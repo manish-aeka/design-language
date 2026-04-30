@@ -1,8 +1,652 @@
 # Sovereign Capital Gate — Design Language
 
-> Design system derived from the **Aibii** AI Business Intelligence SaaS platform.  
-> Sovereign Capital Gate is an example workspace/organisation within the product.  
+> Design system documentation for the **Sovereign Capital Gate** workspace view within the **Aibii** AI Business Intelligence SaaS platform.
 > Place the reference screenshot at `assets/screenshot.png`.
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Screen Anatomy](#screen-anatomy)
+3. [Color System](#color-system)
+4. [Typography](#typography)
+5. [Spacing & Grid](#spacing--grid)
+6. [Border Radius & Elevation](#border-radius--elevation)
+7. [Icon Inventory](#icon-inventory)
+8. [Components](#components)
+   - [Sidebar Navigation](#sidebar-navigation)
+   - [Breadcrumb Bar](#breadcrumb-bar)
+   - [Workspace Header](#workspace-header)
+   - [Action Cards Row](#action-cards-row)
+   - [Section Header & Controls](#section-header--controls)
+   - [Search Bar](#search-bar)
+   - [View Toggle](#view-toggle)
+   - [Type Filter Dropdown](#type-filter-dropdown)
+   - [Item Grid](#item-grid)
+   - [Item Card](#item-card)
+   - [Card Type Badge](#card-type-badge)
+   - [Scrollbar](#scrollbar)
+9. [States & Interactions](#states--interactions)
+10. [Motion & Animation](#motion--animation)
+11. [Design Principles](#design-principles)
+12. [File Structure](#file-structure)
+
+---
+
+## Overview
+
+The Sovereign Capital Gate view is a **workspace detail page** within the Aibii SaaS platform. It shows all items (Chats, Dashboards, Documents) belonging to the workspace, provides action shortcuts for creating new content, and connects to a shared sidebar for cross-workspace navigation.
+
+![Reference Screenshot](assets/screenshot.png)
+
+---
+
+## Screen Anatomy
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ SIDEBAR (220px)                │ MAIN CONTENT AREA                              │
+│                                │                                                │
+│ [M] Manish kumar's Work… [▾]  │ ☰  ‹  ›  Workspaces › Sovereign Capital Gate  │ ← Breadcrumb bar
+│ ───────────────────────────── │                                                │
+│ 🕐 Recent                     │                                                │
+│ ⊞  New dashboard              │ [🏢] Sovereign Capital Gate                    │ ← Workspace header
+│ 💬 New chat                   │      11 items · Last updated about 1 hour ago  │
+│ ───────────────────────────── │                                                │
+│ WORKSPACES              [👁]  │ [📊 New Doc][⊞ Create dash][✨ Ask AI]        │ ← Action cards (5)
+│ ▼ Sovereign Capital Gate ←■   │ [+ Add data source][🗄 Connect Datasource]    │
+│   ├ 💬 Chat                   │                                                │
+│   ├ ⊞  Dashboard              │ All items        [ Search… ] [ Type▾][≡⊞]  │ ← Section header
+│   └ 📄 Document               │                                                │
+│ ▶ My private workspace        │ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐         │ ← Item grid
+│ + Create a workspace          │ │ Chat │ │Dash  │ │ Doc  │ │Cap.  │         │
+│                               │ └──────┘ └──────┘ └──────┘ └──────┘         │
+│ [Shared with me]              │ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐         │
+│ [Settings]                    │ │Deal  │ │Invest│ │Risk  │ │Portf.│         │
+│                               │ └──────┘ └──────┘ └──────┘ └──────┘         │
+│ [✨ Explore free features]    │ ┌──────┐ ┌──────┐ ┌──────┐                  │
+│     Credit left: 15           │ │Valu. │ │Exit  │ │Market│                  │
+└─────────────────────────────── └──────┘ └──────┘ └──────┘ ──────────────────┘
+```
+
+---
+
+## Color System
+
+| Token | Hex | Usage |
+|---|---|---|
+| `color-brand-primary` | `#5B63F6` | CTA icons, active states, focus rings, brand accent |
+| `color-brand-secondary` | `#7C6FF7` | Gradient secondary, AI highlights |
+| `color-bg-base` | `#FFFFFF` | Page background, card surfaces |
+| `color-bg-sidebar` | `#F8F9FC` | Left sidebar background |
+| `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, active toggle, active type option |
+| `color-bg-toggle` | `#F1F3F4` | View toggle container, Type filter trigger background |
+| `color-bg-tab-container` | `#F3F4F6` | Filter pill container |
+| `color-text-primary` | `#111827` | Headings, card titles, active nav labels |
+| `color-text-secondary` | `#6B7280` | Subtitles, timestamps, descriptions |
+| `color-text-tertiary` | `#9CA3AF` | Inactive toggle icons, chevron icons |
+| `color-text-muted` | `#374151` | Type filter trigger text |
+| `color-border-default` | `#E5E7EB` | Card borders, section dividers, breadcrumb buttons |
+| `color-border-active-nav` | `#5B63F6` | `2px` left border on the active workspace row |
+| `color-icon-brand` | `#5B63F6` | Action card icons, funnel icon, active toggle icon |
+| `color-icon-chat` | `#5B63F6` | Chat type icons (sidebar, badges, cards) |
+| `color-icon-dashboard` | `#16A34A` | Dashboard type icons |
+| `color-icon-document` | `#F97316` | Document type icons |
+| `color-icon-other` | `#6B7280` | Other type icon |
+| `color-preview-chat` | `#EEF2FF` | Chat card preview background |
+| `color-preview-chat-icon` | `#93A8F4` | Chat card preview icon |
+| `color-preview-dashboard` | `#F0FDF4` | Dashboard card preview background |
+| `color-preview-dashboard-icon` | `#6EE7A6` | Dashboard card preview icon |
+| `color-preview-document` | `#FFF7ED` | Document card preview background |
+| `color-preview-document-icon` | `#FCA96A` | Document card preview icon |
+| `color-scrollbar-thumb` | `#CBD5E1` | Custom scrollbar thumb |
+| `color-explore-bg` | `#E8EEFF` | Explore features banner background |
+| `color-explore-icon-bg` | `#C7D2FE` | Explore features icon circle |
+| `color-explore-icon` | `#4F6EF7` | Explore features sparkle icon |
+| `color-explore-title` | `#3B4ECC` | Explore features title text |
+| `color-explore-subtitle` | `#6B7ADE` | Explore features subtitle text |
+| `color-avatar-brand` | `#3B5BDB` | Workspace switcher avatar background (sidebar only) |
+
+---
+
+## Typography
+
+### Type Scale
+
+| Token | Size | Weight | Usage |
+|---|---|---|---|
+| `type-display` | 28px | 800 | Workspace title |
+| `type-section` | 15px | 600 | "All items" section heading |
+| `type-body-md` | 14px | 400/500 | Nav labels, card titles, action card titles |
+| `type-body-sm` | 13px | 400/500 | Action card descriptions, type filter, submenu items, breadcrumb |
+| `type-label` | 12px | 600 | Workspace switcher name |
+| `type-caption` | 11px | 400 | Card timestamps, explore banner subtitle |
+| `type-overline` | 11px | 500 | Workspaces section label (uppercase, tracked) |
+| `type-badge` | 10px | 500 | Card type badges |
+
+### Font Family
+```css
+font-family: 'Inter', system-ui, -apple-system, sans-serif;
+```
+
+---
+
+## Spacing & Grid
+
+| Token | Value | Usage |
+|---|---|---|
+| `space-1` | 4px | Micro gaps, badge padding |
+| `space-2` | 8px | Icon-to-label gap, submenu item padding |
+| `space-3` | 12px | Card info padding, type filter trigger padding |
+| `space-4` | 16px | Action card padding, grid gap |
+| `space-5` | 20px | — |
+| `space-6` | 24px | Content area padding top/bottom, section spacing |
+| `space-8` | 32px | Content area horizontal padding |
+
+### Layout Grid
+
+| Zone | Width | Notes |
+|---|---|---|
+| Sidebar | 220px fixed | `min-w-[220px]`, never collapses |
+| Content area | `flex-1` | `px-8 py-8` |
+| Breadcrumb bar | Full width | `h-11`, `px-8` |
+| Action cards | 5 columns → wraps | `grid-cols-4` with 5 cards (wraps to 2 rows on 4-col) |
+| Item grid | 4 columns | `grid-cols-4 gap-4` |
+
+---
+
+## Border Radius & Elevation
+
+| Token | Value | Used on |
+|---|---|---|
+| `radius-sm` | 4px | Card type badges |
+| `radius-md` | 6–8px | Nav items, toggle buttons, breadcrumb buttons, dropdown items |
+| `radius-lg` | 12px | Cards, action cards, dropdown panel, workspace header icon |
+| `radius-full` | 9999px | Workspace switcher avatar, scrollbar thumb, type filter trigger |
+
+### Shadows
+
+| Token | Value | Used on |
+|---|---|---|
+| `shadow-card` | `0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)` | Item cards, action cards at rest |
+| `shadow-card-hover` | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` | Cards on hover |
+| `shadow-toggle-active` | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` | Active view toggle button |
+| `shadow-dropdown` | `0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)` | Type filter dropdown |
+
+---
+
+## Icon Inventory
+
+| Context | Icon | Size | Color |
+|---|---|---|---|
+| Page title (workspace header) | `Building` (office/landmark) | 20px | `#5B63F6` in `#EEF2FF` wrapper |
+| Workspace switcher chevron | `ChevronDown` | 16px | `#9CA3AF` |
+| Nav: Recent | `Clock` (circle + hands) | 16px | `#6B7280` |
+| Nav: New dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
+| Nav: New chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
+| Workspaces header | `EyeOff` | 14px | `#D1D5DB` |
+| Workspace chevron | `ChevronRight` | 12px | `#9CA3AF` → rotates 90° when open |
+| Submenu: Chat | `ChatBubble` | 14px | `#5B63F6` |
+| Submenu: Dashboard | `SquaresGrid` | 14px | `#16A34A` |
+| Submenu: Document | `Document` | 14px | `#F97316` |
+| Bottom nav: Shared with me | `Users` (person group) | 16px | `#9CA3AF` |
+| Bottom nav: Settings | `Cog` (gear) | 16px | `#9CA3AF` |
+| Explore banner icon | `Sparkles` | 16px | `#4F6EF7` |
+| Breadcrumb: Hamburger | `Bars3` | 18px | `#6B7280` |
+| Breadcrumb: Back | `ChevronLeft` | 16px | `#9CA3AF` |
+| Breadcrumb: Forward | `ChevronRight` | 16px | `#9CA3AF` |
+| Breadcrumb: Divider | `ChevronRight` | 14px | `#D1D5DB` |
+
+| Action card: New Document | `BarChart2` (bar chart) | 20px | `#5B63F6` |
+| Action card: Create dashboard | `SquaresGrid` | 20px | `#5B63F6` |
+| Action card: Ask AI | `Sparkles` | 20px | `#5B63F6` |
+| Action card: Add data source | `Plus` | 20px | `#5B63F6` |
+| Action card: Connect Datasource | `Database` (cylinder) | 20px | `#5B63F6` |
+| Search bar: magnifier | `MagnifyingGlass` | 14px | `#9CA3AF` |
+| Type filter: funnel | `Funnel` | 14px | `#5B63F6` |
+| Type filter: chevron | `ChevronDown` | 12px | `#9CA3AF` |
+| Type option: Chat | `ChatBubble` | 14px | `#5B63F6` |
+| Type option: Dashboard | `SquaresGrid` | 14px | `#16A34A` |
+| Type option: Document | `Document` | 14px | `#F97316` |
+| Type option: Other | `EllipsisHorizontal` | 14px | `#6B7280` |
+| View toggle: List | `Bars3` | 15px | `#5B63F6` (active) / `#9CA3AF` |
+| View toggle: Grid | `SquaresGrid` (filled) | 15px | `#5B63F6` (active) / `#9CA3AF` |
+| Card preview: Chat | `ChatBubble` (with dots) | 40px | `#93A8F4` |
+| Card preview: Dashboard | `SquaresGrid` | 40px | `#6EE7A6` |
+| Card preview: Document | `Document` | 40px | `#FCA96A` |
+| Card overflow `⋯` | `EllipsisHorizontal` | 16px | `#9CA3AF` |
+| Card type badge: Chat | `ChatBubble` | 10px | `#5B63F6` |
+| Card type badge: Dashboard | `SquaresGrid` | 10px | `#16A34A` |
+| Card type badge: Document | `Document` | 10px | `#F97316` |
+
+---
+
+## Components
+
+### Sidebar Navigation
+
+Fixed 220px left panel, identical to the Recent View sidebar. "Sovereign Capital Gate" workspace row is the active/highlighted item.
+
+```
+┌─────────────────────────┐
+│ [M] Manish kumar's Work…│  ← Workspace switcher (#3B5BDB avatar)
+├─────────────────────────┤
+│ 🕐 Recent               │
+│ ⊞  New dashboard        │
+│ 💬 New chat             │
+├─────────────────────────┤
+│ WORKSPACES        [👁]  │
+│ ▼ Sovereign Capital Gate│  ← Active: #EEF2FF bg, 2px #5B63F6 left border
+│   ├ 💬 Chat             │
+│   ├ ⊞  Dashboard        │
+│   └ 📄 Document         │
+│ ▶ My private workspace  │
+│ + Create a workspace    │
+├─────────────────────────┤
+│ 👤 Shared with me       │
+│ ⚙  Settings             │
+├─────────────────────────┤
+│ ✨ Explore free features│  ← #E8EEFF banner
+│    Credit left: 15      │
+└─────────────────────────┘
+```
+
+**Key tokens:**
+
+| Property | Value |
+|---|---|
+| Sidebar background | `#F8F9FC` |
+| Active workspace row bg | `#EEF2FF` |
+| Active workspace left border | `2px solid #5B63F6` |
+| Active workspace name | `14px`, `font-weight: 500`, `#111827` |
+| Inactive nav text | `14px`, `#374151` / `#6B7280` |
+| Nav item height | `36px` |
+| Nav item border-radius | `8px` |
+| Nav item hover bg | `#EEF2FF` |
+| Submenu indent | `padding-left: 16px` |
+| Submenu max-height (open) | `160px` with `overflow-y: auto` |
+| Submenu item height | `32px` |
+| Workspace switcher avatar | `28×28px`, `border-radius: 9999px`, `background: #3B5BDB` |
+| Workspaces label | `11px`, uppercase, tracked, `#9CA3AF` |
+| Chevron open | rotates `90deg`, `150ms ease` |
+
+---
+
+### Breadcrumb Bar
+
+Full-width bar (`h-11`) at the top of the content area, sits above the scrollable content.
+
+```
+☰  ‹  ›  Workspaces  ›  Sovereign Capital Gate
+```
+
+| Property | Value |
+|---|---|
+| Height | `44px` |
+| Border bottom | `1px solid #E5E7EB` |
+| Hamburger icon | `18px`, `#6B7280` |
+| Back/forward icons | `16px`, `#9CA3AF` |
+| Breadcrumb text | `13px`, `#9CA3AF` (parent) / `#374151` font-medium (current) |
+| Divider chevron | `14px`, `#D1D5DB` |
+
+---
+
+### Workspace Header
+
+Appears at the top of the scrollable content area, before the action cards.
+
+```
+[🏢]  Sovereign Capital Gate
+      11 items · Last updated about 1 hour ago
+```
+
+| Property | Value |
+|---|---|
+| Icon wrapper | `40×40px`, `border-radius: 12px`, `background: #EEF2FF` |
+| Icon | Building/landmark, `20px`, `color: #5B63F6` |
+| Title | `28px`, `font-weight: 800`, `#111827` |
+| Subtitle | `14px`, `#6B7280`, `margin-top: 2px` |
+| Icon–text gap | `12px` |
+| Header bottom margin | `28px` before action cards |
+
+---
+
+### Action Cards Row
+
+Five shortcut cards laid out in a `grid-cols-4` grid (wraps to 2 rows with 5 cards).
+
+| # | Title | Description | Icon |
+|---|---|---|---|
+| 1 | New Document | Write, edit & share docs | `BarChart2` |
+| 2 | Create dashboard | Group your reports | `SquaresGrid` |
+| 3 | Ask AI | Generate insights from a prompt | `Sparkles` |
+| 4 | Add data source | Attach data to this workspace | `Plus` |
+| 5 | Connect Datasource | Link databases, APIs & more | `Database` |
+
+| Property | Value |
+|---|---|
+| Layout | `grid-cols-4`, `gap: 16px` |
+| Background | `#FFFFFF` |
+| Border | `1px solid #E5E7EB` |
+| Border-radius | `12px` |
+| Padding | `16px` |
+| Icon wrapper | `40×40px`, `border-radius: 8px`, `background: rgba(91,99,246,0.08)` |
+| Icon | `20px`, `#5B63F6` |
+| Title | `14px`, `font-weight: 500`, `#111827` |
+| Description | `13px`, `#6B7280` |
+| Hover | `shadow-card-hover` + `translateY(-1px)` |
+| Transition | `all 150ms ease-out` |
+
+---
+
+### Section Header & Controls
+
+Sits between the action cards and the item grid.
+
+```
+All items                                          [ Type▾ ]  [ ≡ ⊞ ]
+```
+
+| Property | Value |
+|---|---|
+| Title | "All items", `15px`, `font-weight: 600`, `#111827` |
+| Bottom margin | `16px` before item grid |
+| Controls | Search bar + Type filter + View toggle, right-aligned |
+
+---
+
+### Search Bar
+
+Inline text input in the section header controls row, directly before the Type filter.
+
+| Property | Value |
+|---|---|
+| Height | `36px` |
+| Default width | `256px` (`w-64`) |
+| Focus width | `320px` (`w-80`) |
+| Background | `#FFFFFF` |
+| Border | `1px solid #E5E7EB` |
+| Border-radius | `8px` |
+| Padding | `0 12px 0 32px` (icon offset left) |
+| Placeholder | "Search…", `#9CA3AF` |
+| Text | `13px`, `#374151` |
+| Focus ring | `2px solid #5B63F6`, border transparent |
+| Magnifier icon | `14px`, `#9CA3AF`, absolute left `10px` |
+| Width transition | `all 150ms ease` |
+| Behaviour | Filters item cards live on `oninput`; hides non-matching cards; empty query restores all |
+
+---
+
+### View Toggle
+
+Compact dual-mode switcher (list / grid). Light surface.
+
+| Property | Value |
+|---|---|
+| Container background | `#F1F3F4` |
+| Container border | `1px solid rgba(0,0,0,0.06)` |
+| Container border-radius | `8px` |
+| Container padding | `2px` |
+| Button size | `32×32px` |
+| Button border-radius | `6px` |
+| **Active** bg | `#EEF2FF` |
+| **Active** shadow | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` |
+| **Active** icon color | `#5B63F6` |
+| **Inactive** bg | `transparent` |
+| **Inactive** icon color | `#9CA3AF` |
+| Inactive hover bg | `rgba(0,0,0,0.05)` |
+| Icon size | `15px` |
+| List icon | `Bars3` |
+| Grid icon | `SquaresGrid` (filled, 4 rects `rx 1.5`) |
+| Default active | List |
+| Transition | `background-color 150ms ease`, `box-shadow 150ms ease`, `color 150ms ease` |
+
+---
+
+### Type Filter Dropdown
+
+**Trigger:**
+
+| Property | Value |
+|---|---|
+| Background | `#F1F3F4` |
+| Border | `1px solid #E5E7EB` |
+| Border-radius | `9999px` |
+| Height | `36px` |
+| Padding | `0 12px` |
+| Text | "Type", `13px`, `font-weight: 500`, `#374151` |
+| Funnel icon | `14px`, `#5B63F6` |
+| Chevron | `ChevronDown`, `12px`, `#9CA3AF` |
+
+**Dropdown panel:**
+
+| Property | Value |
+|---|---|
+| Background | `#FFFFFF` |
+| Border | `1px solid #E5E7EB` |
+| Border-radius | `12px` |
+| Padding | `6px 0` |
+| Shadow | `0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)` |
+| Min-width | `180px` |
+| Position | `absolute right-0`, below trigger |
+| Item margin | `0 4px` (inset) |
+| Item border-radius | `8px` |
+| Item height | `36px` |
+| Item hover bg | `#F3F4F6` |
+| Transition | `80ms ease` |
+
+**Type options:**
+
+| Type | Icon color | Active bg | Active text |
+|---|---|---|---|
+| Chat | `#5B63F6` | `#EEF2FF` | `#5B63F6` |
+| Dashboard | `#16A34A` | — | `#374151` |
+| Document | `#F97316` | — | `#374151` |
+| Other | `#6B7280` | — | `#374151` |
+
+Default open state: Chat is active.
+
+---
+
+### Item Grid
+
+4-column responsive grid.
+
+| Property | Value |
+|---|---|
+| Columns | `repeat(4, 1fr)` |
+| Gap | `16px` |
+| Top margin | `16px` from section header |
+
+**Current items (11 total):**
+
+| Name | Type |
+|---|---|
+| Chat | Chat |
+| Dashboard | Dashboard |
+| Document | Document |
+| Capital Flow Analysis | Dashboard |
+| Deal Memo Q2 | Document |
+| Investor Briefing | Chat |
+| Risk Register | Document |
+| Portfolio Overview | Dashboard |
+| Valuation Model | Chat |
+| Exit Strategy | Document |
+| Market Signals | Chat |
+
+---
+
+### Item Card
+
+Individual workspace item tile.
+
+```
+┌──────────────────────────────┐
+│                              │
+│          [  icon  ]          │  ← Coloured preview zone (160px)
+│                              │
+├──────────────────────────────┤
+│  Capital Flow Analysis   ⋯  │  ← Title + overflow
+│  [⊞ Dashboard]               │  ← Type badge
+│  Updated 2 hours ago         │  ← Timestamp
+└──────────────────────────────┘
+```
+
+| Property | Value |
+|---|---|
+| Preview height | `160px` |
+| Preview border-radius | top corners only (`12px 12px 0 0`) |
+| Preview icon | `40px` |
+| Card border | `1px solid #E5E7EB` |
+| Card border-radius | `12px` |
+| Card background | `#FFFFFF` |
+| Info area padding | `10px 12px 12px` |
+| Title | `14px`, `font-weight: 500`, `#111827` |
+| Timestamp | `11px`, `#9CA3AF`, `margin-top: 4px` |
+| Overflow `⋯` | hidden by default → `opacity: 1` on card hover |
+| Hover border | `rgba(91,99,246,0.4)` |
+| Hover shadow | `shadow-card-hover` |
+| Hover lift | `translateY(-1px)` |
+| Transition | `all 150ms ease-out` |
+
+**Card type colour map:**
+
+| Type | Preview bg | Preview icon | Badge bg | Badge text |
+|---|---|---|---|---|
+| Chat | `#EEF2FF` | `#93A8F4` | `#EEF2FF` | `#5B63F6` |
+| Dashboard | `#F0FDF4` | `#6EE7A6` | `#F0FDF4` | `#16A34A` |
+| Document | `#FFF7ED` | `#FCA96A` | `#FFF7ED` | `#F97316` |
+
+---
+
+### Card Type Badge
+
+Inline label beneath the card title.
+
+| Property | Value |
+|---|---|
+| Display | `inline-flex`, `align-items: center`, `gap: 4px` |
+| Padding | `2px 6px` |
+| Border-radius | `4px` |
+| Font | `10px`, `font-weight: 500` |
+| Icon size | `10px` |
+| Margin-top | `4px` from title |
+
+---
+
+### Scrollbar
+
+| Property | Value |
+|---|---|
+| Width | `6px` |
+| Thumb | `#CBD5E1`, `border-radius: 9999px` |
+| Track | `transparent` |
+
+```css
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+::-webkit-scrollbar-track { background: transparent; }
+```
+
+---
+
+## States & Interactions
+
+### Item Card States
+
+| State | Visual change |
+|---|---|
+| Default | `border: 1px solid #E5E7EB`, `shadow-card`, overflow hidden |
+| Hover | Border `rgba(91,99,246,0.4)`, `shadow-card-hover`, `translateY(-1px)`, `⋯` visible |
+| Active | `translateY(0)`, `shadow-card` |
+
+### View Toggle States
+
+| State | Visual change |
+|---|---|
+| Active | `#EEF2FF` bg, brand shadow, `#5B63F6` icon |
+| Inactive | `transparent` bg, `#9CA3AF` icon |
+| Inactive hover | `rgba(0,0,0,0.05)` bg, `#6B7280` icon |
+
+### Action Card States
+
+| State | Visual change |
+|---|---|
+| Default | Flat `shadow-card`, `#E5E7EB` border |
+| Hover | `shadow-card-hover`, `translateY(-1px)` |
+| Active | `translateY(0)` |
+
+### Workspace Chevron States
+
+| State | Visual change |
+|---|---|
+| Collapsed | Chevron at `0deg` |
+| Expanded | Chevron at `90deg`, submenu visible with scroll |
+
+---
+
+## Motion & Animation
+
+| Interaction | Duration | Easing | Properties |
+|---|---|---|---|
+| Card hover | `150ms` | `ease-out` | `box-shadow`, `transform`, `border-color` |
+| Action card hover | `150ms` | `ease-out` | `box-shadow`, `transform` |
+| `⋯` appear | `100ms` | `ease` | `opacity` |
+| View toggle | `150ms` | `ease` | `background-color`, `box-shadow`, `color` |
+| Nav item hover | `100ms` | `ease` | `background-color` |
+| Workspace chevron | `150ms` | `ease` | `transform` (0→90deg) |
+| Type dropdown item | `80ms` | `ease` | `background-color` |
+
+---
+
+## Design Principles
+
+### 1. Workspace as Container
+The page focuses on the items inside the workspace. The header is compact; the grid takes precedence over chrome.
+
+### 2. Type-Coded Visual Language
+Chat = `#5B63F6`, Dashboard = `#16A34A`, Document = `#F97316`. Applied consistently across sidebar submenu icons, card previews, card type badges, and type filter options.
+
+### 3. Contextual Active State
+The sidebar reflects which workspace is open — the active row is highlighted and its submenu is expanded. This provides orientation within the larger navigation tree.
+
+### 4. Flat Hierarchy, Depth on Interaction
+Cards start flat. Elevation only appears on hover — communicating affordance rather than decoration.
+
+### 5. Progressive Disclosure
+Card `⋯` menus, type dropdowns, and workspace submenus are hidden by default and appear only when triggered.
+
+### 6. Accessible Contrast
+- Title text `#111827` on `#FFFFFF` → 16.1:1 (AAA)
+- Timestamp `#9CA3AF` on `#FFFFFF` → decorative use only
+- Brand icon `#5B63F6` on `#EEF2FF` → sufficient for icon context
+
+---
+
+## File Structure
+
+```
+sovereign-capital-gate/
+├── assets/
+│   └── screenshot.png
+├── tokens/
+│   ├── colors.json
+│   ├── typography.json
+│   └── spacing.json
+├── components/
+│   ├── sidebar.md
+│   ├── breadcrumb-bar.md
+│   ├── action-cards.md
+│   ├── item-card.md
+│   └── type-badge.md
+└── README.md                   ← This file
+```
+
+---
+
+*Design language version 1.1 — Aibii AI Business Intelligence SaaS · Sovereign Capital Gate workspace, April 2026.*
+
 
 ---
 
