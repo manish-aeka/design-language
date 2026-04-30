@@ -20,6 +20,8 @@
    - [Document Cards](#document-cards)
    - [Empty State](#empty-state)
    - [Upgrade Banner](#upgrade-banner)
+   - [View Toggle](#view-toggle)
+   - [Type Filter Dropdown](#type-filter-dropdown)
 9. [Motion & Animation](#motion--animation)
 10. [Design Principles](#design-principles)
 
@@ -323,6 +325,108 @@ Bottom-of-sidebar persistent call-to-action.
 | Background | Transparent or very light violet tint `rgba(124,58,237,0.04)` |
 | Border radius | `radius-md` |
 | Padding | `space-3 space-4` |
+
+---
+
+### View Toggle
+
+A compact dual-mode switcher displayed to the **right of the tab / filter row**. Switches between **list view** and **grid view**.
+
+```
+┌────────────────────────────┐
+│  [✓ ≡]  │  [⊞]            │
+└────────────────────────────┘
+   Active     Inactive
+```
+
+Uses an **inverted dark surface** (`#12131F`) for strong visual contrast against the light page background.
+
+| Property | Value |
+|---|---|
+| Container background | `#12131F` (dark navy) |
+| Container border-radius | `radius-full` |
+| Container padding | `4px` |
+| Button size | `36px × 36px` |
+| Button border-radius | `radius-full` |
+| **Active button** bg | `#1C3A6E` (dark blue tint) |
+| **Active button** icon color | `#FFFFFF` |
+| **Inactive button** bg | `transparent` |
+| **Inactive button** icon color | `#9CA3AF` |
+| Icon size | `16px` |
+| List icon | `ListChecks` (✓ ≡) |
+| Grid icon | `LayoutGrid` (⊞) |
+| Hover (inactive btn) | bg `rgba(255,255,255,0.06)` |
+| Transition | `background-color 120ms ease` |
+| Placement | Right-aligned, same row as the filter / tab bar |
+
+---
+
+### Type Filter Dropdown
+
+Placed **to the right of the tab row** alongside the View Toggle. Filters content by file or document type.
+
+**Trigger:**
+```
+[ Type ▾ ]
+```
+
+**Trigger button tokens:**
+
+| Property | Value |
+|---|---|
+| Background | `#1A1A2A` (dark surface) |
+| Border | `1px solid rgba(255,255,255,0.12)` |
+| Border-radius | `radius-md` (8px) |
+| Padding | `6px 12px` |
+| Text | "Type", 13px, 500, `#E5E7EB` |
+| Chevron | `ChevronDown`, 12px, `#9CA3AF` |
+| Hover bg | `rgba(255,255,255,0.06)` |
+| Open bg | `rgba(255,255,255,0.10)` |
+
+**Dropdown panel tokens:**
+
+| Property | Value |
+|---|---|
+| Background | `#1A1A2A` |
+| Border | `1px solid rgba(255,255,255,0.10)` |
+| Border-radius | `radius-lg` (12px) |
+| Padding | `6px 0` |
+| Shadow | `0 8px 24px rgba(0,0,0,0.40)` |
+| Min-width | `200px` |
+
+**Dropdown item tokens:**
+
+| Property | Value |
+|---|---|
+| Height | `36px` |
+| Padding | `0 12px` |
+| Layout | `flex`, `align-items: center`, `gap: 10px` |
+| Label | 13px, 400, `#E5E7EB` |
+| Icon size | `20px` (coloured badge) |
+| Hover bg | `rgba(255,255,255,0.06)` |
+| Selected bg | `rgba(91,99,246,0.20)` |
+| Selected text | `#FFFFFF` |
+| Transition | `background-color 80ms ease` |
+
+**File type icon colour map:**
+
+| Type | Colour |
+|---|---|
+| Folders | `#6B7280` gray |
+| Documents | `#3B82F6` blue |
+| Spreadsheets | `#22C55E` green |
+| Presentations | `#EAB308` yellow |
+| Vids | `#A855F7` purple |
+| Gems | `#60A5FA` light blue |
+| Forms | `#8B5CF6` violet |
+| Photos & Media | `#F97316` orange |
+| PDFs | `#EF4444` red |
+| Videos | `#F97316` orange |
+| Archives | `#6B7280` gray |
+| Audio | `#F59E0B` amber |
+| Drawings | `#EF4444` red-orange |
+| Sites | `#3B82F6` blue |
+| Shortcuts | `#9CA3AF` muted gray |
 
 ---
 
