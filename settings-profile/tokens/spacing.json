@@ -1,0 +1,41 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" },
+    "1":  { "value": "4px",  "comment": "Micro gaps" },
+    "2":  { "value": "8px",  "comment": "Icon-to-label, field label to input gap" },
+    "3":  { "value": "12px", "comment": "Tab padding vertical, compact rows" },
+    "4":  { "value": "16px", "comment": "Tab padding horizontal, section margin, avatar-button gap" },
+    "5":  { "value": "20px", "comment": "Sidebar horizontal padding" },
+    "6":  { "value": "24px", "comment": "Page title to tabs gap, tabs to first section gap" },
+    "8":  { "value": "32px", "comment": "Content area horizontal padding, between form sections" },
+    "10": { "value": "40px", "comment": "Page header bottom margin" }
+  },
+  "borderRadius": {
+    "sm":   { "value": "4px",    "comment": "Tight badges" },
+    "md":   { "value": "8px",    "comment": "Inputs, buttons, nav items" },
+    "lg":   { "value": "12px",   "comment": "Cards, modals" },
+    "xl":   { "value": "16px",   "comment": "Large modal overlays" },
+    "full": { "value": "9999px", "comment": "Avatar circle, pill tabs" }
+  },
+  "shadow": {
+    "none":         { "value": "none", "comment": "Inputs at rest, sidebar, page bg" },
+    "inputFocus":   { "value": "0 0 0 3px rgba(91,99,246,0.15)", "comment": "Focused input ring" },
+    "inputError":   { "value": "0 0 0 3px rgba(239,68,68,0.15)", "comment": "Error state input ring" },
+    "btn":          { "value": "0 1px 2px rgba(0,0,0,0.06)", "comment": "Upload button at rest" },
+    "btnHover":     { "value": "0 2px 6px rgba(0,0,0,0.10)", "comment": "Upload button on hover" },
+    "modal":        { "value": "0 20px 60px rgba(0,0,0,0.18)", "comment": "Modals and popovers" }
+  },
+  "layout": {
+    "sidebarWidth":      { "value": "220px",  "comment": "Fixed sidebar width" },
+    "contentPaddingX":   { "value": "32px",   "comment": "Content area horizontal padding" },
+    "formMaxWidth":      { "value": "600px",  "comment": "Maximum width of the settings form" },
+    "inputHeight":       { "value": "40px",   "comment": "Height of a text input field" },
+    "avatarSize":        { "value": "48px",   "comment": "Avatar image width and height" },
+    "tabHeight":         { "value": "34px",   "comment": "Height of each settings tab" },
+    "tabPaddingX":       { "value": "16px",   "comment": "Horizontal padding inside a tab" },
+    "tabPaddingY":       { "value": "6px",    "comment": "Vertical padding inside a tab" },
+    "nameFieldGap":      { "value": "16px",   "comment": "Gap between first name and last name inputs" },
+    "breadcrumbHeight":  { "value": "44px",   "comment": "Height of the top breadcrumb bar" },
+    "navItemHeight":     { "value": "36px",   "comment": "Sidebar nav item height" }
+  }
+}

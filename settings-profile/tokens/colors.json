@@ -1,0 +1,41 @@
+{
+  "color": {
+    "brand": {
+      "primary":           { "value": "#5B63F6", "comment": "Focus rings, active tab indicator" },
+      "secondary":         { "value": "#7C6FF7", "comment": "Upgrade accent" },
+      "gradientStart":     { "value": "#4F6EF7", "comment": "Logo gradient start" },
+      "gradientEnd":       { "value": "#8B5CF6", "comment": "Logo gradient end" }
+    },
+    "background": {
+      "base":              { "value": "#FFFFFF", "comment": "Page background, input backgrounds" },
+      "sidebar":           { "value": "#F8F9FC", "comment": "Left navigation sidebar" },
+      "hover":             { "value": "#EEF2FF", "comment": "Nav item hover" },
+      "tabActive":         { "value": "#FFFFFF", "comment": "Active settings tab" },
+      "tabContainer":      { "value": "transparent", "comment": "Tab row sits on page bg" },
+      "input":             { "value": "#FFFFFF", "comment": "Editable text input background" },
+      "inputDisabled":     { "value": "#F9FAFB", "comment": "Read-only / disabled input background" },
+      "btnSecondary":      { "value": "#FFFFFF", "comment": "Upload a picture button" }
+    },
+    "text": {
+      "primary":           { "value": "#111827", "comment": "Page title, input values, section labels" },
+      "secondary":         { "value": "#6B7280", "comment": "Subtitle, inactive tab text, field labels" },
+      "tertiary":          { "value": "#9CA3AF", "comment": "Read-only input text, disabled states" },
+      "link":              { "value": "#5B63F6", "comment": "Active tab text" },
+      "upgrade":           { "value": "#7C3AED", "comment": "Upgrade this workspace link" }
+    },
+    "border": {
+      "default":           { "value": "#E5E7EB", "comment": "Input borders, tab border, avatar ring" },
+      "subtle":            { "value": "#F3F4F6", "comment": "Sidebar dividers, breadcrumb bottom" },
+      "inputFocus":        { "value": "#5B63F6", "comment": "Focused input border" },
+      "tabActive":         { "value": "#E5E7EB", "comment": "Active tab pill outline" },
+      "inputError":        { "value": "#EF4444", "comment": "Input border in error state" }
+    },
+    "icon": {
+      "muted":             { "value": "#9CA3AF", "comment": "Breadcrumb chevrons, inactive icons" },
+      "brand":             { "value": "#5B63F6", "comment": "Brand-colored icons" }
+    },
+    "avatar": {
+      "ring":              { "value": "#E5E7EB", "comment": "Thin ring around the avatar image" }
+    }
+  }
+}

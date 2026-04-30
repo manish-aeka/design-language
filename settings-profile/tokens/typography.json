@@ -1,0 +1,35 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Primary typeface for all UI text"
+      }
+    },
+    "size": {
+      "display":          { "value": "28px", "comment": "Page title (Profile)" },
+      "subtitle":         { "value": "14px", "comment": "Page subtitle" },
+      "sectionLabel":     { "value": "14px", "comment": "Section heading (Picture)" },
+      "fieldLabel":       { "value": "13px", "comment": "Form field labels (First name, Email)" },
+      "input":            { "value": "14px", "comment": "Input field values" },
+      "inputPlaceholder": { "value": "14px", "comment": "Read-only / placeholder text" },
+      "tab":              { "value": "14px", "comment": "Settings tab labels" },
+      "btnSecondary":     { "value": "14px", "comment": "Upload a picture button label" },
+      "breadcrumb":       { "value": "13px", "comment": "Breadcrumb path items" },
+      "caption":          { "value": "11px", "comment": "Helper text, fine print" }
+    },
+    "weight": {
+      "regular":          { "value": "400" },
+      "medium":           { "value": "500" },
+      "semiBold":         { "value": "600" },
+      "bold":             { "value": "700" },
+      "extraBold":        { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":            { "value": "1.2", "comment": "Display title" },
+      "snug":             { "value": "1.3", "comment": "Labels, tabs, breadcrumb" },
+      "normal":           { "value": "1.4", "comment": "Section labels" },
+      "relaxed":          { "value": "1.5", "comment": "Body, input values, subtitle" }
+    }
+  }
+}
