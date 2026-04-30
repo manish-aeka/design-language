@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aibii — Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { primary: '#5B63F6', secondary: '#7C6FF7' },
+            sidebar: '#F8F9FC',
+            hover:   '#EEF2FF',
+            'tab-container': '#F3F4F6',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            card:        '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            'card-hover':'0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)',
+          },
+        },
+      },
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    .nav-item { transition: background-color 100ms ease; }
+    .nav-item:hover { background-color: #EEF2FF; }
+
+    .ws-submenu { display: none; }
+    .ws-submenu.open { display: block; }
+    .ws-chevron { transition: transform 150ms ease; }
+    .ws-item.open .ws-chevron { transform: rotate(90deg); }
+
+    .toolbar-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 10px; height: 30px; border-radius: 8px;
+      border: 1px solid #E5E7EB; background: #fff;
+      font-size: 12px; font-weight: 500; color: #374151;
+      cursor: pointer; transition: background-color 100ms ease;
+      white-space: nowrap;
+    }
+    .toolbar-btn:hover { background: #F9FAFB; }
+    .toolbar-btn svg { flex-shrink: 0; }
+
+    .chart-card {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .chart-card-title {
+      font-size: 12px; font-weight: 600; color: #374151;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .chart-card-meta {
+      font-size: 11px; color: #9CA3AF; margin-bottom: 12px;
+    }
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+  </style>
+</head>
+<body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
+
+  <!-- ═══════════════════ SIDEBAR 220px ═══════════════════ -->
+  <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+
+    <!-- Workspace switcher -->
+    <div class="px-4 py-3 border-b border-gray-100">
+      <button class="flex items-center gap-2 w-full text-left">
+        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
+        <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+    </div>
+
+    <!-- Primary nav -->
+    <nav class="px-3 py-2 space-y-0.5">
+      <a href="../recent-view/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
+        Recent
+      </a>
+      <!-- New dashboard — ACTIVE -->
+      <a href="#" class="flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-gray-900" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px;">
+        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        New dashboard
+      </a>
+      <a href="../chat/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+        New chat
+      </a>
+    </nav>
+
+    <div class="mx-3 my-1 border-t border-gray-100"></div>
+
+    <!-- Workspaces -->
+    <div class="px-3 py-1">
+      <div class="flex items-center justify-between px-3 h-7">
+        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Workspaces</span>
+      </div>
+      <div class="space-y-0.5 mt-0.5">
+
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws1')" id="ws1-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm text-gray-700 truncate">Sovereign Capital Gate</a>
+          </div>
+          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="../chat/index.html" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Chat
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Dashboard
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Document
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws2')" id="ws2-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My private workspace</a>
+          </div>
+          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Q4 Strategy
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Revenue Overview
+            </a>
+          </div>
+        </div>
+
+        <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
+          <span class="text-gray-400 font-medium text-base leading-none">+</span>
+          Create a workspace
+        </a>
+      </div>
+    </div>
+
+    <div class="flex-1"></div>
+    <div class="mx-3 border-t border-gray-100"></div>
+
+    <nav class="px-3 py-2 space-y-0.5">
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        Shared with me
+      </a>
+      <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
+        <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-[12px] font-semibold leading-tight" style="color:#3B4ECC">Explore free features</p>
+        <p class="text-[11px] mt-0.5" style="color:#6B7ADE">Credit left: 15</p>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════ MAIN ═══════════════════ -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#F9FAFB]">
+
+    <!-- Top bar -->
+    <div class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0">
+      <!-- Left: title + badge -->
+      <div class="flex items-center gap-3">
+        <div id="topbar-nav-btns" class="flex items-center gap-1">
+        <button class="text-gray-500 hover:text-gray-700 mr-1">
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+        <button class="text-gray-400 hover:text-gray-600">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+        </button>
+        <button class="text-gray-400 hover:text-gray-600">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+        </div>
+        <div id="topbar-divider" class="w-px h-4 bg-gray-200 mx-1"></div>
+        <h1 class="text-[15px] font-bold text-gray-900">Sales Overview</h1>
+        <span class="px-2 h-5 rounded-md flex items-center text-[11px] font-medium" style="background:#F3F4F6; color:#6B7280;">Draft</span>
+      </div>
+
+      <!-- Right: toolbar -->
+      <div id="toolbar-btns" class="flex items-center gap-1.5">
+        <!-- Publish -->
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Publish
+        </button>
+        <!-- Toggle Axis -->
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>
+          Toggle Axis
+        </button>
+        <!-- Comment -->
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+          Comment
+        </button>
+        <!-- Color Palette -->
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
+          Color Palette
+        </button>
+        <!-- Add KPI -->
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Add KPI
+        </button>
+        <!-- Fullscreen -->
+        <button id="btn-fullscreen" onclick="toggleFullscreen()" class="toolbar-btn px-2" title="Fullscreen">
+          <svg id="icon-expand" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+          <svg id="icon-compress" class="w-3.5 h-3.5 text-gray-500 hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/></svg>
+        </button>
+        <!-- Edit (primary) -->
+        <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90" style="background:#5B63F6;">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+          Edit
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard canvas -->
+    <div class="flex-1 overflow-y-auto bg-white" style="padding:12px 14px;">
+
+      <!-- Row 2: Monthly Revenue (wide) + Sales by Region -->
+      <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+
+        <!-- Monthly Revenue — col-span-2, Line -->
+        <div class="chart-card col-span-2">
+          <div class="flex items-start justify-between mb-0.5">
+            <div>
+              <p class="chart-card-title">Monthly Revenue</p>
+              <p class="chart-card-meta">Jan – Dec 2024 · USD thousands</p>
+            </div>
+            <span class="text-[11px] font-semibold px-2 h-5 rounded flex items-center" style="background:#EEF2FF;color:#5B63F6;">+18.4%</span>
+          </div>
+          <div class="relative h-[150px]"><canvas id="chartLine"></canvas></div>
+        </div>
+
+        <!-- Sales by Region — col-span-2, Bar -->
+        <div class="chart-card col-span-2">
+          <div class="flex items-start justify-between mb-0.5">
+            <div>
+              <p class="chart-card-title">Sales by Region</p>
+              <p class="chart-card-meta">FY 2024 · 4 regions</p>
+            </div>
+          </div>
+          <div class="relative h-[150px]"><canvas id="chartBar"></canvas></div>
+        </div>
+
+      </div>
+
+      <!-- Row 3: Revenue by Channel (wide) + Market Share + Retention -->
+      <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+
+        <!-- Revenue by Channel — col-span-2, Stacked -->
+        <div class="chart-card col-span-2">
+          <p class="chart-card-title">Revenue by Channel</p>
+          <p class="chart-card-meta">Direct · Partner · Self-serve</p>
+          <div class="relative h-[150px]"><canvas id="chartStacked"></canvas></div>
+        </div>
+
+        <!-- Market Share — col-span-1, Pie -->
+        <div class="chart-card col-span-1">
+          <p class="chart-card-title">Market Share</p>
+          <p class="chart-card-meta">By product · 2024</p>
+          <div class="flex items-center gap-3 h-[150px]">
+            <div class="relative flex-shrink-0" style="width:110px;height:110px;"><canvas id="chartPie"></canvas></div>
+            <div class="space-y-1.5 flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 text-[10px] text-gray-600"><span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#5B63F6"></span>Prod A<span class="ml-auto font-semibold text-gray-800">35%</span></div>
+              <div class="flex items-center gap-1.5 text-[10px] text-gray-600"><span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#A855F7"></span>Prod B<span class="ml-auto font-semibold text-gray-800">25%</span></div>
+              <div class="flex items-center gap-1.5 text-[10px] text-gray-600"><span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#EC4899"></span>Prod C<span class="ml-auto font-semibold text-gray-800">20%</span></div>
+              <div class="flex items-center gap-1.5 text-[10px] text-gray-600"><span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#F59E0B"></span>Prod D<span class="ml-auto font-semibold text-gray-800">15%</span></div>
+              <div class="flex items-center gap-1.5 text-[10px] text-gray-600"><span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#10B981"></span>Prod E<span class="ml-auto font-semibold text-gray-800">5%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Retention — col-span-1, Doughnut -->
+        <div class="chart-card col-span-1">
+          <p class="chart-card-title">Retention Rate</p>
+          <p class="chart-card-meta">Q4 2024</p>
+          <div class="flex flex-col items-center justify-center h-[150px] gap-2">
+            <div class="relative" style="width:110px;height:110px;">
+              <canvas id="chartDoughnut"></canvas>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-[18px] font-bold text-gray-900">91%</span>
+                <span class="text-[10px] text-gray-400">retained</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 4: New vs Returning (wide) + Top Products + Marketing Spend -->
+      <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+
+        <!-- New vs Returning — col-span-2, Multi-line -->
+        <div class="chart-card col-span-2">
+          <p class="chart-card-title">New vs Returning Customers</p>
+          <p class="chart-card-meta">Monthly · 2024</p>
+          <div class="relative h-[150px]"><canvas id="chartMultiLine"></canvas></div>
+        </div>
+
+        <!-- Top Products — col-span-1, Horizontal Bar -->
+        <div class="chart-card col-span-1">
+          <p class="chart-card-title">Top Products</p>
+          <p class="chart-card-meta">By revenue · FY 2024</p>
+          <div class="relative h-[150px]"><canvas id="chartHBar"></canvas></div>
+        </div>
+
+        <!-- Marketing Spend — col-span-1, Scatter -->
+        <div class="chart-card col-span-1">
+          <p class="chart-card-title">Marketing Spend</p>
+          <p class="chart-card-meta">Spend vs return · USD K</p>
+          <div class="relative h-[150px]"><canvas id="chartScatter"></canvas></div>
+        </div>
+
+      </div>
+
+      <!-- Row 5: Cumulative Growth (full width), Area -->
+      <div class="grid grid-cols-1 gap-2.5">
+        <div class="chart-card">
+          <div class="flex items-start justify-between mb-0.5">
+            <div>
+              <p class="chart-card-title">Cumulative Revenue Growth</p>
+              <p class="chart-card-meta">Jan – Dec 2024 · compounding monthly · USD thousands</p>
+            </div>
+            <span class="text-[11px] font-semibold px-2 h-5 rounded flex items-center" style="background:#D1FAE5;color:#065F46;">+430% YTD</span>
+          </div>
+          <div class="relative h-[120px]"><canvas id="chartArea"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // ── Fullscreen ──
+    function toggleFullscreen() {
+      const expand   = document.getElementById('icon-expand');
+      const compress = document.getElementById('icon-compress');
+      const sidebar  = document.querySelector('aside');
+      const toolbar  = document.getElementById('toolbar-btns');
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        expand.classList.add('hidden');
+        compress.classList.remove('hidden');
+        sidebar.classList.add('hidden');
+        // hide all toolbar children except the fullscreen button itself
+        Array.from(toolbar.children).forEach(el => {
+          if (el.id !== 'btn-fullscreen') el.classList.add('hidden');
+        });
+        document.getElementById('topbar-nav-btns').classList.add('hidden');
+        document.getElementById('topbar-divider').classList.add('hidden');
+      } else {
+        document.exitFullscreen();
+        expand.classList.remove('hidden');
+        compress.classList.add('hidden');
+        sidebar.classList.remove('hidden');
+        Array.from(toolbar.children).forEach(el => el.classList.remove('hidden'));
+        document.getElementById('topbar-nav-btns').classList.remove('hidden');
+        document.getElementById('topbar-divider').classList.remove('hidden');
+      }
+    }
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        document.getElementById('icon-expand').classList.remove('hidden');
+        document.getElementById('icon-compress').classList.add('hidden');
+        document.querySelector('aside').classList.remove('hidden');
+        const toolbar = document.getElementById('toolbar-btns');
+        Array.from(toolbar.children).forEach(el => el.classList.remove('hidden'));
+        document.getElementById('topbar-nav-btns').classList.remove('hidden');
+        document.getElementById('topbar-divider').classList.remove('hidden');
+      }
+    });
+
+    // ── Sidebar workspace toggle ──
+    function toggleWorkspace(id) {
+      const sub = document.getElementById(id + '-sub');
+      const btn = document.getElementById(id + '-btn');
+      sub.classList.toggle('open');
+      btn.classList.toggle('open');
+    }
+
+    // ── Shared Chart.js defaults ──
+    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+    Chart.defaults.font.size   = 11;
+    Chart.defaults.color       = '#9CA3AF';
+
+    const gridColor  = '#F3F4F6';
+    const tickColor  = '#9CA3AF';
+
+    // ── 1. Monthly Revenue — Line ──
+    new Chart(document.getElementById('chartLine'), {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        datasets: [{
+          data: [128, 192, 160, 208, 244, 228, 265, 292, 310, 298, 350, null],
+          borderColor: '#5B63F6',
+          borderWidth: 2,
+          pointBackgroundColor: '#5B63F6',
+          pointRadius: 3.5,
+          pointHoverRadius: 5,
+          tension: 0.3,
+          fill: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y + 'K' } } },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: false, min: 100 }
+        }
+      }
+    });
+
+    // ── 2. Sales by Region — Bar ──
+    new Chart(document.getElementById('chartBar'), {
+      type: 'bar',
+      data: {
+        labels: ['North America','Europe','Asia Pacific','Latin America'],
+        datasets: [{
+          data: [2480, 1820, 2160, 1520],
+          backgroundColor: ['#5B63F6','#A855F7','#EC4899','#F59E0B'],
+          borderRadius: 5,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toLocaleString() } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: tickColor, maxRotation: 35, minRotation: 20 } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true }
+        }
+      }
+    });
+
+    // ── 3. Market Share — Pie ──
+    new Chart(document.getElementById('chartPie'), {
+      type: 'pie',
+      data: {
+        labels: ['Product A','Product B','Product C','Product D','Product E'],
+        datasets: [{
+          data: [35, 25, 20, 15, 5],
+          backgroundColor: ['#5B63F6','#A855F7','#EC4899','#F59E0B','#10B981'],
+          borderWidth: 2,
+          borderColor: '#fff',
+          hoverOffset: 6,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%' } },
+        }
+      }
+    });
+
+    // ── 4. Marketing Spend — Scatter ──
+    new Chart(document.getElementById('chartScatter'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          data: [
+            {x:1,y:130},{x:2,y:205},{x:3,y:260},{x:4,y:310},{x:5,y:380},
+            {x:6,y:425},{x:7,y:480},{x:8,y:510},{x:9,y:580},{x:10,y:625},
+            {x:11,y:680},{x:12,y:720},{x:13,y:760},{x:14,y:800},{x:15,y:860},
+          ],
+          backgroundColor: '#5B63F6',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y + 'K' } } },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true }
+        }
+      }
+    });
+
+    // ── 5. Revenue by Channel — Stacked Bar ──
+    new Chart(document.getElementById('chartStacked'), {
+      type: 'bar',
+      data: {
+        labels: ['Q1','Q2','Q3','Q4'],
+        datasets: [
+          { label: 'Direct',     data: [420,510,480,620], backgroundColor: '#5B63F6', borderRadius: 0, stack: 's' },
+          { label: 'Partner',    data: [230,280,310,340], backgroundColor: '#7C6FF7', borderRadius: 0, stack: 's' },
+          { label: 'Self-serve', data: [140,170,190,220], backgroundColor: '#A5B4FC', borderRadius: 4, stack: 's' },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 8, padding: 10, font: { size: 10 } } },
+          tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': $' + ctx.parsed.y + 'K' } }
+        },
+        scales: {
+          x: { grid: { display: false }, stacked: true, ticks: { color: tickColor } },
+          y: { grid: { color: gridColor }, stacked: true, ticks: { color: tickColor }, beginAtZero: true }
+        }
+      }
+    });
+
+    // ── 6. Cumulative Growth — Area ──
+    new Chart(document.getElementById('chartArea'), {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        datasets: [{
+          data: [100,118,142,168,200,230,268,310,358,410,468,530],
+          borderColor: '#10B981',
+          borderWidth: 2,
+          backgroundColor: 'rgba(16,185,129,0.10)',
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y + 'K' } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: tickColor } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: false }
+        }
+      }
+    });
+
+    // ── 7. Customer Retention — Doughnut ──
+    new Chart(document.getElementById('chartDoughnut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Retained','Churned'],
+        datasets: [{
+          data: [91, 9],
+          backgroundColor: ['#5B63F6','#F3F4F6'],
+          borderWidth: 2,
+          borderColor: '#fff',
+          hoverOffset: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%' } }
+        }
+      }
+    });
+
+    // ── 8. Top Products — Horizontal Bar ──
+    new Chart(document.getElementById('chartHBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Analytics Pro','Data Bridge','Insight Hub','QuickReport','AutoSync'],
+        datasets: [{
+          data: [980, 740, 620, 510, 390],
+          backgroundColor: ['#5B63F6','#7C6FF7','#A5B4FC','#C7D2FE','#E0E7FF'],
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.x + 'K' } } },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true },
+          y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 10 } } }
+        }
+      }
+    });
+
+    // ── 9. New vs Returning — Multi-line ──
+    new Chart(document.getElementById('chartMultiLine'), {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        datasets: [
+          {
+            label: 'New',
+            data: [42,58,51,70,84,78,95,108,120,112,136,150],
+            borderColor: '#5B63F6', borderWidth: 2,
+            pointRadius: 0, tension: 0.3, fill: false,
+          },
+          {
+            label: 'Returning',
+            data: [86,134,109,138,160,150,170,184,190,186,214,200],
+            borderColor: '#10B981', borderWidth: 2,
+            pointRadius: 0, tension: 0.3, fill: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 8, padding: 10, font: { size: 10 } } },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: tickColor } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
