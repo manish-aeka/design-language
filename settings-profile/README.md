@@ -1,11 +1,428 @@
-# Settings — Profile Page Design Language
+# Settings Page — Design Language
 
-> Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Settings › Profile screen.  
-> Place the reference screenshot at `assets/screenshot.png`.
+> Design system documentation for the **Aibii** AI Business Intelligence SaaS platform — Settings screen.
 
 ---
 
 ## Table of Contents
+
+1. [Overview](#overview)
+2. [Screen Anatomy](#screen-anatomy)
+3. [Color System](#color-system)
+4. [Typography](#typography)
+5. [Spacing & Layout](#spacing--layout)
+6. [Border Radius & Elevation](#border-radius--elevation)
+7. [Sidebar](#sidebar)
+8. [Components](#components)
+   - [Breadcrumb Bar](#breadcrumb-bar)
+   - [Page Header with Icon](#page-header-with-icon)
+   - [Settings Tab Bar](#settings-tab-bar)
+   - [Profile Tab](#profile-tab)
+   - [Workspace Tab](#workspace-tab)
+   - [Billing Tab](#billing-tab)
+   - [Users Tab](#users-tab)
+   - [Integrations Tab](#integrations-tab)
+9. [States & Interactions](#states--interactions)
+10. [Design Principles](#design-principles)
+
+---
+
+## Overview
+
+The **Settings** page is the user and workspace configuration surface of the Aibii platform. It uses the same shell (sidebar + content area) as all views but introduces a **pill tab bar** for navigating five distinct panels: Profile, Workspace, Billing, Users, and Integrations. The heading icon updates dynamically with each active tab.
+
+---
+
+## Screen Anatomy
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ SIDEBAR (220px, white)    │  CONTENT AREA (fluid, white bg)             │
+│                           │                                             │
+│  [M] Manish kumar's Work  │  ≡  ‹  ›  Settings        ← Breadcrumb     │
+│  ─────────────────────    │                                             │
+│  🕐 Recent                │  [🔵 icon]  Profile        ← Page heading   │
+│  ⊞  New dashboard         │  Manage your team and preferences here.     │
+│  💬 New chat              │                                             │
+│  ─────────────────────    │  [ Profile  Workspace  Billing  Users  Integrations ] ← Pill tabs
+│  WORKSPACES         [👁]  │                                             │
+│  ▶ Sovereign Capital Gate │  ┌─ Panel content per active tab ─────────┐ │
+│  ▶ My private workspace   │  │  (see per-tab sections below)          │ │
+│  + Create a workspace     │  └────────────────────────────────────────┘ │
+│                           │                                             │
+│  ─────────────────────    │                                             │
+│  👤 Shared with me        │                                             │
+│  ⚙ Settings  ← ACTIVE    │                                             │
+│  ─────────────────────    │                                             │
+│  🔵 Explore free features │                                             │
+└───────────────────────────┴─────────────────────────────────────────────┘
+```
+
+---
+
+## Color System
+
+| Token | Hex | Usage |
+|---|---|---|
+| `color-brand-primary` | `#5B63F6` | Active tab, buttons, focus rings, active nav border |
+| `color-bg-base` | `#FFFFFF` | Page background, sidebar background, card backgrounds |
+| `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, heading icon bg |
+| `color-bg-tab-container` | `#F3F4F6` | Pill tab bar container |
+| `color-bg-tab-active` | `#FFFFFF` | Active pill tab background |
+| `color-bg-input` | `#FFFFFF` | Editable text inputs |
+| `color-bg-input-disabled` | `#F9FAFB` | Read-only inputs, URL display |
+| `color-bg-gray-50` | `#F9FAFB` | Table headers, datasource cards |
+| `color-bg-explore` | `#E8EEFF` | Explore banner background |
+| `color-bg-explore-icon` | `#C7D2FE` | Explore banner icon container |
+| `color-text-primary` | `#111827` | Page title, input values, active tab |
+| `color-text-secondary` | `#6B7280` | Inactive tabs, labels, nav items |
+| `color-text-muted` | `#9CA3AF` | Placeholder text, meta info |
+| `color-text-brand` | `#5B63F6` | Owner badge, active heading icon |
+| `color-text-danger` | `#EF4444` | Danger zone text, delete button |
+| `color-border-default` | `#E5E7EB` | Input borders, card borders, active tab border |
+| `color-border-subtle` | `#F3F4F6` (gray-100) | Dividers, table row separators |
+| `color-active-nav-border` | `#5B63F6` | 2px left border on active Settings nav item |
+| `color-workspace-avatar` | `#3B5BDB` | Workspace avatar background |
+| `color-billing-banner` | `#E8EEFF` | Billing free plan banner bg |
+| `color-billing-banner-border` | `#C7D2FE` | Billing banner border |
+
+---
+
+## Typography
+
+| Token | Size | Weight | Usage |
+|---|---|---|---|
+| `type-page-title` | 28px | 800 ExtraBold | Page heading ("Profile", "Workspace", etc.) |
+| `type-subtitle` | 14px | 400 Regular | Page subtitle |
+| `type-tab` | 14px | 500/600 Medium/SemiBold | Pill tab labels (active = 600) |
+| `type-section-label` | 11px | 600 SemiBold | Uppercase card section labels |
+| `type-field-label` | 12px | 500 Medium | Form field labels |
+| `type-input` | 13–14px | 400/500 | Input values |
+| `type-body` | 13px | 400 Regular | General body text, table rows |
+| `type-caption` | 11–12px | 400 Regular | Meta text, badges, timestamps |
+
+```css
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+```
+
+---
+
+## Spacing & Layout
+
+| Token | Value | Usage |
+|---|---|---|
+| `space-1` | 4px | Micro gaps |
+| `space-2` | 8px | Icon-to-label, inline element gaps |
+| `space-3` | 12px | Compact padding |
+| `space-4` | 16px | Standard padding, tab horizontal padding |
+| `space-5` | 20px | Card padding (`p-5`) |
+| `space-6` | 24px | Gap between heading and tabs, tabs and content |
+| `space-8` | 32px | Content area horizontal padding |
+
+### Content Layout
+- Sidebar: **220px** fixed width
+- Content area padding: `px-8 py-7` (32px / 28px)
+- Single-column panels (Profile, Billing, Users, Integrations): `max-w-xl`
+- Workspace panel: full-width rows with responsive columns
+
+---
+
+## Border Radius & Elevation
+
+| Token | Value | Used on |
+|---|---|---|
+| `radius-lg` | `rounded-lg` (8px) | Inputs, buttons, small elements |
+| `radius-xl` | `rounded-xl` (12px) | Cards, table wrappers |
+| `radius-full` | `rounded-full` (9999px) | Pill tabs, avatars, tab container |
+
+### Card Shadow
+```css
+box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+```
+Applied to all white content cards via `.shadow-card`.
+
+---
+
+## Sidebar
+
+The sidebar is **220px** wide with a **white background** (`bg-white`), matching the canvas/content area color for a seamless feel.
+
+### Structure (top → bottom)
+
+| Zone | Content |
+|---|---|
+| **Workspace switcher** | `px-4 py-3`, border-bottom. Round avatar `w-7 h-7` (`#3B5BDB`), workspace name, chevron |
+| **Primary nav** | `px-3 py-2 space-y-0.5`. Items: Recent, New dashboard, New chat. Height `h-9`, `rounded-lg`, `text-sm` |
+| **Divider** | `mx-3 my-1 border-t border-gray-100` |
+| **Workspaces section** | Label "WORKSPACES" + eye-slash icon. Collapsible items with chevron toggle. Sub-items (Chat/Dashboard/Document). "+ Create a workspace" |
+| **Spacer** | `flex-1` |
+| **Divider** | `mx-3 border-t border-gray-100` |
+| **Bottom utility nav** | `px-3 py-2`. Items: Shared with me, **Settings (active)** |
+| **Explore banner** | `mx-3 mb-3`, `background:#E8EEFF`, icon `#C7D2FE`. "Explore free features" + "Credit left: 15" |
+
+### Active Settings Nav Item
+```css
+background: #EEF2FF;
+border-left: 2px solid #5B63F6;
+padding-left: 10px;
+font-weight: 500;
+color: #111827;
+```
+
+### Nav Item Hover
+```css
+.nav-item:hover { background-color: #EEF2FF; }
+```
+
+### Workspace Submenu Toggle (JS)
+```js
+function toggleWorkspace(id) {
+  const sub = document.getElementById(id + '-sub');
+  const btn = document.getElementById(id + '-btn');
+  sub.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+```
+`.ws-submenu` is `display:none` by default; `.ws-submenu.open` is `display:block`. The `.ws-chevron` rotates 90° when `.ws-item.open`.
+
+---
+
+## Components
+
+### Breadcrumb Bar
+
+```
+≡   ‹   ›   Settings
+```
+
+| Property | Value |
+|---|---|
+| Height | `h-11` (44px) |
+| Border-bottom | `1px solid #F3F4F6` |
+| Background | `bg-white` |
+| Padding | `px-6` |
+| Page label | 13px, `text-gray-500` |
+
+---
+
+### Page Header with Icon
+
+Each tab has a dedicated icon displayed in a rounded container beside the `<h1>`. Both the icon and the title update dynamically via JS when switching tabs.
+
+```
+┌────┐
+│ 🔵 │  Profile
+└────┘  Manage your team and preferences here.
+```
+
+| Property | Value |
+|---|---|
+| Icon container | `w-9 h-9 rounded-xl`, `background:#EEF2FF` |
+| Icon | `w-5 h-5`, `color:#5B63F6` |
+| Title | 28px, 800 ExtraBold, `text-gray-900` |
+| Subtitle | 14px, 400, `text-gray-400` |
+
+**Icon per tab:**
+
+| Tab | Icon |
+|---|---|
+| Profile | Person / user outline |
+| Workspace | Grid / dashboard squares |
+| Billing | Credit card |
+| Users | People / group |
+| Integrations | Plug / connect squares |
+
+**JS:**
+```js
+document.getElementById('page-title').textContent = TITLES[active];
+document.getElementById('heading-icon').innerHTML = ICONS[active];
+```
+
+---
+
+### Settings Tab Bar
+
+Pill-style tab bar. Container has a `#F3F4F6` background, `rounded-full`, `p-1`, `gap-1`.
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  [ Profile ]   Workspace   Billing   Users   Integrations        │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+| State | Background | Border | Text | Font Weight |
+|---|---|---|---|---|
+| Active | `#FFFFFF` | `1px solid #E5E7EB` | `#111827` | 600 SemiBold |
+| Inactive | `transparent` | `1px solid transparent` | `#6B7280` | 400 Regular |
+
+| Property | Value |
+|---|---|
+| Height | `32px` |
+| Padding | `0 16px` |
+| Border-radius | `9999px` (full pill) |
+| Font size | `14px` |
+| Transition | `background, color, border 120ms ease` |
+
+**JS:** `setTab(active)` toggles `.active` class on both `tab-{id}` buttons and `section-{id}` panels.
+
+---
+
+### Profile Tab
+
+`max-w-xl`, single white card with `shadow-card`.
+
+**Sections within the card:**
+
+#### Picture section
+- Avatar: `w-16 h-16 rounded-xl border border-gray-200`, falls back to gray placeholder
+- Upload button: `border border-gray-200 rounded-lg px-3 h-8 text-sm text-gray-700`
+- Remove button: `text-red-400 text-sm`
+- Section separated from name fields by `border-b border-gray-100 pb-5 mb-5`
+
+#### Name fields
+- Two-column grid (`grid grid-cols-2 gap-3`)
+- Each: label `12px font-medium text-gray-600` + input `h-9 border border-gray-200 rounded-lg px-3 text-sm`
+
+#### Email field
+- Read-only input: `bg-gray-50 text-gray-400 cursor-default`
+
+#### Save button
+- Right-aligned in a `border-t border-gray-100 mt-5 pt-5 flex justify-end`
+- Style: `px-4 h-9 rounded-lg text-sm font-medium text-white background:#5B63F6`
+
+---
+
+### Workspace Tab
+
+Full-width layout. Three stacked rows.
+
+#### Row 1 — 50/50 columns (equal height, `items-stretch`)
+
+**Left — Workspace info card:**
+- Workspace avatar `w-12 h-12 rounded-xl` (`#3B5BDB`)
+- Editable workspace name input (transparent, editable on click)
+- Meta text: "Created April 2024 · 3 members"
+- Workspace URL (read-only display)
+- Description textarea (`rows=2`)
+- Save button (right-aligned, `border-t`)
+
+**Right — Users with access card:**
+- Header: "USERS WITH ACCESS" label + **Add user** button (`background:#5B63F6`)
+- Search bar: icon-prefixed `input[type=text]` placeholder "Search users..."
+- Table: `User` column (avatar + name + email) | `Role` column
+  - Owner: non-editable badge `background:#EEF2FF color:#5B63F6`
+  - Others: `<select>` dropdown (Admin / Editor / Viewer)
+
+#### Row 2 — Data sources (full width)
+- Header: "DATA SOURCES" label + **Add a datasource** button
+- `grid grid-cols-2 gap-3` for datasource cards
+- Each card: icon + name + subtitle + status badge or Connect button
+- Inline hint panel (dashed border, `#EEF2FF` tint) shown on "Add a datasource" click
+
+#### Row 3 — Danger zone (full width)
+- `border border-red-100`, label in `#EF4444`
+- "Delete workspace" description + **Delete** button (`border-red-200 color:#EF4444`)
+
+---
+
+### Billing Tab
+
+`max-w-xl`.
+
+#### Free plan banner
+- Background `#E8EEFF`, border `#C7D2FE`
+- AI icon + "Free plan" label (`color:#3B4ECC`)
+- Price `$0 / month` (28px extrabold, `color:#3B4ECC`)
+- Plan details line + **Upgrade plan** button (`background:#5B63F6`)
+
+#### Payment method card
+- White card `shadow-card`
+- "No payment method added yet." + **Add card** button
+
+---
+
+### Users Tab
+
+`max-w-xl`.
+
+#### Invite bar
+- `input[type=email]` placeholder "Search or invite users by email..." (flex-1)
+- **Add users** button (`background:#5B63F6`, `flex-shrink-0`)
+
+#### Users list table
+White card `rounded-xl border border-gray-200 shadow-card`:
+
+| Column | Width | Content |
+|---|---|---|
+| User | `flex-1` | Avatar circle + name (`font-medium`) + email (`text-gray-400 text-[11px]`) |
+| Role | `w-24` | Badge (Owner) or `<select>` dropdown (Admin/Editor/Viewer/Pending) |
+
+**Rows:**
+| Name | Role |
+|---|---|
+| Manish Kumar | Owner badge `#EEF2FF / #5B63F6` |
+| Arjun Patel | Admin (select) |
+| Sneha Rao | Editor (select) |
+| Riya Sharma | Viewer (select) |
+| james.b@example.com | Pending badge `#FEF9C3 / #D97706` |
+
+---
+
+### Integrations Tab
+
+`max-w-xl`. Grid of integration cards (`grid grid-cols-2 gap-3`).
+
+Each card: icon + integration name + description + **Connect** or **Connected** button.
+
+| Integration | Status |
+|---|---|
+| Google Sheets | Connect |
+| Notion | Connect |
+| Slack | Connected |
+| PostgreSQL | Connect |
+| REST API | Connect |
+
+**Connected button style:** `background:#F0FDF4 color:#16A34A border border-green-100`  
+**Connect button style:** `border border-gray-200 text-gray-700 hover:bg-gray-50`
+
+---
+
+## States & Interactions
+
+| Interaction | Behavior |
+|---|---|
+| Tab switch | `setTab(id)` — toggles `.active` on pill button + panel; updates `h1` text and heading icon |
+| Workspace submenu | `toggleWorkspace(id)` — toggles `.ws-submenu.open` and rotates `.ws-chevron` |
+| Nav item hover | `background-color: #EEF2FF` via `.nav-item:hover` |
+| Add datasource | `showAddDataSource()` — removes `hidden` from `#add-ds-hint` |
+| Dismiss hint | Button inside hint adds `hidden` back |
+| Toggle switch | `toggleSwitch(btn)` — toggles active state |
+
+---
+
+## Design Principles
+
+1. **Consistent shell** — sidebar and breadcrumb bar identical across all views
+2. **Pill tabs** — same pattern as recent-view filter tabs; active state uses white background + subtle border
+3. **Card-based panels** — every settings group lives in a white card with `shadow-card` for clear visual grouping
+4. **Dynamic heading** — page title and icon update on tab switch to reinforce context
+5. **Neutral white sidebar** — sidebar background matches canvas (`#FFFFFF`) for a clean, borderless feel
+6. **Role-based access** — Users tab and Workspace → Users card both show role dropdowns, Owner is badge-only (non-editable)
+
+---
+
+## File Structure
+
+```
+settings-profile/
+├── index.html      ← Settings page (single-file, Tailwind CDN)
+└── README.md       ← This file
+```
+
+---
+
+*Design language v1.2 — Aibii AI Business Intelligence SaaS · Settings, April 2026.*
+
 
 1. [Overview](#overview)
 2. [Screen Anatomy](#screen-anatomy)
