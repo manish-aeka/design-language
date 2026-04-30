@@ -1,0 +1,40 @@
+{
+  "color": {
+    "brand": {
+      "primary":         { "value": "#5B63F6", "comment": "Links, active tab text, icon strokes, focus rings" },
+      "secondary":       { "value": "#7C6FF7", "comment": "Gradient end, AI and Upgrade accents" },
+      "gradientStart":   { "value": "#4F6EF7", "comment": "Logo gradient start" },
+      "gradientEnd":     { "value": "#8B5CF6", "comment": "Logo gradient end" }
+    },
+    "background": {
+      "base":            { "value": "#FFFFFF", "comment": "Page background" },
+      "sidebar":         { "value": "#F8F9FC", "comment": "Left navigation sidebar" },
+      "hover":           { "value": "#EEF2FF", "comment": "Nav item hover" },
+      "card":            { "value": "#FFFFFF", "comment": "Document card surface" },
+      "placeholder":     { "value": "#F0F1F4", "comment": "Empty document thumbnail background" },
+      "tabActive":       { "value": "#FFFFFF", "comment": "Active pill tab background" },
+      "tabInactive":     { "value": "transparent", "comment": "Inactive tab background" },
+      "tabContainer":    { "value": "#F3F4F6", "comment": "Pill group container background" }
+    },
+    "text": {
+      "primary":         { "value": "#111827", "comment": "Page title, card titles, nav labels" },
+      "secondary":       { "value": "#6B7280", "comment": "Subtitle, timestamps, inactive tab text" },
+      "tertiary":        { "value": "#9CA3AF", "comment": "Placeholder and disabled states" },
+      "link":            { "value": "#5B63F6", "comment": "Active tab text, action icon labels" },
+      "upgrade":         { "value": "#7C3AED", "comment": "Upgrade this workspace link" }
+    },
+    "border": {
+      "default":         { "value": "#E5E7EB", "comment": "Card borders, tab container border" },
+      "subtle":          { "value": "#F3F4F6", "comment": "Sidebar dividers" },
+      "tabActive":       { "value": "#E5E7EB", "comment": "Active pill tab border" }
+    },
+    "icon": {
+      "brand":           { "value": "#5B63F6", "comment": "Action card icons" },
+      "muted":           { "value": "#D1D5DB", "comment": "Document placeholder icons" }
+    },
+    "scrollbar": {
+      "thumb":           { "value": "#CBD5E1", "comment": "Scrollbar thumb" },
+      "track":           { "value": "transparent", "comment": "Scrollbar track" }
+    }
+  }
+}

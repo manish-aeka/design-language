@@ -1,0 +1,38 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Primary typeface for all UI text"
+      }
+    },
+    "size": {
+      "display":    { "value": "28px", "comment": "Page / workspace title" },
+      "headingLg":  { "value": "20px", "comment": "Section headings" },
+      "headingMd":  { "value": "16px", "comment": "Card titles, dialog headings" },
+      "bodyLg":     { "value": "15px", "comment": "Navigation labels, body copy" },
+      "bodyMd":     { "value": "14px", "comment": "Action card labels, general body" },
+      "bodySm":     { "value": "13px", "comment": "Action card descriptions, meta text" },
+      "label":      { "value": "12px", "comment": "Timestamps, section labels" },
+      "caption":    { "value": "11px", "comment": "Helper text, fine print" }
+    },
+    "weight": {
+      "regular":    { "value": "400" },
+      "medium":     { "value": "500" },
+      "semiBold":   { "value": "600" },
+      "bold":       { "value": "700" },
+      "extraBold":  { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":      { "value": "1.2", "comment": "Display headings" },
+      "snug":       { "value": "1.3", "comment": "Subheadings, labels" },
+      "normal":     { "value": "1.4", "comment": "Body small, captions" },
+      "relaxed":    { "value": "1.5", "comment": "Body text, nav labels" }
+    },
+    "letterSpacing": {
+      "tight":      { "value": "-0.01em", "comment": "Display / large headings" },
+      "normal":     { "value": "0",        "comment": "Body copy" },
+      "wide":       { "value": "0.05em",   "comment": "Section label headers (uppercase)" }
+    }
+  }
+}

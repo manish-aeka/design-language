@@ -1,0 +1,47 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" },
+    "1":  { "value": "4px",  "comment": "Icon padding, micro gaps" },
+    "2":  { "value": "8px",  "comment": "Inline element gaps, icon-to-label gap" },
+    "3":  { "value": "12px", "comment": "Compact row padding" },
+    "4":  { "value": "16px", "comment": "Default component padding, card padding" },
+    "5":  { "value": "20px", "comment": "Sidebar horizontal padding" },
+    "6":  { "value": "24px", "comment": "Section spacing, content area padding top" },
+    "8":  { "value": "32px", "comment": "Page-level padding, large section gaps" },
+    "10": { "value": "40px", "comment": "Between major layout sections" },
+    "12": { "value": "48px", "comment": "Hero / top-of-page spacing" }
+  },
+  "borderRadius": {
+    "sm":   { "value": "4px",    "comment": "Badges, labels" },
+    "md":   { "value": "8px",    "comment": "Nav items hover state, buttons, action icons" },
+    "lg":   { "value": "12px",   "comment": "Document cards, action shortcut cards, dialogs" },
+    "xl":   { "value": "16px",   "comment": "Modal overlays" },
+    "full": { "value": "9999px", "comment": "Avatar chips, pill buttons" }
+  },
+  "shadow": {
+    "none": {
+      "value": "none",
+      "comment": "Flat surfaces (sidebar, page background)"
+    },
+    "card": {
+      "value": "0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)",
+      "comment": "Document cards and action cards at rest"
+    },
+    "cardHover": {
+      "value": "0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06)",
+      "comment": "Document cards on hover"
+    },
+    "modal": {
+      "value": "0 20px 60px rgba(0,0,0,0.18)",
+      "comment": "Modal and popover surfaces"
+    }
+  },
+  "layout": {
+    "sidebarWidth":      { "value": "220px",  "comment": "Fixed left navigation sidebar width" },
+    "contentPaddingX":   { "value": "32px",   "comment": "Horizontal padding in main content area" },
+    "cardGridGap":       { "value": "16px",   "comment": "Gap between document cards in the grid" },
+    "actionCardGap":     { "value": "16px",   "comment": "Gap between action shortcut cards" },
+    "cardMinWidth":      { "value": "220px",  "comment": "Minimum document card width in grid" },
+    "navItemHeight":     { "value": "36px",   "comment": "Height of a single sidebar nav item" }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" },
+    "1":  { "value": "4px",  "comment": "Micro gaps, tab bar inner gap" },
+    "2":  { "value": "8px",  "comment": "Icon-to-label gap, page title icon gap" },
+    "3":  { "value": "12px", "comment": "Card info area padding, compact rows" },
+    "4":  { "value": "16px", "comment": "Card padding, grid gap, action card gap" },
+    "5":  { "value": "20px", "comment": "Sidebar horizontal padding" },
+    "6":  { "value": "24px", "comment": "Header-to-action-cards gap, tabs-to-grid gap" },
+    "7":  { "value": "28px", "comment": "Action-cards-to-filter-tabs gap" },
+    "8":  { "value": "32px", "comment": "Content area horizontal padding" },
+    "10": { "value": "40px", "comment": "Between major layout zones" }
+  },
+  "borderRadius": {
+    "sm":   { "value": "4px",    "comment": "Badges, tight labels" },
+    "md":   { "value": "8px",    "comment": "Buttons, icon backgrounds, nav items" },
+    "lg":   { "value": "12px",   "comment": "Document cards, action cards" },
+    "xl":   { "value": "16px",   "comment": "Modals, dialogs" },
+    "full": { "value": "9999px", "comment": "Pill tabs, avatar chips, scrollbar thumb" }
+  },
+  "shadow": {
+    "none":      { "value": "none", "comment": "Sidebar, flat surfaces" },
+    "card":      { "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "comment": "Document cards at rest" },
+    "cardHover": { "value": "0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)", "comment": "Document cards on hover" },
+    "tabActive": { "value": "0 1px 4px rgba(0,0,0,0.10)", "comment": "Active pill tab" },
+    "modal":     { "value": "0 20px 60px rgba(0,0,0,0.18)", "comment": "Modals and popovers" }
+  },
+  "layout": {
+    "sidebarWidth":       { "value": "220px", "comment": "Fixed sidebar width" },
+    "contentPaddingX":    { "value": "32px",  "comment": "Content area horizontal padding" },
+    "documentGridCols":   { "value": "4",     "comment": "Default document grid columns" },
+    "documentGridGap":    { "value": "16px",  "comment": "Gap between document cards" },
+    "actionCardGap":      { "value": "16px",  "comment": "Gap between action shortcut cards" },
+    "cardMinWidth":       { "value": "200px", "comment": "Minimum document card width" },
+    "tabHeight":          { "value": "32px",  "comment": "Height of each pill tab" },
+    "tabPaddingX":        { "value": "16px",  "comment": "Horizontal padding inside a tab" },
+    "tabContainerPad":    { "value": "4px",   "comment": "Inner padding of tab group container" },
+    "navItemHeight":      { "value": "36px",  "comment": "Sidebar nav item height" },
+    "scrollbarWidth":     { "value": "6px",   "comment": "Content area scrollbar width" }
+  }
+}

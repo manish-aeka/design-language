@@ -1,0 +1,32 @@
+{
+  "color": {
+    "brand": {
+      "primary":         { "value": "#5B63F6", "comment": "Primary actions, links, icon strokes, focus rings" },
+      "secondary":       { "value": "#7C6FF7", "comment": "Gradient end, Upgrade accent, AI highlights" },
+      "gradientStart":   { "value": "#4F6EF7", "comment": "Logo / brand gradient start" },
+      "gradientEnd":     { "value": "#8B5CF6", "comment": "Logo / brand gradient end" }
+    },
+    "background": {
+      "base":            { "value": "#FFFFFF", "comment": "Page background, card surfaces" },
+      "sidebar":         { "value": "#F8F9FC", "comment": "Left navigation sidebar" },
+      "hover":           { "value": "#EEF2FF", "comment": "Nav item hover / selected state" },
+      "card":            { "value": "#FFFFFF", "comment": "Document and action card surface" },
+      "placeholder":     { "value": "#F3F4F6", "comment": "Empty thumbnail placeholder" }
+    },
+    "text": {
+      "primary":         { "value": "#111827", "comment": "Headings, body copy, nav labels" },
+      "secondary":       { "value": "#6B7280", "comment": "Subtitles, timestamps, descriptions" },
+      "tertiary":        { "value": "#9CA3AF", "comment": "Disabled labels, placeholder hint text" },
+      "link":            { "value": "#5B63F6", "comment": "Clickable text links" },
+      "upgrade":         { "value": "#7C3AED", "comment": "Upgrade this workspace link" }
+    },
+    "border": {
+      "default":         { "value": "#E5E7EB", "comment": "Card borders, dividers" },
+      "subtle":          { "value": "#F3F4F6", "comment": "Section separators, sidebar dividers" }
+    },
+    "icon": {
+      "brand":           { "value": "#5B63F6", "comment": "Action card icons" },
+      "muted":           { "value": "#D1D5DB", "comment": "Empty-state document icons" }
+    }
+  }
+}
