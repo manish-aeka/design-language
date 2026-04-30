@@ -361,8 +361,18 @@
           </button>
         </div>
 
-        <!-- Right: Type filter + View toggle -->
+        <!-- Right: Search + Type filter + View toggle -->
         <div class="flex items-center gap-2">
+
+          <!-- Search bar -->
+          <div class="relative">
+            <span class="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+            </span>
+            <input id="search-input" type="text" placeholder="Search…"
+              oninput="filterItems(this.value)"
+              class="h-9 w-64 pl-8 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent focus:w-80 transition-all" />
+          </div>
 
           <!-- Type filter -->
           <div class="relative">
@@ -634,6 +644,15 @@
       const dd = document.getElementById('type-dropdown');
       if (!e.target.closest('.relative')) dd.classList.remove('open');
     });
+
+    // Search
+    function filterItems(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.report-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    }
   </script>
 
 </body>
