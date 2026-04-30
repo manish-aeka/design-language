@@ -1,6 +1,7 @@
 # Sovereign Capital Gate — Design Language
 
-> Design system derived from the Sovereign Capital Gate workspace UI (Penno platform).  
+> Design system derived from the **Aibii** AI Business Intelligence SaaS platform.  
+> Sovereign Capital Gate is an example workspace/organisation within the product.  
 > Place the reference screenshot at `assets/screenshot.png`.
 
 ---
@@ -29,7 +30,7 @@
 
 ## Overview
 
-The Sovereign Capital Gate UI is a **document collaboration workspace** built on clean, minimal principles. The interface prioritises content over chrome — using generous whitespace, subtle borders, and a restrained color palette to keep focus on documents and team actions.
+The Sovereign Capital Gate view is an **AI-powered Business Intelligence workspace** within the Aibii SaaS platform. It serves as an organisation-level hub where teams access, create, and share data reports, dashboards, and AI-generated insights. The interface prioritises analytical content over chrome — using generous whitespace, subtle borders, and a restrained color palette to keep focus on insights and data work.
 
 ![Reference Screenshot](assets/screenshot.png)
 
@@ -39,10 +40,11 @@ The Sovereign Capital Gate UI is a **document collaboration workspace** built on
 
 | Property | Value |
 |---|---|
-| Product name | Penno |
+| Product name | Aibii |
+| Full name | Aibii — AI Business Intelligence |
 | Workspace name | Sovereign Capital Gate |
-| Brand voice | Professional, collaborative, focused |
-| Visual personality | Clean · Trustworthy · Minimal |
+| Brand voice | Intelligent, data-driven, trustworthy |
+| Visual personality | Clean · Precise · Analytical |
 
 ### Logo Mark
 - Gradient pill/shield icon with a **blue-to-violet** gradient
@@ -139,7 +141,7 @@ All spacing is based on a **4px base unit**.
 |---|---|---|
 | Sidebar | 220px (fixed) | Never collapses in desktop layout |
 | Content area | `calc(100vw - 220px)` | Flexible, padded `32px` on each side |
-| Document card grid | 3 columns, `gap: 16px` | Min card width: `220px` |
+| Insight card grid | 3 columns, `gap: 16px` | Min card width: `220px` |
 | Action shortcut row | 4 equal columns | `gap: 16px`, full content-width |
 
 ---
@@ -161,8 +163,8 @@ All spacing is based on a **4px base unit**.
 | Token | Value | Used on |
 |---|---|---|
 | `shadow-none` | `none` | Flat surfaces (sidebar, page bg) |
-| `shadow-card` | `0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)` | Document cards, action cards at rest |
-| `shadow-card-hover` | `0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06)` | Document cards on hover |
+| `shadow-card` | `0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)` | Insight cards, action cards at rest |
+| `shadow-card-hover` | `0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06)` | Insight cards on hover |
 | `shadow-modal` | `0 20px 60px rgba(0,0,0,0.18)` | Modal / popover surfaces |
 
 Cards use **border + subtle shadow** together:
@@ -187,18 +189,18 @@ The UI uses icons consistent with [Lucide](https://lucide.dev/) or [Heroicons](h
 
 | Context | Icon | Description |
 |---|---|---|
-| Start new document | `FileText` | Document with lines |
-| Start with AI | `Sparkles` | Wand/sparkle |
-| Add sources | `Download` / `Database` | Import arrow |
-| Create a folder | `FolderPlus` | Folder with plus |
-| Channel | `Hash` | # symbol |
-| Add channel | `Plus` | Plus sign |
+| New report / analysis | `BarChart2` | Bar chart icon |
+| Ask AI / AI insights | `Sparkles` | Wand/sparkle |
+| Connect data source | `Database` | Database cylinder |
+| Create dashboard | `LayoutDashboard` | Dashboard grid |
+| Project / channel | `Hash` | # symbol |
+| Add project | `Plus` | Plus sign |
 | Shared with me | `Users` | Person group |
-| Import | `ArrowDownTray` | Tray with arrow |
+| Import data | `ArrowDownTray` | Tray with arrow |
 | Templates | `LayoutGrid` | Grid layout |
 | Settings | `Settings` | Gear |
 | Upgrade | `Rocket` | Rocket / star |
-| Document placeholder | `File` | Empty file outline |
+| Report placeholder | `BarChart2` | Muted chart icon |
 | More options | `MoreHorizontal` | Three dots |
 
 ---
@@ -213,20 +215,20 @@ The UI uses icons consistent with [Lucide](https://lucide.dev/) or [Heroicons](h
 ┌─────────────────────────┐
 │  [M] Manish Kumar's Work │  ← Workspace switcher (bold, 14px)
 ├─────────────────────────┤
-│  ✦ Ask Penno AI  ⌘K     │  ← Quick-action shortcut
+│  ✦ Ask Aibii AI  ⌘K     │  ← AI query shortcut
 │  🕐 Recent               │
-│  📄 New document         │
-│  💬 New chat             │
+│  📊 New report           │
+│  💬 Ask AI               │
 ├─────────────────────────┤
-│  Channels          [👁]  │  ← Section header (12px, gray, uppercase)
+│  Projects          [👁]  │  ← Section header (12px, gray, uppercase)
 │  # Sovereign Capital Gate│  ← SELECTED: bg #EEF2FF, text primary
-│  # My private channel    │
-│  + Create a channel      │
+│  # My private project    │
+│  + Create a project      │
 ├─────────────────────────┤
 │                          │
 │  🚀 Upgrade workspace    │  ← Bottom utility section
 │  👤 Shared with me       │
-│  ⬇ Import               │
+│  ⬇ Connect data          │
 │  🗂 Templates            │
 │  ⚙ Settings             │
 └─────────────────────────┘
@@ -244,7 +246,13 @@ The UI uses icons consistent with [Lucide](https://lucide.dev/) or [Heroicons](h
 
 ### Action Cards
 
-Four equal-width shortcut cards at the top of the content area.
+Four equal-width shortcut cards at the top of the content area. In Aibii these represent the primary analytical workflows.
+
+**Actions:**
+1. **New report** — "Build from +100 templates"
+2. **Ask AI** — "Generate insights from a prompt"
+3. **Connect data** — "Chat with your data sources"
+4. **Create dashboard** — "Organise your insights"
 
 **Anatomy:**
 ```
@@ -269,28 +277,28 @@ Four equal-width shortcut cards at the top of the content area.
 
 ---
 
-### Document Cards
+### Insight Cards
 
-Grid cards representing individual documents.
+Grid cards representing individual reports, dashboards, or AI-generated insights.
 
 **Anatomy:**
 ```
 ┌──────────────────────┐
 │                      │
-│    [  📄  ]          │  ← Thumbnail area (gray bg, centered icon)
+│    [  📊  ]          │  ← Preview area (gray bg, chart icon)
 │                      │
 ├──────────────────────┤
 │  Untitled         ⋯  │  ← Title + overflow menu
-│  Edited 22 min ago   │  ← Timestamp
+│  Updated 22 min ago  │  ← Timestamp
 └──────────────────────┘
 ```
 
 | Property | Value |
 |---|---|
 | Width | ~`240px` (grid auto-fills) |
-| Thumbnail height | `~160px` |
-| Thumbnail bg | `color-bg-placeholder` |
-| Thumbnail icon | `File` icon, 32px, `color-icon-muted` |
+| Preview height | `~160px` |
+| Preview bg | `color-bg-placeholder` |
+| Preview icon | `BarChart2` icon, 32px, `color-icon-muted` |
 | Card border | `1px solid color-border-default` |
 | Card radius | `radius-lg` (12px) |
 | Title | `type-body-md`, `color-text-primary`, `font-weight: 500` |
@@ -302,13 +310,13 @@ Grid cards representing individual documents.
 
 ### Empty State
 
-When no content exists in a card slot.
+When no reports or dashboards exist in a project yet.
 
 | Property | Value |
 |---|---|
-| Icon | `File` outline, 32px, `#D1D5DB` |
+| Icon | `BarChart2` outline, 32px, `#D1D5DB` |
 | Background | `color-bg-placeholder` (`#F3F4F6`) |
-| Message | `type-body-sm`, `color-text-tertiary` |
+| Message | `type-body-sm`, `color-text-tertiary` — e.g. "No reports yet — create your first insight" |
 | CTA button | `color-brand-primary` text, `type-body-sm`, `font-weight: 500` |
 
 ---
@@ -451,8 +459,8 @@ Placed **to the right of the tab row** alongside the View Toggle. Filters conten
 
 ## Design Principles
 
-### 1. Content First
-The document grid is the hero. Navigation and toolbars recede visually so the user's work takes centre stage. Use restraint with decorative elements.
+### 1. Data First
+The insight / report grid is the hero. Navigation and toolbars recede visually so the user's analytical work takes centre stage. Use restraint with decorative elements.
 
 ### 2. Progressive Disclosure
 Show the minimum necessary UI at each level. Actions like "more options" (⋯) appear only on hover. Advanced settings are buried in Settings, not surfaced by default.
@@ -493,4 +501,4 @@ sovereign-capital-gate/
 
 ---
 
-*Design language version 1.0 — Derived from Sovereign Capital Gate UI reference, April 2026.*
+*Design language version 1.0 — Aibii AI Business Intelligence SaaS · Sovereign Capital Gate workspace, April 2026.*

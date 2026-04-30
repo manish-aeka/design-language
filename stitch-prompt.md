@@ -1,4 +1,4 @@
-# Penno Workspace UI — Google Stitch Prompt
+# Aibii — AI Business Intelligence SaaS · Google Stitch Prompt
 
 > Paste this entire file into Google Stitch as your UI generation prompt.
 
@@ -6,10 +6,10 @@
 
 ## What to Build
 
-Build a **document collaboration web application** called **Penno**. It has a persistent left sidebar and a fluid content area. Generate the following 3 screens:
+Build **Aibii** — an **AI-powered Business Intelligence SaaS web application**. Users connect data sources, generate AI-driven reports and insights, build dashboards, and collaborate with their team on analytical work. It has a persistent left sidebar and a fluid content area. Generate the following 3 screens:
 
-1. **Sovereign Capital Gate** — channel document grid
-2. **Recent** — personal recent documents view
+1. **Sovereign Capital Gate** — organisation-level insight & report grid
+2. **Recent** — personal recent reports and analyses view
 3. **Settings › Profile** — user profile settings form
 
 ---
@@ -107,21 +107,21 @@ The sidebar is **220px wide**, fixed, always visible. Background `#F8F9FC`.
 
 ```
 ┌─────────────────────────┐
-│  [M] Manish kumar's Work ▾│  14px bold, workspace switcher chip
+│  [M] Manish kumar's Work ▾│  14px bold, org switcher chip
 ├─────────────────────────┤
-│  ✦  Ask Penno AI    ⌘K  │  14px, brand icon
+│  ✦  Ask Aibii AI    ⌘K  │  14px, brand icon (AI query shortcut)
 │  🕐 Recent              │  14px
-│  📄 New document        │  14px
-│  💬 New chat            │  14px
+│  📊 New report          │  14px
+│  💬 Ask AI              │  14px
 ├─────────────────────────┤
-│  CHANNELS          [👁] │  12px uppercase label, #6B7280
+│  PROJECTS          [👁] │  12px uppercase label, #6B7280
 │  # Sovereign Capital Gate│  SELECTED: bg #EEF2FF, left border 2px #5B63F6
-│  # My private channel   │
-│  +  Create a channel    │
+│  # My private project   │
+│  +  Create a project    │
 ├─────────────────────────┤
 │  🚀 Upgrade this workspace│  #7C3AED text
 │  👤 Shared with me      │
-│  ⬇  Import             │
+│  🔗 Connect data        │
 │  🗂  Templates          │
 │  ⚙  Settings           │
 ├─────────────────────────┤
@@ -171,48 +171,47 @@ Placed **right-aligned on the same row as the tab/filter bar**.
 - Label: "Type", 13px, 500, `#E5E7EB` + `ChevronDown` icon 12px `#9CA3AF`
 - Dropdown panel: bg `#1A1A2A`, border `1px solid rgba(255,255,255,0.10)`, radius 12px, shadow `0 8px 24px rgba(0,0,0,0.40)`
 - Items: 36px height, `flex + gap 10px`, label 13px `#E5E7EB`, coloured square icon 20px
-- Type icon colours: Folders=gray, Documents=blue `#3B82F6`, Spreadsheets=green `#22C55E`, Presentations=yellow `#EAB308`, Vids=purple `#A855F7`, Gems=light-blue `#60A5FA`, Forms=violet `#8B5CF6`, PDFs=red `#EF4444`, Videos=orange `#F97316`, Audio=amber `#F59E0B`, Drawings=red-orange, Sites=blue
+**Type filter dropdown item list** (AI BI context):
+- Reports, Dashboards, Datasets, Queries, KPIs, Charts, Spreadsheets, Presentations, PDFs, Videos, Forms, Archives, Audio, Drawings, Shortcuts
 
 ---
 
-## Screen 1: Sovereign Capital Gate (Channel View)
-
-**Breadcrumb:** none — this is the channel home page.
+## Screen 1: Sovereign Capital Gate (Organisation View)
 
 **Page heading:**
 ```
 # Sovereign Capital Gate
-Work on team documents and share them with others.    (14px #6B7280)
+Analyse data and share business insights with your team.    (14px #6B7280)
 ```
 
 **Action cards row** (4 cards):
-1. Icon `FilePlus`, Title "Start new document", Desc "Choose from +100 templates"
-2. Icon `Sparkles`, Title "Start with AI", Desc "Create from a prompt"
-3. Icon `ArrowDownTray`, Title "Add sources", Desc "Chat with your sources"
-4. Icon `FolderPlus`, Title "Create a folder", Desc "Organize your documents"
+1. Icon `BarChart2`, Title "New report", Desc "Build from +100 templates"
+2. Icon `Sparkles`, Title "Ask AI", Desc "Generate insights from a prompt"
+3. Icon `Database`, Title "Connect data", Desc "Chat with your data sources"
+4. Icon `LayoutDashboard`, Title "Create dashboard", Desc "Organise your insights"
 
 **Below action cards:**
 
-Row with: left-aligned label "Documents" (14px/600 `#111827`) + right-aligned **View Toggle** + **Type Filter**
+Row with: left-aligned label "Reports" (14px/600 `#111827`) + right-aligned **View Toggle** + **Type Filter**
 
-**Document grid:** 2 columns (or 3 on wider screens), `gap: 16px`
+**Report grid:** 2 columns (or 3 on wider screens), `gap: 16px`
 
-Each document card:
+Each report card:
 ```
 ┌──────────────────────────────────┐
 │                                  │
-│          [  📄  ]                │  ← bg #F3F4F6, height 160px, icon 32px #D1D5DB centered
+│          [  📊  ]                │  ← bg #F3F4F6, height 160px, icon 32px #D1D5DB centered
 │                                  │
 ├──────────────────────────────────┤
 │  Untitled                    ⋯  │  ← 14px/500 #111827 + MoreHorizontal icon (show on hover)
-│  Edited 22 minutes ago           │  ← 12px #6B7280
+│  Updated 22 minutes ago          │  ← 12px #6B7280
 └──────────────────────────────────┘
 ```
 
 Card: border `1px solid #E5E7EB`, radius 12px, bg `#FFFFFF`
 Card hover: border transitions to `rgba(91,99,246,0.3)`, shadow `0 4px 12px rgba(0,0,0,0.10)`
 
-Show **2 document cards** in the grid (both "Untitled").
+Show **2 report cards** in the grid (both "Untitled").
 
 ---
 
@@ -227,15 +226,15 @@ Show **2 document cards** in the grid (both "Untitled").
 **Page heading:**
 ```
 🕐  Recent                          (28px/700 #111827, clock icon inline)
-    Your recent documents and folders are displayed here.
-    You can also create new documents and folders from here.   (14px #6B7280)
+    Your recent reports and insights are displayed here.
+    You can also create new reports and dashboards from here.   (14px #6B7280)
 ```
 
 **Action cards row** (4 cards):
-1. Icon `FilePlus`, Title "Start new document", Desc "Choose from +100 templates"
-2. Icon `Hash`, Title "Create a workspace", Desc "Group your documents"
-3. Icon `Sparkles`, Title "Start with AI", Desc "Create from a prompt"
-4. Icon `ArrowDownTray`, Title "Add sources", Desc "Chat with your sources"
+1. Icon `BarChart2`, Title "New report", Desc "Build from +100 templates"
+2. Icon `Hash`, Title "Create a workspace", Desc "Group your reports"
+3. Icon `Sparkles`, Title "Ask AI", Desc "Generate insights from a prompt"
+4. Icon `Database`, Title "Connect data", Desc "Chat with your data sources"
 
 **Filter tab bar + View Toggle + Type Filter on the same row:**
 
@@ -249,11 +248,13 @@ Left side — pill tabs container (bg `#F3F4F6`, radius `9999px`, padding `4px`)
 
 Right side — **View Toggle** + **Type Filter** (as described above)
 
-**Document grid:** 4 columns, `gap: 16px`, margin-top 24px from tab bar
+**Report grid:** 4 columns, `gap: 16px`, margin-top 24px from tab bar
 
-Show **8 document cards** in a 4×2 grid:
+Show **8 report cards** in a 4×2 grid:
 - Row 1: "Untitled" (19 min), "Untitled" (20 min), "Untitled" (20 min), "Untitled" (1 hr)
-- Row 2: "API Documentation Template" (1 hr), "Untitled" (1 hr), "Untitled" (1 hr), "Untitled" (1 hr)
+- Row 2: "Q1 Revenue Analysis" (1 hr), "Untitled" (1 hr), "Untitled" (1 hr), "Untitled" (1 hr)
+
+Each card uses `BarChart2` icon 32px `#D1D5DB` in the preview zone instead of a file icon.
 
 Scrollbar on right: 6px width, thumb `#CBD5E1`, radius pill, visible only on overflow.
 
@@ -349,4 +350,4 @@ Input specs:
 
 ---
 
-*Generate all 3 screens. Use the exact hex values, spacing, and component specs above. The overall feel is: clean, minimal, professional, with a blue-violet brand accent. Light mode only.*
+*Generate all 3 screens. Use the exact hex values, spacing, and component specs above. The overall feel is: clean, minimal, data-focused, with a blue-violet brand accent. Light mode only. This is an AI Business Intelligence SaaS — all content language should reflect analytics, reports, insights, and data work — not document editing.*

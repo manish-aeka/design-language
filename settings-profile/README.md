@@ -1,6 +1,6 @@
 # Settings — Profile Page Design Language
 
-> Design system derived from the **Settings › Profile** page of the Penno workspace UI.  
+> Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Settings › Profile screen.  
 > Place the reference screenshot at `assets/screenshot.png`.
 
 ---
@@ -34,7 +34,7 @@
 
 ## Overview
 
-The **Settings › Profile** page is a user-preference form surface. It uses the same shell (sidebar + content area) as all other views, but introduces new primitives unique to settings: a **multi-tab settings bar**, **form inputs**, a **read-only field**, an **avatar upload control**, and a **section label** pattern. The page is intentionally sparse — one form, no distractions.
+The **Settings › Profile** page is the user-preference form surface of the Aibii AI Business Intelligence SaaS platform. It uses the same shell (sidebar + content area) as all analytical views, but introduces new primitives unique to settings: a **multi-tab settings bar**, **form inputs**, a **read-only field**, an **avatar upload control**, and a **section label** pattern. The page is intentionally sparse — one form, no distractions.
 
 ![Reference Screenshot](assets/screenshot.png)
 
@@ -624,4 +624,4 @@ settings-profile/
 
 ---
 
-*Design language version 1.0 — Derived from Settings › Profile UI reference, April 2026.*
+*Design language version 1.0 — Aibii AI Business Intelligence SaaS · Settings › Profile, April 2026.*
