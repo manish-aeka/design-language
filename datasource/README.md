@@ -13,7 +13,7 @@ The **Connect Data** view is a multi-step screen within Aibii that lets users br
 └──────────────────────────────────────────────────────────┘
 ```
 
-- **Sidebar** — 220px fixed, matches `recent-view` sidebar exactly. "Connect Data" is the active nav item (brand highlight `#EEF2FF` + `2px solid #5B63F6` left border).
+- **Sidebar** — 220px fixed, matches `recent-view` sidebar exactly. **Connect Datasource** is the active nav item in the bottom utility section (`#EEF2FF` bg + `2px solid #5B63F6` left border). Primary nav contains plain links (Recent, Create Dashboard, AI Chat).
 - **Main** — `flex-1`, `overflow-hidden`. One of three views is `.active` at a time.
 
 ---
@@ -135,7 +135,8 @@ Clicking any card calls `openWizard(name)` → navigates to View 3.
 | `filterDatasources()` | Re-renders table on search input |
 | `filterDsType(type)` | Filters table by type and updates dropdown label |
 | `toggleDsTypeDropdown()` | Opens/closes the View 1 Type filter dropdown |
-| `toggleWS(id)` | Expands/collapses sidebar workspace submenus |
+| `toggleWorkspace(id)` | Expands/collapses sidebar workspace submenus |
+| `openNewProjectModal()` | Placeholder for new-project modal (wired to "Create a project" link) |
 
 ---
 
