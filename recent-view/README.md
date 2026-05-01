@@ -26,7 +26,7 @@
    - [Card Type Badge](#card-type-badge)
    - [Scrollbar](#scrollbar)
 9. [Modals](#modals)
-   - [New Project Modal](#new-project-modal)
+   - [Create Project Modal](#create-project-modal)
    - [Create Item Modal](#create-item-modal)
 10. [States & Interactions](#states--interactions)
 11. [Motion & Animation](#motion--animation)
@@ -39,8 +39,8 @@
 The **Recent** view is the personal analytics home screen — the first screen a user lands on after selecting an organisation in Aibii. It combines a lightweight action strip, a filter/tab mechanism, and a dense report grid to surface the most relevant analyses and dashboards with zero navigation friction.
 
 Key interactions available from this screen:
-- **7 action-card shortcuts** (New Project, New Dashboard, New Document, New Presentation, New Form, AI chat, Create Datasource)
-- **New Project modal** — creates a project and adds it to the sidebar in real-time
+- **7 action-card shortcuts** (Create Project, Create Dashboard, Create Document, Create Presentation, Create Form, AI Chat, Add Datasource)
+- **Create Project modal** — creates a project and adds it to the sidebar in real-time
 - **Create Item modal** — shared modal for Dashboard, Document, Presentation, Form, and AI chat creation
 - **Pinned project** — "My Private Project" always appears first in the sidebar Projects list
 - **Dynamic sidebar** — new projects are injected immediately after the pinned entry without page reload
@@ -58,8 +58,8 @@ Key interactions available from this screen:
 │  [M] Manish kumar's Work…  │  🕐 Recent                                     │
 │  ────────────────────────  │     Your recent reports and insights…          │
 │  🕐 Recent  ← active       │                                                │
-│  ⊞  New dashboard          │  [🗂 New Project][⊞ New Dashboard][📄 New Doc] │
-│  💬 New chat               │  [🖥 New Pres.][📋 New Form][✨ AI chat][🗄 DS] │ ← 7 Action Cards (4-col grid)
+│  ⊞  Create Dashboard      │  [🗂 Create Project][⊞ Create Dashboard][📄 Create Doc] │
+│  💬 AI Chat               │  [🖥 Create Pres.][📋 Create Form][✨ AI Chat][🗄 DS] │ ← 7 Action Cards (4-col grid)
 │  ────────────────────────  │                                                │
 │  PROJECTS            [👁]  │  [ By me ][ By everyone ][ Shared with me ]   │ ← Filter Tabs
 │  ▶ My Private Project 📌   │                                  [ Type▾][≡⊞] │
@@ -244,16 +244,16 @@ Active and inactive tabs both use `radius-full` — the tab container itself use
 | Location | Icon | Size | Color |
 |---|---|---|---|
 | Page title | `Clock` (circle + hands) | 24px | `color-text-primary` (#111827) |
-| Action card: New Project | `FolderOpen` | 20px | `color-icon-brand` (#5B63F6) |
-| Action card: New Dashboard | `SquaresGrid` (4 squares) | 20px | `color-icon-brand` |
-| Action card: New Document | `Document` | 20px | `color-icon-brand` |
-| Action card: New Presentation | `PresentationChartBar` (screen + legs) | 20px | `color-icon-brand` |
-| Action card: New Form | `ClipboardDocumentList` | 20px | `color-icon-brand` |
-| Action card: AI chat | `Sparkles` | 20px | `color-icon-brand` |
-| Action card: Create Datasource | `Database` (cylinder) | 20px | `color-icon-brand` |
+| Action card: Create Project | `FolderOpen` | 20px | `color-icon-brand` (#5B63F6) |
+| Action card: Create Dashboard | `SquaresGrid` (4 squares) | 20px | `color-icon-brand` |
+| Action card: Create Document | `Document` | 20px | `color-icon-brand` |
+| Action card: Create Presentation | `PresentationChartBar` (screen + legs) | 20px | `color-icon-brand` |
+| Action card: Create Form | `ClipboardDocumentList` | 20px | `color-icon-brand` |
+| Action card: AI Chat | `Sparkles` | 20px | `color-icon-brand` |
+| Action card: Add Datasource | `Database` (cylinder) | 20px | `color-icon-brand` |
 | Nav: Recent (active) | `Clock` | 16px | `#6B7280` |
-| Nav: New dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
-| Nav: New chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
+| Nav: Create Dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
+| Nav: AI Chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
 | Workspaces header | `EyeOff` | 14px | `#D1D5DB` |
 | Workspace chevron | `ChevronRight` | 12px | `#9CA3AF` → rotates 90° when open |
 | Submenu: Chat item | `ChatBubble` | 14px | `#5B63F6` |
@@ -331,19 +331,19 @@ Row 2:
 | Icon–text gap | `12px` |
 | Hover | `shadow-card-hover` + `translateY(-1px)` |
 | Transition | `all 150ms ease-out` |
-| Click behaviour | New Project → **New Project Modal**; New Dashboard / Document / Presentation / Form / AI chat → **Create Item Modal**; Create Datasource → no modal |
+| Click behaviour | Create Project → **Create Project Modal**; Create Dashboard / Create Document / Create Presentation / Create Form / AI Chat → **Create Item Modal**; Add Datasource → no modal |
 
 **Card inventory:**
 
 | # | Title | Description | Icon | Opens Modal |
 |---|---|---|---|---|
-| 1 | New Project | Organize work in a project | `FolderOpen` | New Project Modal |
-| 2 | New Dashboard | Build charts & visual reports | `SquaresGrid` | Create Item Modal |
-| 3 | New Document | Write, edit & share docs | `Document` | Create Item Modal |
-| 4 | New Presentation | Create slides & decks | `PresentationChartBar` | Create Item Modal |
-| 5 | New Form | Collect data with forms | `ClipboardDocumentList` | Create Item Modal |
-| 6 | AI chat | Generate insights from a prompt | `Sparkles` | Create Item Modal |
-| 7 | Create Datasource | Link databases, APIs & more | `Database` | — |
+| 1 | Create Project | Organize work in a project | `FolderOpen` | Create Project Modal |
+| 2 | Create Dashboard | Build charts & visual reports | `SquaresGrid` | Create Item Modal |
+| 3 | Create Document | Write, edit & share docs | `Document` | Create Item Modal |
+| 4 | Create Presentation | Create slides & decks | `PresentationChartBar` | Create Item Modal |
+| 5 | Create Form | Collect data with forms | `ClipboardDocumentList` | Create Item Modal |
+| 6 | AI Chat | Generate insights from a prompt | `Sparkles` | Create Item Modal |
+| 7 | Add Datasource | Link databases, APIs & more | `Database` | — |
 
 ---
 
@@ -644,16 +644,16 @@ Applies globally to the content area and workspace submenus.
 
 ## Modals
 
-### New Project Modal
+### Create Project Modal
 
-Triggered by: **New Project** action card click, or **"+ Create a project"** sidebar link click.
+Triggered by: **Create Project** action card click, or **"+ Create a project"** sidebar link click.
 
 Functions: `openNewProjectModal()` / `closeNewProjectModal()` / `createNewProject()`
 
 **Anatomy:**
 ```
 ┌─────────────────────────────────┐
-│  New Project              [ × ] │
+│  Create Project           [ × ] │
 ├─────────────────────────────────┤
 │  Name *                         │
 │  [ Enter project name…        ] │
@@ -698,16 +698,16 @@ Functions: `openNewProjectModal()` / `closeNewProjectModal()` / `createNewProjec
 
 ### Create Item Modal
 
-Triggered by: **New Dashboard**, **New Document**, **New Presentation**, **New Form**, **AI chat** action card clicks.
+Triggered by: **Create Dashboard**, **Create Document**, **Create Presentation**, **Create Form**, **AI Chat** action card clicks.
 
 Functions: `openCreateModal(type)` / `closeCreateModal()`
 
-The `type` string is passed as the modal title (e.g. `'New Dashboard'`).
+The `type` string is passed as the modal title (e.g. `'Create Dashboard'`).
 
 **Anatomy:**
 ```
 ┌─────────────────────────────────┐
-│  New Dashboard            [ × ] │  ← dynamic title
+│  Create Dashboard         [ × ] │  ← dynamic title
 ├─────────────────────────────────┤
 │  Name                           │
 │  [ Enter a name…              ] │
@@ -780,13 +780,13 @@ The `type` string is passed as the modal title (e.g. `'New Dashboard'`).
 
 | Card | Behaviour on Click |
 |---|---|
-| New Project | Opens New Project Modal |
-| New Dashboard | Opens Create Item Modal — title "New Dashboard" |
-| New Document | Opens Create Item Modal — title "New Document" |
-| New Presentation | Opens Create Item Modal — title "New Presentation" |
-| New Form | Opens Create Item Modal — title "New Form" |
-| AI chat | Opens Create Item Modal — title "AI Chat" |
-| Create Datasource | No modal — direct action |
+| Create Project | Opens Create Project Modal |
+| Create Dashboard | Opens Create Item Modal — title "Create Dashboard" |
+| Create Document | Opens Create Item Modal — title "Create Document" |
+| Create Presentation | Opens Create Item Modal — title "Create Presentation" |
+| Create Form | Opens Create Item Modal — title "Create Form" |
+| AI Chat | Opens Create Item Modal — title "AI Chat" |
+| Add Datasource | No modal — direct action |
 
 ---
 
