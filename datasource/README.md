@@ -13,7 +13,7 @@ The **Connect Data** view is a multi-step screen within Aibii that lets users br
 └──────────────────────────────────────────────────────────┘
 ```
 
-- **Sidebar** — 220px fixed, matches `recent-view` sidebar exactly. **Connect Datasource** is the active nav item in the bottom utility section (`#EEF2FF` bg + `2px solid #5B63F6` left border). Primary nav contains plain links (Recent, Create Dashboard, AI Chat).
+- **Sidebar** — 220px fixed, matches `recent-view` sidebar exactly. This sidebar structure is the **canonical reference** shared by all pages in the design-language project (chat, dashboard, create-form, settings-profile, sovereign-capital-gate). **Connect Datasource** is the active nav item in the bottom utility section (`#EEF2FF` bg + `2px solid #5B63F6` left border). Primary nav contains plain links (Recent, Create Dashboard, AI Chat).
 - **Main** — `flex-1`, `overflow-hidden`. One of three views is `.active` at a time.
 
 ---
@@ -99,6 +99,38 @@ Clicking any card calls `openWizard(name)` → navigates to View 3.
 - Scrollable list of 8 tables with checkboxes
 - "Back" + "Finish" buttons
 - On Finish → shows toast notification "Datasource connected successfully", returns to View 1
+
+---
+
+## Sidebar Structure
+
+The shared sidebar is identical across all pages. Key sections:
+
+### Primary Nav
+| Item | State | Notes |
+|---|---|---|
+| Recent | plain link | `href="../recent-view/index.html"` |
+| Create Dashboard | plain link | |
+| AI Chat | plain link | |
+
+On page-specific views the relevant item receives the active style (`background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px`).
+
+### Projects Section
+
+Label: `Projects` (`text-[11px] uppercase tracking-widest text-gray-400`) with eye/search icon. Container: `id="projects-list"`.
+
+| Project | Notes |
+|---|---|
+| **My Private Project** | Pinned (blue pin icon `#5B63F6`), `id="ws2-btn"`, 11 sub-items: Q4 Strategy, Revenue Overview, Project Brief, Investor Update, Meeting Notes, KPI Tracker, Product Feedback, User Analytics, Sprint Planning, Roadmap 2026, API Docs |
+| **Sovereign Capital Gate** | `id="ws1-btn"`, 3 sub-items: Chat, Dashboard, Document |
+| + Create a project | `onclick="event.preventDefault();openNewProjectModal()"` |
+
+### Bottom Utility Nav
+| Item | State | Notes |
+|---|---|---|
+| Connect Datasource | **ACTIVE** on this page | `href="../datasource/index.html"`, icon color `#5B63F6` |
+| Shared with me | plain | |
+| Settings | plain | `href="../settings-profile/index.html"` |
 
 ---
 
