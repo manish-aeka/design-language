@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aibii — Form Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { primary: '#5B63F6', secondary: '#7C6FF7' },
+            sidebar: '#F8F9FC',
+            hover: '#EEF2FF',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+          boxShadow: {
+            card: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            modal: '0 20px 60px rgba(0,0,0,0.18)',
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    /* ── Sidebar ── */
+    .nav-item { transition: background-color 120ms ease; cursor: pointer; }
+    .nav-item:hover { background-color: #EEF2FF; }
+    .ws-submenu { display: none; }
+    .ws-submenu.open { display: block; max-height: 200px; overflow-y: auto; }
+    .ws-chevron { transition: transform 150ms ease; }
+    .ws-item.open .ws-chevron { transform: rotate(90deg); }
+
+    /* ── Canvas background ── */
+    /* #canvas-scroll { background-color: #ede7f6; } */
+
+
+
+    /* ── Question cards ── */
+    .q-card {
+      transition: box-shadow 180ms ease;
+    }
+    .q-card:hover {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10) !important;
+    }
+    .q-card.is-dragging { opacity: 0.35; }
+    .q-card.drag-over { outline: 2px solid #5B63F6; }
+
+    /* ── Drag handle ── */
+    .drag-handle { cursor: grab; display: none; color: #CBD5E1; padding: 4px; align-items: center; justify-content: center; }
+    .drag-handle:active { cursor: grabbing; }
+    .edit-mode .drag-handle { display: flex; }
+
+    /* ── Edit controls ── */
+    .q-edit-controls { display: none; }
+    .edit-mode .q-edit-controls { display: flex; }
+
+    /* ── Contenteditable label ── */
+    .q-label {
+      font-size: 15px; font-weight: 600; color: #202124;
+      line-height: 1.5; outline: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 150ms; min-width: 40px;
+    }
+    .edit-mode .q-label:hover { border-bottom-color: #dadce0; cursor: text; }
+    .edit-mode .q-label:focus { border-bottom-color: #1a73e8; }
+
+    /* ── Required star ── */
+    .req-star { color: #d93025; margin-left: 4px; font-size: 15px; line-height: 1; }
+
+    /* ── Form field inputs (view mode) ── */
+    .f-input {
+      width: 100%; border: none; border-bottom: 1px solid #dadce0;
+      outline: none; padding: 10px 0 6px; font-size: 14px; color: #202124;
+      font-family: inherit; background: transparent; transition: border-color 150ms;
+    }
+    .f-input:focus { border-bottom: 2px solid #1a73e8; padding-bottom: 5px; }
+    .f-input:disabled { color: #80868b; cursor: default; }
+    .f-select { padding: 10px 4px 6px; }
+    .f-textarea {
+      width: 100%; border: none; border-bottom: 1px solid #dadce0;
+      outline: none; padding: 10px 0 6px; font-size: 14px; color: #202124;
+      font-family: inherit; background: transparent; resize: none;
+      transition: border-color 150ms;
+    }
+    .f-textarea:focus { border-bottom: 2px solid #1a73e8; padding-bottom: 5px; }
+    .f-textarea:disabled { color: #80868b; }
+
+    /* ── Radio / checkbox rows ── */
+    .opt-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 7px 0; font-size: 14px; color: #202124; cursor: pointer;
+    }
+    .opt-row input[type=radio], .opt-row input[type=checkbox] {
+      width: 18px; height: 18px; accent-color: #1a73e8; flex-shrink: 0; cursor: pointer;
+    }
+
+    /* ── Floating add button ── */
+    #fab-add {
+      position: fixed; bottom: 28px; right: 28px; z-index: 40;
+      height: 44px; padding: 0 20px; border-radius: 9999px;
+      background: linear-gradient(135deg, #5B63F6 0%, #7C6FF7 100%);
+      color: #fff; font-size: 13px; font-weight: 600;
+      box-shadow: 0 6px 22px rgba(91,99,246,0.42);
+      display: none; align-items: center; gap: 8px;
+      cursor: pointer; border: none;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    #fab-add:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(91,99,246,0.55); }
+
+    /* ── Submit row ── */
+    #submit-row { display: none; }
+
+    /* ── Modals ── */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(10,10,24,0.40); z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-box {
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.06);
+      width: 100%; max-width: 480px; padding: 28px;
+      animation: popIn 180ms cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(10px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .m-input {
+      width: 100%; border: 1.5px solid #E5E7EB; border-radius: 10px;
+      padding: 9px 13px; font-size: 13px; color: #111827; outline: none;
+      background: #FAFAFA; font-family: inherit;
+      transition: border-color 150ms, box-shadow 150ms;
+    }
+    .m-input:focus { border-color: #5B63F6; background: #fff; box-shadow: 0 0 0 3px rgba(91,99,246,0.10); }
+    .m-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; display: block; }
+    .m-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 32px; }
+
+    /* ── Topbar icon ── */
+    .topbar-icon {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #5B63F6, #7C6FF7);
+      display: flex; align-items: center; justify-content: center;
+    }
+  </style>
+</head>
+<body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
+
+  <!-- ════════════════════════════════════════
+       SIDEBAR 220px
+  ════════════════════════════════════════ -->
+  <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+
+    <!-- Workspace switcher -->
+    <div class="px-4 py-3 border-b border-gray-100">
+      <button class="flex items-center gap-2 w-full text-left">
+        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
+        <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+    </div>
+
+    <!-- Primary nav -->
+    <nav class="px-3 py-2 space-y-0.5">
+      <a href="../recent-view/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
+        Recent
+      </a>
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        Create Dashboard
+      </a>
+      <!-- Create Form — active -->
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-gray-900" style="background:#EEF2FF;border-left:2px solid #5B63F6;padding-left:10px;">
+        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+        Create Form
+      </a>
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+        AI Chat
+      </a>
+    </nav>
+
+    <div class="mx-3 my-1 border-t border-gray-100"></div>
+
+    <!-- Projects -->
+    <div class="px-3 py-1">
+      <div class="flex items-center justify-between px-3 h-7">
+        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
+      </div>
+      <div class="space-y-0.5 mt-0.5">
+        <!-- My Private Project -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws2')" id="ws2-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
+            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 2a1 1 0 00-1 1v1H9V3a1 1 0 00-2 0v1H6a2 2 0 00-2 2v1c0 2.21 1.34 4.11 3.25 4.93V19a1 1 0 00.55.89l3 1.5a1 1 0 00.9 0l3-1.5A1 1 0 0015 19v-7.07C16.66 11.11 18 9.21 18 7V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1z"/></svg>
+          </div>
+          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Q4 Strategy
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Revenue Overview
+            </a>
+          </div>
+        </div>
+        <!-- Sovereign Capital Gate -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws1')" id="ws1-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm text-gray-700 truncate">Sovereign Capital Gate</a>
+          </div>
+          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Chat
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Dashboard
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Document
+            </a>
+          </div>
+        </div>
+        <a href="#" onclick="event.preventDefault()" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
+          <span class="text-gray-400 font-medium text-base leading-none">+</span>
+          Create a project
+        </a>
+      </div>
+    </div>
+
+    <div class="flex-1"></div>
+    <div class="mx-3 border-t border-gray-100"></div>
+    <nav class="px-3 py-2 space-y-0.5">
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        Shared with me
+      </a>
+      <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
+        <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-[12px] font-semibold leading-tight" style="color:#3B4ECC">Explore free features</p>
+        <p class="text-[11px] mt-0.5" style="color:#6B7ADE">Credit left: 15</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════════════════════════════════════════
+       MAIN
+  ════════════════════════════════════════ -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Topbar -->
+    <div class="flex items-center justify-between px-5 h-14 border-b border-gray-100 bg-white flex-shrink-0" style="box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+      <div class="flex items-center gap-2.5">
+        <div class="topbar-icon">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+        </div>
+        <span class="text-gray-300 text-sm">/</span>
+        <span id="topbar-title" class="text-[14px] font-semibold text-gray-800">Untitled Form</span>
+      </div>
+
+    </div>
+
+    <!-- Canvas -->
+    <div class="flex-1 overflow-y-auto py-10 px-8" id="canvas-scroll">
+      <div class="w-full" id="form-canvas">
+
+        <!-- Section heading -->
+        <div class="mb-5">
+          <div class="flex items-center justify-between">
+            <h1 class="text-[22px] font-bold text-gray-900 leading-snug">Untitled Form</h1>
+            <div class="flex items-center gap-2">
+              <span id="mode-badge" class="hidden text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background:#EEF2FF;color:#5B63F6">
+                <i class="fa-solid fa-pen-to-square mr-1"></i>Editing
+              </span>
+              <button id="toggle-mode-btn" onclick="toggleMode()"
+                class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg border text-[13px] font-medium transition-all"
+                style="border-color:#E5E7EB;color:#374151;background:#fff">
+                <i id="mode-icon" class="fa-solid fa-pen text-xs"></i>
+                <span id="mode-btn-label">Edit Form</span>
+              </button>
+            </div>
+          </div>
+          <p class="text-[13px] text-gray-500 mt-1">Fill in the fields below. Required fields are marked with <span class="text-red-500">*</span></p>
+        </div>
+
+        <!-- Fields container (rendered by JS) -->
+        <div id="fields-container"></div>
+
+      </div>
+
+      <!-- Submit row (view mode) -->
+      <div id="submit-row" class="w-full mt-6 flex items-center justify-end gap-3">
+        <button class="text-[13px] text-gray-400 hover:text-gray-600 font-medium transition-colors">Clear form</button>
+        <button class="px-6 h-10 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity"
+          style="background:blue;box-shadow:0 4px 14px rgba(91,99,246,0.35)">
+          Submit
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Add Field button (edit mode only) -->
+  <button id="fab-add" onclick="openAddModal()">
+    <i class="fa-solid fa-plus text-sm"></i>
+    <span>Add field</span>
+  </button>
+
+  <!-- ════════════════ ADD FIELD MODAL ════════════════ -->
+  <div id="add-modal" class="modal-bg hidden" onclick="handleBgClick(event,'add-modal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-[17px] font-bold text-gray-900">Add Field</h2>
+        <button onclick="closeAddModal()" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="m-label">Question label <span class="text-red-500">*</span></label>
+          <input id="m-label-input" class="m-input" placeholder="e.g. Full name" />
+        </div>
+        <div>
+          <label class="m-label">Field type</label>
+          <select id="m-type-select" class="m-input m-select" onchange="onModalTypeChange()">
+            <option value="text">Short answer</option>
+            <option value="email">Email</option>
+            <option value="number">Number</option>
+            <option value="textarea">Long text (paragraph)</option>
+            <option value="dropdown">Dropdown</option>
+            <option value="checkbox">Checkboxes</option>
+            <option value="radio">Multiple choice</option>
+            <option value="date">Date</option>
+            <option value="file">File upload</option>
+          </select>
+        </div>
+        <div id="m-options-row" class="hidden">
+          <label class="m-label">Options <span class="text-gray-400 font-normal">(comma separated)</span></label>
+          <input id="m-options-input" class="m-input" placeholder="Option 1, Option 2, Option 3" />
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="m-required-check" class="w-4 h-4 accent-[#5B63F6]" />
+          <label for="m-required-check" class="text-[13px] text-gray-700 font-medium cursor-pointer">Required field</label>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 mt-6 pt-5 border-t border-gray-100">
+        <button onclick="closeAddModal()" class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="confirmAdd()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">Add field</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ DELETE MODAL ════════════════ -->
+  <div id="del-modal" class="modal-bg hidden" onclick="handleBgClick(event,'del-modal')">
+    <div class="modal-box max-w-sm" onclick="event.stopPropagation()">
+      <div class="flex items-start gap-3 mb-4">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEF2F2">
+          <i class="fa-solid fa-trash text-sm" style="color:#EF4444"></i>
+        </div>
+        <div>
+          <h2 class="text-[16px] font-bold text-gray-900">Delete field?</h2>
+          <p class="text-[13px] text-gray-500 mt-0.5">This will permanently remove "<span id="del-label-preview" class="font-medium text-gray-700"></span>" from your form.</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 mt-5 pt-4 border-t border-gray-100">
+        <button onclick="closeDelModal()" class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="confirmDelete()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-white" style="background:#EF4444">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════ */
+    let fields = [
+      { id: 'f1', type: 'text',     label: 'Full name',                 required: true,  options: [] },
+      { id: 'f2', type: 'email',    label: 'Email address',             required: true,  options: [] },
+      { id: 'f3', type: 'dropdown', label: 'How did you hear about us?', required: false, options: ['Search engine', 'Social media', 'Friend / referral', 'Advertisement'] },
+      { id: 'f4', type: 'checkbox', label: 'What topics interest you?', required: false, options: ['Data analytics', 'AI / ML', 'Business intelligence', 'Dashboards'] },
+      { id: 'f5', type: 'textarea', label: 'Additional comments',       required: false, options: [] },
+    ];
+
+    let isEditMode  = false;
+    let delTargetId = null;
+    let dragSrcEl   = null;
+
+    /* ═══════════════════════════════════════════
+       ICON / NAME MAPS
+    ═══════════════════════════════════════════ */
+    const TYPE_ICON = {
+      text: 'fa-font', email: 'fa-envelope', number: 'fa-hashtag',
+      textarea: 'fa-align-left', dropdown: 'fa-chevron-down',
+      checkbox: 'fa-square-check', radio: 'fa-circle-dot',
+      date: 'fa-calendar', file: 'fa-paperclip'
+    };
+    const TYPE_NAME = {
+      text: 'Short text', email: 'Email', number: 'Number',
+      textarea: 'Long text', dropdown: 'Dropdown',
+      checkbox: 'Checkboxes', radio: 'Multiple choice',
+      date: 'Date', file: 'File upload'
+    };
+
+    /* ═══════════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════════ */
+    function toggleWorkspace(id) {
+      document.getElementById(id + '-sub').classList.toggle('open');
+      document.getElementById(id + '-btn').classList.toggle('open');
+    }
+
+    /* ═══════════════════════════════════════════
+       TOGGLE EDIT / PREVIEW MODE
+    ═══════════════════════════════════════════ */
+    function toggleMode() {
+      isEditMode = !isEditMode;
+
+      const btn       = document.getElementById('toggle-mode-btn');
+      const icon      = document.getElementById('mode-icon');
+      const label     = document.getElementById('mode-btn-label');
+      const badge     = document.getElementById('mode-badge');
+      const fab       = document.getElementById('fab-add');
+      const submitRow = document.getElementById('submit-row');
+
+      if (isEditMode) {
+        btn.style.background  = '#EEF2FF';
+        btn.style.borderColor = '#C7D2FE';
+        btn.style.color       = '#5B63F6';
+        icon.className        = 'fa-solid fa-eye text-xs';
+        label.textContent     = 'Preview';
+        badge.classList.remove('hidden');
+        fab.style.display     = 'flex';
+        submitRow.style.display = 'none';
+      } else {
+        btn.style.background  = '#fff';
+        btn.style.borderColor = '#E5E7EB';
+        btn.style.color       = '#374151';
+        icon.className        = 'fa-solid fa-pen text-xs';
+        label.textContent     = 'Edit Form';
+        badge.classList.add('hidden');
+        fab.style.display     = 'none';
+        submitRow.style.display = 'flex';
+      }
+
+      document.getElementById('form-canvas').classList.toggle('edit-mode', isEditMode);
+      renderFields();
+    }
+
+    /* ═══════════════════════════════════════════
+       RENDER
+    ═══════════════════════════════════════════ */
+    function renderFields() {
+      const container = document.getElementById('fields-container');
+      container.innerHTML = '';
+      fields.forEach((field, idx) => container.appendChild(buildCard(field, idx)));
+    }
+
+    function buildCard(field, idx) {
+      const card = document.createElement('div');
+      card.className = 'q-card bg-white rounded-xl px-6 py-5 mb-3';
+      card.style.cssText = 'box-shadow:0 1px 2px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.08)';
+      card.dataset.id = field.id;
+      card.draggable  = isEditMode;
+
+      if (isEditMode) {
+        card.addEventListener('dragstart', onDragStart);
+        card.addEventListener('dragover',  onDragOver);
+        card.addEventListener('dragleave', onDragLeave);
+        card.addEventListener('drop',      onDrop);
+        card.addEventListener('dragend',   onDragEnd);
+      }
+
+      card.innerHTML = `
+        <div class="flex items-start gap-2">
+          <!-- Drag handle (edit mode only) -->
+          <div class="drag-handle pt-1" title="Drag to reorder">
+            <i class="fa-solid fa-grip-vertical text-[13px]"></i>
+          </div>
+
+          <!-- Main content -->
+          <div class="flex-1 min-w-0">
+            <div class="mb-3">
+              <span class="q-label"
+                   contenteditable="${isEditMode ? 'true' : 'false'}"
+                   data-id="${field.id}"
+                   onblur="onLabelBlur(this)"
+                   spellcheck="false">${esc(field.label)}</span>${field.required ? '<span class="req-star">*</span>' : ''}
+            </div>
+            ${buildInput(field)}
+          </div>
+
+          <!-- Delete button (edit mode only) -->
+          <div class="q-edit-controls flex-col items-center gap-1 flex-shrink-0">
+            <button onclick="openDelModal('${field.id}')"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-400 hover:bg-red-50 transition-colors"
+              title="Delete field">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function buildInput(field) {
+      const dis = isEditMode ? 'disabled' : '';
+      switch (field.type) {
+        case 'text':
+          return `<input class="f-input" type="text" placeholder="Short answer text" ${dis}>`;
+        case 'email':
+          return `<input class="f-input" type="email" placeholder="example@email.com" ${dis}>`;
+        case 'number':
+          return `<input class="f-input" type="number" placeholder="0" ${dis}>`;
+        case 'date':
+          return `<input class="f-input" type="date" ${dis}>`;
+        case 'textarea':
+          return `<textarea class="f-textarea" rows="3" placeholder="Long answer text" ${dis}></textarea>`;
+        case 'file':
+          return `<label class="flex items-center gap-2 px-4 h-10 rounded-lg border border-dashed border-gray-300 cursor-pointer text-[13px] text-gray-400 hover:border-[#5B63F6] hover:text-[#5B63F6] transition-colors w-fit">
+            <i class="fa-solid fa-paperclip"></i> Attach file
+            <input type="file" class="hidden" ${dis}>
+          </label>`;
+        case 'dropdown':
+          return `<select class="f-input f-select" ${dis}>
+            <option value="" disabled selected>Select an option</option>
+            ${field.options.map(o => `<option>${esc(o)}</option>`).join('')}
+          </select>`;
+        case 'checkbox':
+          return field.options.length
+            ? field.options.map(o => `<label class="opt-row"><input type="checkbox" class="w-4 h-4 accent-[#5B63F6]" ${dis}> ${esc(o)}</label>`).join('')
+            : `<p class="text-[12px] text-gray-400 italic">No options yet — add in edit mode</p>`;
+        case 'radio':
+          return field.options.length
+            ? field.options.map(o => `<label class="opt-row"><input type="radio" name="${field.id}" class="w-4 h-4 accent-[#5B63F6]" ${dis}> ${esc(o)}</label>`).join('')
+            : `<p class="text-[12px] text-gray-400 italic">No options yet — add in edit mode</p>`;
+        default:
+          return `<input class="f-input" type="text" ${dis}>`;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       INLINE LABEL EDITING
+    ═══════════════════════════════════════════ */
+    function onLabelBlur(el) {
+      const f = fields.find(f => f.id === el.dataset.id);
+      if (f) {
+        const text = el.innerText.trim();
+        if (text) f.label = text;
+        else el.innerText = f.label; // restore if empty
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       ADD FIELD MODAL
+    ═══════════════════════════════════════════ */
+    function openAddModal() {
+      document.getElementById('m-label-input').value = '';
+      document.getElementById('m-type-select').value = 'text';
+      document.getElementById('m-options-input').value = '';
+      document.getElementById('m-required-check').checked = false;
+      document.getElementById('m-options-row').classList.add('hidden');
+      document.getElementById('m-label-input').style.borderColor = '';
+      document.getElementById('add-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('m-label-input').focus(), 60);
+    }
+
+    function closeAddModal() {
+      document.getElementById('add-modal').classList.add('hidden');
+    }
+
+    function onModalTypeChange() {
+      const t = document.getElementById('m-type-select').value;
+      document.getElementById('m-options-row').classList.toggle('hidden',
+        !['dropdown', 'checkbox', 'radio'].includes(t));
+    }
+
+    function confirmAdd() {
+      const labelEl = document.getElementById('m-label-input');
+      const label   = labelEl.value.trim();
+      if (!label) {
+        labelEl.style.borderColor = '#EF4444';
+        labelEl.focus();
+        return;
+      }
+      labelEl.style.borderColor = '';
+      const type     = document.getElementById('m-type-select').value;
+      const required = document.getElementById('m-required-check').checked;
+      const optRaw   = document.getElementById('m-options-input').value;
+      const options  = optRaw ? optRaw.split(',').map(o => o.trim()).filter(Boolean) : [];
+
+      fields.push({ id: 'f' + Date.now(), type, label, required, options });
+      closeAddModal();
+      renderFields();
+      setTimeout(() => {
+        const s = document.getElementById('canvas-scroll');
+        s.scrollTo({ top: s.scrollHeight, behavior: 'smooth' });
+      }, 80);
+    }
+
+    /* ═══════════════════════════════════════════
+       DELETE MODAL
+    ═══════════════════════════════════════════ */
+    function openDelModal(id) {
+      const f = fields.find(f => f.id === id);
+      if (!f) return;
+      delTargetId = id;
+      document.getElementById('del-label-preview').textContent = f.label;
+      document.getElementById('del-modal').classList.remove('hidden');
+    }
+
+    function closeDelModal() {
+      delTargetId = null;
+      document.getElementById('del-modal').classList.add('hidden');
+    }
+
+    function confirmDelete() {
+      if (!delTargetId) return;
+      fields = fields.filter(f => f.id !== delTargetId);
+      closeDelModal();
+      renderFields();
+    }
+
+    /* ═══════════════════════════════════════════
+       DRAG & DROP (native HTML5)
+    ═══════════════════════════════════════════ */
+    function onDragStart(e) {
+      dragSrcEl = this;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => this.classList.add('is-dragging'), 0);
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (dragSrcEl && dragSrcEl !== this) this.classList.add('drag-over');
+    }
+
+    function onDragLeave() {
+      this.classList.remove('drag-over');
+    }
+
+    function onDrop(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+      if (!dragSrcEl || dragSrcEl === this) return;
+      const si = fields.findIndex(f => f.id === dragSrcEl.dataset.id);
+      const ti = fields.findIndex(f => f.id === this.dataset.id);
+      const [moved] = fields.splice(si, 1);
+      fields.splice(ti, 0, moved);
+      renderFields();
+    }
+
+    function onDragEnd() {
+      this.classList.remove('is-dragging');
+      document.querySelectorAll('.q-card').forEach(c => c.classList.remove('drag-over'));
+      dragSrcEl = null;
+    }
+
+    /* ═══════════════════════════════════════════
+       BACKDROP CLICK
+    ═══════════════════════════════════════════ */
+    function handleBgClick(e, id) {
+      if (e.target === document.getElementById(id)) {
+        document.getElementById(id).classList.add('hidden');
+        if (id === 'del-modal') closeDelModal();
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       HELPERS
+    ═══════════════════════════════════════════ */
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /* ═══════════════════════════════════════════
+       INIT — start in preview mode (clean form view)
+    ═══════════════════════════════════════════ */
+    renderFields();
+    document.getElementById('submit-row').style.display = 'flex';
+  </script>
+</body>
+</html>
