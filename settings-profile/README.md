@@ -1,6 +1,295 @@
-# Settings Page — Design Language
+# Settings — Design Language v2.1
 
 > Design system documentation for the **Aibii** AI Business Intelligence SaaS platform — Settings screen.
+> Updated May 2026 — terminology clarification (workspace vs project), sidebar Settings dropdown pattern.
+
+---
+
+## Overview
+
+The Settings page uses a **2-level tab structure** rendered entirely within the existing Aibii shell (sidebar + breadcrumb bar + scrollable content area). No layout primitives change. All tokens — colors, typography, spacing, radius, shadow — are the same as every other Aibii screen.
+
+**3 top-level sections, each with their own sub-tabs:**
+
+| Section | Sub-tabs | Dynamic heading |
+|---|---|---|
+| **Profile** | Overview · Projects · Stats | "My Profile" |
+| **Organisation** | Data Sources · Users | "Organisation" |
+| **Workspace** | Workspace · Users · Datasources · Relationships | "Workspace" |
+
+---
+
+## Screen Anatomy
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│ SIDEBAR (220px)          │  CONTENT AREA (fluid, white)                  │
+│  [M] Manish kumar's Work │  ≡  ‹  ›  Settings          ← Breadcrumb h-11│
+│  Recent                  │                                               │
+│  New dashboard           │  [icon]  My Profile         ← Dynamic heading │
+│  New chat                │  View and manage your profile…                │
+│  ─────────────────────── │                                               │
+│  WORKSPACES        [👁]  │  [ Profile ]  Organisation  Workspace  ← L1 tabs
+│  ▶ Sovereign Capital Gate│                                               │
+│  ▶ My private workspace  │  [ Overview ]  Workspaces  Stats      ← L2 tabs
+│  + Create a workspace    │                                               │
+│  ─────────────────────── │  ┌─────────────────────────────────────────┐  │
+│  👤 Shared with me       │  │  panel content (per active sub-tab)     │  │
+│  ⚙ Settings  ← ACTIVE   │  └─────────────────────────────────────────┘  │
+│  ─────────────────────── │                                               │
+│  ✦ Explore free features │                                               │
+└──────────────────────────┴───────────────────────────────────────────────┘
+```
+
+---
+
+## Color System | `#5B63F6` | Active tab border, buttons, focus rings, active nav |
+| `bg.hover` | `#EEF2FF` | Heading icon bg, nav hover, active nav bg |
+| `bg.tab-container` | `#F3F4F6` | Both L1 and L2 pill tab containers |
+| `bg.tab-active` | `#FFFFFF` | Active pill tab background |
+| `border.default` | `#E5E7EB` | Card borders, input borders, active tab border |
+| `border.subtle` | `#F3F4F6` | Row dividers inside cards |
+| `text.primary` | `#111827` | Page title, card headings, input values |
+| `text.secondary` | `#6B7280` | Inactive tabs, timestamps |
+| `text.muted` | `#9CA3AF` | Placeholder, meta labels |
+| `text.brand` | `#5B63F6` | "Data sources connected" status text |
+| `status.positive` | `#16A34A` | Connected badge text |
+| `status.positive-bg` | `#D1FAE5` | Connected badge bg |
+| `status.warning` | `#D97706` | Review / Owner badge text |
+| `status.warning-bg` | `#FEF3C7` | Review / Owner badge bg |
+| `status.warning-border` | `#FDE68A` | Owner badge border |
+| `status.info` | `#3B82F6` | Processing badge text |
+| `status.info-bg` | `#DBEAFE` | Processing badge bg |
+| `status.danger` | `#EF4444` | Ban / delete icon color |
+| `avatar.brand` | `#5B63F6` | User avatar circle bg (org/ws users) |
+| `avatar.workspace` | `#3B5BDB` | Workspace sidebar avatar |
+
+---
+
+## Typography
+
+Same scale as all Aibii screens. Notable usages in Settings:
+
+| Element | Size | Weight | Color |
+|---|---|---|---|
+| Page title (dynamic h1) | 28px | 800 | `#111827` |
+| Page subtitle | 14px | 400 | `#9CA3AF` |
+| Section heading (e.g. "My Profile") | 15px | 600 | `#111827` |
+| Section subtitle | 13px | 400 | `#9CA3AF` |
+| Pill tab label | 14px | 500 / 600 active | `#6B7280` / `#111827` |
+| Card section overline | 11px | 600 | `#9CA3AF` uppercase tracked |
+| Field label | 13px | 600 | `#111827` |
+| Field value / input | 14px | 400–500 | `#111827` |
+| Row field label (small) | 12px | 400 | `#9CA3AF` |
+| Datasource type | 12px | 400 | `#6B7280` |
+| Created date | 12px | 400 | `#9CA3AF` |
+| Status badge | 11px | 600 | varies |
+| Table tag pill | 11px | 400 | `#6B7280` |
+| User avatar letter | 13px | 700 | `#FFFFFF` |
+| "Add users" / "Manage users" labels | 13px | 600 | `#111827` |
+
+---
+
+## Tab System
+
+Both levels use **identical pill-tab CSS** (`.stab` class), just nested.
+
+### L1 — Top-level tabs
+
+Container: `flex items-center gap-1 p-1 rounded-full w-fit` · `background: #F3F4F6`
+
+| State | bg | border | text | font-weight | shadow |
+|---|---|---|---|---|---|
+| Active | `#FFFFFF` | `1px solid #E5E7EB` | `#111827` | 600 | `0 1px 4px rgba(0,0,0,0.10)` |
+| Inactive | `transparent` | `1px solid transparent` | `#6B7280` | 500 | none |
+
+Button: `h-8 px-4 rounded-full text-[14px] whitespace-nowrap`
+
+### L2 — Sub-tabs (per section)
+
+Identical spec. Tabs differ per section:
+- **Profile:** Overview · Workspaces · Stats
+- **Organisation:** Data Sources · Users
+- **Workspace:** Workspace · Users · Datasources · Relationships
+
+---
+
+## Dynamic Heading
+
+Switches on L1 tab change via JS. Icon wrapper is always `w-9 h-9 rounded-xl bg-[#EEF2FF]`, icon `w-5 h-5 color:#5B63F6`.
+
+| L1 Tab | Title | Subtitle | Icon |
+|---|---|---|---|
+| Profile | My Profile | View and manage your profile, workspaces, and activity stats | Person |
+| Organisation | Organisation | Manage your data connections and users | Building |
+| Workspace | Workspace | Manage access and datasources here | Briefcase |
+
+---
+
+## Component Specs
+
+### Profile Card (Profile → Overview)
+
+`bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden max-w-[640px]`
+
+**User row** (`border-b border-gray-100 px-5 py-4 flex items-center justify-between`):
+- Name: `14px font-semibold text-gray-900`
+- Email below: `13px text-gray-400 mt-0.5`
+- Owner badge: `bg-[#FEF9C3] text-[#D97706] border border-[#FDE68A] rounded-full px-3 h-7 text-[12px] font-semibold gap-1.5`
+
+**Org section** (`px-5 py-4`):
+- Overline: `11px font-semibold text-gray-400 uppercase tracking-widest mb-4`
+- Each row: `flex items-center gap-3 space-y-5` — icon `w-4 h-4 text-gray-300` + label `12px text-gray-400` + value `14px font-medium text-gray-900`
+
+---
+
+## Project List Row (Profile → Projects)
+
+Inside `bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden max-w-[640px]`:
+
+`flex items-center gap-4 px-5 h-[72px] border-b border-gray-100 last:border-b-0`
+
+- Icon wrapper: `w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0`
+- Briefcase icon: `w-4 h-4 text-gray-400`
+- Name: `14px font-semibold text-gray-900`
+- Status below name: `12px`
+  - "Data sources connected" → `color: #5B63F6`
+  - "No data sources yet" → `color: #9CA3AF`
+- Owner badge (same spec as profile card)
+- Chevron right: `w-4 h-4 text-gray-300 ml-auto flex-shrink-0`
+
+---
+
+### Datasource Card (Organisation → Data Sources)
+
+Grid: `grid grid-cols-3 gap-4`
+
+Card: `ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card`
+- Hover: `border-color: #C7D2FE` · `box-shadow: 0 4px 14px rgba(0,0,0,0.08)`
+
+Layout inside:
+```
+[DB icon 24px text-gray-400]  ─────────────  [Status badge]
+Name  (14px font-semibold text-gray-900, mt-3)
+Type  (12px text-gray-500)
+─────────────
+Created [date]  (12px text-gray-400, mt-3)
+```
+
+**Status badge spec** (`px-2.5 h-5 rounded-full text-[11px] font-semibold`):
+
+| Label | bg | text |
+|---|---|---|
+| Connected | `#D1FAE5` | `#16A34A` |
+| Review | `#FEF3C7` | `#D97706` |
+| Processing | `#DBEAFE` | `#3B82F6` |
+
+---
+
+### Search + Action Bar (Org Data Sources)
+
+`flex items-center gap-2 mb-6`
+
+- Search: `flex-1 h-10 pl-9 pr-3 border border-gray-200 rounded-lg text-[13px]` + magnifier icon absolute `left-3 w-4 h-4 text-gray-400`
+  - Focus: `border-[#5B63F6] ring-[3px] ring-[rgba(91,99,246,0.12)]`
+- Filter button: `w-10 h-10 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50`
+- New Data source button: `flex items-center gap-1.5 px-4 h-10 rounded-lg text-[13px] font-medium text-white bg-[#5B63F6] hover:opacity-90`
+
+---
+
+### User Row (Org → Users, Workspace → Users)
+
+Inside `bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden`:
+
+`flex items-center gap-3 px-4 h-14 border-b border-gray-100 last:border-b-0`
+
+- Avatar: `w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[13px] font-bold bg-[#5B63F6]`
+- Email: `14px text-gray-900 flex-1`
+- Role select: `border border-gray-200 rounded-lg h-8 px-3 text-[13px] text-gray-600 bg-white min-w-[110px]`
+- Ban icon: `w-4 h-4 text-red-400 cursor-pointer hover:text-red-600`
+- Delete icon: `w-4 h-4 text-red-400 cursor-pointer hover:text-red-600`
+
+---
+
+### Add Users Bar (Org & Workspace)
+
+`flex items-center gap-3 mb-5`
+
+- Email input (Org) or Select a user dropdown (Workspace): `flex-1 h-10 pl-9 pr-3 border border-gray-200 rounded-lg text-[14px]` with icon prefix
+- Role dropdown: `h-10 pl-9 pr-8 border border-gray-200 rounded-lg text-[13px] bg-white min-w-[130px]` with icon prefix
+
+---
+
+### Workspace Form (Workspace → Workspace)
+
+`max-w-[540px]`
+
+- Label: `block text-[13px] font-semibold text-gray-900 mb-1.5`
+- Text input: `h-10 w-full px-3.5 border border-gray-200 rounded-lg text-[14px] text-gray-900`
+- Textarea: `w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-[14px] text-gray-400 resize-none h-28`
+- Focus on both: `border-[#5B63F6] ring-[3px] ring-[rgba(91,99,246,0.12)]`
+
+---
+
+### Linked Datasource Row (Workspace → Datasources)
+
+Inside `bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden max-w-[640px]`:
+
+`flex items-center gap-4 px-4 h-14 border-b border-gray-100 last:border-b-0`
+
+- Avatar: `w-9 h-9 rounded-full bg-[#5B63F6] flex items-center justify-center` with DB cylinder icon `w-4 h-4 text-white`
+- Name: `14px font-semibold text-gray-900`
+- Table count: `12px text-gray-400 mt-0.5`
+- Table tags: `px-2 h-5 bg-gray-100 text-gray-600 text-[11px] rounded flex items-center` (gap-1.5 flex-wrap)
+- Edit icon: `w-4 h-4 ml-auto text-[#5B63F6] cursor-pointer hover:opacity-70 flex-shrink-0`
+
+---
+
+## JavaScript
+
+```js
+// Switches L1 panel + updates dynamic heading + syncs sidebar snav active
+function setTopTab(tab)
+
+// Switches L2 sub-panel within a section
+// prefix: 'prof' | 'org' | 'ws'
+function setSubTab(prefix, tab)
+
+// Sidebar settings menu toggle (collapse/expand)
+function toggleSettings()
+
+// Sidebar project submenu toggle (identical across all screens)
+function toggleWorkspace(id)
+```
+
+---
+
+## States & Interactions
+
+| Interaction | Spec |
+|---|---|
+| L1 tab switch via sidebar | `setTopTab()` — updates `.main-panel`, `.top-ptab`, heading, `.snav-btn` |
+| L2 tab switch | `setSubTab(prefix, tab)` — updates `.<prefix>-subpanel`, `.<prefix>-subtab` |
+| Datasource card hover | `border-color: #C7D2FE` · `box-shadow: 0 4px 14px rgba(0,0,0,0.08)` · `150ms ease` |
+| Input focus | `border-[#5B63F6]` · `ring-[3px] ring-[rgba(91,99,246,0.12)]` · immediate |
+| Nav item hover | `bg: #EEF2FF` · `100ms ease` |
+| Settings dropdown toggle | `toggleSettings()` — `open` class on `#settings-btn` + `#settings-sub` · `150ms ease` |
+| Project submenu toggle | `toggleWorkspace(id)` — same open/chevron pattern on project items |
+| Ban / delete icon hover | `text-red-600` · `100ms ease` |
+
+---
+
+## Design Principles
+
+1. **Same shell, new depth** — The 2-level tab pattern reuses the identical pill-tab CSS (`.stab`) at both levels
+2. **Consistent tokens** — Every color, size, and shadow is from the shared Aibii token set
+3. **Dynamic heading** — Title + subtitle + icon update on L1 tab switch, reinforcing context
+4. **Card-based panels** — All list content (workspaces, datasources, users) lives in `rounded-xl border` cards
+5. **Status badges** — Connected/Review/Processing use the same positive/warning/info token colors as the rest of the app
+
+---
+
+*Design language v2.1 — Aibii AI Business Intelligence SaaS · Settings, May 2026.*
 
 ---
 

@@ -10,11 +10,27 @@
       theme: {
         extend: {
           colors: {
+            brand: {
+              primary:   '#5B63F6',
+              secondary: '#7C6FF7',
+              upgrade:   '#7C3AED',
+            },
             sidebar: '#F8F9FC',
+            hover:   '#EEF2FF',
+            placeholder: '#F0F1F4',
+            'tab-container': '#F3F4F6',
+            'toggle-bg':  '#12131F',
+            'toggle-active': '#1C3A6E',
+            'filter-bg':  '#1A1A2A',
           },
-          fontFamily: { sans: ['Inter','system-ui','-apple-system','sans-serif'] },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
           boxShadow: {
-            card: '0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04)',
+            card:        '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            'card-hover':'0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)',
+            'tab-active':'0 1px 4px rgba(0,0,0,0.10)',
+            'filter':    '0 8px 24px rgba(0,0,0,0.40)',
           },
         },
       },
@@ -24,22 +40,45 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    ::-webkit-scrollbar{width:5px}
-    ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:9999px}
-    ::-webkit-scrollbar-track{background:transparent}
-    .nav-item{transition:background-color 100ms ease;cursor:pointer}
-    .nav-item:hover{background-color:#F1F3F9}
-    .settings-panel{display:none}
-    .settings-panel.active{display:block}
-    .toggle-knob{transition:transform 150ms ease}
-    .stab{cursor:pointer;border-radius:9999px;padding:0 16px;height:32px;font-size:14px;transition:background-color 120ms,box-shadow 120ms,color 120ms;white-space:nowrap}
-    .stab.active{background:white;color:#111827;font-weight:600;border:1px solid #E5E7EB;box-shadow:0 1px 4px rgba(0,0,0,0.10)}
-    .stab:not(.active){color:#6B7280;background:transparent;border:1px solid transparent}
-    .stab:not(.active):hover{color:#374151}
-    .role-select{background:none;border:none;font-size:13px;color:#6B7280;cursor:pointer;outline:none}
-    .role-select:hover{color:#111}
-    .ds-card{transition:box-shadow 120ms,border-color 120ms}
-    .ds-card:hover{box-shadow:0 4px 14px rgba(0,0,0,0.08);border-color:#c7d2fe}
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    /* Nav item hover */
+    .nav-item { transition: background-color 100ms ease; cursor: pointer; }
+    .nav-item:hover { background-color: #EEF2FF; }
+
+    /* Workspace / project submenu */
+    .ws-submenu { display: none; }
+    .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
+    .ws-chevron { transition: transform 150ms ease; }
+    .ws-item.open .ws-chevron { transform: rotate(90deg); }
+
+    /* 2-level panel switching */
+    .main-panel { display: none; }
+    .main-panel.active { display: block; }
+    .sub-panel { display: none; }
+    .sub-panel.active { display: block; }
+
+    /* Pill tabs — same pattern as filter-tab on other screens */
+    .stab { cursor: pointer; border-radius: 9999px; padding: 0 16px; height: 32px; font-size: 14px; font-weight: 500; transition: background-color 120ms ease, box-shadow 120ms ease, color 120ms ease; white-space: nowrap; border: 1px solid transparent; }
+    .stab.active { background: white; color: #111827; font-weight: 600; border-color: #E5E7EB; box-shadow: 0 1px 4px rgba(0,0,0,0.10); }
+    .stab:not(.active) { color: #6B7280; background: transparent; }
+    .stab:not(.active):hover { color: #374151; }
+
+    /* Datasource card hover */
+    .ds-card { transition: all 150ms ease-out; }
+    .ds-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); border-color: rgba(91,99,246,0.4); }
+
+    /* Input focus ring */
+    .field-input:focus { outline: none; border-color: #5B63F6; box-shadow: 0 0 0 3px rgba(91,99,246,0.12); }
+
+    /* Icon action buttons */
+    .icon-btn { transition: color 100ms ease; cursor: pointer; }
+
+    /* Sidebar settings sub-nav active highlight */
+    .snav-btn.active-snav { background: #EEF2FF; color: #111827; font-weight: 600; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -82,7 +121,7 @@
     <!-- Workspaces section -->
     <div class="px-3 py-1">
       <div class="flex items-center justify-between px-3 h-7">
-        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Workspaces</span>
+        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
         <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
       </div>
       <div class="space-y-0.5 mt-0.5">
@@ -119,7 +158,7 @@
               class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
               <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
-            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My private workspace</a>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My private project</a>
           </div>
           <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
@@ -135,7 +174,7 @@
 
         <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
           <span class="text-gray-400 font-medium text-base leading-none">+</span>
-          Create a workspace
+          Create a project
         </a>
       </div>
     </div>
@@ -152,11 +191,36 @@
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
         Shared with me
       </a>
-      <!-- Settings — ACTIVE -->
-      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-gray-900" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px;">
-        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        Settings
-      </a>
+      <!-- Settings — expandable dropdown (starts open, Profile active) -->
+      <div>
+        <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF">
+          <button onclick="toggleSettings()" id="settings-btn"
+            class="ws-item open flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+            <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div class="flex items-center gap-2 flex-1">
+            <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span class="text-sm font-medium text-gray-900">Settings</span>
+          </div>
+        </div>
+        <div id="settings-sub" class="ws-submenu open pl-4 mt-0.5 space-y-0.5">
+          <button onclick="setTopTab('profile')" id="snav-profile"
+            class="snav-btn active-snav nav-item flex items-center gap-2 w-full px-3 h-8 rounded-lg text-[13px] text-left">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+            Profile
+          </button>
+          <button onclick="setTopTab('workspace')" id="snav-workspace"
+            class="snav-btn nav-item flex items-center gap-2 w-full px-3 h-8 rounded-lg text-[13px] text-left text-gray-600">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+            Workspace
+          </button>
+          <button onclick="setTopTab('organisation')" id="snav-organisation"
+            class="snav-btn nav-item flex items-center gap-2 w-full px-3 h-8 rounded-lg text-[13px] text-left text-gray-600">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
+            Organisation
+          </button>
+        </div>
+      </div>
     </nav>
 
     <!-- Explore free features banner -->
@@ -176,8 +240,8 @@
   <main class="flex-1 flex flex-col overflow-hidden bg-white">
 
     <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 px-6 h-11 border-b border-gray-100 flex-shrink-0">
-      <button class="text-gray-400 hover:text-gray-600">
+    <div class="flex items-center gap-2 px-8 h-11 border-b border-gray-100 flex-shrink-0">
+      <button class="text-gray-500 hover:text-gray-700">
         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
       <button class="text-gray-400 hover:text-gray-600">
@@ -190,460 +254,581 @@
     </div>
 
     <!-- Scrollable content -->
-    <div class="flex-1 overflow-y-auto px-8 py-7">
+    <div class="flex-1 overflow-y-auto px-8 py-8">
 
-      <!-- Page heading -->
+      <!-- Dynamic page heading -->
       <div class="flex items-center gap-3 mb-0.5">
-        <div id="heading-icon" class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+        <div id="heading-icon" class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
           <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
         </div>
-        <h1 id="page-title" class="text-[28px] font-extrabold text-gray-900 leading-tight">Profile</h1>
+        <h1 id="page-title" class="text-[28px] font-extrabold text-gray-900 leading-tight">My Profile</h1>
       </div>
-      <p class="text-[14px] text-gray-400 mb-6 mt-0.5">Manage your team and preferences here.</p>
+      <p id="page-subtitle" class="text-[14px] text-gray-500 mb-7 mt-0.5">View and manage your profile, projects, and activity stats</p>
 
-      <!-- ── Tab bar — pill style (same as recent-view) ── -->
-      <div class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
-        <button id="tab-profile" onclick="setTab('profile')" class="stab active">Profile</button>
-        <button id="tab-workspace" onclick="setTab('workspace')" class="stab">Workspace</button>
-        <button id="tab-billing" onclick="setTab('billing')" class="stab">Billing</button>
-        <button id="tab-members" onclick="setTab('members')" class="stab">Users</button>
-        <button id="tab-integrations" onclick="setTab('integrations')" class="stab">Integrations</button>
-      </div>
+      <!-- ════════════════ PROFILE PANEL ════════════════ -->
+      <div id="panel-profile" class="main-panel active">
 
-      <!-- ══ PROFILE ══ -->
-      <div id="section-profile" class="settings-panel active max-w-xl">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
-
-          <!-- Picture -->
-          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Picture</p>
-          <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
-            <div class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center">
-              <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-            </div>
-            <button class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload a picture</button>
-          </div>
-
-          <!-- First / Last name -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-[12px] font-medium text-gray-600 mb-1.5">First name</label>
-              <input type="text" value="Manish"
-                class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-            </div>
-            <div>
-              <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Last name</label>
-              <input type="text" value="kumar"
-                class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-            </div>
-          </div>
-
-          <!-- Email -->
-          <div class="mb-5">
-            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email</label>
-            <input type="email" value="manish7479dlp@gmail.com"
-              class="w-full h-9 px-3 text-[13px] text-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-          </div>
-
-          <div class="flex justify-end pt-4 border-t border-gray-100">
-            <button class="px-4 h-9 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">Save changes</button>
-          </div>
+        <!-- L2 sub-tabs: Overview | Workspaces | Stats -->
+        <div class="flex items-center gap-1 p-1 rounded-full mb-6 w-fit" style="background:#F3F4F6">
+          <button id="prof-stab-overview" onclick="setSubTab('prof','overview')" class="stab prof-subtab active">Overview</button>
+          <button id="prof-stab-projects" onclick="setSubTab('prof','projects')" class="stab prof-subtab">Projects</button>
+          <button id="prof-stab-stats" onclick="setSubTab('prof','stats')" class="stab prof-subtab">Stats</button>
         </div>
-      </div>
 
-      <!-- ══ WORKSPACE ══ -->
-      <div id="section-workspace" class="settings-panel">
+        <!-- ── Overview sub-panel ── -->
+        <div id="prof-panel-overview" class="sub-panel active prof-subpanel">
+          <h2 class="text-[15px] font-semibold text-gray-900 mb-0.5">My Profile</h2>
+          <p class="text-[13px] text-gray-400 mb-5">Personal &amp; organization details</p>
 
-        <!-- ROW 1: Workspace info (50%) + Users with access (50%) -->
-        <div class="flex gap-5 items-stretch mb-5">
-
-          <!-- Workspace info -->
-          <div class="flex-1 min-w-0 bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Workspace info</p>
-            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
-              <div class="flex-1 min-w-0">
-                <input type="text" value="Manish kumar's Workspace" class="w-full text-[14px] font-semibold text-gray-900 border-none outline-none bg-transparent focus:bg-white focus:border focus:border-indigo-300 focus:rounded px-1" />
-                <p class="text-[12px] text-gray-400 mt-0.5 px-1">Created April 2024 · 3 members</p>
-              </div>
-            </div>
-            <div class="space-y-3 flex-1">
+          <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-card" style="max-width:640px">
+            <!-- User row -->
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <div>
-                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Workspace URL</label>
-                <div class="flex items-center h-9 px-3 border border-gray-200 rounded-lg bg-gray-50 text-[13px] text-gray-500">
-                  aibii.com/<span class="text-gray-800 font-medium">manish-workspace</span>
-                </div>
+                <p class="text-[14px] font-semibold text-gray-900">Manish Kumar</p>
+                <p class="text-[13px] text-gray-400 mt-0.5">manish7479dlp@gmail.com</p>
               </div>
-              <div>
-                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>
-                <textarea rows="2" placeholder="What is this workspace about?"
-                  class="w-full px-3 py-2 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"></textarea>
-              </div>
-            </div>
-            <div class="flex justify-end mt-4 pt-4 border-t border-gray-100">
-              <button class="px-4 h-9 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">Save changes</button>
-            </div>
-          </div>
-
-          <!-- Users with access -->
-          <div class="flex-1 min-w-0 bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Users with access</p>
-              <button class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                Add user
-              </button>
-            </div>
-            <!-- Search bar -->
-            <div class="relative mb-3">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-              <input type="text" placeholder="Search users..." class="w-full h-9 pl-8 pr-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-            </div>
-            <!-- Users table -->
-            <div class="overflow-hidden rounded-xl border border-gray-100 flex-1">
-              <div class="flex items-center px-4 h-8 bg-gray-50 border-b border-gray-100">
-                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">User</span>
-                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-24 text-right">Role</span>
-              </div>
-              <div class="divide-y divide-gray-100">
-                <!-- Owner -->
-                <div class="flex items-center px-4 h-12">
-                  <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
-                    <div class="min-w-0">
-                      <p class="text-[13px] font-medium text-gray-900 truncate">Manish Kumar</p>
-                      <p class="text-[11px] text-gray-400 truncate">manish@aibii.com</p>
-                    </div>
-                  </div>
-                  <div class="w-24 flex justify-end">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span>
-                  </div>
-                </div>
-                <!-- Admin -->
-                <div class="flex items-center px-4 h-12">
-                  <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#0F9D58">A</div>
-                    <div class="min-w-0">
-                      <p class="text-[13px] font-medium text-gray-900 truncate">Arjun Patel</p>
-                      <p class="text-[11px] text-gray-400 truncate">arjun@aibii.com</p>
-                    </div>
-                  </div>
-                  <div class="w-24 flex justify-end">
-                    <select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                      <option selected>Admin</option>
-                      <option>Editor</option>
-                      <option>Viewer</option>
-                    </select>
-                  </div>
-                </div>
-                <!-- Editor -->
-                <div class="flex items-center px-4 h-12">
-                  <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">S</div>
-                    <div class="min-w-0">
-                      <p class="text-[13px] font-medium text-gray-900 truncate">Sneha Rao</p>
-                      <p class="text-[11px] text-gray-400 truncate">sneha@aibii.com</p>
-                    </div>
-                  </div>
-                  <div class="w-24 flex justify-end">
-                    <select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                      <option>Admin</option>
-                      <option selected>Editor</option>
-                      <option>Viewer</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /row 1 -->
-
-        <!-- ROW 2: Data sources (full width) -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Data sources</p>
-            <button onclick="showAddDataSource()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Add a datasource
-            </button>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <!-- Connected datasource -->
-            <div class="ds-card flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#0F9D58">
-                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h10M3 12h6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Q4 Revenue Sheet</p>
-                <p class="text-[11px] text-gray-400">Google Sheets · Last synced 2 hrs ago</p>
-              </div>
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium flex-shrink-0" style="background:#F0FDF4;color:#16A34A">
-                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
-                Connected
+              <span class="flex items-center gap-1.5 px-3 h-7 rounded-full text-[12px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                Owner
               </span>
             </div>
-            <!-- Disconnected datasource -->
-            <div class="ds-card flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#336791">
-                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="5" rx="5" ry="2" stroke="white" stroke-width="1.2"/><path d="M3 5v3c0 1.1 2.239 2 5 2s5-.9 5-2V5" stroke="white" stroke-width="1.2"/><path d="M3 8v3c0 1.1 2.239 2 5 2s5-.9 5-2V8" stroke="white" stroke-width="1.2"/></svg>
+            <!-- Organisation details -->
+            <div class="px-5 py-5">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Organisation</p>
+              <div class="space-y-5">
+                <!-- Org Name -->
+                <div class="flex items-center gap-3">
+                  <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
+                  <div>
+                    <p class="text-[12px] text-gray-400">Organization Name</p>
+                    <p class="text-[14px] font-medium text-gray-900 mt-0.5">ACME Corporation</p>
+                  </div>
+                </div>
+                <!-- Org ID -->
+                <div class="flex items-center gap-3">
+                  <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+                  <div>
+                    <p class="text-[12px] text-gray-400">Organization ID</p>
+                    <p class="text-[14px] font-mono font-medium text-gray-900 mt-0.5">acmecorp001</p>
+                  </div>
+                </div>
+                <!-- Login Email -->
+                <div class="flex items-center gap-3">
+                  <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                  <div>
+                    <p class="text-[12px] text-gray-400">Login Email</p>
+                    <p class="text-[14px] font-medium text-gray-900 mt-0.5">manish7479dlp@gmail.com</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Analytics DB</p>
-                <p class="text-[11px] text-gray-400">PostgreSQL · Not connected</p>
-              </div>
-              <button class="flex-shrink-0 px-2.5 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-100 transition-colors">Connect</button>
             </div>
           </div>
-          <!-- Add datasource modal hint -->
-          <div id="add-ds-hint" class="hidden mt-3 p-3 rounded-xl border border-dashed border-indigo-300 bg-indigo-50 flex items-center gap-3">
-            <svg class="w-5 h-5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-            <p class="text-[13px]" style="color:#5B63F6">Choose a source: Google Sheets, PostgreSQL, REST API, Notion, or CSV upload.</p>
-            <button onclick="document.getElementById('add-ds-hint').classList.add('hidden')" class="ml-auto text-gray-400 hover:text-gray-600">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </div><!-- /prof-panel-overview -->
+
+        <!-- ── Projects sub-panel ── -->
+        <div id="prof-panel-projects" class="sub-panel prof-subpanel">
+          <h2 class="text-[15px] font-semibold text-gray-900 mb-0.5">Projects</h2>
+          <p class="text-[13px] text-gray-400 mb-5">All projects you are part of in this workspace</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-card" style="max-width:640px">
+
+            <!-- Workspace row helper: briefcase icon + name + status + Owner badge + chevron -->
+            <!-- Row 1 -->
+            <div class="flex items-center gap-4 px-5 border-b border-gray-100" style="height:72px">
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">Sovereign Capital Gate</p>
+                <p class="text-[12px] mt-0.5" style="color:#5B63F6">Data sources connected</p>
+              </div>
+              <span class="flex items-center gap-1 px-2.5 h-6 rounded-full text-[11px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">Owner</span>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+            <!-- Row 2 -->
+            <div class="flex items-center gap-4 px-5 border-b border-gray-100" style="height:72px">
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">Q4 Revenue Analysis</p>
+                <p class="text-[12px] mt-0.5" style="color:#5B63F6">Data sources connected</p>
+              </div>
+              <span class="flex items-center gap-1 px-2.5 h-6 rounded-full text-[11px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">Owner</span>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+            <!-- Row 3 -->
+            <div class="flex items-center gap-4 px-5 border-b border-gray-100" style="height:72px">
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">SALES ANALYSIS</p>
+                <p class="text-[12px] text-gray-400 mt-0.5">No data sources yet</p>
+              </div>
+              <span class="flex items-center gap-1 px-2.5 h-6 rounded-full text-[11px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">Owner</span>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+            <!-- Row 4 -->
+            <div class="flex items-center gap-4 px-5 border-b border-gray-100" style="height:72px">
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">data_conn</p>
+                <p class="text-[12px] mt-0.5" style="color:#5B63F6">Data sources connected</p>
+              </div>
+              <span class="flex items-center gap-1 px-2.5 h-6 rounded-full text-[11px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">Owner</span>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+            <!-- Row 5 -->
+            <div class="flex items-center gap-4 px-5 border-b border-gray-100" style="height:72px">
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">My private project</p>
+                <p class="text-[12px] mt-0.5" style="color:#5B63F6">Data sources connected</p>
+              </div>
+              <span class="flex items-center gap-1 px-2.5 h-6 rounded-full text-[11px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">Owner</span>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+            <!-- Row 6 -->
+            <div class="flex items-center gap-4 px-5" style="height:72px">
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">demo 2</p>
+                <p class="text-[12px] mt-0.5" style="color:#5B63F6">Data sources connected</p>
+              </div>
+              <span class="flex items-center gap-1 px-2.5 h-6 rounded-full text-[11px] font-semibold border flex-shrink-0" style="background:#FEF9C3;color:#D97706;border-color:#FDE68A">Owner</span>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+
+          </div>
+        </div><!-- /prof-panel-projects -->
+
+        <!-- ── Stats sub-panel ── -->
+        <div id="prof-panel-stats" class="sub-panel prof-subpanel">
+          <h2 class="text-[15px] font-semibold text-gray-900 mb-0.5">Stats</h2>
+          <p class="text-[13px] text-gray-400 mb-5">Your activity and usage statistics</p>
+          <div class="grid grid-cols-3 gap-4" style="max-width:640px">
+            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-card">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Reports</p>
+              <p class="text-[28px] font-extrabold text-gray-900">24</p>
+              <p class="text-[12px] text-gray-400 mt-1">Created this month</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-card">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">AI Queries</p>
+              <p class="text-[28px] font-extrabold text-gray-900">137</p>
+              <p class="text-[12px] text-gray-400 mt-1">This month</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-card">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Credits</p>
+              <p class="text-[28px] font-extrabold" style="color:#5B63F6">15</p>
+              <p class="text-[12px] text-gray-400 mt-1">Remaining</p>
+            </div>
+          </div>
+        </div><!-- /prof-panel-stats -->
+
+      </div><!-- /panel-profile -->
+
+
+      <!-- ════════════════ ORGANISATION PANEL ════════════════ -->
+      <div id="panel-organisation" class="main-panel">
+
+        <!-- L2 sub-tabs: Data Sources | Users -->
+        <div class="flex items-center gap-1 p-1 rounded-full mb-6 w-fit" style="background:#F3F4F6">
+          <button id="org-stab-datasources" onclick="setSubTab('org','datasources')" class="stab org-subtab active">Data Sources</button>
+          <button id="org-stab-users" onclick="setSubTab('org','users')" class="stab org-subtab">Users</button>
+        </div>
+
+        <!-- ── Data Sources sub-panel ── -->
+        <div id="org-panel-datasources" class="sub-panel active org-subpanel">
+
+          <!-- Search + filter + New Data source -->
+          <div class="flex items-center gap-2 mb-6">
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+              </span>
+              <input type="text" placeholder="Search data sources..." class="field-input h-10 w-full pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg" />
+            </div>
+            <button class="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 flex-shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+            </button>
+            <button class="flex items-center gap-1.5 px-4 h-10 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              New Data source
             </button>
           </div>
-        </div><!-- /data sources -->
 
-        <!-- ROW 3: Danger zone (full width) -->
-        <div class="bg-white border border-red-100 rounded-xl shadow-card p-5">
-          <p class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#EF4444">Danger zone</p>
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-[14px] font-medium text-gray-900">Delete workspace</p>
-              <p class="text-[13px] text-gray-500 mt-0.5">Permanently delete this workspace and all its data.</p>
-            </div>
-            <button class="flex-shrink-0 ml-4 px-3 h-8 rounded-lg border border-red-200 text-[13px] font-medium hover:bg-red-50 transition-colors" style="color:#EF4444">Delete</button>
-          </div>
-        </div>
+          <!-- 3-col datasource cards -->
+          <div class="grid grid-cols-3 gap-4">
 
-      </div>
-
-      <!-- ══ BILLING ══ -->
-      <div id="section-billing" class="settings-panel max-w-xl">
-        <div class="rounded-xl p-5 mb-5" style="background:#E8EEFF;border:1px solid #C7D2FE">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                <span class="text-[12px] font-semibold" style="color:#3B4ECC">Free plan</span>
+            <!-- sqlserver-conn — Review -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#FEF3C7;color:#D97706">Review</span>
               </div>
-              <p class="text-[22px] font-extrabold" style="color:#3B4ECC">$0 <span class="text-[14px] font-normal text-gray-500">/ month</span></p>
-              <p class="text-[13px] mt-1" style="color:#6B7ADE">15 AI credits · 2 workspaces · 5 GB storage</p>
-            </div>
-            <button class="flex-shrink-0 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#5B63F6">Upgrade plan</button>
-          </div>
-        </div>
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
-          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Payment method</p>
-          <div class="flex items-center justify-between">
-            <p class="text-[13px] text-gray-500">No payment method added yet.</p>
-            <button class="px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Add card</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══ USERS ══ -->
-      <div id="section-members" class="settings-panel max-w-xl">
-
-        <!-- Invite bar -->
-        <div class="flex items-center gap-3 mb-5">
-          <input type="email" placeholder="Search or invite users by email..."
-            class="flex-1 h-9 px-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-          <button class="flex-shrink-0 px-4 h-9 rounded-lg text-[13px] font-medium text-white whitespace-nowrap" style="background:#5B63F6">
-            Add users
-          </button>
-        </div>
-
-        <!-- Users list -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden">
-          <div class="flex items-center px-4 h-9 border-b border-gray-100 bg-gray-50">
-            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">User</span>
-            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-24 text-right">Role</span>
-            <span class="w-8"></span>
-          </div>
-          <div class="divide-y divide-gray-100">
-
-            <!-- Owner -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Manish Kumar</p>
-                <p class="text-[12px] text-gray-400">manish7479dlp@gmail.com</p>
-              </div>
-              <span class="w-24 text-right text-[12px] font-semibold px-2 py-0.5 rounded" style="color:#3B4ECC;background:#EEF2FF">Owner</span>
-              <div class="w-8"></div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">sqlserver-conn</p>
+              <p class="text-[12px] text-gray-500">sqlserver</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 12 Mar 2026</p>
             </div>
 
-            <!-- Admin -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#059669">A</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Arjun Patel</p>
-                <p class="text-[12px] text-gray-400">arjun.patel@company.com</p>
+            <!-- test-mongo — Connected -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#D1FAE5;color:#16A34A">Connected</span>
               </div>
-              <select class="role-select w-24 text-right text-[12px] font-medium text-gray-700">
-                <option selected>Admin</option>
-                <option>Editor</option>
-                <option>Viewer</option>
-              </select>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">test-mongo</p>
+              <p class="text-[12px] text-gray-500">mongodb</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 5 Mar 2026</p>
             </div>
 
-            <!-- Editor -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#D97706">S</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Sneha Rao</p>
-                <p class="text-[12px] text-gray-400">sneha.rao@company.com</p>
+            <!-- data_subset — Connected -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#D1FAE5;color:#16A34A">Connected</span>
               </div>
-              <select class="role-select w-24 text-right text-[12px] font-medium text-gray-700">
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">data_subset</p>
+              <p class="text-[12px] text-gray-500">postgres</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 24 Feb 2026</p>
+            </div>
+
+            <!-- postgres-v3-test — Connected -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#D1FAE5;color:#16A34A">Connected</span>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">postgres-v3-test</p>
+              <p class="text-[12px] text-gray-500">postgres</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 9 Feb 2026</p>
+            </div>
+
+            <!-- postgres-test-1 — Review -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#FEF3C7;color:#D97706">Review</span>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">postgres-test-1</p>
+              <p class="text-[12px] text-gray-500">postgres</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 3 Feb 2026</p>
+            </div>
+
+            <!-- test-csv-1501 — Review -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#FEF3C7;color:#D97706">Review</span>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">test-csv-1501</p>
+              <p class="text-[12px] text-gray-500">csv</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 15 Jan 2026</p>
+            </div>
+
+            <!-- demo postgres — Processing -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#DBEAFE;color:#3B82F6">Processing</span>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">demo postgres</p>
+              <p class="text-[12px] text-gray-500">postgres</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 12 Jan 2026</p>
+            </div>
+
+            <!-- test111 — Processing -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#DBEAFE;color:#3B82F6">Processing</span>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">test111</p>
+              <p class="text-[12px] text-gray-500">postgres</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 8 Jan 2026</p>
+            </div>
+
+            <!-- edit-mysql-ds — Review -->
+            <div class="ds-card bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+              <div class="flex items-center justify-between">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="px-2.5 h-5 rounded-full text-[11px] font-semibold flex items-center" style="background:#FEF3C7;color:#D97706">Review</span>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-900 mt-3">edit-mysql-ds</p>
+              <p class="text-[12px] text-gray-500">mysql</p>
+              <p class="text-[12px] text-gray-400 mt-3">Created 7 Jan 2026</p>
+            </div>
+
+          </div>
+        </div><!-- /org-panel-datasources -->
+
+        <!-- ── Users sub-panel ── -->
+        <div id="org-panel-users" class="sub-panel org-subpanel">
+
+          <!-- Add users -->
+          <p class="text-[13px] font-semibold text-gray-900 mb-3">Add users</p>
+          <div class="flex items-center gap-3 mb-7" style="max-width:640px">
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+              </span>
+              <input type="email" placeholder="Enter email" class="field-input h-10 w-full pl-9 pr-3 text-[14px] border border-gray-200 rounded-lg bg-white" />
+            </div>
+            <div class="relative flex-shrink-0">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+              </span>
+              <select class="field-input h-10 pl-9 pr-8 text-[13px] text-gray-700 border border-gray-200 rounded-lg bg-white min-w-[130px] appearance-none">
+                <option>User</option>
                 <option>Admin</option>
-                <option selected>Editor</option>
-                <option>Viewer</option>
               </select>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
             </div>
-
-            <!-- Viewer -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#7C3AED">R</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Riya Sharma</p>
-                <p class="text-[12px] text-gray-400">riya.sharma@company.com</p>
-              </div>
-              <select class="role-select w-24 text-right text-[12px] font-medium text-gray-700">
-                <option>Admin</option>
-                <option>Editor</option>
-                <option selected>Viewer</option>
-              </select>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-            <!-- Pending invite -->
-            <div class="flex items-center gap-3 px-4 py-3 bg-gray-50">
-              <div class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-500">james.b@example.com</p>
-                <p class="text-[12px] text-gray-400">Invite pending</p>
-              </div>
-              <span class="text-[11px] font-medium px-2 py-0.5 rounded-full" style="background:#FEF9C3;color:#854D0E">Pending</span>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
           </div>
+
+          <!-- Manage users -->
+          <p class="text-[13px] font-semibold text-gray-900 mb-3">Manage users</p>
+          <div class="relative mb-3" style="max-width:640px">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+            </span>
+            <input type="text" placeholder="Search users" class="field-input h-10 w-full pl-9 pr-3 text-[13px] border border-gray-200 rounded-lg bg-white" />
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-card" style="max-width:640px">
+            <!-- user row -->
+            <div class="flex items-center gap-3 px-4 h-14 border-b border-gray-100">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style="background:#5B63F6">U</div>
+              <p class="text-[14px] text-gray-900 flex-1">use1@acme-corp.com</p>
+              <select class="border border-gray-200 rounded-lg h-8 px-3 text-[13px] text-gray-600 bg-white min-w-[110px]">
+                <option>User</option><option>Admin</option><option>Viewer</option>
+              </select>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </div>
+            <div class="flex items-center gap-3 px-4 h-14 border-b border-gray-100">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style="background:#5B63F6">A</div>
+              <p class="text-[14px] text-gray-900 flex-1">avisek@acme-corp.com</p>
+              <select class="border border-gray-200 rounded-lg h-8 px-3 text-[13px] text-gray-600 bg-white min-w-[110px]">
+                <option>User</option><option>Admin</option><option>Viewer</option>
+              </select>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 115.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </div>
+            <div class="flex items-center gap-3 px-4 h-14 border-b border-gray-100">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style="background:#5B63F6">D</div>
+              <p class="text-[14px] text-gray-900 flex-1">dev@acme-corp.com</p>
+              <select class="border border-gray-200 rounded-lg h-8 px-3 text-[13px] text-gray-600 bg-white min-w-[110px]">
+                <option>User</option><option>Admin</option><option>Viewer</option>
+              </select>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 115.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </div>
+            <div class="flex items-center gap-3 px-4 h-14 border-b border-gray-100">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style="background:#5B63F6">D</div>
+              <p class="text-[14px] text-gray-900 flex-1">dipeeka@aekaadvisors.com</p>
+              <select class="border border-gray-200 rounded-lg h-8 px-3 text-[13px] text-gray-600 bg-white min-w-[110px]">
+                <option>User</option><option>Admin</option><option>Viewer</option>
+              </select>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 115.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </div>
+            <div class="flex items-center gap-3 px-4 h-14">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style="background:#5B63F6">S</div>
+              <p class="text-[14px] text-gray-900 flex-1">subhadeep@aekaadvisors.com</p>
+              <select class="border border-gray-200 rounded-lg h-8 px-3 text-[13px] text-gray-600 bg-white min-w-[110px]">
+                <option>User</option><option>Admin</option><option>Viewer</option>
+              </select>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 115.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <svg class="icon-btn w-4 h-4 text-red-400 hover:text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </div>
+          </div>
+
+        </div><!-- /org-panel-users -->
+
+      </div><!-- /panel-organisation -->
+
+
+      <!-- ════════════════ WORKSPACE PANEL ════════════════ -->
+      <div id="panel-workspace" class="main-panel">
+
+        <!-- L2 sub-tabs: Workspace | Users | Datasources | Relationships -->
+        <div class="flex items-center gap-1 p-1 rounded-full mb-6 w-fit" style="background:#F3F4F6">
+          <button id="ws-stab-info" onclick="setSubTab('ws','info')" class="stab ws-subtab active">Workspace</button>
+          <button id="ws-stab-users" onclick="setSubTab('ws','users')" class="stab ws-subtab">Users</button>
+          <button id="ws-stab-datasources" onclick="setSubTab('ws','datasources')" class="stab ws-subtab">Datasources</button>
+          <button id="ws-stab-relationships" onclick="setSubTab('ws','relationships')" class="stab ws-subtab">Relationships</button>
         </div>
-      </div>
 
-      <!-- ══ INTEGRATIONS ══ -->
-      <div id="section-integrations" class="settings-panel max-w-xl">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card divide-y divide-gray-100">
-
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#0F9D58">
-                <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none"><path d="M5 6h10M5 10h10M5 14h6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-              <div>
-                <p class="text-[14px] font-medium text-gray-900">Google Sheets</p>
-                <p class="text-[12px] text-gray-500">Import and sync data from Google Sheets.</p>
-              </div>
+        <!-- ── Workspace Info sub-panel ── -->
+        <div id="ws-panel-info" class="sub-panel active ws-subpanel">
+          <div style="max-width:540px">
+            <div class="mb-5">
+              <label class="block text-[13px] font-semibold text-gray-900 mb-1.5">Name</label>
+              <input type="text" value="Sovereign Capital Gate" class="field-input h-10 w-full px-3.5 border border-gray-200 rounded-lg text-[14px] text-gray-900 bg-white" />
             </div>
-            <button class="flex-shrink-0 px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Connect</button>
+            <div>
+              <label class="block text-[13px] font-semibold text-gray-900 mb-1.5">Description</label>
+              <textarea rows="4" placeholder="Enter project description (optional)" class="field-input w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-[14px] text-gray-400 resize-none bg-white" style="height:112px"></textarea>
+            </div>
+          </div>
+        </div><!-- /ws-panel-info -->
+
+        <!-- ── Workspace Users sub-panel ── -->
+        <div id="ws-panel-users" class="sub-panel ws-subpanel">
+          <!-- Add users -->
+          <p class="text-[13px] font-semibold text-gray-900 mb-3">Add users</p>
+          <div class="flex items-center gap-3 mb-7" style="max-width:640px">
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+              </span>
+              <select class="field-input h-10 w-full pl-9 pr-8 text-[14px] text-gray-500 border border-gray-200 rounded-lg bg-white appearance-none">
+                <option>Select a user</option>
+              </select>
+              <span class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </span>
+            </div>
+            <div class="relative flex-shrink-0">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </span>
+              <select class="field-input h-10 pl-9 pr-8 text-[13px] text-gray-700 border border-gray-200 rounded-lg bg-white min-w-[130px] appearance-none">
+                <option>Viewer</option><option>Editor</option><option>Admin</option>
+              </select>
+            </div>
           </div>
 
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-900">
-                <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none"><path d="M5 4h6l4 4v8H5V4z" stroke="white" stroke-width="1.2" stroke-linejoin="round"/><path d="M11 4v4h4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <div>
-                <p class="text-[14px] font-medium text-gray-900">Notion</p>
-                <p class="text-[12px] text-gray-500">Pull pages and databases from Notion.</p>
-              </div>
-            </div>
-            <button class="flex-shrink-0 px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Connect</button>
+          <!-- Manage users -->
+          <p class="text-[13px] font-semibold text-gray-900 mb-3">Manage users</p>
+          <div class="relative mb-3" style="max-width:640px">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+            </span>
+            <input type="text" placeholder="Search users" class="field-input h-10 w-full pl-9 pr-3 text-[13px] border border-gray-200 rounded-lg bg-white" />
           </div>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card flex items-center justify-center" style="max-width:640px;height:120px">
+            <p class="text-[14px] text-gray-400">No members yet. Invite people to get started.</p>
+          </div>
+        </div><!-- /ws-panel-users -->
 
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#4A154B">
-                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="white"><path d="M6 2a2 2 0 100 4H8V4a2 2 0 00-2-2zM2 6a2 2 0 104 0V4H4a2 2 0 00-2 2zM10 14a2 2 0 100-4H8v2a2 2 0 002 2zM14 10a2 2 0 10-4 0v2h2a2 2 0 002-2z"/></svg>
-              </div>
-              <div>
-                <p class="text-[14px] font-medium text-gray-900">Slack</p>
-                <p class="text-[12px] text-gray-500">Send AI summaries and alerts to Slack channels.</p>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium flex-shrink-0" style="background:#F0FDF4;color:#16A34A">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-              Connected
+        <!-- ── Datasources sub-panel ── -->
+        <div id="ws-panel-datasources" class="sub-panel ws-subpanel">
+          <!-- Link a datasource -->
+          <p class="text-[13px] font-semibold text-gray-900 mb-3">Link a datasource</p>
+          <div class="relative mb-7" style="max-width:640px">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+            </span>
+            <select class="field-input h-10 w-full pl-9 pr-8 text-[14px] text-gray-500 border border-gray-200 rounded-lg bg-white appearance-none">
+              <option>Select a datasource</option>
+            </select>
+            <span class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </span>
           </div>
 
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#336791">
-                <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none"><ellipse cx="10" cy="6" rx="6" ry="2.5" stroke="white" stroke-width="1.2"/><path d="M4 6v4c0 1.38 2.686 2.5 6 2.5s6-1.12 6-2.5V6" stroke="white" stroke-width="1.2"/><path d="M4 10v4c0 1.38 2.686 2.5 6 2.5s6-1.12 6-2.5v-4" stroke="white" stroke-width="1.2"/></svg>
-              </div>
-              <div>
-                <p class="text-[14px] font-medium text-gray-900">PostgreSQL</p>
-                <p class="text-[12px] text-gray-500">Query your database directly from Aibii.</p>
-              </div>
-            </div>
-            <button class="flex-shrink-0 px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Connect</button>
+          <!-- Manage linked datasources -->
+          <p class="text-[13px] font-semibold text-gray-900 mb-3">Manage linked datasources</p>
+          <div class="relative mb-3" style="max-width:640px">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+            </span>
+            <input type="text" placeholder="Search linked datasources..." class="field-input h-10 w-full pl-9 pr-3 text-[13px] border border-gray-200 rounded-lg bg-white" />
           </div>
-
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
-                <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-card" style="max-width:640px">
+            <!-- linked datasource row -->
+            <div class="flex items-center gap-4 px-4" style="height:60px">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style="background:#5B63F6">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
               </div>
-              <div>
-                <p class="text-[14px] font-medium text-gray-900">REST API</p>
-                <p class="text-[12px] text-gray-500">Connect any REST endpoint as a data source.</p>
+              <div class="flex-1 min-w-0">
+                <p class="text-[14px] font-semibold text-gray-900">data_subset</p>
+                <p class="text-[12px] text-gray-400">3 tables</p>
               </div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="px-2 h-5 bg-gray-100 text-gray-600 text-[11px] rounded flex items-center">primary_sales_mod</span>
+                <span class="px-2 h-5 bg-gray-100 text-gray-600 text-[11px] rounded flex items-center">dealers</span>
+                <span class="px-2 h-5 bg-gray-100 text-gray-600 text-[11px] rounded flex items-center">branch_and_territories</span>
+              </div>
+              <svg class="icon-btn w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"/></svg>
             </div>
-            <button class="flex-shrink-0 px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Connect</button>
           </div>
+        </div><!-- /ws-panel-datasources -->
 
-        </div>
-      </div>
+        <!-- ── Relationships sub-panel ── -->
+        <div id="ws-panel-relationships" class="sub-panel ws-subpanel">
+          <div class="flex flex-col items-center justify-center" style="height:200px">
+            <svg class="w-10 h-10 text-gray-200 mb-3" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+            <p class="text-[14px] text-gray-400">No relationships defined yet.</p>
+            <p class="text-[13px] text-gray-400 mt-1">Link datasources to start building relationships.</p>
+          </div>
+        </div><!-- /ws-panel-relationships -->
+
+      </div><!-- /panel-workspace -->
 
     </div><!-- /scroll -->
   </main>
 
   <script>
-    const TABS = ['profile','workspace','billing','members','integrations'];
-    const TITLES = {profile:'Profile',workspace:'Workspace',billing:'Billing',members:'Users',integrations:'Integrations'};
-    const ICONS = {
-      profile: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>',
-      workspace: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>',
-      billing: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>',
-      members: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>',
-      integrations: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg>'
+    // ── Dynamic headings per top-level tab ──
+    const TOP_H = {
+      profile:      {
+        title: 'My Profile',
+        sub:   'View and manage your profile, projects, and activity stats',
+        icon:  '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>'
+      },
+      organisation: {
+        title: 'Organisation',
+        sub:   'Manage your data connections and users',
+        icon:  '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>'
+      },
+      workspace:    {
+        title: 'Workspace',
+        sub:   'Manage access and datasources here',
+        icon:  '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"/></svg>'
+      }
     };
 
-    function setTab(active) {
-      document.getElementById('page-title').textContent = TITLES[active];
-      document.getElementById('heading-icon').innerHTML = ICONS[active];
-      TABS.forEach(t => {
-        document.getElementById('tab-' + t).classList.toggle('active', t === active);
-        document.getElementById('section-' + t).classList.toggle('active', t === active);
-      });
+    function setTopTab(tab) {
+      // Switch main panels
+      document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+      // Update dynamic heading
+      const h = TOP_H[tab];
+      document.getElementById('page-title').textContent = h.title;
+      document.getElementById('page-subtitle').textContent = h.sub;
+      document.getElementById('heading-icon').innerHTML = h.icon;
+      // Sync sidebar settings sub-nav active state
+      document.querySelectorAll('.snav-btn').forEach(b => b.classList.remove('active-snav'));
+      const snav = document.getElementById('snav-' + tab);
+      if (snav) snav.classList.add('active-snav');
     }
 
-    function showAddDataSource() {
-      document.getElementById('add-ds-hint').classList.toggle('hidden');
+    function toggleSettings() {
+      document.getElementById('settings-sub').classList.toggle('open');
+      document.getElementById('settings-btn').classList.toggle('open');
+    }
+
+    function setSubTab(prefix, tab) {
+      // Switch sub-panels
+      document.querySelectorAll('.' + prefix + '-subpanel').forEach(p => p.classList.remove('active'));
+      document.getElementById(prefix + '-panel-' + tab).classList.add('active');
+      // Switch sub-tab buttons
+      document.querySelectorAll('.' + prefix + '-subtab').forEach(b => b.classList.remove('active'));
+      document.getElementById(prefix + '-stab-' + tab).classList.add('active');
+    }
+
+    function toggleWorkspace(id) {
+      document.getElementById(id + '-sub').classList.toggle('open');
+      document.getElementById(id + '-btn').classList.toggle('open');
     }
   </script>
 </body>
