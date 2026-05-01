@@ -1,7 +1,363 @@
-﻿# Settings Page — Design Language
+﻿# Settings — Design Language
 
-> Design system documentation for the **Aibii** AI Business Intelligence SaaS platform — Settings screen.  
-> Version 1.3 · May 2026
+> Aibii AI Business Intelligence SaaS · Settings screen  
+> Version 2.0 · May 2026
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Screen Anatomy](#screen-anatomy)
+3. [Design Tokens](#design-tokens)
+4. [Typography](#typography)
+5. [Layout & Spacing](#layout--spacing)
+6. [Sidebar](#sidebar)
+7. [Breadcrumb Bar](#breadcrumb-bar)
+8. [Page Header](#page-header)
+9. [Tab Bar](#tab-bar)
+10. [Profile Tab](#profile-tab)
+11. [Workspace Tab](#workspace-tab)
+12. [States & Interactions](#states--interactions)
+13. [Motion](#motion)
+14. [JS Reference](#js-reference)
+15. [File Structure](#file-structure)
+
+---
+
+## Overview
+
+The **Settings** screen shares the standard shell (220px sidebar + fluid content area) with all Aibii views. It uses a **pill tab bar** to switch between two panels: **Profile** and **Workspace**. The page heading icon and title update dynamically on each tab switch.
+
+All section headings use `text-[15px] font-semibold text-gray-900` — matching the datasource screen — instead of the older all-caps label pattern.
+
+---
+
+## Screen Anatomy
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ SIDEBAR (220px)          │  CONTENT AREA (fluid)                    │
+│                          │                                          │
+│  [M] Manish kumar's...   │  ≡  ‹  ›  Settings       ← breadcrumb   │
+│  ─────────────────────   │                                          │
+│  Recent                  │  ○  Profile               ← heading      │
+│  Create Dashboard        │  Manage your team…                       │
+│  AI Chat                 │                                          │
+│  ─────────────────────   │  [ Profile ]  Workspace   ← pill tabs    │
+│  PROJECTS                │                                          │
+│  ▶ My Private Project ◉  │  ┌─────────────────────────────────────┐ │
+│    ├ Q4 Strategy         │  │  panel content (per active tab)     │ │
+│    ├ Revenue Overview    │  └─────────────────────────────────────┘ │
+│    └ …                   │                                          │
+│  ▶ Sovereign Capital Gate│                                          │
+│  + Create a project      │                                          │
+│  ─────────────────────   │                                          │
+│  Shared with me          │                                          │
+│  ●  Settings   ← ACTIVE  │                                          │
+│  ─────────────────────   │                                          │
+│  ✦ Explore free features │                                          │
+└──────────────────────────┴──────────────────────────────────────────┘
+```
+
+---
+
+## Design Tokens
+
+### Colors
+
+| Token | Hex | Usage |
+|---|---|---|
+| `brand-primary` | `#5B63F6` | Buttons, active nav border, focus rings, pin icon |
+| `bg-base` | `#FFFFFF` | Page, sidebar, card backgrounds |
+| `bg-hover` | `#EEF2FF` | Nav hover, active nav item |
+| `bg-tab-container` | `#F3F4F6` | Pill tab bar background |
+| `bg-tab-active` | `#FFFFFF` | Active pill tab |
+| `bg-gray-50` | `#F9FAFB` | Table headers, read-only inputs |
+| `bg-explore` | `#E8EEFF` | Explore banner |
+| `bg-billing-banner` | `linear-gradient(135deg, #EEF2FF, #F5F3FF)` | Billing plan card |
+| `text-primary` | `#111827` | Headings, input values, active tab |
+| `text-secondary` | `#6B7280` | Inactive tabs, nav labels |
+| `text-muted` | `#9CA3AF` | Placeholder, meta |
+| `text-brand` | `#5B63F6` | Owner badge, billing plan label |
+| `border-default` | `#E5E7EB` | Card borders, input borders |
+| `border-subtle` | `#F3F4F6` | Dividers, table separators |
+| `active-nav-border` | `#5B63F6` | 2px left border on active nav item |
+| `status-connected` | `#16A34A` on `#F0FDF4` | Connected status badge |
+| `status-error` | `#DC2626` on `#FEF2F2` | Error status badge |
+| `status-syncing` | `#2563EB` on `#EFF6FF` | Syncing status badge |
+
+### Shadows
+
+```css
+/* Card */
+box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+
+/* Dropdown */
+box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+```
+
+---
+
+## Typography
+
+| Role | Size | Weight | Usage |
+|---|---|---|---|
+| Page title | 28px | 800 | `<h1>` — updates per tab |
+| Section title | 15px | 600 | Card section headings |
+| Subtitle | 14px | 400 | Page subtitle under h1 |
+| Tab label | 14px | 500 / 600 | Pill tab buttons |
+| Field label | 12px | 500 | Form `<label>` elements |
+| Body / input | 13px | 400 | Input values, table rows |
+| Caption | 11–12px | 400 | Meta text, badges, timestamps |
+| Table header | 11px | 600 | Uppercase column headers |
+
+```css
+font-family: 'Inter', system-ui, -apple-system, sans-serif;
+```
+
+---
+
+## Layout & Spacing
+
+| Property | Value |
+|---|---|
+| Sidebar width | `220px` fixed |
+| Content padding | `px-8 py-8` |
+| Card padding | `p-5` |
+| Profile panel max-width | `max-w-xl` |
+| Workspace cards | full-width |
+| Grid gap (row 1 columns) | `gap-5` |
+| Card border-radius | `rounded-xl` (12px) |
+| Input / button border-radius | `rounded-lg` (8px) |
+| Input height | `h-9` (36px) |
+| Button height | `h-8` – `h-9` (32–36px) |
+
+---
+
+## Sidebar
+
+Identical to `recent-view` sidebar. **Settings** is the active nav item.
+
+```
+Active nav style:
+  background: #EEF2FF
+  border-left: 2px solid #5B63F6
+  padding-left: 10px
+  font-weight: 500
+
+Nav hover:
+  .nav-item:hover { background-color: #EEF2FF; }
+```
+
+### Structure
+
+| Zone | Details |
+|---|---|
+| Workspace switcher | `px-4 py-3`, avatar `w-7 h-7 #3B5BDB`, name, chevron |
+| Primary nav | Recent · Create Dashboard · AI Chat |
+| Projects section | My Private Project (pinned ◉) → items; Sovereign Capital Gate → items; + Create a project |
+| Spacer | `flex-1` |
+| Bottom nav | Shared with me · **Settings (active)** |
+| Explore banner | `#E8EEFF` bg, sparkles icon, "Explore free features" + "Credit left: 15" |
+
+---
+
+## Breadcrumb Bar
+
+```
+≡   ‹   ›   Settings
+```
+
+| Property | Value |
+|---|---|
+| Height | `h-11` (44px) |
+| Padding | `px-8` |
+| Border | `border-b border-gray-100` |
+| Label | `text-[13px] text-gray-500` |
+
+---
+
+## Page Header
+
+Inline icon + `<h1>` + subtitle. Icon and title update on tab switch.
+
+```
+[icon]  Profile
+        Manage your team and preferences here.
+```
+
+| Property | Value |
+|---|---|
+| Icon | `w-6 h-6 text-gray-900` inline SVG (no background box) |
+| Title | `text-[28px] font-extrabold text-gray-900` |
+| Subtitle | `text-sm text-gray-500 mt-2` |
+| Wrapper margin-bottom | `mb-6` |
+
+**Icon per tab:**
+
+| Tab | Icon |
+|---|---|
+| Profile | Person / user outline |
+| Workspace | 4-square grid |
+
+---
+
+## Tab Bar
+
+Pill-style. Container: `#F3F4F6` bg, `rounded-full`, `p-1`, `gap-1`.
+
+| State | Bg | Border | Text | Weight |
+|---|---|---|---|---|
+| Active | `#FFFFFF` | `1px solid #E5E7EB` | `#111827` | 600 |
+| Inactive | transparent | transparent | `#6B7280` | 400 |
+| Inactive hover | transparent | transparent | `#374151` | 400 |
+
+```css
+.stab { height: 32px; padding: 0 16px; border-radius: 9999px; font-size: 14px; }
+```
+
+Tabs: **Profile** · **Workspace**
+
+---
+
+## Profile Tab
+
+Single card (`max-w-xl`, `shadow-card`).
+
+### Picture
+- Avatar placeholder: `w-16 h-16 rounded-xl border border-gray-200 bg-gray-100`
+- "Upload a picture" button: `border border-gray-200 rounded-lg h-9 px-4 text-[13px] font-medium text-gray-700`
+
+### Name fields
+- `grid grid-cols-2 gap-4`
+- Label: `text-[12px] font-medium text-gray-600 mb-1.5`
+- Input: `h-9 border border-gray-200 rounded-lg px-3 text-[13px]`
+
+### Email
+- Full-width, value visually dimmed (`text-gray-400`)
+
+### Save
+- Right-aligned, `border-t border-gray-100 pt-4`
+- `px-4 h-9 rounded-lg text-[13px] font-medium text-white background:#5B63F6`
+
+---
+
+## Workspace Tab
+
+Three full-width cards stacked vertically.
+
+### Card 1 — Row with two columns
+
+**Left — Workspace info**
+- Avatar `w-12 h-12 rounded-xl #3B5BDB` + editable name input + meta ("Created April 2024 · 3 members")
+- Workspace URL (read-only display box)
+- Description `<textarea rows=2>`
+- Save button (right-aligned, `border-t`)
+
+**Right — Users with access**
+- Header: `text-[15px] font-semibold text-gray-900` + **Add user** button (`#5B63F6`)
+- Search input: `h-9 rounded-lg bg-white border border-gray-200`
+- User table: avatar + name + email | Role column
+  - Owner: badge `background:#EEF2FF color:#5B63F6` (non-editable)
+  - Others: `<select>` (Admin / Editor / Viewer), `h-7 rounded-lg`
+
+### Card 2 — Data Sources
+
+- Section title: `text-[15px] font-semibold text-gray-900`
+- **Add a datasource** button (right of title, `#5B63F6`)
+- **Search + Type filter row:**
+  - Search input: `h-9 pl-9 rounded-lg border border-gray-200`
+  - Type dropdown button: `width:120px`, `rounded-lg`, `border border-gray-200`
+  - Dropdown: `rounded-xl`, 4 options — All / Database / File / API (each with icon)
+- **Table:** `table-fixed`, `max-height:280px overflow-y:auto`, sticky `thead`
+  - Columns: Name (38%) · Type (22%) · Status (25%) · Tables (10%)
+  - Status badges use `STATUS_STYLE` map (Connected / Error / Syncing)
+- **Add hint panel:** dashed indigo border, `bg-indigo-50`, dismissible
+
+**Data:** 5 sample rows — Q4 Revenue Sheet (File), Analytics DB (Database), Sales API (API), CRM Export (File), User Events DB (Database)
+
+### Card 3 — Billing
+
+- Pro Plan badge (`#EEF2FF / #5B63F6`)
+- **Plan card** (gradient `#EEF2FF → #F5F3FF`):
+  - "Pro · $29 / month" + next billing date + **Manage plan** button
+  - 3 usage meters: AI Credits · Datasources · Workspaces (indigo progress bars)
+- **Payment method row:** Visa card icon + last 4 + expiry + **Update** button
+- **Recent invoices:** 2 rows (date · amount · Paid badge · Download link)
+
+---
+
+## States & Interactions
+
+| Interaction | Behaviour |
+|---|---|
+| Tab switch | `setTab(id)` — toggles `.active` on pill + panel; updates `h1` and heading icon |
+| Project submenu | `toggleWorkspace(id)` — `.ws-submenu.open` show/hide, `.ws-chevron` rotates 90° |
+| Nav hover | `background-color: #EEF2FF` |
+| Add datasource | `showAddDataSource()` — toggles `hidden` on `#add-ds-hint` |
+| DS search | `filterSettingDs(q)` — filters table rows by name/type |
+| DS type filter | `filterSettingDsType(type)` — filters table by type, updates button label |
+| DS type dropdown | `toggleSettingDsTypeDropdown()` — toggle + outside-click close |
+| Create a project | `openNewProjectModal()` — placeholder |
+
+---
+
+## Motion
+
+| Element | Property | Duration | Easing |
+|---|---|---|---|
+| Nav item hover | `background-color` | 100ms | ease |
+| Pill tab | `background, color, box-shadow` | 120ms | ease |
+| Workspace chevron | `transform: rotate(90deg)` | 150ms | ease |
+| Toggle knob | `transform` | 150ms | ease |
+| Inputs / buttons | `border-color` | — | transition-colors |
+
+---
+
+## JS Reference
+
+```js
+// Tab switching
+const TABS = ['profile', 'workspace'];
+const TITLES = { profile: 'Profile', workspace: 'Workspace' };
+const ICONS = { profile: '…svg…', workspace: '…svg…' };
+function setTab(active) { … }
+
+// Datasource table
+const SETTING_DS_DATA = [ … ];       // 5 sample rows
+const TYPE_ICONS = { Database, File, API };
+const STATUS_STYLE = { Connected, Error, Syncing };
+function renderSettingDsTable() { … }
+function filterSettingDs(q) { … }
+function filterSettingDsType(type) { … }
+function toggleSettingDsTypeDropdown() { … }
+function showAddDataSource() { … }
+
+// Sidebar
+function toggleWorkspace(id) { … }   // expand/collapse project submenu
+function openNewProjectModal() { … } // placeholder
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  renderSettingDsTable();
+});
+```
+
+---
+
+## File Structure
+
+```
+settings-profile/
+├── index.html   ← single-file SPA (Tailwind CDN, no build step)
+└── README.md    ← this file
+```
+
+---
+
+*Aibii Design Language v2.0 · Settings · May 2026*
+
 
 ---
 
