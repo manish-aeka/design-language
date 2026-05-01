@@ -20,20 +20,30 @@
    - [Filter Tab Bar](#filter-tab-bar)
    - [View Toggle](#view-toggle)
    - [Type Filter Dropdown](#type-filter-dropdown)
-   - [Workspace Submenu](#workspace-submenu)
+   - [Sidebar Projects Section](#sidebar-projects-section)
    - [Report Grid](#report-grid)
    - [Report Card](#report-card)
    - [Card Type Badge](#card-type-badge)
    - [Scrollbar](#scrollbar)
-9. [States & Interactions](#states--interactions)
-10. [Motion & Animation](#motion--animation)
-11. [Design Principles](#design-principles)
+9. [Modals](#modals)
+   - [Create Project Modal](#create-project-modal)
+   - [Create Item Modal](#create-item-modal)
+10. [States & Interactions](#states--interactions)
+11. [Motion & Animation](#motion--animation)
+12. [Design Principles](#design-principles)
 
 ---
 
 ## Overview
 
 The **Recent** view is the personal analytics home screen — the first screen a user lands on after selecting an organisation in Aibii. It combines a lightweight action strip, a filter/tab mechanism, and a dense report grid to surface the most relevant analyses and dashboards with zero navigation friction.
+
+Key interactions available from this screen:
+- **7 action-card shortcuts** (Create Project, Create Dashboard, Create Document, Create Presentation, Create Form, AI Chat, Add Datasource)
+- **Create Project modal** — creates a project and adds it to the sidebar in real-time
+- **Create Item modal** — shared modal for Dashboard, Document, Presentation, Form, and AI chat creation
+- **Pinned project** — "My Private Project" always appears first in the sidebar Projects list
+- **Dynamic sidebar** — new projects are injected immediately after the pinned entry without page reload
 
 ![Reference Screenshot](assets/screenshot.png)
 
@@ -43,25 +53,25 @@ The **Recent** view is the personal analytics home screen — the first screen a
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ SIDEBAR (220px)            │  CONTENT AREA (fluid)                    [↕]  │
+│ SIDEBAR (220px)            │  CONTENT AREA (fluid)                          │
 │                            │                                                │
 │  [M] Manish kumar's Work…  │  🕐 Recent                                     │
 │  ────────────────────────  │     Your recent reports and insights…          │
 │  🕐 Recent  ← active       │                                                │
-│  ⊞  New dashboard          │  [📊 New Doc][🗂 Workspace][✨ Ask AI][🔗 Data] │ ← Action Cards
-│  💬 New chat               │                                                │
-│  ────────────────────────  │  [ By me ][ By everyone ][ Shared with me ]   │ ← Filter Tabs
-│  WORKSPACES          [👁]  │                                  [ Type▾][≡⊞] │
-│  ▶ Sovereign Capital Gate  │                                                │
-│    ├ 💬 Chat               │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐        │
-│    ├ ⊞  Dashboard          │  │      │ │      │ │      │ │      │        │ ← 4-col Report Grid
-│    └ 📄 Document           │  └──────┘ └──────┘ └──────┘ └──────┘        │
-│  ▶ My private workspace    │  Untitled  Untitled  Q1 Rev…  Untitled        │
-│    ├ 💬 Q4 Strategy        │  ─────────────────────────────────────────── │
+│  ⊞  Create Dashboard      │  [🗂 Create Project][⊞ Create Dashboard][📄 Create Doc] │
+│  💬 AI Chat               │  [🖥 Create Pres.][📋 Create Form][✨ AI Chat][🗄 DS] │ ← 7 Action Cards (4-col grid)
+│  ────────────────────────  │                                                │
+│  PROJECTS            [👁]  │  [ By me ][ By everyone ][ Shared with me ]   │ ← Filter Tabs
+│  ▶ My Private Project 📌   │                                  [ Type▾][≡⊞] │
+│    ├ 💬 Q4 Strategy        │                                                │
 │    ├ ⊞  Revenue Overview   │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐        │
-│    ├ 📄 Project Brief      │  │      │ │      │ │      │ │      │        │
-│    └ … (scrollable)        │  └──────┘ └──────┘ └──────┘ └──────┘        │
-│  + Create a workspace      │                                                │
+│    └ … (scrollable)        │  │      │ │      │ │      │ │      │        │ ← 4-col Report Grid
+│  ▶ Sovereign Capital Gate  │  └──────┘ └──────┘ └──────┘ └──────┘        │
+│    ├ 💬 Chat               │  Untitled  Untitled  Q1 Rev…  Untitled        │
+│    ├ ⊞  Dashboard          │  ─────────────────────────────────────────── │
+│    └ 📄 Document           │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐        │
+│  [dynamically added proj.] │  │      │ │      │ │      │ │      │        │
+│  + Create a project        │  └──────┘ └──────┘ └──────┘ └──────┘        │
 │  ────────────────────────  │                                                │
 │  👤 Shared with me         │                                                │
 │  ⚙  Settings              │                                                │
@@ -234,13 +244,16 @@ Active and inactive tabs both use `radius-full` — the tab container itself use
 | Location | Icon | Size | Color |
 |---|---|---|---|
 | Page title | `Clock` (circle + hands) | 24px | `color-text-primary` (#111827) |
-| Action card: New Document | `BarChart2` | 20px | `color-icon-brand` (#5B63F6) |
-| Action card: Create a workspace | `Bars3` (horizontal lines) | 20px | `color-icon-brand` |
-| Action card: Ask AI | `Sparkles` | 20px | `color-icon-brand` |
-| Action card: Connect Datasource | `Database` (cylinder) | 20px | `color-icon-brand` |
+| Action card: Create Project | `FolderOpen` | 20px | `color-icon-brand` (#5B63F6) |
+| Action card: Create Dashboard | `SquaresGrid` (4 squares) | 20px | `color-icon-brand` |
+| Action card: Create Document | `Document` | 20px | `color-icon-brand` |
+| Action card: Create Presentation | `PresentationChartBar` (screen + legs) | 20px | `color-icon-brand` |
+| Action card: Create Form | `ClipboardDocumentList` | 20px | `color-icon-brand` |
+| Action card: AI Chat | `Sparkles` | 20px | `color-icon-brand` |
+| Action card: Add Datasource | `Database` (cylinder) | 20px | `color-icon-brand` |
 | Nav: Recent (active) | `Clock` | 16px | `#6B7280` |
-| Nav: New dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
-| Nav: New chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
+| Nav: Create Dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
+| Nav: AI Chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
 | Workspaces header | `EyeOff` | 14px | `#D1D5DB` |
 | Workspace chevron | `ChevronRight` | 12px | `#9CA3AF` → rotates 90° when open |
 | Submenu: Chat item | `ChatBubble` | 14px | `#5B63F6` |
@@ -289,15 +302,19 @@ Appears at the top of the content area. Combines an inline clock icon, bold titl
 
 ### Action Cards Row
 
-Four equal-width cards providing the primary analytical workflow shortcuts.
+Seven equal-width cards in a **4-column grid** (2 rows) providing primary workflow shortcuts. Cards 1–4 in the first row, cards 5–7 in the second.
 
 ```
-┌────────────────────┐ ┌────────────────────┐ ┌────────────────────┐ ┌────────────────────┐
-│ [📊] New Document  │ │ [≡]  Create a      │ │ [✨] Ask AI        │ │ [🗄] Connect       │
-│      Write, edit & │ │      workspace     │ │      Generate      │ │      Datasource    │
-│      share docs    │ │      Group your    │ │      insights from │ │      Link dbs,     │
-│                    │ │      reports       │ │      a prompt      │ │      APIs & more   │
-└────────────────────┘ └────────────────────┘ └────────────────────┘ └────────────────────┘
+Row 1:
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│[🗂] New      │ │[⊞] New       │ │[📄] New      │ │[🖥] New      │
+│    Project   │ │    Dashboard │ │    Document  │ │    Pres.     │
+└──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
+Row 2:
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│[📋] New      │ │[✨] AI chat  │ │[🗄] Create   │
+│    Form      │ │              │ │    Datasource│
+└──────────────┘ └──────────────┘ └──────────────┘
 ```
 
 | Property | Value |
@@ -314,15 +331,19 @@ Four equal-width cards providing the primary analytical workflow shortcuts.
 | Icon–text gap | `12px` |
 | Hover | `shadow-card-hover` + `translateY(-1px)` |
 | Transition | `all 150ms ease-out` |
+| Click behaviour | Create Project → **Create Project Modal**; Create Dashboard / Create Document / Create Presentation / Create Form / AI Chat → **Create Item Modal**; Add Datasource → no modal |
 
 **Card inventory:**
 
-| # | Title | Description | Icon |
-|---|---|---|---|
-| 1 | New Document | Write, edit & share docs | `BarChart2` |
-| 2 | Create a workspace | Group your reports | `Bars3` |
-| 3 | Ask AI | Generate insights from a prompt | `Sparkles` |
-| 4 | Connect Datasource | Link databases, APIs & more | `Database` |
+| # | Title | Description | Icon | Opens Modal |
+|---|---|---|---|---|
+| 1 | Create Project | Organize work in a project | `FolderOpen` | Create Project Modal |
+| 2 | Create Dashboard | Build charts & visual reports | `SquaresGrid` | Create Item Modal |
+| 3 | Create Document | Write, edit & share docs | `Document` | Create Item Modal |
+| 4 | Create Presentation | Create slides & decks | `PresentationChartBar` | Create Item Modal |
+| 5 | Create Form | Collect data with forms | `ClipboardDocumentList` | Create Item Modal |
+| 6 | AI Chat | Generate insights from a prompt | `Sparkles` | Create Item Modal |
+| 7 | Add Datasource | Link databases, APIs & more | `Database` | — |
 
 ---
 
@@ -448,20 +469,32 @@ Default open state shows Chat as active (highlighted `#EEF2FF` bg, `#5B63F6` tex
 
 ---
 
-### Workspace Submenu
+### Sidebar Projects Section
 
-Each workspace in the sidebar has a **chevron-toggle** button that expands an inline submenu showing the workspace's Chats, Dashboards, and Documents.
+The sidebar **Projects** section (formerly "Workspaces") holds all user projects in a collapsible accordion list. The section header is labelled **PROJECTS** in `11px` uppercase muted text.
 
-**Workspace row anatomy:**
+**Section container:** `id="projects-list"` — used by JS to dynamically inject newly created projects.
+
+**Pinned project rule:** "My Private Project" is always the first entry. A **pin icon** (`12×12px`, `color: #5B63F6`, filled SVG) appears on the right side of its row.
+
+**Sidebar order:**
 ```
-[▶][Sovereign Capital Gate]   ← chevron btn + name link
+[▶] My Private Project  [📌]   ← pinned, always first
     ├ 💬 Q4 Strategy
     ├ ⊞  Revenue Overview
-    ├ 📄 Project Brief
-    └ … (scrollable list)
+    └ … (scrollable)
+
+[▶] Sovereign Capital Gate
+    ├ 💬 Chat
+    ├ ⊞  Dashboard
+    └ 📄 Document
+
+[dynamically created projects appear here]
+
+[+] Create a project              ← opens New Project Modal on click
 ```
 
-**Workspace row tokens:**
+**Project row tokens:**
 
 | Property | Value |
 |---|---|
@@ -472,7 +505,8 @@ Each workspace in the sidebar has a **chevron-toggle** button that expands an in
 | Chevron button | `20×20px`, `border-radius: 4px`, hover bg `#E5E7EB` |
 | Chevron icon | `12px`, `#9CA3AF`, `stroke-width: 2.5` |
 | Chevron open state | rotates `90deg` via CSS transition `150ms ease` |
-| Workspace name | `14px`, `#374151`, `truncate` |
+| Project name | `14px`, `#374151`, `truncate` |
+| Pin icon | `12×12px`, `color: #5B63F6`, filled path SVG, right-aligned, pinned project only |
 
 **Submenu container tokens:**
 
@@ -498,12 +532,22 @@ Each workspace in the sidebar has a **chevron-toggle** button that expands an in
 | Icon gap | `8px` |
 | Hover bg | `#EEF2FF` |
 
-**Current workspaces and contents:**
+**"Create a project" link:**
 
-| Workspace | Items |
+| Property | Value |
 |---|---|
-| Sovereign Capital Gate | Chat, Dashboard, Document |
-| My private workspace | Q4 Strategy (chat), Revenue Overview (dashboard), Project Brief (doc), Investor Update (chat), Meeting Notes (doc), KPI Tracker (dashboard), Product Feedback (chat), User Analytics (dashboard), Sprint Planning (chat), Roadmap 2026 (doc), API Docs (doc) |
+| Trigger | `onclick="openNewProjectModal()"` |
+| Icon | `+` text character, `#9CA3AF`, `font-size: 16px` |
+| Label | `14px`, `#6B7280` |
+| Hover bg | `#EEF2FF` |
+
+**Static projects and contents:**
+
+| Project | Order | Items |
+|---|---|---|
+| My Private Project | 1st (pinned) | Q4 Strategy (chat), Revenue Overview (dashboard), Project Brief (doc), Investor Update (chat), Meeting Notes (doc), KPI Tracker (dashboard), Product Feedback (chat), User Analytics (dashboard), Sprint Planning (chat), Roadmap 2026 (doc), API Docs (doc) |
+| Sovereign Capital Gate | 2nd | Chat, Dashboard, Document |
+| *(dynamically added)* | 3rd+ | Empty submenu initially |
 
 ---
 
@@ -598,6 +642,98 @@ Applies globally to the content area and workspace submenus.
 
 ---
 
+## Modals
+
+### Create Project Modal
+
+Triggered by: **Create Project** action card click, or **"+ Create a project"** sidebar link click.
+
+Functions: `openNewProjectModal()` / `closeNewProjectModal()` / `createNewProject()`
+
+**Anatomy:**
+```
+┌─────────────────────────────────┐
+│  Create Project           [ × ] │
+├─────────────────────────────────┤
+│  Name *                         │
+│  [ Enter project name…        ] │
+│                                 │
+│  Description (optional)         │
+│  [ What is this project…      ] │
+│  [ (textarea, 3 rows)         ] │
+├─────────────────────────────────┤
+│                 [ Close][Create]│
+└─────────────────────────────────┘
+```
+
+| Property | Value |
+|---|---|
+| Backdrop | `rgba(17,24,39,0.45)` + `backdrop-filter: blur(2px)` |
+| Modal width | `max-w-md` (448px) |
+| Border radius | `16px` |
+| Header padding | `24px 24px 16px` |
+| Header border | `1px solid #F3F4F6` (bottom) |
+| Title | `16px`, `font-weight: 600`, `#111827` |
+| Close button | `32×32px`, `border-radius: 8px`, hover bg `#F3F4F6` |
+| Body padding | `24px`, `gap: 16px` between fields |
+| Name label | `13px`, `font-weight: 500`, `#374151` |
+| Name required marker | `*` in `#F87171` (red-400) |
+| Name input | `h-9`, full-width, `border: 1px solid #E5E7EB`, focus ring `#5B63F6` |
+| Description label | `13px`, `font-weight: 500`, `#374151` + `(optional)` in `#9CA3AF` normal weight |
+| Description textarea | `3 rows`, `resize: none`, same border/focus as name input |
+| Footer padding | `0 24px 24px` |
+| Close button style | `h-9 px-4`, gray border, hover bg `#F9FAFB` |
+| Create button style | `h-9 px-5`, bg `#5B63F6`, hover bg `#4850e4`, white text |
+| Enter key | Submits from name field (`onkeydown`) |
+| Backdrop click | Closes modal |
+
+**On Create (JS behaviour):**
+1. Reads `#proj-name` value — focuses field and returns if empty
+2. Generates unique ID: `ws-dyn-{Date.now()}`
+3. Creates a new project `<div>` with chevron toggle, name link, empty submenu
+4. Inserts into `#projects-list` immediately after `firstBlock.nextSibling` (after the pinned entry)
+5. Closes modal
+
+---
+
+### Create Item Modal
+
+Triggered by: **Create Dashboard**, **Create Document**, **Create Presentation**, **Create Form**, **AI Chat** action card clicks.
+
+Functions: `openCreateModal(type)` / `closeCreateModal()`
+
+The `type` string is passed as the modal title (e.g. `'Create Dashboard'`).
+
+**Anatomy:**
+```
+┌─────────────────────────────────┐
+│  Create Dashboard         [ × ] │  ← dynamic title
+├─────────────────────────────────┤
+│  Name                           │
+│  [ Enter a name…              ] │
+│                                 │
+│  Select project                 │
+│  [ Choose a project…    ▾     ] │
+├─────────────────────────────────┤
+│                 [ Close][Create]│
+└─────────────────────────────────┘
+```
+
+| Property | Value |
+|---|---|
+| Backdrop | `rgba(17,24,39,0.45)` + `backdrop-filter: blur(2px)` |
+| Modal width | `max-w-md` (448px) |
+| Border radius | `16px` |
+| Title | `16px`, `font-weight: 600`, `#111827` — set dynamically to card name |
+| Name input | `h-9`, full-width, focus ring `#5B63F6` |
+| Select project | Native `<select>`, `h-9`, custom chevron overlay, focus ring `#5B63F6` |
+| Project options | My Private Project, Sovereign Capital Gate |
+| Backdrop click | Closes modal |
+| Close button | Gray border button |
+| Create button | bg `#5B63F6`, hover `#4850e4`, white text |
+
+---
+
 ## States & Interactions
 
 ### Report Card States
@@ -623,6 +759,7 @@ Applies globally to the content area and workspace submenus.
 | **Default** | Border, flat `shadow-card` |
 | **Hover** | `shadow-card-hover`, `translateY(-1px)` |
 | **Active** | `translateY(0)`, `shadow-card` |
+| **Click (modal cards)** | Opens modal overlay |
 
 ### View Toggle States
 
@@ -632,12 +769,24 @@ Applies globally to the content area and workspace submenus.
 | **Inactive button** | `transparent` bg, `#9CA3AF` icon |
 | **Inactive hover** | `rgba(0,0,0,0.05)` bg, `#6B7280` icon |
 
-### Workspace Chevron States
+### Project Chevron States
 
 | State | Visual Change |
 |---|---|
 | **Collapsed** | Chevron points right (`0deg`) |
 | **Expanded** | Chevron rotates to `90deg`, submenu slides in |
+
+### Action Card — Modal Triggers
+
+| Card | Behaviour on Click |
+|---|---|
+| Create Project | Opens Create Project Modal |
+| Create Dashboard | Opens Create Item Modal — title "Create Dashboard" |
+| Create Document | Opens Create Item Modal — title "Create Document" |
+| Create Presentation | Opens Create Item Modal — title "Create Presentation" |
+| Create Form | Opens Create Item Modal — title "Create Form" |
+| AI Chat | Opens Create Item Modal — title "AI Chat" |
+| Add Datasource | No modal — direct action |
 
 ---
 
@@ -651,8 +800,9 @@ Applies globally to the content area and workspace submenus.
 | Tab switch | `120ms` | `ease` | `background-color`, `box-shadow`, `color` |
 | View toggle switch | `150ms` | `ease` | `background-color`, `box-shadow`, `color` |
 | Nav item hover | `100ms` | `ease` | `background-color` |
-| Workspace chevron | `150ms` | `ease` | `transform` (rotate 0 → 90deg) |
+| Project chevron | `150ms` | `ease` | `transform` (rotate 0 → 90deg) |
 | Type dropdown item | `80ms` | `ease` | `background-color` |
+| Modal open/close | instant | — | `display` toggled via `.hidden` class |
 
 **Principles:**
 - Micro-interactions stay ≤ 150ms — feels instant and responsive
@@ -672,8 +822,8 @@ All cards start flat. Elevation (shadow + border shift) appears only on interact
 ### 3. Segmented Filtering Without Navigation
 The pill tab bar (`By me` / `By everyone` / `Shared with me`) provides scope filtering in place — no page reload, no URL change.
 
-### 4. Workspaces as Navigable Containers
-Workspaces in the sidebar are expandable in-place. The chevron-toggle splits name navigation from expand/collapse to avoid accidental triggers. Submenus cap at 160px with a scroll to prevent sidebar overflow.
+### 4. Projects as Navigable Containers
+Projects in the sidebar are expandable in-place. The chevron-toggle splits name navigation from expand/collapse to avoid accidental triggers. Submenus cap at 160px with a scroll to prevent sidebar overflow. New projects created via the modal are injected dynamically without page reload.
 
 ### 5. Type-Coded Visual Language
 Chat = brand purple `#5B63F6`, Dashboard = green `#16A34A`, Document = orange `#F97316`. This colour system is applied consistently across the sidebar submenu icons, the card type badges, and the Type filter dropdown.
@@ -710,4 +860,4 @@ recent-view/
 
 ---
 
-*Design language version 1.1 — Aibii AI Business Intelligence SaaS · Recent View, April 2026.*
+*Design language version 1.3 — Aibii AI Business Intelligence SaaS · Recent View, May 2026.*
