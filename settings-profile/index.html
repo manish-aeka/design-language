@@ -40,11 +40,15 @@
     .role-select:hover{color:#111}
     .ds-card{transition:box-shadow 120ms,border-color 120ms}
     .ds-card:hover{box-shadow:0 4px 14px rgba(0,0,0,0.08);border-color:#c7d2fe}
+    /* Workspace submenu */
+    .ws-submenu{display:none}
+    .ws-submenu.open{display:block;max-height:200px;overflow-y:auto}
+    .ws-chevron{transition:transform 150ms ease}
+    .ws-item.open .ws-chevron{transform:rotate(90deg)}
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
 
-  <!-- ═══ SIDEBAR ═══ -->
   <!-- ═══════════════════════════════════════════
        SIDEBAR  220px fixed
   ════════════════════════════════════════════ -->
@@ -68,26 +72,50 @@
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-        New dashboard
+        Create Dashboard
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-        New chat
+        AI Chat
       </a>
     </nav>
 
     <!-- Divider -->
     <div class="mx-3 my-1 border-t border-gray-100"></div>
 
-    <!-- Workspaces section -->
+    <!-- Projects section -->
     <div class="px-3 py-1">
       <div class="flex items-center justify-between px-3 h-7">
-        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Workspaces</span>
+        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
         <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
       </div>
-      <div class="space-y-0.5 mt-0.5">
+      <div id="projects-list" class="space-y-0.5 mt-0.5">
 
-        <!-- Workspace: Sovereign Capital Gate -->
+        <!-- My Private Project — PINNED (always first) -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws2')" id="ws2-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
+            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="currentColor" viewBox="0 0 24 24" title="Pinned">
+              <path d="M16 2a1 1 0 00-1 1v1H9V3a1 1 0 00-2 0v1H6a2 2 0 00-2 2v1c0 2.21 1.34 4.11 3.25 4.93V19a1 1 0 00.55.89l3 1.5a1 1 0 00.9 0l3-1.5A1 1 0 0015 19v-7.07C16.66 11.11 18 9.21 18 7V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1z"/>
+            </svg>
+          </div>
+          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Q4 Strategy
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Revenue Overview
+            </a>
+          </div>
+        </div>
+
+        <!-- Sovereign Capital Gate -->
         <div>
           <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
             <button onclick="toggleWorkspace('ws1')" id="ws1-btn"
@@ -112,30 +140,9 @@
           </div>
         </div>
 
-        <!-- Workspace: My private workspace -->
-        <div>
-          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
-            <button onclick="toggleWorkspace('ws2')" id="ws2-btn"
-              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
-              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My private workspace</a>
-          </div>
-          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Q4 Strategy
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Revenue Overview
-            </a>
-          </div>
-        </div>
-
-        <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
+        <a href="#" onclick="event.preventDefault();openNewProjectModal()" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
           <span class="text-gray-400 font-medium text-base leading-none">+</span>
-          Create a workspace
+          Create a project
         </a>
       </div>
     </div>
@@ -205,9 +212,6 @@
       <div class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
         <button id="tab-profile" onclick="setTab('profile')" class="stab active">Profile</button>
         <button id="tab-workspace" onclick="setTab('workspace')" class="stab">Workspace</button>
-        <button id="tab-billing" onclick="setTab('billing')" class="stab">Billing</button>
-        <button id="tab-members" onclick="setTab('members')" class="stab">Users</button>
-        <button id="tab-integrations" onclick="setTab('integrations')" class="stab">Integrations</button>
       </div>
 
       <!-- ══ PROFILE ══ -->
@@ -416,11 +420,8 @@
           </div>
         </div>
 
-      </div>
-
-      <!-- ══ BILLING ══ -->
-      <div id="section-billing" class="settings-panel max-w-xl">
-        <div class="rounded-xl p-5 mb-5" style="background:#E8EEFF;border:1px solid #C7D2FE">
+        <!-- ── Billing ── -->
+        <div class="rounded-xl p-5 mt-5 mb-5" style="background:#E8EEFF;border:1px solid #C7D2FE">
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center gap-2 mb-1">
@@ -433,120 +434,16 @@
             <button class="flex-shrink-0 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#5B63F6">Upgrade plan</button>
           </div>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
           <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Payment method</p>
           <div class="flex items-center justify-between">
             <p class="text-[13px] text-gray-500">No payment method added yet.</p>
             <button class="px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Add card</button>
           </div>
         </div>
-      </div>
 
-      <!-- ══ USERS ══ -->
-      <div id="section-members" class="settings-panel max-w-xl">
-
-        <!-- Invite bar -->
-        <div class="flex items-center gap-3 mb-5">
-          <input type="email" placeholder="Search or invite users by email..."
-            class="flex-1 h-9 px-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-          <button class="flex-shrink-0 px-4 h-9 rounded-lg text-[13px] font-medium text-white whitespace-nowrap" style="background:#5B63F6">
-            Add users
-          </button>
-        </div>
-
-        <!-- Users list -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden">
-          <div class="flex items-center px-4 h-9 border-b border-gray-100 bg-gray-50">
-            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">User</span>
-            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-24 text-right">Role</span>
-            <span class="w-8"></span>
-          </div>
-          <div class="divide-y divide-gray-100">
-
-            <!-- Owner -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Manish Kumar</p>
-                <p class="text-[12px] text-gray-400">manish7479dlp@gmail.com</p>
-              </div>
-              <span class="w-24 text-right text-[12px] font-semibold px-2 py-0.5 rounded" style="color:#3B4ECC;background:#EEF2FF">Owner</span>
-              <div class="w-8"></div>
-            </div>
-
-            <!-- Admin -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#059669">A</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Arjun Patel</p>
-                <p class="text-[12px] text-gray-400">arjun.patel@company.com</p>
-              </div>
-              <select class="role-select w-24 text-right text-[12px] font-medium text-gray-700">
-                <option selected>Admin</option>
-                <option>Editor</option>
-                <option>Viewer</option>
-              </select>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-            <!-- Editor -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#D97706">S</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Sneha Rao</p>
-                <p class="text-[12px] text-gray-400">sneha.rao@company.com</p>
-              </div>
-              <select class="role-select w-24 text-right text-[12px] font-medium text-gray-700">
-                <option>Admin</option>
-                <option selected>Editor</option>
-                <option>Viewer</option>
-              </select>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-            <!-- Viewer -->
-            <div class="flex items-center gap-3 px-4 py-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#7C3AED">R</div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-900">Riya Sharma</p>
-                <p class="text-[12px] text-gray-400">riya.sharma@company.com</p>
-              </div>
-              <select class="role-select w-24 text-right text-[12px] font-medium text-gray-700">
-                <option>Admin</option>
-                <option>Editor</option>
-                <option selected>Viewer</option>
-              </select>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-            <!-- Pending invite -->
-            <div class="flex items-center gap-3 px-4 py-3 bg-gray-50">
-              <div class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[13px] font-medium text-gray-500">james.b@example.com</p>
-                <p class="text-[12px] text-gray-400">Invite pending</p>
-              </div>
-              <span class="text-[11px] font-medium px-2 py-0.5 rounded-full" style="background:#FEF9C3;color:#854D0E">Pending</span>
-              <button class="w-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- ══ INTEGRATIONS ══ -->
-      <div id="section-integrations" class="settings-panel max-w-xl">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card divide-y divide-gray-100">
+        <!-- ── Integrations ── -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-card divide-y divide-gray-100 mt-5">
 
           <div class="flex items-center justify-between px-5 py-4">
             <div class="flex items-center gap-3">
@@ -617,20 +514,18 @@
           </div>
 
         </div>
+
       </div>
 
     </div><!-- /scroll -->
   </main>
 
   <script>
-    const TABS = ['profile','workspace','billing','members','integrations'];
-    const TITLES = {profile:'Profile',workspace:'Workspace',billing:'Billing',members:'Users',integrations:'Integrations'};
+    const TABS = ['profile','workspace'];
+    const TITLES = {profile:'Profile',workspace:'Workspace'};
     const ICONS = {
       profile: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>',
-      workspace: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>',
-      billing: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>',
-      members: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>',
-      integrations: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg>'
+      workspace: '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>'
     };
 
     function setTab(active) {
@@ -644,6 +539,18 @@
 
     function showAddDataSource() {
       document.getElementById('add-ds-hint').classList.toggle('hidden');
+    }
+
+    function toggleWorkspace(id) {
+      const sub = document.getElementById(id + '-sub');
+      const btn = document.getElementById(id + '-btn');
+      const isOpen = sub.classList.contains('open');
+      sub.classList.toggle('open', !isOpen);
+      btn.classList.toggle('open', !isOpen);
+    }
+
+    function openNewProjectModal() {
+      // placeholder — add modal HTML if needed
     }
   </script>
 </body>
