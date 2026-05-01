@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aibii — Datasources</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { sidebar: '#F8F9FC' },
+          fontFamily: { sans: ['Inter','system-ui','-apple-system','sans-serif'] },
+          boxShadow: { card: '0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04)' },
+        },
+      },
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    /* Nav items */
+    .nav-item {
+      height: 36px; padding: 0 12px; border-radius: 8px;
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; transition: background 120ms ease;
+      font-size: 14px; color: #374151; text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-item:hover { background: #EEF2FF; }
+    .nav-item.active {
+      background: #EEF2FF;
+      border-left: 2px solid #5B63F6;
+      padding-left: 10px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .nav-item.active svg { color: #5B63F6 !important; }
+
+    /* Workspace submenu */
+    .ws-submenu { display: none; }
+    .ws-submenu.open { display: block; }
+    .ws-chevron { transition: transform 200ms ease; flex-shrink: 0; }
+    .ws-item.open .ws-chevron { transform: rotate(90deg); }
+
+    /* View switching */
+    .view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .view.active { display: flex; }
+
+    /* Datasource cards */
+    .ds-card {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
+    }
+    .ds-card:hover {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-color: #C7D2FE;
+      transform: translateY(-1px);
+    }
+
+    /* Connector cards (picker) */
+    .connector-card {
+      border: 1.5px solid #E5E7EB;
+      border-radius: 14px;
+      padding: 24px 16px 20px;
+      cursor: pointer;
+      background: #fff;
+      text-align: center;
+      transition: box-shadow 150ms ease, transform 100ms ease, border-color 150ms ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .connector-card:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+      transform: translateY(-2px);
+      border-color: #A5B4FC;
+    }
+    .connector-card.selected {
+      border-color: #5B63F6;
+      background: #F5F6FF;
+      box-shadow: 0 0 0 3px rgba(91,99,246,0.12);
+    }
+
+    /* Stepper line */
+    .step-line { flex: 1; height: 1px; background: #E5E7EB; transition: background 250ms ease; }
+    .step-line.done { background: #5B63F6; }
+
+    /* Inputs */
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #5B63F6 !important;
+      box-shadow: 0 0 0 3px rgba(91,99,246,0.15);
+    }
+
+    /* Toolbar button */
+    .toolbar-btn {
+      height: 30px; padding: 0 10px; border-radius: 8px;
+      border: 1px solid #E5E7EB; background: #fff;
+      font-size: 12px; font-weight: 500; color: #374151;
+      display: flex; align-items: center; gap: 6px;
+      cursor: pointer; white-space: nowrap; transition: background 120ms ease;
+    }
+    .toolbar-btn:hover { background: #F9FAFB; }
+
+    /* Card shadow */
+    .shadow-card { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+
+    /* Spin */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 1s linear infinite; }
+
+    /* SSL knob */
+    #ssl-knob { transition: transform 150ms ease; }
+
+    /* Table rows */
+    .tbl-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: 6px;
+      cursor: pointer; border-bottom: 1px solid #F3F4F6;
+      transition: background 100ms ease;
+    }
+    .tbl-row:last-child { border-bottom: none; }
+    .tbl-row:hover { background: #F9FAFB; }
+
+    /* Pill tab */
+    .pill-tab {
+      height: 32px; padding: 0 16px; border-radius: 9999px;
+      font-size: 14px; font-weight: 500; color: #6B7280;
+      cursor: pointer; transition: all 120ms ease-in-out;
+      white-space: nowrap; display: flex; align-items: center;
+      background: transparent; border: none;
+    }
+    .pill-tab.active {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+      color: #111827;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="font-sans text-gray-900 bg-white flex h-screen overflow-hidden">
+
+  <!-- ═══════════════════════════════════════════ SIDEBAR ════════════════════ -->
+  <aside class="w-[220px] min-w-[220px] bg-white flex flex-col overflow-y-auto" style="border-right:1px solid #F3F4F6">
+
+    <!-- Workspace switcher -->
+    <div class="px-4 py-3 flex items-center gap-2.5" style="border-bottom:1px solid #F3F4F6">
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
+      <span class="text-[14px] font-semibold text-gray-900 truncate flex-1">Manish kumar's Work</span>
+      <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+    </div>
+
+    <!-- Primary nav -->
+    <div class="px-3 py-2 space-y-0.5">
+      <a href="../recent-view/index.html" class="nav-item">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
+        Recent
+      </a>
+      <a href="../dashboard/index.html" class="nav-item">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        New dashboard
+      </a>
+      <a href="../chat/index.html" class="nav-item">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+        New chat
+      </a>
+    </div>
+
+    <div class="mx-3 my-1" style="border-top:1px solid #F3F4F6"></div>
+
+    <!-- Workspaces -->
+    <div class="px-3 py-2">
+      <div class="flex items-center px-2 mb-1.5">
+        <span class="text-[11px] font-medium uppercase tracking-widest" style="color:#9CA3AF">Workspaces</span>
+      </div>
+      <div>
+        <button id="scg-btn" class="ws-item nav-item w-full" onclick="toggleWorkspace('scg')" style="justify-content:space-between">
+          <div class="flex items-center gap-2 min-w-0">
+            <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <span class="text-[14px] text-gray-700 truncate">Sovereign Capital Gate</span>
+          </div>
+        </button>
+        <div id="scg-sub" class="ws-submenu pl-5 space-y-0.5 mt-0.5">
+          <a href="../chat/index.html" class="flex items-center gap-2 h-8 px-2 rounded-lg text-[13px] text-gray-600 hover:bg-[#EEF2FF]"><svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>Chat</a>
+          <a href="../dashboard/index.html" class="flex items-center gap-2 h-8 px-2 rounded-lg text-[13px] text-gray-600 hover:bg-[#EEF2FF]"><svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6z"/></svg>Dashboard</a>
+          <div class="flex items-center gap-2 h-8 px-2 rounded-lg text-[13px] text-gray-600 hover:bg-[#EEF2FF] cursor-pointer"><svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>Document</div>
+        </div>
+      </div>
+      <div class="mt-0.5">
+        <button id="mpw-btn" class="ws-item nav-item w-full" onclick="toggleWorkspace('mpw')" style="justify-content:space-between">
+          <div class="flex items-center gap-2 min-w-0">
+            <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <span class="text-[14px] text-gray-700 truncate">My private workspace</span>
+          </div>
+          <svg class="w-3 h-3 flex-shrink-0 ml-1" style="color:#5B63F6" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd"/></svg>
+        </button>
+        <div id="mpw-sub" class="ws-submenu pl-5 space-y-0.5 mt-0.5">
+          <div class="flex items-center gap-2 h-8 px-2 rounded-lg text-[13px] text-gray-600 hover:bg-[#EEF2FF] cursor-pointer"><svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>Q4 Strategy</div>
+          <div class="flex items-center gap-2 h-8 px-2 rounded-lg text-[13px] text-gray-600 hover:bg-[#EEF2FF] cursor-pointer"><svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6z"/></svg>Revenue Overview</div>
+        </div>
+      </div>
+      <button class="nav-item w-full mt-0.5 text-[13px]" style="color:#6B7280"><svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Create a workspace</button>
+    </div>
+
+    <div class="flex-1"></div>
+    <div class="mx-3" style="border-top:1px solid #F3F4F6"></div>
+
+    <div class="px-3 py-2 space-y-0.5">
+      <a href="#" class="nav-item"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>Shared with me</a>
+      <a href="../settings-profile/index.html" class="nav-item active"><svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Settings</a>
+    </div>
+
+    <div class="mx-3 mb-3 rounded-xl p-3" style="background:#E8EEFF">
+      <div class="flex items-center gap-2 mb-0.5">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#C7D2FE"><svg class="w-3.5 h-3.5" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg></div>
+        <span class="text-[12px] font-semibold" style="color:#3B4ECC">Explore free features</span>
+      </div>
+      <p class="text-[11px]" style="color:#6B7ADE">Credit left: 15</p>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════ MAIN CONTENT ═══════════════ -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-white">
+
+    <!-- ══════════════════════════ VIEW: PICKER (default) ═══════════════════════════════════════════════════════════ -->
+    <!-- List view removed: the datasource list lives in Settings → Workspace → Data Sources -->
+    <div id="view-list" class="view">
+      <!-- hidden placeholder: 'list' navigates back to settings -->
+    </div>
+    <div id="view-DEAD" class="view">
+      <!-- Top bar -->
+      <div class="h-11 flex-shrink-0 flex items-center px-5 gap-2" style="border-bottom:1px solid #E5E7EB">
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"><svg class="w-[18px] h-[18px] text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></button>
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></button>
+        <div class="w-px h-4 bg-gray-200 mx-1"></div>
+        <button onclick="window.location.href='../settings-profile/index.html'" class="text-[13px] hover:text-gray-700 transition-colors" style="color:#9CA3AF">Settings</button>
+        <svg class="w-3 h-3" style="color:#D1D5DB" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        <button onclick="window.location.href='../settings-profile/index.html'" class="text-[13px] hover:text-gray-700 transition-colors" style="color:#9CA3AF">Workspace</button>
+        <svg class="w-3 h-3" style="color:#D1D5DB" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        <span class="text-[13px] font-medium text-gray-700">Data Sources</span>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 overflow-y-auto px-8 py-7">
+
+        <!-- Page heading -->
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+            </div>
+            <div>
+              <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Datasources</h1>
+              <p class="text-[14px]" style="color:#9CA3AF">Manage your connected data sources and add new connections.</p>
+            </div>
+          </div>
+          <button onclick="showView('picker')" class="h-9 px-4 rounded-lg flex items-center gap-2 text-[13px] font-semibold text-white flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#5B63F6">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Datasource
+          </button>
+        </div>
+
+        <!-- Info banner -->
+        <div class="flex items-center gap-3 px-4 py-3 rounded-xl mb-7" style="border:1px solid #E5E7EB; background:#F9FAFB">
+          <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
+          <p class="text-[13px] text-gray-600">Connect data sources to unlock AI-powered analytics across all your workspaces.</p>
+        </div>
+
+        <!-- Filter row -->
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-1 p-1 rounded-full" style="background:#F3F4F6">
+            <button class="pill-tab active" onclick="filterTab(this)">All</button>
+            <button class="pill-tab" onclick="filterTab(this)">Ready</button>
+            <button class="pill-tab" onclick="filterTab(this)">In Review</button>
+            <button class="pill-tab" onclick="filterTab(this)">Error</button>
+          </div>
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z"/></svg>
+            <input type="text" placeholder="Search datasources..." class="h-8 pl-9 pr-3 text-[12px] rounded-lg w-52" style="border:1px solid #E5E7EB; color:#374151" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mb-7">
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#DBEAFE"><svg class="w-[18px] h-[18px]" style="color:#2563EB" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">Production DB</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#DCFCE7; color:#16A34A">Ready</span></div><p class="text-[11px]" style="color:#9CA3AF">Postgres · 47 tables</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#FEF3C7"><svg class="w-[18px] h-[18px]" style="color:#D97706" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">Analytics Store</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#DCFCE7; color:#16A34A">Ready</span></div><p class="text-[11px]" style="color:#9CA3AF">MySQL · 23 tables</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#DCFCE7"><svg class="w-[18px] h-[18px]" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">Q1 Sales Report</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#DCFCE7; color:#16A34A">Ready</span></div><p class="text-[11px]" style="color:#9CA3AF">CSV · 1 table</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#DCFCE7"><svg class="w-[18px] h-[18px]" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">Budget Forecast</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#FEF3C7; color:#D97706">In Review</span></div><p class="text-[11px]" style="color:#9CA3AF">Excel · 3 tables</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#DCFCE7"><svg class="w-[18px] h-[18px]" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">User Events</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#EEF2FF; color:#5B63F6">Processing</span></div><p class="text-[11px]" style="color:#9CA3AF">MongoDB · 8 tables</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EDE9FE"><svg class="w-[18px] h-[18px]" style="color:#7C3AED" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">Internal MCP API</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#EEF2FF; color:#5B63F6">Processing</span></div><p class="text-[11px]" style="color:#9CA3AF">MCP Server · 0 tables</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#FEE2E2"><svg class="w-[18px] h-[18px]" style="color:#EF4444" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg></div>
+              <div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><p class="text-[13px] font-semibold text-gray-900 truncate">Legacy ERP</p><span class="text-[10px] font-semibold px-1.5 h-[17px] rounded-full flex items-center flex-shrink-0" style="background:#FEE2E2; color:#EF4444">Error</span></div><p class="text-[11px]" style="color:#9CA3AF">SQL Server · 134 tables</p></div>
+            </div>
+        </div>
+
+        <!-- Steps + CTA -->
+        <div class="rounded-xl p-5" style="border:1px solid #E5E7EB">
+          <p class="text-[11px] font-semibold uppercase tracking-widest mb-4" style="color:#9CA3AF">Three steps to insights</p>
+          <div class="grid grid-cols-3 gap-4 mb-5">
+            <div class="rounded-xl p-4" style="border:1px solid #E5E7EB"><div class="flex items-center gap-2.5 mb-2"><span class="w-5 h-5 rounded flex items-center justify-center text-[11px] font-bold flex-shrink-0" style="background:#EEF2FF; color:#5B63F6">1</span><span class="text-[13px] font-semibold text-gray-900">Select Source</span></div><p class="text-[12px] text-gray-500">Pick from databases, warehouses, or files</p></div>
+            <div class="rounded-xl p-4" style="border:1px solid #E5E7EB"><div class="flex items-center gap-2.5 mb-2"><span class="w-5 h-5 rounded flex items-center justify-center text-[11px] font-bold flex-shrink-0" style="background:#EEF2FF; color:#5B63F6">2</span><span class="text-[13px] font-semibold text-gray-900">Secure Connection</span></div><p class="text-[12px] text-gray-500">Authenticate with encrypted credentials</p></div>
+            <div class="rounded-xl p-4" style="border:1px solid #E5E7EB"><div class="flex items-center gap-2.5 mb-2"><span class="w-5 h-5 rounded flex items-center justify-center text-[11px] font-bold flex-shrink-0" style="background:#EEF2FF; color:#5B63F6">3</span><span class="text-[13px] font-semibold text-gray-900">Ask Anything</span></div><p class="text-[12px] text-gray-500">Query your data using plain English</p></div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-[14px] font-bold text-gray-900">Ready to add more data?</p><p class="text-[12px] text-gray-500 mt-0.5">Connect in seconds, query instantly, get insights faster</p></div>
+            <button onclick="showView('picker')" class="h-9 px-4 rounded-lg text-[13px] font-semibold text-white flex items-center gap-2 flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#5B63F6">Get Started <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></button>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end view-DEAD (old list) -->
+
+    <!-- ══════════════════════════ VIEW: PICKER ════════════════════════════════ -->
+    <div id="view-picker" class="view active">
+      <!-- Top bar with heading -->
+      <div class="flex-shrink-0 px-8 pt-7 pb-5" style="background:#F8F9FC; border-bottom:1px solid #ECEEF2">
+        <div class="flex items-start gap-3 mb-5">
+          <button onclick="window.location.href='../settings-profile/index.html'" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white border border-gray-200 transition-colors mt-0.5 flex-shrink-0" style="background:white">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+          </button>
+          <div>
+            <h1 class="text-[22px] font-bold text-gray-900 leading-tight">Add Datasource</h1>
+            <p class="text-[13px] text-gray-400 mt-0.5">Choose a connector to connect more data to your workspace</p>
+          </div>
+        </div>
+        <!-- Search -->
+        <div class="flex gap-3">
+          <div class="relative flex-1">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z"/></svg>
+            <input type="text" placeholder="Search connectors..." class="w-full h-11 pl-11 pr-4 text-[13px] rounded-xl bg-white" style="border:1.5px solid #E5E7EB; color:#374151; outline:none" oninput="filterConnectors(this.value)" onfocus="this.style.borderColor='#A5B4FC'" onblur="this.style.borderColor='#E5E7EB'" />
+          </div>
+          <button class="w-11 h-11 rounded-xl flex items-center justify-center bg-white flex-shrink-0" style="border:1.5px solid #E5E7EB">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-8 py-6">
+        <!-- DATABASE -->
+        <div class="connector-group mb-7" id="cat-database">
+          <p class="text-[11px] font-bold uppercase tracking-widest mb-3" style="color:#9CA3AF">Database</p>
+          <div class="grid grid-cols-4 gap-3">
+            <div class="connector-card" data-name="postgres" onclick="selectConnector('Postgres', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#EFF6FF">
+                <svg class="w-7 h-7" style="color:#1D4ED8" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">Postgres</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Connect to PostgreSQL databases with advanced querying capabilities</p>
+            </div>
+            <div class="connector-card" data-name="mysql" onclick="selectConnector('MySQL', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#FFF7ED">
+                <svg class="w-7 h-7" style="color:#C2410C" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">MySQL</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Connect to MySQL databases for reliable data integration</p>
+            </div>
+            <div class="connector-card" data-name="mongodb" onclick="selectConnector('MongoDB', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#F0FDF4">
+                <svg class="w-7 h-7" style="color:#15803D" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">MongoDB</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Connect to MongoDB for NoSQL document-based data</p>
+            </div>
+            <div class="connector-card" data-name="sql server" onclick="selectConnector('SQL Server', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#FEF2F2">
+                <svg class="w-7 h-7" style="color:#B91C1C" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">SQL Server</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Microsoft SQL Server database connections</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILE -->
+        <div class="connector-group mb-7" id="cat-file">
+          <p class="text-[11px] font-bold uppercase tracking-widest mb-3" style="color:#9CA3AF">File</p>
+          <div class="grid grid-cols-4 gap-3">
+            <div class="connector-card" data-name="excel" onclick="selectConnector('Excel', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#F0FDF4">
+                <svg class="w-7 h-7" style="color:#15803D" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125v-5.25A1.875 1.875 0 014.125 11.25h.375M18 10.5V5.25A2.25 2.25 0 0015.75 3h-7.5A2.25 2.25 0 006 5.25v13.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 11.25l1.5 1.5 3-3"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">Excel</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Upload and connect Excel files for data analysis</p>
+            </div>
+            <div class="connector-card" data-name="csv" onclick="selectConnector('CSV', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#ECFDF5">
+                <svg class="w-7 h-7" style="color:#059669" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">CSV</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Import CSV files with flexible formatting options</p>
+            </div>
+            <div class="connector-card" data-name="json" onclick="selectConnector('JSON / JSONL', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#F5F3FF">
+                <svg class="w-7 h-7" style="color:#7C3AED" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">JSON / JSONL</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Upload JSON or JSONL files for structured data import</p>
+            </div>
+            <div class="connector-card" data-name="google sheets" onclick="selectConnector('Google Sheets', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#F0FDF4">
+                <svg class="w-7 h-7" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M3 9h18M3 15h18M9 3v18"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">Google Sheets</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Sync live data from Google Sheets spreadsheets</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- API -->
+        <div class="connector-group" id="cat-api">
+          <p class="text-[11px] font-bold uppercase tracking-widest mb-3" style="color:#9CA3AF">API &amp; Services</p>
+          <div class="grid grid-cols-4 gap-3">
+            <div class="connector-card" data-name="rest api" onclick="selectConnector('REST API', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#EEF2FF">
+                <svg class="w-7 h-7" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">REST API</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Connect to any REST API endpoint with custom auth</p>
+            </div>
+            <div class="connector-card" data-name="mcp server" onclick="selectConnector('MCP Server', this)">
+              <div class="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style="background:#F5F3FF">
+                <svg class="w-7 h-7" style="color:#7C3AED" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-900 mb-1.5">MCP Server</p>
+              <p class="text-[11px] text-gray-400 leading-snug">Connect to MCP-compatible AI data servers</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end view-picker -->
+
+    <!-- ══════════════════════════ VIEW: FORM ══════════════════════════════════ -->
+    <div id="view-form" class="view">
+
+      <!-- Breadcrumb bar — identical to settings-profile -->
+      <div class="flex items-center gap-2 px-6 h-11 border-b border-gray-100 flex-shrink-0">
+        <button onclick="showView('picker')" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+        <button onclick="showView('picker')" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+        </button>
+        <button onclick="window.location.href='../settings-profile/index.html'" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Settings</button>
+        <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        <button onclick="showView('picker')" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Add Datasource</button>
+        <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        <span id="form-breadcrumb" class="text-[13px] text-gray-500">Postgres</span>
+      </div>
+
+      <!-- Scrollable content — identical layout to settings-profile -->
+      <div class="flex-1 overflow-y-auto px-8 py-7">
+        <div class="max-w-xl">
+
+          <!-- Page heading -->
+          <div class="flex items-center gap-3 mb-0.5">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path stroke-linecap="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path stroke-linecap="round" d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+            </div>
+            <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add <span id="form-title">Postgres</span></h1>
+          </div>
+          <p class="text-[14px] text-gray-400 mb-6 mt-0.5">Configure your connection step by step.</p>
+
+          <!-- Single card — stepper inside, like settings single-card pattern -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card">
+
+            <!-- Card header: stepper -->
+            <div class="flex items-center px-5 py-4 border-b border-gray-100">
+              <div class="flex items-center gap-2">
+                <span id="snum-1" class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 text-white" style="background:#5B63F6">1</span>
+                <span id="slabel-1" class="text-[13px] font-medium text-gray-900 whitespace-nowrap">General Info</span>
+              </div>
+              <div id="line-1" class="step-line mx-3"></div>
+              <div class="flex items-center gap-2">
+                <span id="snum-2" class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-medium flex-shrink-0" style="border:1.5px solid #E5E7EB; color:#9CA3AF">2</span>
+                <span id="slabel-2" class="text-[13px] text-gray-400 whitespace-nowrap">Connection</span>
+              </div>
+              <div id="line-2" class="step-line mx-3"></div>
+              <div class="flex items-center gap-2">
+                <span id="snum-3" class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-medium flex-shrink-0" style="border:1.5px solid #E5E7EB; color:#9CA3AF">3</span>
+                <span id="slabel-3" class="text-[13px] text-gray-400 whitespace-nowrap">Select Tables</span>
+              </div>
+            </div>
+
+            <!-- ── Step 1: General Info ── -->
+            <div id="form-step-1" class="p-5">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">General Information</p>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Connection Name <span class="text-red-400">*</span></label>
+                  <input type="text" placeholder="e.g. Production Analytics Database"
+                    class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                </div>
+                <div>
+                  <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description <span class="text-gray-400 font-normal">(optional)</span></label>
+                  <textarea placeholder="Briefly describe the purpose of this connection…" rows="3"
+                    class="w-full px-3 py-2 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"></textarea>
+                </div>
+              </div>
+              <div class="flex justify-end pt-4 mt-4 border-t border-gray-100">
+                <button onclick="goToStep(2)" class="px-4 h-9 rounded-lg text-[13px] font-medium text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Continue</button>
+              </div>
+            </div>
+
+            <!-- ── Step 2: Connection Details ── -->
+            <div id="form-step-2" class="p-5 hidden">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Connection Details</p>
+              <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Host <span class="text-red-400">*</span></label>
+                    <input type="text" placeholder="db.example.com"
+                      class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Port <span class="text-red-400">*</span></label>
+                    <input type="text" placeholder="5432"
+                      class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Database Name <span class="text-red-400">*</span></label>
+                  <input type="text" placeholder="e.g. production_db"
+                    class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Username <span class="text-red-400">*</span></label>
+                    <input type="text" placeholder="admin"
+                      class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Password <span class="text-red-400">*</span></label>
+                    <input type="password" placeholder="••••••••"
+                      class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                  </div>
+                </div>
+                <!-- SSL toggle — matches settings workspace toggle style -->
+                <div class="flex items-center justify-between py-3 px-3 rounded-lg bg-gray-50 border border-gray-100">
+                  <div>
+                    <p class="text-[13px] font-medium text-gray-900">Enable SSL / TLS</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Use an encrypted connection (recommended)</p>
+                  </div>
+                  <button id="ssl-toggle" data-on="true" onclick="toggleSSL()"
+                    class="w-9 h-5 rounded-full relative flex-shrink-0 transition-colors" style="background:#5B63F6">
+                    <span id="ssl-knob" class="w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] shadow-sm" style="left:calc(100% - 3px - 14px)"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
+                <button onclick="goToStep(1)"
+                  class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Back</button>
+                <button id="test-btn" onclick="testConnection()"
+                  class="px-4 h-9 rounded-lg text-[13px] font-medium text-white flex items-center gap-2 hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                  Test Connection
+                </button>
+              </div>
+            </div>
+
+            <!-- ── Step 3: Select Tables ── -->
+            <div id="form-step-3" class="p-5 hidden">
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Select Tables</p>
+                <span class="text-[11px] font-semibold px-2 h-5 rounded-full flex items-center" style="background:#EEF2FF; color:#5B63F6">47 tables</span>
+              </div>
+              <p class="text-[13px] text-gray-400 mb-4">Choose which tables to expose to the AI.</p>
+              <div class="relative mb-3">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z"/></svg>
+                <input type="text" placeholder="Search tables…"
+                  class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
+              <label class="flex items-center gap-3 px-1 pb-2.5 mb-1 border-b border-gray-100 cursor-pointer">
+                <input type="checkbox" id="select-all" class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" onchange="toggleAll(this)" />
+                <span class="text-[12px] font-semibold text-gray-500 select-none">Select all tables</span>
+              </label>
+              <div class="max-h-52 overflow-y-auto">
+                <div class="tbl-row" onclick="toggleTableRow(this)"><input type="checkbox" checked class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" /><div class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.375 19.5h17.25M3.375 9h17.25M3.375 14.25h17.25"/></svg></div><span class="text-[13px] font-medium text-gray-900 flex-1">users</span><span class="text-[11px] text-gray-400">2.4K rows</span></div>
+                <div class="tbl-row" onclick="toggleTableRow(this)"><input type="checkbox" checked class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" /><div class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.375 19.5h17.25M3.375 9h17.25M3.375 14.25h17.25"/></svg></div><span class="text-[13px] font-medium text-gray-900 flex-1">orders</span><span class="text-[11px] text-gray-400">18.7K rows</span></div>
+                <div class="tbl-row" onclick="toggleTableRow(this)"><input type="checkbox" checked class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" /><div class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.375 19.5h17.25M3.375 9h17.25M3.375 14.25h17.25"/></svg></div><span class="text-[13px] font-medium text-gray-900 flex-1">products</span><span class="text-[11px] text-gray-400">847 rows</span></div>
+                <div class="tbl-row" onclick="toggleTableRow(this)"><input type="checkbox" class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" /><div class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.375 19.5h17.25M3.375 9h17.25M3.375 14.25h17.25"/></svg></div><span class="text-[13px] font-medium text-gray-900 flex-1">revenue_monthly</span><span class="text-[11px] text-gray-400">36 rows</span></div>
+                <div class="tbl-row" onclick="toggleTableRow(this)"><input type="checkbox" class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" /><div class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.375 19.5h17.25M3.375 9h17.25M3.375 14.25h17.25"/></svg></div><span class="text-[13px] font-medium text-gray-900 flex-1">customers</span><span class="text-[11px] text-gray-400">5.1K rows</span></div>
+                <div class="tbl-row" onclick="toggleTableRow(this)"><input type="checkbox" class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" /><div class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.375 19.5h17.25M3.375 9h17.25M3.375 14.25h17.25"/></svg></div><span class="text-[13px] font-medium text-gray-900 flex-1">sessions</span><span class="text-[11px] text-gray-400">124K rows</span></div>
+              </div>
+              <div class="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
+                <button onclick="goToStep(2)"
+                  class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Back</button>
+                <button onclick="window.location.href='../settings-profile/index.html'"
+                  class="px-4 h-9 rounded-lg text-[13px] font-medium text-white flex items-center gap-2 hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                  Save Datasource
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                </button>
+              </div>
+            </div>
+
+          </div><!-- end single card -->
+        </div><!-- end max-w-xl -->
+      </div>
+    </div><!-- end view-form -->
+
+  </main>
+
+  <script>
+    function showView(name) {
+      if (name === 'list') { window.location.href = '../settings-profile/index.html'; return; }
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+      history.replaceState(null, '', '#' + name);
+    }
+    function selectConnector(name, el) {
+      document.querySelectorAll('.connector-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('form-title').textContent = name;
+      document.getElementById('form-breadcrumb').textContent = name;
+      goToStep(1);
+      setTimeout(() => showView('form'), 150);
+    }
+    function goToStep(step) {
+      [1,2,3].forEach(n => document.getElementById('form-step-' + n).classList.toggle('hidden', n !== step));
+      for (let n = 1; n <= 3; n++) {
+        const num = document.getElementById('snum-' + n);
+        const lbl = document.getElementById('slabel-' + n);
+        num.style.background = ''; num.style.color = '#9CA3AF'; num.style.border = '1.5px solid #E5E7EB';
+        lbl.style.color = '#9CA3AF'; lbl.style.fontWeight = '400';
+      }
+      document.getElementById('line-1').classList.remove('done');
+      document.getElementById('line-2').classList.remove('done');
+      for (let n = 1; n <= step; n++) {
+        const num = document.getElementById('snum-' + n);
+        const lbl = document.getElementById('slabel-' + n);
+        num.style.background = '#5B63F6'; num.style.color = '#fff'; num.style.border = 'none';
+        lbl.style.color = '#111827'; lbl.style.fontWeight = '500';
+      }
+      if (step >= 2) document.getElementById('line-1').classList.add('done');
+      if (step >= 3) document.getElementById('line-2').classList.add('done');
+    }
+    function testConnection() {
+      const btn = document.getElementById('test-btn');
+      btn.disabled = true; btn.style.opacity = '0.8';
+      btn.innerHTML = `<svg class="w-4 h-4 spin" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>Testing…`;
+      setTimeout(() => {
+        btn.style.background = '#16A34A'; btn.style.opacity = '1';
+        btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>Connected!`;
+        setTimeout(() => {
+          btn.disabled = false; btn.style.background = '#5B63F6';
+          btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>Test Connection`;
+          goToStep(3);
+        }, 900);
+      }, 1800);
+    }
+    function toggleSSL() {
+      const btn = document.getElementById('ssl-toggle');
+      const knob = document.getElementById('ssl-knob');
+      const on = btn.dataset.on === 'true';
+      btn.dataset.on = String(!on);
+      btn.style.background = on ? '#E5E7EB' : '#5B63F6';
+      knob.style.left = on ? '3px' : 'calc(100% - 3px - 14px)';
+    }
+    function toggleTableRow(row) { const cb = row.querySelector('input[type="checkbox"]'); cb.checked = !cb.checked; }
+    function toggleAll(cb) { document.querySelectorAll('#form-step-3 .tbl-row input[type="checkbox"]').forEach(c => { c.checked = cb.checked; }); }
+    function filterTab(el) { document.querySelectorAll('.pill-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
+    function filterConnectors(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.connector-card').forEach(card => {
+        const name = (card.dataset.name || '').toLowerCase();
+        card.style.display = (!q || name.includes(q)) ? '' : 'none';
+      });
+    }
+    function toggleWorkspace(id) {
+      document.getElementById(id+'-sub')?.classList.toggle('open');
+      document.getElementById(id+'-btn')?.classList.toggle('open');
+    }
+    // Handle back/forward navigation (picker is default, no list on this page)
+    window.addEventListener('hashchange', function() {
+      const h = location.hash;
+      if (h === '#form') showView('form');
+      else showView('picker');
+    });
+  </script>
+</body>
+</html>
