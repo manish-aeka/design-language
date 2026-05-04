@@ -46,6 +46,9 @@
     .stab:not(.active):hover{color:#374151}
     .ws-panel{display:none}
     .ws-panel.active{display:block}
+    .ws-utab{cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:0 4px;height:38px;font-size:14px;color:#6B7280;background:transparent;border:none;border-bottom:2px solid transparent;transition:color 120ms,border-color 120ms;white-space:nowrap}
+    .ws-utab:hover{color:#374151}
+    .ws-utab.active{color:#5B63F6;font-weight:600;border-bottom-color:#5B63F6}
     .role-select{background:none;border:none;font-size:13px;color:#6B7280;cursor:pointer;outline:none}
     .role-select:hover{color:#111}
     .type-dropdown{display:none}
@@ -294,12 +297,24 @@
       <!-- ══ WORKSPACE ══ -->
       <div id="section-workspace" class="settings-panel">
 
-        <!-- Workspace sub-tabs -->
-        <div class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
-          <button id="wstab-info" onclick="setWsTab('info')" class="stab active">General</button>
-          <button id="wstab-users" onclick="setWsTab('users')" class="stab">Members</button>
-          <button id="wstab-datasources" onclick="setWsTab('datasources')" class="stab">Integrations</button>
-          <button id="wstab-billing" onclick="setWsTab('billing')" class="stab">Billing</button>
+        <!-- Underline tab bar -->
+        <div class="flex items-center gap-6 border-b border-gray-200 mb-7">
+          <button id="wstab-info" onclick="setWsTab('info')" class="ws-utab active">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+            General
+          </button>
+          <button id="wstab-users" onclick="setWsTab('users')" class="ws-utab">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+            Members
+          </button>
+          <button id="wstab-datasources" onclick="setWsTab('datasources')" class="ws-utab">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+            Integrations
+          </button>
+          <button id="wstab-billing" onclick="setWsTab('billing')" class="ws-utab">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+            Billing
+          </button>
         </div>
 
         <!-- Sub-panel: Workspace Info -->
@@ -566,7 +581,6 @@
             </div>
           </div>
         </div><!-- /billing -->
-        </div>
 
       </div>
 
