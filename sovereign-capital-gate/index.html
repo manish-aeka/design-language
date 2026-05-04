@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -101,9 +101,9 @@
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
 
-  <!-- ═══════════════════════════════════════════
+  <!-- -------------------------------------------
        SIDEBAR  220px fixed
-  ════════════════════════════════════════════ -->
+  -------------------------------------------- -->
   <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
@@ -114,7 +114,8 @@
         <svg id="ws-switcher-chevron" class="w-4 h-4 text-gray-400 flex-shrink-0" style="transition:transform 150ms ease" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div id="ws-switcher-dropdown" class="ws-switcher-dropdown">
-        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+
       </div>
     </div>
 
@@ -126,11 +127,11 @@
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-        Create Dashboard
+        New Dashboard
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-        AI Chat
+        New Chat
       </a>
     </nav>
 
@@ -145,7 +146,7 @@
       </div>
       <div id="projects-list" class="space-y-0.5 mt-0.5">
 
-        <!-- Workspace: My Private Project — PINNED (always first) -->
+        <!-- Workspace: My Private Project � PINNED (always first) -->
         <div>
           <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
             <button onclick="toggleWorkspace('ws2')" id="ws2-btn"
@@ -160,7 +161,7 @@
           </div>
           <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
               Q4 Strategy
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
@@ -172,7 +173,7 @@
               Project Brief
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
               Investor Update
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
@@ -184,7 +185,7 @@
               KPI Tracker
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
               Product Feedback
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
@@ -192,7 +193,7 @@
               User Analytics
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
               Sprint Planning
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
@@ -206,7 +207,7 @@
           </div>
         </div>
 
-        <!-- Workspace: Sovereign Capital Gate — ACTIVE -->
+        <!-- Workspace: Sovereign Capital Gate � ACTIVE -->
         <div>
           <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px;">
             <button onclick="toggleWorkspace('ws1')" id="ws1-btn"
@@ -217,7 +218,7 @@
           </div>
           <div id="ws1-sub" class="ws-submenu open pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
               Chat
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
@@ -277,9 +278,9 @@
 
   </aside>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- -------------------------------------------
        MAIN CONTENT AREA
-  ════════════════════════════════════════════ -->
+  -------------------------------------------- -->
   <main class="flex-1 flex flex-col overflow-hidden">
 
     <!-- Breadcrumb bar -->
@@ -310,7 +311,7 @@
           </div>
           <div>
             <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Sovereign Capital Gate</h1>
-            <p class="text-sm text-gray-500 mt-0.5">11 items · Last updated about 1 hour ago</p>
+            <p class="text-sm text-gray-500 mt-0.5">11 items � Last updated about 1 hour ago</p>
           </div>
         </div>
       </div>
@@ -318,14 +319,14 @@
       <!-- Action cards row -->
       <div class="grid grid-cols-4 gap-4 mb-7">
 
-        <!-- Card: Create Dashboard -->
-        <button onclick="openCreateModal('Create Dashboard')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Dashboard -->
+        <button onclick="openCreateModal('New Dashboard')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Dashboard</p>
-            <p class="text-[13px] text-gray-500">Build charts &amp; visual reports</p>
+            <p class="text-sm font-medium text-gray-900">New Dashboard</p>
+            <p class="text-[13px] text-gray-500">Charts, KPIs &amp; visual reports</p>
           </div>
         </button>
 
@@ -335,8 +336,8 @@
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Document</p>
-            <p class="text-[13px] text-gray-500">Write, edit &amp; share docs</p>
+            <p class="text-sm font-medium text-gray-900">New Document</p>
+            <p class="text-[13px] text-gray-500">Write, collaborate &amp; share</p>
           </div>
         </button>
 
@@ -346,8 +347,8 @@
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M3.75 3H2.25m0 0H1.5m19.5 0h-.75m0 0H21.75M12 16.5v4.5m-3 0h6"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Presentation</p>
-            <p class="text-[13px] text-gray-500">Create slides &amp; decks</p>
+            <p class="text-sm font-medium text-gray-900">New Presentation</p>
+            <p class="text-[13px] text-gray-500">Slides, decks &amp; pitches</p>
           </div>
         </button>
 
@@ -357,19 +358,19 @@
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Form</p>
-            <p class="text-[13px] text-gray-500">Collect data with forms</p>
+            <p class="text-sm font-medium text-gray-900">New Form</p>
+            <p class="text-[13px] text-gray-500">Surveys, feedback &amp; data entry</p>
           </div>
         </button>
 
-        <!-- Card: AI Chat -->
-        <button onclick="openCreateModal('AI Chat')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Chat -->
+        <button onclick="openCreateModal('New Chat')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
-            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">AI Chat</p>
-            <p class="text-[13px] text-gray-500">Generate insights from a prompt</p>
+            <p class="text-sm font-medium text-gray-900">New Chat</p>
+            <p class="text-[13px] text-gray-500">Ask questions, get AI answers</p>
           </div>
         </button>
 
@@ -380,7 +381,7 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">Add Datasource</p>
-            <p class="text-[13px] text-gray-500">Link databases, APIs &amp; more</p>
+            <p class="text-[13px] text-gray-500">Connect databases, APIs &amp; files</p>
           </div>
         </button>
 
@@ -398,7 +399,7 @@
             <span class="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
               <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
             </span>
-            <input id="search-input" type="text" placeholder="Search…"
+            <input id="search-input" type="text" placeholder="Search items..."
               oninput="filterItems(this.value)"
               class="h-9 w-64 pl-8 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent focus:w-80 transition-all" />
           </div>
@@ -415,21 +416,36 @@
             <div id="type-dropdown"
               class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[180px] bg-white"
               style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" style="background:#EEF2FF">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-                <span class="text-[13px] font-medium" style="color:#5B63F6">Chat</span>
+              <!-- Chat -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+                <span class="text-[13px] text-gray-700">Chat</span>
               </div>
+              <!-- Dashboard -->
               <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
                 <span class="text-[13px] text-gray-700">Dashboard</span>
               </div>
+              <!-- Document -->
               <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                 <span class="text-[13px] text-gray-700">Document</span>
               </div>
+              <!-- Presentation -->
               <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#6B7280" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-                <span class="text-[13px] text-gray-700">Other</span>
+                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M3.75 3H2.25m0 0H1.5m19.5 0h-.75m0 0H21.75M12 16.5v4.5m-3 0h6"/></svg>
+                <span class="text-[13px] text-gray-700">Presentation</span>
+              </div>
+              <!-- Form -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+                
+                <span class="text-[13px] text-gray-700">Form</span>
+              </div>
+              <!-- Datasource -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#6366F1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="text-[13px] text-gray-700">Datasource</span>
               </div>
             </div>
           </div>
@@ -453,22 +469,62 @@
         </div>
       </div>
 
-      <!-- Items grid — 3 items for Sovereign Capital Gate -->
+      <!-- Items grid � 3 items for Sovereign Capital Gate -->
       <div class="grid grid-cols-4 gap-4">
 
-        <!-- Card: Chat -->
+         <!-- Card: Capital Flow Analysis � Dashboard -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
+            <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Capital Flow Analysis</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F0FDF4;color:#16A34A">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                Dashboard
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 2 hours ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card: Deal Memo Q2 � Document -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
+            <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Deal Memo Q2</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFF7ED;color:#F97316">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                Document
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 3 hours ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card: Investor Briefing � Chat -->
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
             <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Chat</p>
+              <p class="text-sm font-medium text-gray-900">Investor Briefing</p>
               <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
                 Chat
               </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated about 1 hour ago</p>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 5 hours ago</p>
             </div>
             <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -516,67 +572,9 @@
           </div>
         </div>
 
-        <!-- Card: Capital Flow Analysis — Dashboard -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
-            <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-          </div>
-          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-900">Capital Flow Analysis</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F0FDF4;color:#16A34A">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-                Dashboard
-              </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated 2 hours ago</p>
-            </div>
-            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-            </button>
-          </div>
-        </div>
+       
 
-        <!-- Card: Deal Memo Q2 — Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
-            <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-          </div>
-          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-900">Deal Memo Q2</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFF7ED;color:#F97316">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                Document
-              </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated 3 hours ago</p>
-            </div>
-            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Card: Investor Briefing — Chat -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
-            <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-          </div>
-          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-900">Investor Briefing</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-                Chat
-              </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated 5 hours ago</p>
-            </div>
-            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Card: Risk Register — Document -->
+        <!-- Card: Risk Register � Document -->
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
@@ -596,7 +594,7 @@
           </div>
         </div>
 
-        <!-- Card: Portfolio Overview — Dashboard -->
+        <!-- Card: Portfolio Overview � Dashboard -->
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
             <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
@@ -616,7 +614,7 @@
           </div>
         </div>
 
-        <!-- Card: Valuation Model — Chat -->
+        <!-- Card: Valuation Model � Chat -->
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
             <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
@@ -625,7 +623,7 @@
             <div>
               <p class="text-sm font-medium text-gray-900">Valuation Model</p>
               <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
                 Chat
               </span>
               <p class="text-[11px] text-gray-400 mt-1">Updated 2 days ago</p>
@@ -636,7 +634,7 @@
           </div>
         </div>
 
-        <!-- Card: Exit Strategy — Document -->
+        <!-- Card: Exit Strategy � Document -->
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
@@ -656,7 +654,7 @@
           </div>
         </div>
 
-        <!-- Card: Market Signals — Chat -->
+        <!-- Card: Market Signals � Chat -->
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
             <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
@@ -665,7 +663,7 @@
             <div>
               <p class="text-sm font-medium text-gray-900">Market Signals</p>
               <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
                 Chat
               </span>
               <p class="text-[11px] text-gray-400 mt-1">Updated 3 days ago</p>
@@ -769,7 +767,7 @@
       if (e.target === projModal) closeNewProjectModal();
     });
 
-    // ── Workspace switcher ──────────────────────────────────────────
+    // -- Workspace switcher ------------------------------------------
     var wsData = [
       { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
       { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false }
@@ -840,14 +838,14 @@
       <div class="px-6 py-5 space-y-4">
         <div>
           <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name</label>
-          <input id="modal-name" type="text" placeholder="Enter a name…"
+          <input id="modal-name" type="text" placeholder="Enter a name�"
             class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
         </div>
         <div>
           <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Select project</label>
           <div class="relative">
             <select class="w-full h-9 pl-3 pr-8 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all">
-              <option value="" disabled selected>Choose a project…</option>
+              <option value="" disabled selected>Choose a project�</option>
               <option value="scg">Sovereign Capital Gate</option>
               <option value="ws2">My Private Project</option>
             </select>
@@ -879,7 +877,7 @@
       <div class="px-6 py-5 space-y-4">
         <div>
           <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name <span class="text-red-400">*</span></label>
-          <input id="proj-name" type="text" placeholder="Project name…"
+          <input id="proj-name" type="text" placeholder="Project name�"
             class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
         </div>
         <div>
