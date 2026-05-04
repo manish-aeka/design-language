@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Workspace — Aibii</title>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+          colors: { brand: { primary: '#5B63F6', secondary: '#7C6FF7' } },
+        },
+      },
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    input:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(91,99,246,0.12); }
+    #create-btn:not(:disabled) { box-shadow: 0 2px 8px rgba(91,99,246,0.30); }
+    #create-btn:not(:disabled):hover { background: #4850e4 !important; }
+    .back-link:hover svg { transform: translateX(-2px); }
+    .back-link svg { transition: transform 150ms ease; }
+  </style>
+</head>
+<body class="font-sans bg-[#F5F6FA] min-h-screen flex flex-col">
+
+  <!-- ── Top bar ── -->
+  <header class="bg-white border-b border-gray-100 h-14 flex items-center px-6 flex-shrink-0">
+    <a href="../recent-view/index.html" class="back-link flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+      </svg>
+      Back
+    </a>
+    <div class="mx-auto flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#5B63F6,#7C6FF7)">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
+        </svg>
+      </div>
+      <span class="text-[15px] font-bold text-gray-900">Aibii</span>
+    </div>
+    <!-- spacer to balance back link -->
+    <div class="w-[60px]"></div>
+  </header>
+
+  <!-- ── Main content ── -->
+  <main class="flex-1 overflow-y-auto flex items-start justify-center px-6 py-16">
+    <div class="w-full max-w-[540px]">
+
+      <!-- Header row: avatar preview + title -->
+      <div class="flex items-center gap-5 mb-10">
+        <div id="ws-avatar"
+          class="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-[28px] font-bold flex-shrink-0 transition-colors"
+          style="background:#CBD5E1">
+          <svg class="w-7 h-7 text-white/70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-[24px] font-bold text-gray-900 leading-tight">Create a workspace</h1>
+          <p class="text-sm text-gray-500 mt-1">A shared space for your team's dashboards and data.</p>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-8 py-7 space-y-5">
+
+          <!-- Name -->
+          <div>
+            <label class="block text-[13px] font-semibold text-gray-700 mb-1.5">
+              Workspace name <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="ws-name"
+              type="text"
+              placeholder="e.g. Marketing Team, Q3 Launch, Research..."
+              oninput="onNameInput(this.value)"
+              autocomplete="off"
+              class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#5B63F6] transition-all"
+            />
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-[13px] font-semibold text-gray-700 mb-1.5">
+              Description
+              <span class="text-[11px] font-normal text-gray-400 ml-1">(optional)</span>
+            </label>
+            <textarea
+              id="ws-desc"
+              rows="4"
+              placeholder="What will your team use this workspace for?"
+              class="w-full px-3.5 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:border-[#5B63F6] transition-all"
+            ></textarea>
+          </div>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="border-t border-gray-100"></div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3 px-8 py-5">
+          <a href="../recent-view/index.html"
+            class="flex-1 h-11 flex items-center justify-center rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+            Cancel
+          </a>
+          <button
+            id="create-btn"
+            onclick="createWorkspace()"
+            disabled
+            class="flex-1 h-11 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style="background:#5B63F6">
+            Create workspace
+          </button>
+        </div>
+      </div>
+
+      <!-- Helper hint -->
+      <p class="text-center text-[12px] text-gray-400 mt-5">
+        You can always edit workspace details later from Settings.
+      </p>
+
+    </div>
+  </main>
+
+  <script>
+    var AVATAR_COLORS = ['#3B5BDB','#5B63F6','#7C3AED','#0EA5E9','#16A34A','#F97316','#EC4899','#DC2626'];
+
+    function pickColor(name) {
+      var idx = name.charCodeAt(0) % AVATAR_COLORS.length;
+      return AVATAR_COLORS[idx];
+    }
+
+    function onNameInput(val) {
+      var btn = document.getElementById('create-btn');
+      var avatar = document.getElementById('ws-avatar');
+      var trimmed = val.trim();
+
+      btn.disabled = trimmed.length === 0;
+
+      if (trimmed.length > 0) {
+        avatar.style.background = pickColor(trimmed.toLowerCase());
+        avatar.innerHTML = '<span>' + trimmed.charAt(0).toUpperCase() + '</span>';
+      } else {
+        avatar.style.background = '#CBD5E1';
+        avatar.innerHTML = '<svg class="w-7 h-7 text-white/70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>';
+      }
+    }
+
+    function createWorkspace() {
+      var name = document.getElementById('ws-name').value.trim();
+      var desc = document.getElementById('ws-desc').value.trim();
+      if (!name) return;
+
+      // Load existing, append new workspace, save
+      var saved = [];
+      try { saved = JSON.parse(localStorage.getItem('aibii_workspaces') || '[]'); } catch(e) {}
+
+      saved.push({
+        id:      'ws-' + Date.now(),
+        name:    name,
+        desc:    desc,
+        initial: name.charAt(0).toUpperCase(),
+        color:   pickColor(name.toLowerCase()),
+        createdAt: Date.now()
+      });
+
+      localStorage.setItem('aibii_workspaces', JSON.stringify(saved));
+
+      // Go back to recent-view — new workspace will appear in dropdown
+      window.location.href = '../recent-view/index.html';
+    }
+
+    // Allow Enter in name field to submit
+    document.getElementById('ws-name').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !document.getElementById('create-btn').disabled) createWorkspace();
+    });
+  </script>
+
+</body>
+</html>

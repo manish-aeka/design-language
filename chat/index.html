@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -80,6 +80,19 @@
     /* AI action button */
     .ai-action { transition: background-color 100ms ease, color 100ms ease; }
     .ai-action:hover { background: #E5E7EB; color: #374151; }
+    /* Workspace switcher dropdown */
+    .ws-switcher-dropdown { display: none; }
+    .ws-switcher-dropdown.open {
+      display: block;
+      position: fixed;
+      z-index: 40;
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding-top: 4px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -90,13 +103,15 @@
   <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
-    <div class="px-4 py-3 border-b border-gray-100">
-      <button class="flex items-center gap-2 w-full text-left">
-        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-              style="background:#3B5BDB">M</span>
+    <div class="border-b border-gray-100" id="ws-switcher-wrapper">
+      <button onclick="toggleWsSwitcher()" class="flex items-center gap-2 w-full text-left px-4 py-3">
+        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
         <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
-        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        <svg id="ws-switcher-chevron" class="w-4 h-4 text-gray-400 flex-shrink-0" style="transition:transform 150ms ease" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
+      <div id="ws-switcher-dropdown" class="ws-switcher-dropdown">
+        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+      </div>
     </div>
 
     <!-- Primary nav -->
@@ -663,6 +678,62 @@
 
     // Scroll to bottom on load
     document.getElementById('messages-area').scrollTop = 9999;
+
+    // ── Workspace switcher ──────────────────────────────────────────
+    var wsData = [
+      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
+      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false }
+    ];
+    function renderWsSwitcherList() {
+      var list = document.getElementById('ws-switcher-list');
+      if (!list) return;
+      list.innerHTML = wsData.map(function(ws) {
+        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm hover:bg-gray-50 transition-colors text-left' + (ws.current ? ' bg-[#EEF2FF]' : '') + '">'
+          + '<span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
+          + '<span class="flex-1 text-sm text-gray-700 truncate' + (ws.current ? ' font-semibold' : '') + '">' + (ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name) + '</span>'
+          + (ws.current ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
+          + '</button>';
+      }).join('');
+    }
+    function positionWsDropdown() {
+      var wrapper = document.getElementById('ws-switcher-wrapper');
+      var dd = document.getElementById('ws-switcher-dropdown');
+      if (!wrapper || !dd) return;
+      var rect = wrapper.getBoundingClientRect();
+      dd.style.top    = (rect.bottom + 4) + 'px';
+      dd.style.left   = (rect.left + 8) + 'px';
+      dd.style.width  = (rect.width - 16) + 'px';
+    }
+    function toggleWsSwitcher() {
+      var dd = document.getElementById('ws-switcher-dropdown');
+      var ch = document.getElementById('ws-switcher-chevron');
+      var open = dd.classList.toggle('open');
+      if (ch) ch.style.transform = open ? 'rotate(180deg)' : '';
+      if (open) { renderWsSwitcherList(); positionWsDropdown(); }
+    }
+    function selectWorkspace(id) {
+      wsData.forEach(function(ws) { ws.current = ws.id === id; });
+      var ws = wsData.find(function(ws) { return ws.id === id; });
+      if (ws) {
+        var wrap = document.getElementById('ws-switcher-wrapper');
+        var nameEl = wrap ? wrap.querySelector('.truncate') : null;
+        var avatarEl = wrap ? wrap.querySelector('.rounded-full') : null;
+        if (nameEl) nameEl.textContent = ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name;
+        if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
+      }
+      document.getElementById('ws-switcher-dropdown').classList.remove('open');
+      var ch = document.getElementById('ws-switcher-chevron');
+      if (ch) ch.style.transform = '';
+    }
+    document.addEventListener('click', function(e) {
+      var wrap = document.getElementById('ws-switcher-wrapper');
+      var dd = document.getElementById('ws-switcher-dropdown');
+      if (dd && dd.classList.contains('open') && wrap && !wrap.contains(e.target)) {
+        dd.classList.remove('open');
+        var ch = document.getElementById('ws-switcher-chevron');
+        if (ch) ch.style.transform = '';
+      }
+    });
   </script>
 
 </body>
