@@ -60,9 +60,23 @@
     /* Tab transitions */
     .filter-tab { transition: background-color 120ms ease, box-shadow 120ms ease, color 120ms ease; }
 
-    /* Nav item hover */
-    .nav-item { transition: background-color 100ms ease; }
-    .nav-item:hover { background-color: #EEF2FF; }
+    /* List view */
+    #report-grid.list-view { display: flex !important; flex-direction: column; gap: 0; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
+    #report-grid.list-view .report-card { display: flex !important; flex-direction: row; align-items: center; border-radius: 0 !important; border: none; border-bottom: 1px solid #F3F4F6; box-shadow: none !important; }
+    #report-grid.list-view .report-card:last-child { border-bottom: none; }
+    #report-grid.list-view .report-card:hover { transform: none !important; background: #F9FAFB; }
+    /* Thumbnail → small icon square */
+    #report-grid.list-view .report-card > div:first-child { height: 40px !important; width: 40px !important; min-width: 40px; border-radius: 8px !important; margin: 10px 12px 10px 16px; flex-shrink: 0; }
+    #report-grid.list-view .report-card > div:first-child svg { width: 20px !important; height: 20px !important; }
+    /* Card body → horizontal row */
+    #report-grid.list-view .report-card > div:last-child { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 10px 16px 10px 0; min-width: 0; }
+    /* Name + badge + time row */
+    #report-grid.list-view .report-card > div:last-child > div:first-child { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 10px; min-width: 0; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child > p:first-child { margin: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child > span { margin-top: 0 !important; flex-shrink: 0; width: 96px; justify-content: center; overflow: hidden; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child > p:last-child { margin: 0; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+    /* Overflow button */
+    #report-grid.list-view .report-card > div:last-child > button { margin-top: 0 !important; opacity: 1; flex-shrink: 0; }
 
     /* Toggle button */
     .toggle-btn { transition: background-color 150ms ease, box-shadow 150ms ease, color 150ms ease; color: #9CA3AF; }
@@ -110,7 +124,8 @@
         <svg id="ws-switcher-chevron" class="w-4 h-4 text-gray-400 flex-shrink-0" style="transition:transform 150ms ease" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div id="ws-switcher-dropdown" class="ws-switcher-dropdown">
-        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+
       </div>
     </div>
 
@@ -123,11 +138,11 @@
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-        Create Dashboard
+        New Dashboard
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-        AI Chat
+        New Chat
       </a>
     </nav>
 
@@ -151,8 +166,9 @@
             </button>
             <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
             <!-- Pin icon -->
-            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="currentColor" viewBox="0 0 24 24" title="Pinned">
-              <path d="M16 2a1 1 0 00-1 1v1H9V3a1 1 0 00-2 0v1H6a2 2 0 00-2 2v1c0 2.21 1.34 4.11 3.25 4.93V19a1 1 0 00.55.89l3 1.5a1 1 0 00.9 0l3-1.5A1 1 0 0015 19v-7.07C16.66 11.11 18 9.21 18 7V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1z"/>
+            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Pinned">
+              <path d="M12 17v5"/>
+              <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76z"/>
             </svg>
           </div>
           <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
@@ -322,68 +338,57 @@
       <!-- Action cards row -->
       <div class="grid grid-cols-4 gap-4 mb-7">
 
-        <!-- Card: New Project -->
-        <button onclick="openNewProjectModal()" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
-            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
-          </div>
-          <div>
-            <p class="text-sm font-medium text-gray-900">Create Project</p>
-            <p class="text-[13px] text-gray-500">Organize work in a project</p>
-          </div>
-        </button>
-
-        <!-- Card: Create Dashboard -->
-        <button onclick="openCreateModal('Create Dashboard')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Dashboard -->
+        <button onclick="openCreateModal('New Dashboard')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Dashboard</p>
+            <p class="text-sm font-medium text-gray-900">New Dashboard</p>
             <p class="text-[13px] text-gray-500">Build charts &amp; visual reports</p>
           </div>
         </button>
 
-        <!-- Card: Create Document -->
-        <button onclick="openCreateModal('Create Document')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Document -->
+        <button onclick="openCreateModal('New Document')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Document</p>
+            <p class="text-sm font-medium text-gray-900">New Document</p>
             <p class="text-[13px] text-gray-500">Write, edit &amp; share docs</p>
           </div>
         </button>
 
-        <!-- Card: Create Presentation -->
-        <button onclick="openCreateModal('Create Presentation')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Presentation -->
+        <button onclick="openCreateModal('New Presentation')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M3.75 3H2.25m0 0H1.5m19.5 0h-.75m0 0H21.75M12 16.5v4.5m-3 0h6"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Presentation</p>
+            <p class="text-sm font-medium text-gray-900">New Presentation</p>
             <p class="text-[13px] text-gray-500">Create slides &amp; decks</p>
           </div>
         </button>
 
-        <!-- Card: Create Form -->
-        <button onclick="openCreateModal('Create Form')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Form -->
+        <button onclick="openCreateModal('New Form')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">Create Form</p>
+            <p class="text-sm font-medium text-gray-900">New Form</p>
             <p class="text-[13px] text-gray-500">Collect data with forms</p>
           </div>
         </button>
 
-        <!-- Card: AI chat -->
-        <button onclick="openCreateModal('AI Chat')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <!-- Card: New Chat -->
+        <button onclick="openCreateModal('New Chat')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
-            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-900">AI chat</p>
+            <p class="text-sm font-medium text-gray-900">New Chat</p>
             <p class="text-[13px] text-gray-500">Generate insights from a prompt</p>
           </div>
         </button>
@@ -419,6 +424,10 @@
             class="filter-tab h-8 px-4 rounded-full text-sm font-medium text-gray-500">
             Shared with me
           </button>
+          <button id="tab-everything" onclick="setTab('everything')"
+            class="filter-tab h-8 px-4 rounded-full text-sm font-medium text-gray-500">
+            Everything
+          </button>
         </div>
 
         <!-- Right: Search + Type filter + View toggle -->
@@ -426,12 +435,12 @@
 
           <!-- Search bar -->
           <div class="relative">
-            <span class="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
-              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             </span>
             <input id="search-input" type="text" placeholder="Search…"
               oninput="filterItems(this.value)"
-              class="h-9 w-64 pl-8 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent focus:w-80 transition-all" />
+              class="h-9 w-64 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent focus:w-80 transition-all" />
           </div>
 
           <!-- Type filter -->
@@ -440,31 +449,46 @@
               class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700"
               style="background:#F1F3F4; border:1px solid #E5E7EB">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-              Type
+              <span id="type-filter-label">Type</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div id="type-dropdown"
               class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[180px] bg-white"
               style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               <!-- Chat -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" style="background:#EEF2FF">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" style="background:#EEF2FF" onclick="setTypeFilter('chat', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
                 <span class="text-[13px] font-medium" style="color:#5B63F6">Chat</span>
               </div>
               <!-- Dashboard -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('dashboard', this)">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
                 <span class="text-[13px] text-gray-700">Dashboard</span>
               </div>
               <!-- Document -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('document', this)">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                 <span class="text-[13px] text-gray-700">Document</span>
               </div>
-              <!-- Other -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#6B7280" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-                <span class="text-[13px] text-gray-700">Other</span>
+              <!-- Presentation -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('presentation', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#8B5CF6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+                <span class="text-[13px] text-gray-700">Presentation</span>
+              </div>
+              <!-- Form -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('form', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+                <span class="text-[13px] text-gray-700">Form</span>
+              </div>
+              <!-- Datasource -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('datasource', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#0EA5E9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                <span class="text-[13px] text-gray-700">Datasource</span>
+              </div>
+              <!-- Project -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('project', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F59E0B" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+                <span class="text-[13px] text-gray-700">Project</span>
               </div>
             </div>
           </div>
@@ -472,11 +496,11 @@
           <!-- View toggle — segmented control -->
           <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background:#F1F3F4; border:1px solid rgba(0,0,0,0.06)">
             <button id="view-list" onclick="setView('list')"
-              class="toggle-btn toggle-active flex items-center justify-center w-8 h-8 rounded-md">
+              class="toggle-btn flex items-center justify-center w-8 h-8 rounded-md">
               <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
             </button>
             <button id="view-grid" onclick="setView('grid')"
-              class="toggle-btn flex items-center justify-center w-8 h-8 rounded-md">
+              class="toggle-btn toggle-active flex items-center justify-center w-8 h-8 rounded-md">
               <svg class="w-[15px] h-[15px]" fill="currentColor" viewBox="0 0 24 24">
                 <rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/>
                 <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/>
@@ -490,19 +514,39 @@
       </div><!-- /filter row -->
 
       <!-- Report grid 4-col -->
-      <div class="grid grid-cols-4 gap-4">
+      <div id="report-grid" class="grid grid-cols-4 gap-4">
 
-        <!-- Card 1 — Chart -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <!-- Card 1 — Chat -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="chat">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
-            <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg>
+            <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
+              <p class="text-sm font-medium text-gray-900">Q4 Strategy Discussion</p>
               <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg>
-                Chart
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+                Chat
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 5 minutes ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 2 — Dashboard -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="dashboard">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
+            <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Revenue Overview</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F0FDF4;color:#16A34A">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                Dashboard
               </span>
               <p class="text-[11px] text-gray-400 mt-1">Updated 19 minutes ago</p>
             </div>
@@ -512,19 +556,19 @@
           </div>
         </div>
 
-        <!-- Card 2 — Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <!-- Card 3 — Document -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="document">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
+              <p class="text-sm font-medium text-gray-900">Product Brief 2026</p>
               <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFF7ED;color:#F97316">
                 <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                 Document
               </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated 20 minutes ago</p>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 32 minutes ago</p>
             </div>
             <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -532,19 +576,119 @@
           </div>
         </div>
 
-        <!-- Card 3 — Dashboard -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <!-- Card 4 — Presentation -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="presentation">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F5F3FF">
+            <svg class="w-10 h-10" style="color:#A78BFA" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Investor Pitch Deck</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F5F3FF;color:#8B5CF6">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+                Presentation
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 45 minutes ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 5 — Form -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="form">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FDF2F8">
+            <svg class="w-10 h-10" style="color:#F4A8D4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Customer Feedback Form</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FDF2F8;color:#EC4899">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+                Form
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 1 hour ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 6 — Datasource -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="datasource">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0F9FF">
+            <svg class="w-10 h-10" style="color:#7DD3FC" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Postgres — prod-db</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F0F9FF;color:#0EA5E9">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                Datasource
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 2 hours ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 7 — Project -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="project">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFFBEB">
+            <svg class="w-10 h-10" style="color:#FCD34D" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">My Private Project</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFFBEB;color:#F59E0B">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+                Project
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 2 hours ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 8 — Chat -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="chat">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
+            <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+          </div>
+          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">Sprint Planning</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+                Chat
+              </span>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 3 hours ago</p>
+            </div>
+            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 9 — Dashboard -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="dashboard">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
             <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
+              <p class="text-sm font-medium text-gray-900">User Analytics</p>
               <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F0FDF4;color:#16A34A">
                 <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
                 Dashboard
               </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated 20 minutes ago</p>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 4 hours ago</p>
             </div>
             <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -552,19 +696,19 @@
           </div>
         </div>
 
-        <!-- Card 4 — Chart -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
-            <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg>
+        <!-- Card 10 — Project -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="project">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFFBEB">
+            <svg class="w-10 h-10" style="color:#FCD34D" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg>
-                Chart
+              <p class="text-sm font-medium text-gray-900">Sovereign Capital Gate</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFFBEB;color:#F59E0B">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+                Project
               </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated about 1 hour ago</p>
+              <p class="text-[11px] text-gray-400 mt-1">Updated yesterday</p>
             </div>
             <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -572,19 +716,19 @@
           </div>
         </div>
 
-        <!-- Card 5 — Document (named) -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
-            <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+        <!-- Card 11 — Presentation -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="presentation">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F5F3FF">
+            <svg class="w-10 h-10" style="color:#A78BFA" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Q1 Revenue Analysis</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFF7ED;color:#F97316">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                Document
+              <p class="text-sm font-medium text-gray-900">Roadmap 2026</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F5F3FF;color:#8B5CF6">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+                Presentation
               </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated about 1 hour ago</p>
+              <p class="text-[11px] text-gray-400 mt-1">Updated yesterday</p>
             </div>
             <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -592,59 +736,19 @@
           </div>
         </div>
 
-        <!-- Card 6 — Dashboard -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
-            <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        <!-- Card 12 — Form -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="form">
+          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FDF2F8">
+            <svg class="w-10 h-10" style="color:#F4A8D4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#F0FDF4;color:#16A34A">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-                Dashboard
+              <p class="text-sm font-medium text-gray-900">Onboarding Survey</p>
+              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FDF2F8;color:#EC4899">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+                Form
               </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated about 1 hour ago</p>
-            </div>
-            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Card 7 — Chart -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
-            <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg>
-          </div>
-          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg>
-                Chart
-              </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated about 1 hour ago</p>
-            </div>
-            <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Card 8 — Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
-          <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
-            <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-          </div>
-          <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-900">Untitled</p>
-              <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#FFF7ED;color:#F97316">
-                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                Document
-              </span>
-              <p class="text-[11px] text-gray-400 mt-1">Updated about 1 hour ago</p>
+              <p class="text-[11px] text-gray-400 mt-1">Updated 2 days ago</p>
             </div>
             <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -659,7 +763,7 @@
   <script>
     // Filter tabs
     function setTab(active) {
-      ['me','everyone','shared'].forEach(id => {
+      ['me','everyone','shared','everything'].forEach(id => {
         const el = document.getElementById('tab-' + id);
         if (id === active) {
           el.classList.add('bg-white','text-gray-900','border','border-gray-200');
@@ -675,14 +779,20 @@
 
     // View toggle
     function setView(active) {
+      const grid = document.getElementById('report-grid');
+      if (active === 'list') {
+        grid.classList.remove('grid', 'grid-cols-4', 'gap-4');
+        grid.classList.add('list-view');
+      } else {
+        grid.classList.remove('list-view');
+        grid.classList.add('grid', 'grid-cols-4', 'gap-4');
+      }
       ['list', 'grid'].forEach(id => {
         const btn = document.getElementById('view-' + id);
         if (id === active) {
           btn.classList.add('toggle-active');
         } else {
           btn.classList.remove('toggle-active');
-          btn.style.background = '';
-          btn.style.boxShadow = '';
         }
       });
     }
@@ -696,8 +806,48 @@
     }
 
     // Type filter dropdown
+    var activeTypeFilter = null;
+
     function toggleTypeFilter() {
       document.getElementById('type-dropdown').classList.toggle('open');
+    }
+
+    function setTypeFilter(type, el) {
+      // "Everything" or toggling the same type → clear filter
+      if (type === 'everything' || activeTypeFilter === type) {
+        activeTypeFilter = null;
+        // Reset all type-items to default style
+        document.querySelectorAll('.type-item').forEach(item => {
+          item.style.background = '';
+          item.querySelector('span').style.color = '';
+          item.querySelector('span').style.fontWeight = '';
+        });
+        document.getElementById('type-filter-label').textContent = 'Type';
+      } else {
+        activeTypeFilter = type;
+        // Reset all, then highlight selected
+        document.querySelectorAll('.type-item').forEach(item => {
+          item.style.background = '';
+          item.querySelector('span').style.fontWeight = '';
+        });
+        el.style.background = '#EEF2FF';
+        el.querySelector('span').style.fontWeight = '600';
+        const label = el.querySelector('span').textContent.trim();
+        document.getElementById('type-filter-label').textContent = label;
+      }
+      applyFilters();
+      document.getElementById('type-dropdown').classList.remove('open');
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      document.querySelectorAll('.report-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const cardType = card.getAttribute('data-type');
+        const matchSearch = !q || text.includes(q);
+        const matchType = !activeTypeFilter || cardType === activeTypeFilter;
+        card.style.display = (matchSearch && matchType) ? '' : 'none';
+      });
     }
     // Close on outside click
     document.addEventListener('click', function(e) {
@@ -707,11 +857,7 @@
 
     // Search
     function filterItems(query) {
-      const q = query.toLowerCase().trim();
-      document.querySelectorAll('.report-card').forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = (!q || text.includes(q)) ? '' : 'none';
-      });
+      applyFilters();
     }
 
     // Create modal (dashboard / doc / presentation / form / ai chat)
@@ -856,9 +1002,8 @@
         <div>
           <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Select project</label>
           <div class="relative">
-            <select class="w-full h-9 pl-3 pr-8 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all">
-              <option value="" disabled selected>Choose a project…</option>
-              <option value="ws2">My Private Project</option>
+            <select id="modal-project" class="w-full h-9 pl-3 pr-8 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all">
+              <option value="ws2" selected>My Private Project</option>
               <option value="ws1">Sovereign Capital Gate</option>
             </select>
             <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
