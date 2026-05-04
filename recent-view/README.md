@@ -1,6 +1,6 @@
-# Recent View — Design Language
+﻿# Recent View — Design Language
 
-> Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Recent Reports & Insights view.  
+> Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Recent View.
 > Place the reference screenshot at `assets/screenshot.png`.
 
 ---
@@ -21,9 +21,11 @@
    - [View Toggle](#view-toggle)
    - [Type Filter Dropdown](#type-filter-dropdown)
    - [Sidebar Projects Section](#sidebar-projects-section)
+   - [Sidebar Toggle](#sidebar-toggle)
    - [Report Grid](#report-grid)
    - [Report Card](#report-card)
    - [Card Type Badge](#card-type-badge)
+   - [Card Context Menu](#card-context-menu)
    - [Scrollbar](#scrollbar)
 9. [Modals](#modals)
    - [Create Project Modal](#create-project-modal)
@@ -36,16 +38,17 @@
 
 ## Overview
 
-The **Recent** view is the personal analytics home screen — the first screen a user lands on after selecting an organisation in Aibii. It combines a lightweight action strip, a filter/tab mechanism, and a dense report grid to surface the most relevant analyses and dashboards with zero navigation friction.
+The **Recent** view is the personal analytics home screen — the first screen a user lands on after selecting a workspace in Aibii. It combines a lightweight action strip, a filter/tab mechanism, and a dense report grid to surface the most relevant analyses and dashboards with zero navigation friction.
 
-Key interactions available from this screen:
-- **7 action-card shortcuts** (Create Project, Create Dashboard, Create Document, Create Presentation, Create Form, AI Chat, Add Datasource)
-- **Create Project modal** — creates a project and adds it to the sidebar in real-time
-- **Create Item modal** — shared modal for Dashboard, Document, Presentation, Form, and AI chat creation
-- **Pinned project** — "My Private Project" always appears first in the sidebar Projects list
-- **Dynamic sidebar** — new projects are injected immediately after the pinned entry without page reload
-
-![Reference Screenshot](assets/screenshot.png)
+Key interactions:
+- **6 action-card shortcuts** (New Dashboard, New Document, New Presentation, New Form, New Chat, Add Datasource)
+- **Create Item modal** — shared modal for all 6 action cards, with Name (required) + Description (optional) + Select project
+- **Create Project modal** — triggered via sidebar "+ Create a project" link
+- **Sidebar toggle** — hamburger button collapses/expands the 220px sidebar with smooth animation
+- **Card context menu** — `...` on any card opens Share / Rename / Edit dropdown
+- **Type filter** — filters report grid by content type; clicking active type clears filter
+- **View toggle** — switches between 4-column card layout and compact list layout
+- **4 filter tabs** — By me / By everyone / Shared with me / Everything
 
 ---
 
@@ -53,30 +56,25 @@ Key interactions available from this screen:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ SIDEBAR (220px)            │  CONTENT AREA (fluid)                          │
-│                            │                                                │
-│  [M] Manish kumar's Work…  │  🕐 Recent                                     │
-│  ────────────────────────  │     Your recent reports and insights…          │
-│  🕐 Recent  ← active       │                                                │
-│  ⊞  Create Dashboard      │  [🗂 Create Project][⊞ Create Dashboard][📄 Create Doc] │
-│  💬 AI Chat               │  [🖥 Create Pres.][📋 Create Form][✨ AI Chat][🗄 DS] │ ← 7 Action Cards (4-col grid)
-│  ────────────────────────  │                                                │
-│  PROJECTS            [👁]  │  [ By me ][ By everyone ][ Shared with me ]   │ ← Filter Tabs
-│  ▶ My Private Project 📌   │                                  [ Type▾][≡⊞] │
-│    ├ 💬 Q4 Strategy        │                                                │
-│    ├ ⊞  Revenue Overview   │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐        │
-│    └ … (scrollable)        │  │      │ │      │ │      │ │      │        │ ← 4-col Report Grid
-│  ▶ Sovereign Capital Gate  │  └──────┘ └──────┘ └──────┘ └──────┘        │
-│    ├ 💬 Chat               │  Untitled  Untitled  Q1 Rev…  Untitled        │
-│    ├ ⊞  Dashboard          │  ─────────────────────────────────────────── │
-│    └ 📄 Document           │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐        │
-│  [dynamically added proj.] │  │      │ │      │ │      │ │      │        │
-│  + Create a project        │  └──────┘ └──────┘ └──────┘ └──────┘        │
-│  ────────────────────────  │                                                │
-│  👤 Shared with me         │                                                │
-│  ⚙  Settings              │                                                │
-│  ────────────────────────  │                                                │
-│  🔵 Explore free features  │                                                │
+│ SIDEBAR (220px)             │  CONTENT AREA (fluid)                         │
+│                             │                                               │
+│  [M] Manish kumar's Work…   │  🕐 Recent                                    │
+│  ─────────────────────────  │     All your recently accessed dashboards,    │
+│  🕐 Recent  ← active        │     chats, documents, and more — in one place │
+│  ⊞  New Dashboard           │                                               │
+│  💬 New Chat                │  [⊞ New Dashboard][📄 Doc][🖥 Pres.][📋 Form] │
+│  ─────────────────────────  │  [💬 New Chat][🗄 Add Datasource]             │ ← 6 Action Cards
+│  PROJECTS            [👁]   │                                               │
+│  ▶ My Private Project 📌    │  [ By me ][ By everyone ][ Shared ][ All ]   │ ← 4 Filter Tabs
+│    ├ 💬 Q4 Strategy         │                            [ Type▾ ][ ≡ ⊞ ]  │
+│    └ …                      │                                               │
+│  ▶ Sovereign Capital Gate   │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐       │
+│  + Create a project         │  │      │ │      │ │      │ │      │       │ ← 12-card Report Grid
+│  ─────────────────────────  │  └──────┘ └──────┘ └──────┘ └──────┘       │
+│  👤 Shared with me          │                                               │
+│  ⚙  Settings               │                                               │
+│  ─────────────────────────  │                                               │
+│  🔵 Explore free features   │                                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,192 +86,109 @@ Key interactions available from this screen:
 
 | Token | Hex | Usage |
 |---|---|---|
-| `color-brand-primary` | `#5B63F6` | Active nav border, active toggle icon, Chat type icon, focus rings |
-| `color-brand-secondary` | `#7C6FF7` | Gradient accents |
-| `color-brand-upgrade` | `#7C3AED` | Upgrade CTAs |
+| `color-brand-primary` | `#5B63F6` | Active nav border, active toggle icon, focus rings, action card icons |
+| `color-brand-hover` | `#4850e4` | Button hover state |
 | `color-bg-base` | `#FFFFFF` | Page background, card surface |
-| `color-bg-sidebar` | `#F8F9FC` | Left navigation sidebar |
-| `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, active toggle button bg |
-| `color-bg-toggle-container` | `#F1F3F4` | View toggle container bg, Type filter trigger bg |
-| `color-bg-tab-container` | `#F3F4F6` | Pill group container background |
-| `color-bg-tab-active` | `#FFFFFF` | Active pill tab background |
-| `color-bg-explore-banner` | `#E8EEFF` | "Explore free features" banner |
-| `color-text-primary` | `#111827` | Page title, card titles, active tab text, workspace switcher name |
-| `color-text-secondary` | `#374151` | Nav item labels (inactive) |
+| `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, active toggle bg |
+| `color-bg-toggle-container` | `#F1F3F4` | View toggle container, Type filter trigger |
+| `color-bg-tab-container` | `#F3F4F6` | Pill group container |
+| `color-bg-tab-active` | `#FFFFFF` | Active pill tab |
+| `color-text-primary` | `#111827` | Page title, card titles, active tab text |
+| `color-text-secondary` | `#374151` | Nav labels, context menu items |
 | `color-text-tertiary` | `#6B7280` | Subtitles, timestamps, inactive tab text |
 | `color-text-muted` | `#9CA3AF` | Toggle icon (inactive), placeholder labels |
-| `color-border-default` | `#E5E7EB` | Card borders, Type filter border, sidebar top-level dividers |
-| `color-border-subtle` | `#F3F4F6` | Sidebar section dividers, breadcrumb border |
+| `color-border-default` | `#E5E7EB` | Card borders, type filter border |
+| `color-border-subtle` | `#F3F4F6` | Sidebar dividers, list-view row separators |
 | `color-border-active-nav` | `#5B63F6` | 2px left border on active sidebar nav item |
-| `color-icon-brand` | `#5B63F6` | Action card icons, Type filter funnel icon |
-| `color-icon-chat` | `#5B63F6` | Chat-type icon (sidebar submenu + type filter + card badge) |
-| `color-icon-dashboard` | `#16A34A` | Dashboard-type icon |
-| `color-icon-document` | `#F97316` | Document-type icon |
-| `color-icon-chart` | `#93A8F4` | Chart-type icon in card preview |
-| `color-badge-chat-bg` | `#EEF2FF` | Chat badge background |
-| `color-badge-dashboard-bg` | `#F0FDF4` | Dashboard badge background |
-| `color-badge-document-bg` | `#FFF7ED` | Document badge background |
-| `color-preview-chart-bg` | `#EEF2FF` | Chart card preview background |
-| `color-preview-dashboard-bg` | `#F0FDF4` | Dashboard card preview background |
-| `color-preview-document-bg` | `#FFF7ED` | Document card preview background |
-| `color-workspace-avatar` | `#3B5BDB` | Workspace switcher avatar background |
-| `color-explore-icon-bg` | `#C7D2FE` | Explore banner icon circle background |
-| `color-explore-icon` | `#4F6EF7` | Explore banner sparkle icon |
-| `color-explore-title` | `#3B4ECC` | Explore banner heading text |
-| `color-explore-subtitle` | `#6B7ADE` | Explore banner generation count |
-| `color-scrollbar-thumb` | `#CBD5E1` | Scrollbar thumb |
-| `color-scrollbar-track` | `transparent` | Scrollbar track |
+
+### Type Colour Map
+
+| Type | Preview bg | Icon color | Badge bg | Badge text |
+|---|---|---|---|---|
+| Chat | `#EEF2FF` | `#93A8F4` | `#EEF2FF` | `#5B63F6` |
+| Dashboard | `#F0FDF4` | `#6EE7A6` | `#F0FDF4` | `#16A34A` |
+| Document | `#FFF7ED` | `#FCA96A` | `#FFF7ED` | `#F97316` |
+| Presentation | `#F5F3FF` | `#A78BFA` | `#F5F3FF` | `#7C3AED` |
+| Form | `#FDF2F8` | `#F4A8D4` | `#FDF2F8` | `#BE185D` |
+| Datasource | `#F0F9FF` | `#7DD3FC` | `#F0F9FF` | `#0369A1` |
+| Project | `#FFFBEB` | `#FCD34D` | `#FFFBEB` | `#92400E` |
 
 ---
 
 ## Typography
 
-### Type Scale
+| Token | Size | Weight | Usage |
+|---|---|---|---|
+| `type-display` | 28px | 800 | Page title ("Recent") |
+| `type-subtitle` | 14px | 400 | Page subtitle |
+| `type-heading-md` | 16px | 600 | Modal headings |
+| `type-body-md` | 14px | 500 | Action card labels, nav labels |
+| `type-body-sm` | 13px | 400 | Descriptions, dropdown items, context menu |
+| `type-card-title` | 14px | 500 | Report card title (grid view) |
+| `type-list-name` | 13px | 500 | Report card name (list view) |
+| `type-timestamp` | 11px | 400 | "Updated X ago" |
+| `type-badge` | 10px | 500 | Card type badge |
+| `type-tab` | 14px | 500 | Filter tab labels |
 
-| Token | Size | Weight | Line Height | Usage |
-|---|---|---|---|---|
-| `type-display` | 28px | 800 (ExtraBold) | 1.2 | Page title ("Recent") |
-| `type-subtitle` | 14px | 400 (Regular) | 1.5 | Page subtitle under the title |
-| `type-heading-md` | 16px | 600 (SemiBold) | 1.4 | Section/dialog headings |
-| `type-body-md` | 14px | 400 (Regular) | 1.5 | Action card labels, nav labels |
-| `type-body-sm` | 13px | 400 (Regular) | 1.4 | Action card descriptions |
-| `type-card-title` | 14px | 500 (Medium) | 1.4 | Document card title ("Untitled") |
-| `type-label` | 12px | 400 (Regular) | 1.3 | Timestamps ("Edited 19 minutes ago") |
-| `type-tab` | 14px | 500 (Medium) | 1.3 | Filter tab labels |
-| `type-caption` | 11px | 400 (Regular) | 1.3 | Helper text, explore banner |
-
-### Font Family
-```css
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-```
-
-### Page Title Style
-The "Recent" heading uses the clock icon (`⏱`) in `color-text-primary` placed **inline** before the text — icon and text are vertically centre-aligned.
-
-```css
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 28px;
-  font-weight: 800;
-  color: #111827;
-}
-```
+Font: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
 
 ---
 
 ## Spacing & Grid
 
-### Base Unit: 4px
-
 | Token | Value | Usage |
 |---|---|---|
-| `space-1` | 4px | Micro gaps, icon padding |
-| `space-2` | 8px | Icon-to-label gaps, inline spacing |
-| `space-3` | 12px | Compact row padding |
-| `space-4` | 16px | Default card padding, section gap |
-| `space-5` | 20px | Sidebar horizontal padding |
-| `space-6` | 24px | Between page header and action cards |
-| `space-7` | 28px | Between action cards and filter tabs |
-| `space-8` | 32px | Content area horizontal padding |
-| `space-10` | 40px | Between major layout zones |
-
-### Layout Grid
-
-| Zone | Spec | Notes |
-|---|---|---|
-| Sidebar | 220px fixed | Constant across all views |
-| Content area padding | 32px horizontal | Applied to left/right of content zone |
-| Action cards | 4 columns, `gap: 16px` | Equal-width, flex row |
-| Document grid | 4 columns, `gap: 16px` | Responsive min-width 200px per card |
-| Filter tab bar | `gap: 4px` | Tight spacing between pill tabs |
-| Page header bottom margin | 24px | Space between subtitle and action cards |
-
-### 4-Column Document Grid Detail
-
-```css
-.document-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-```
-
-At narrower viewports (< 1100px), drops to 3 columns; at < 800px, drops to 2 columns.
+| `space-4` | 16px | Card padding, section gaps |
+| `space-6` | 24px | Header → action cards margin |
+| `space-7` | 28px | Action cards → filter tabs margin |
+| Content padding | `px-8 py-4` (32px / 16px) | Main content area |
+| Action cards | `grid-cols-4`, `gap: 16px` | |
+| Report grid | `grid-cols-4`, `gap: 16px` | Grid view |
+| Sidebar width | `220px` fixed | Collapsible |
 
 ---
 
 ## Border Radius & Elevation
 
-### Border Radius
-
 | Token | Value | Used on |
 |---|---|---|
-| `radius-sm` | 4px | Badges, tight labels |
-| `radius-md` | 8px | Buttons, action icon backgrounds, nav items |
-| `radius-lg` | 12px | Document cards, action shortcut cards |
-| `radius-xl` | 16px | Modals, dialogs |
-| `radius-full` | 9999px | Pill tabs, avatar chips |
+| `radius-sm` | 4px | Badges |
+| `radius-md` | 8px | Buttons, icon backgrounds, nav items, context menu items |
+| `radius-lg` | 12px | Cards, action cards, dropdown panel, context menu |
+| `radius-xl` | 16px | Modals |
+| `radius-full` | 9999px | Pill tabs, type filter trigger |
 
-### Pill Tab Radius
-Active and inactive tabs both use `radius-full` — the tab container itself uses `radius-full` to create a seamlessly rounded group.
-
-### Elevation (Shadows)
-
-| Token | Value | Used on |
+| Shadow token | Value | Used on |
 |---|---|---|
-| `shadow-none` | `none` | Sidebar, flat page surfaces |
-| `shadow-card` | `0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)` | Document cards at rest |
-| `shadow-card-hover` | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` | Document cards on hover |
-| `shadow-tab-active` | `0 1px 4px rgba(0,0,0,0.10)` | Active pill tab elevation |
-| `shadow-modal` | `0 20px 60px rgba(0,0,0,0.18)` | Modals / popovers |
+| `shadow-card` | `0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)` | Cards at rest |
+| `shadow-card-hover` | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` | Cards on hover |
+| `shadow-tab-active` | `0 1px 4px rgba(0,0,0,0.10)` | Active pill tab |
+| `shadow-toggle-active` | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` | Active view toggle button |
+| `shadow-context-menu` | `0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)` | Card context menu |
+| `shadow-modal` | `0 20px 60px rgba(0,0,0,0.18)` | Modals |
 
 ---
 
 ## Iconography
 
-### Style Rules
-- **Line icons**, uniform stroke weight **1.5px**
-- Sizes: `16px` inline, `20px` action areas, `24px` page title icon
-- Monochromatic per context — `color-icon-brand` on card surfaces, `color-icon-muted` for placeholders
-- The `#` symbol for channels is rendered as text/icon at `16px`, `color-text-secondary`
-
-### Icon Inventory
+All icons: Heroicons outline, inline SVG, stroke-width 1.5px.
 
 | Location | Icon | Size | Color |
 |---|---|---|---|
-| Page title | `Clock` (circle + hands) | 24px | `color-text-primary` (#111827) |
-| Action card: Create Project | `FolderOpen` | 20px | `color-icon-brand` (#5B63F6) |
-| Action card: Create Dashboard | `SquaresGrid` (4 squares) | 20px | `color-icon-brand` |
-| Action card: Create Document | `Document` | 20px | `color-icon-brand` |
-| Action card: Create Presentation | `PresentationChartBar` (screen + legs) | 20px | `color-icon-brand` |
-| Action card: Create Form | `ClipboardDocumentList` | 20px | `color-icon-brand` |
-| Action card: AI Chat | `Sparkles` | 20px | `color-icon-brand` |
-| Action card: Add Datasource | `Database` (cylinder) | 20px | `color-icon-brand` |
-| Nav: Recent (active) | `Clock` | 16px | `#6B7280` |
-| Nav: Create Dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
-| Nav: AI Chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
-| Workspaces header | `EyeOff` | 14px | `#D1D5DB` |
-| Workspace chevron | `ChevronRight` | 12px | `#9CA3AF` → rotates 90° when open |
-| Submenu: Chat item | `ChatBubble` | 14px | `#5B63F6` |
-| Submenu: Dashboard item | `SquaresGrid` (4 squares) | 14px | `#16A34A` |
-| Submenu: Document item | `Document` | 14px | `#F97316` |
-| Bottom nav: Shared with me | `UserGroup` | 16px | `#9CA3AF` |
-| Bottom nav: Settings | `Cog6Tooth` | 16px | `#9CA3AF` |
-| Workspace switcher | `ChevronDown` | 16px | `#9CA3AF` |
-| Breadcrumb: Menu | `Bars3` | 18px | `#6B7280` |
-| Breadcrumb: Back / Forward | `ChevronLeft` / `ChevronRight` | 16px | `#9CA3AF` |
-| Type filter trigger: funnel | `Funnel` | 14px | `#5B63F6` |
-| Type filter trigger: chevron | `ChevronDown` | 12px | `#9CA3AF` |
-| Card overflow | `EllipsisHorizontal` (⋯) | 16px | `#9CA3AF`, hidden → visible on hover |
-| Card badge: Chart | `BarChart2` | 10px | `#5B63F6` |
-| Card badge: Dashboard | `SquaresGrid` | 10px | `#16A34A` |
-| Card badge: Document | `Document` | 10px | `#F97316` |
-| Card preview: Chart | `BarChart2` | 40px | `#93A8F4` |
-| Card preview: Dashboard | `SquaresGrid` | 40px | `#6EE7A6` |
-| Card preview: Document | `Document` | 40px | `#FCA96A` |
-| Explore banner | `Sparkles` | 16px | `#4F6EF7` |
+| Page title | Clock | 24px | `#111827` |
+| Action card icons (all) | type-specific (see below) | 20px | `#5B63F6` |
+| Nav: Recent | Clock | 16px | `#6B7280` |
+| Nav: New Dashboard | SquaresGrid | 16px | `#6B7280` |
+| Nav: New Chat | ChatBubble | 16px | `#6B7280` |
+| Breadcrumb: Hamburger | Bars3 | 18px | `#6B7280` |
+| Breadcrumb: Back/Forward | ChevronLeft/Right | 16px | `#9CA3AF` |
+| Type filter funnel | Funnel | 14px | `#5B63F6` |
+| Card overflow | EllipsisHorizontal | 16px | `#9CA3AF` |
+| Context menu: Share | ShareNodes | 14px | `#9CA3AF` |
+| Context menu: Rename | PencilSquare | 14px | `#9CA3AF` |
+| Context menu: Edit | AdjustmentsHorizontal | 14px | `#9CA3AF` |
+| Sidebar pin | Thumbtack | 12px | `#5B63F6` |
+| Project chevron | ChevronRight | 12px | `#9CA3AF` |
 
 ---
 
@@ -281,358 +196,150 @@ Active and inactive tabs both use `radius-full` — the tab container itself use
 
 ### Page Header
 
-Appears at the top of the content area. Combines an inline clock icon, bold title, and descriptive subtitle.
-
-```
-🕐  Recent
-    Your recent reports and insights are displayed here.
-    You can also create new reports and dashboards from here.
-```
-
 | Property | Value |
 |---|---|
-| Icon | `Clock`, 24px, `#111827` |
-| Title | 28px, `font-weight: 800`, `#111827` |
-| Icon + title gap | 8px |
-| Subtitle | 14px, `font-weight: 400`, `#6B7280` |
-| Title–subtitle gap | 8px (margin-top) |
-| Header bottom margin | 24px before action cards |
+| Icon | Clock, 24px, `#111827` |
+| Title | "Recent", 28px, `font-weight: 800`, `#111827` |
+| Subtitle | "All your recently accessed dashboards, chats, documents, and more — in one place." |
+| Subtitle style | 14px, `#6B7280` |
+| Bottom margin | `mb-6` (24px) |
 
 ---
 
 ### Action Cards Row
 
-Seven equal-width cards in a **4-column grid** (2 rows) providing primary workflow shortcuts. Cards 1–4 in the first row, cards 5–7 in the second.
+Six cards in a `grid-cols-4` layout (4 + 2 rows).
 
-```
-Row 1:
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│[🗂] New      │ │[⊞] New       │ │[📄] New      │ │[🖥] New      │
-│    Project   │ │    Dashboard │ │    Document  │ │    Pres.     │
-└──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
-Row 2:
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│[📋] New      │ │[✨] AI chat  │ │[🗄] Create   │
-│    Form      │ │              │ │    Datasource│
-└──────────────┘ └──────────────┘ └──────────────┘
-```
+| # | Title | Description | Opens |
+|---|---|---|---|
+| 1 | New Dashboard | Charts, KPIs & visual reports | Create Item Modal |
+| 2 | New Document | Write, collaborate & share | Create Item Modal |
+| 3 | New Presentation | Slides, decks & pitches | Create Item Modal |
+| 4 | New Form | Surveys, feedback & data entry | Create Item Modal |
+| 5 | New Chat | Ask questions, get AI answers | Create Item Modal |
+| 6 | Add Datasource | Connect databases, APIs & files | Create Item Modal |
 
-| Property | Value |
-|---|---|
-| Layout | `grid-template-columns: repeat(4, 1fr)`, `gap: 16px` |
-| Background | `#FFFFFF` |
-| Border | `1px solid #E5E7EB` |
-| Border radius | `12px` |
-| Padding | `16px` |
-| Icon wrapper | `40×40px`, `border-radius: 8px`, `background: rgba(91,99,246,0.08)` |
-| Icon size | `20px`, color `#5B63F6` |
-| Title | `14px`, `font-weight: 500`, `#111827` |
-| Description | `13px`, `#6B7280` |
-| Icon–text gap | `12px` |
-| Hover | `shadow-card-hover` + `translateY(-1px)` |
-| Transition | `all 150ms ease-out` |
-| Click behaviour | Create Project → **Create Project Modal**; Create Dashboard / Create Document / Create Presentation / Create Form / AI Chat → **Create Item Modal**; Add Datasource → no modal |
-
-**Card inventory:**
-
-| # | Title | Description | Icon | Opens Modal |
-|---|---|---|---|---|
-| 1 | Create Project | Organize work in a project | `FolderOpen` | Create Project Modal |
-| 2 | Create Dashboard | Build charts & visual reports | `SquaresGrid` | Create Item Modal |
-| 3 | Create Document | Write, edit & share docs | `Document` | Create Item Modal |
-| 4 | Create Presentation | Create slides & decks | `PresentationChartBar` | Create Item Modal |
-| 5 | Create Form | Collect data with forms | `ClipboardDocumentList` | Create Item Modal |
-| 6 | AI Chat | Generate insights from a prompt | `Sparkles` | Create Item Modal |
-| 7 | Add Datasource | Link databases, APIs & more | `Database` | — |
+Card spec: bg `#FFFFFF`, border `1px solid #E5E7EB`, radius `12px`, padding `16px`, icon wrapper `40×40px` with `rgba(91,99,246,0.08)` bg, icon `20px #5B63F6`. Hover: `shadow-card-hover` + `translateY(-1px)`.
 
 ---
 
 ### Filter Tab Bar
 
-Segmented pill-style control for filtering the report grid by authorship/sharing scope.
+Four pill tabs. Default active: **By me**.
 
-```
-┌──────────────────────────────────────────┐
-│  ┌────────┐  By everyone  Shared with me │
-│  │ By me  │                              │
-│  └────────┘                              │
-└──────────────────────────────────────────┘
-```
-
-| Property | Value |
+| Tab | id |
 |---|---|
-| Container background | `#F3F4F6` |
-| Container border radius | `9999px` (full) |
-| Container padding | `4px` |
-| Tab height | `32px` |
-| Tab padding | `0 16px` |
-| Tab border radius | `9999px` |
-| Tab font | `14px`, `font-weight: 500` |
-| **Active tab** bg | `#FFFFFF` |
-| **Active tab** border | `1px solid #E5E7EB` |
-| **Active tab** shadow | `0 1px 4px rgba(0,0,0,0.10)` |
-| **Active tab** text | `#111827` |
-| **Inactive tab** bg | `transparent` |
-| **Inactive tab** text | `#6B7280` |
-| Tab gap | `4px` |
-| Transition | `background-color 120ms ease`, `box-shadow 120ms ease`, `color 120ms ease` |
+| By me | `tab-me` |
+| By everyone | `tab-everyone` |
+| Shared with me | `tab-shared` |
+| Everything | `tab-everything` |
 
-**Tab options:** `By me` · `By everyone` · `Shared with me`
+Container: bg `#F3F4F6`, radius `9999px`, padding `4px`. Active tab: bg `#FFFFFF`, `1px solid #E5E7EB`, `shadow-tab-active`, text `#111827`. Inactive: transparent bg, text `#6B7280`.
+
+JS: `setTab(active)` — iterates all 4 tab IDs.
 
 ---
 
 ### View Toggle
 
-Compact dual-mode switcher placed to the right of the filter row. Switches between list and grid view.
+Default active: **grid**.
 
-```
-┌─────────────────┐
-│  [ ≡ ] │ [ ⊞ ] │
-│  active  inactive
-└─────────────────┘
-```
-
-| Property | Value |
+| State | Layout |
 |---|---|
-| Container background | `#F1F3F4` |
-| Container border | `1px solid rgba(0,0,0,0.06)` |
-| Container border-radius | `8px` |
-| Container padding | `2px` |
-| Button size | `32×32px` |
-| Button border-radius | `6px` |
-| **Active button** bg | `#EEF2FF` |
-| **Active button** shadow | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` |
-| **Active button** icon color | `#5B63F6` |
-| **Inactive button** bg | `transparent` |
-| **Inactive button** icon color | `#9CA3AF` |
-| Icon size | `15px` |
-| List icon | `Bars3` (3 horizontal lines) |
-| Grid icon | `SquaresGrid` (4 filled squares, `rx 1.5`) |
-| Default active | List view |
-| Hover (inactive) | bg `rgba(0,0,0,0.05)`, color `#6B7280` |
-| Transition | `background-color 150ms ease`, `box-shadow 150ms ease`, `color 150ms ease` |
+| Grid (default) | `grid grid-cols-4 gap-4` on `#report-grid` |
+| List | `.list-view` class added; grid classes removed |
+
+List view card row: `[40px icon] [name] [96px type badge] [timestamp] [...]`. Rows separated by `1px solid #F3F4F6`. Container: `1px solid #E5E7EB`, `border-radius: 12px`.
+
+JS: `setView(active)` — toggles `list-view` class and grid Tailwind classes on `#report-grid`.
 
 ---
 
 ### Type Filter Dropdown
 
-Placed to the right of the tab row alongside the View Toggle. Filters the report grid by content type.
+Trigger: pill button with funnel icon + `<span id="type-filter-label">Type</span>`. Label updates to selected type name on selection.
 
-**Trigger button:**
+Types: Chat (default active) · Dashboard · Document · Presentation · Form · Datasource · Project.
 
-| Property | Value |
-|---|---|
-| Background | `#F1F3F4` |
-| Border | `1px solid #E5E7EB` |
-| Border-radius | `9999px` |
-| Height | `36px` |
-| Padding | `0 12px` |
-| Text | "Type", `13px`, `font-weight: 500`, `#374151` |
-| Funnel icon | `14px`, `color: #5B63F6` |
-| Chevron | `ChevronDown`, `12px`, `#9CA3AF` |
-
-**Dropdown panel:**
-
-| Property | Value |
-|---|---|
-| Background | `#FFFFFF` |
-| Border | `1px solid #E5E7EB` |
-| Border-radius | `12px` |
-| Padding | `6px 0` |
-| Shadow | `0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)` |
-| Min-width | `180px` |
-| Position | `absolute right-0`, below trigger |
-
-**Dropdown items:**
-
-| Property | Value |
-|---|---|
-| Height | `36px` |
-| Padding | `0 12px` |
-| Margin | `0 4px` (horizontal, for inset look) |
-| Border-radius | `8px` |
-| Label | `13px` |
-| Icon size | `14px` |
-| Hover bg | `#F3F4F6` |
-| Transition | `background-color 80ms ease` |
-
-**Type options and colours:**
-
-| Type | Icon | Icon Color | Active bg |
-|---|---|---|---|
-| Chat | `ChatBubble` | `#5B63F6` | `#EEF2FF` |
-| Dashboard | `SquaresGrid` | `#9CA3AF` (default) | — |
-| Document | `Document` | `#9CA3AF` (default) | — |
-| Other | `EllipsisHorizontal` | `#9CA3AF` (default) | — |
-
-Default open state shows Chat as active (highlighted `#EEF2FF` bg, `#5B63F6` text/icon).
+JS: `activeTypeFilter` global. `setTypeFilter(type, el)` — toggle logic; clicking active type clears filter. `applyFilters()` — combines search + type filter on `.report-card[data-type]`.
 
 ---
 
 ### Sidebar Projects Section
 
-The sidebar **Projects** section (formerly "Workspaces") holds all user projects in a collapsible accordion list. The section header is labelled **PROJECTS** in `11px` uppercase muted text.
-
-**Section container:** `id="projects-list"` — used by JS to dynamically inject newly created projects.
-
-**Pinned project rule:** "My Private Project" is always the first entry. A **pin icon** (`12×12px`, `color: #5B63F6`, filled SVG) appears on the right side of its row.
-
-**Sidebar order:**
-```
-[▶] My Private Project  [📌]   ← pinned, always first
-    ├ 💬 Q4 Strategy
-    ├ ⊞  Revenue Overview
-    └ … (scrollable)
-
-[▶] Sovereign Capital Gate
-    ├ 💬 Chat
-    ├ ⊞  Dashboard
-    └ 📄 Document
-
-[dynamically created projects appear here]
-
-[+] Create a project              ← opens New Project Modal on click
-```
-
-**Project row tokens:**
+Collapsible accordion. Always-first pinned entry: "My Private Project" with thumbtack icon.
 
 | Property | Value |
 |---|---|
-| Row height | `36px` |
-| Row padding | `0 8px` |
-| Row border-radius | `8px` |
-| Row hover bg | `#EEF2FF` |
-| Chevron button | `20×20px`, `border-radius: 4px`, hover bg `#E5E7EB` |
-| Chevron icon | `12px`, `#9CA3AF`, `stroke-width: 2.5` |
-| Chevron open state | rotates `90deg` via CSS transition `150ms ease` |
-| Project name | `14px`, `#374151`, `truncate` |
-| Pin icon | `12×12px`, `color: #5B63F6`, filled path SVG, right-aligned, pinned project only |
+| Project row height | `36px` |
+| Chevron open | rotates `90deg`, `150ms ease` |
+| Submenu max-height | `160px`, `overflow-y: auto` |
+| Submenu item | `32px`, `13px`, `#4B5563` |
+| "+ Create a project" | `onclick="openNewProjectModal()"` |
 
-**Submenu container tokens:**
+Static projects: **My Private Project** (pinned, 11 items) + **Sovereign Capital Gate** (3 items).
 
-| Property | Value |
-|---|---|
-| Padding-left | `16px` (indent) |
-| Margin-top | `2px` |
-| Gap between items | `2px` |
-| Max-height (open) | `160px` |
-| Overflow | `auto` (vertical scroll when items exceed max-height) |
-| Default state | `display: none` |
-| Open state | `display: block` |
+---
 
-**Submenu item tokens:**
+### Sidebar Toggle
 
-| Property | Value |
-|---|---|
-| Height | `32px` |
-| Padding | `0 12px` |
-| Border-radius | `8px` |
-| Font | `13px`, `#4B5563` |
-| Icon size | `14px` |
-| Icon gap | `8px` |
-| Hover bg | `#EEF2FF` |
+Hamburger (`Bars3`, `#6B7280`) in breadcrumb bar → `toggleSidebar()` → toggles `.collapsed` on `#sidebar`.
 
-**"Create a project" link:**
-
-| Property | Value |
-|---|---|
-| Trigger | `onclick="openNewProjectModal()"` |
-| Icon | `+` text character, `#9CA3AF`, `font-size: 16px` |
-| Label | `14px`, `#6B7280` |
-| Hover bg | `#EEF2FF` |
-
-**Static projects and contents:**
-
-| Project | Order | Items |
-|---|---|---|
-| My Private Project | 1st (pinned) | Q4 Strategy (chat), Revenue Overview (dashboard), Project Brief (doc), Investor Update (chat), Meeting Notes (doc), KPI Tracker (dashboard), Product Feedback (chat), User Analytics (dashboard), Sprint Planning (chat), Roadmap 2026 (doc), API Docs (doc) |
-| Sovereign Capital Gate | 2nd | Chat, Dashboard, Document |
-| *(dynamically added)* | 3rd+ | Empty submenu initially |
+Collapsed state: `width: 0`, `min-width: 0`, `opacity: 0`, `border-right: none`.
+Transition: `width/min-width 220ms ease`, `opacity 180ms ease`.
 
 ---
 
 ### Report Grid
 
-Responsive 4-column grid of report cards below the filter row.
+`<div id="report-grid">` — 12 cards with `data-type` attributes (chat, dashboard, document, presentation, form, datasource, project).
 
-| Property | Value |
-|---|---|
-| Columns | `repeat(4, 1fr)` |
-| Gap | `16px` |
-| Top margin | `24px` from filter tab bar |
+Cards:
+
+| Title | Type | Time |
+|---|---|---|
+| Q4 Strategy Discussion | chat | 5 min ago |
+| Revenue Overview | dashboard | 19 min ago |
+| Product Brief 2026 | document | 32 min ago |
+| Investor Pitch Deck | presentation | 45 min ago |
+| Customer Feedback Form | form | 1 hour ago |
+| Postgres — prod-db | datasource | 2 hours ago |
+| My Private Project | project | 2 hours ago |
+| Sprint Planning | chat | 3 hours ago |
+| User Analytics | dashboard | 4 hours ago |
+| Sovereign Capital Gate | project | yesterday |
+| Roadmap 2026 | presentation | yesterday |
+| Onboarding Survey | form | 2 days ago |
 
 ---
 
 ### Report Card
 
-Individual report tile in the grid. Has a coloured preview zone and an info footer.
+Grid view: colored preview zone (160px) + title/badge/timestamp footer + hidden `...` button.
 
-**Anatomy:**
-```
-┌────────────────────────────────┐
-│                                │
-│          [  icon  ]            │  ← Coloured preview zone (160px)
-│                                │
-├────────────────────────────────┤
-│  Q1 Revenue Analysis       ⋯  │  ← Title + overflow button
-│  [📄 Document]                 │  ← Type badge
-│  Updated about 1 hour ago      │  ← Timestamp
-└────────────────────────────────┘
-```
+List view row: `[40px icon square] [name (max 200px)] [96px badge] [time auto margin-left] [...]`
 
-| Property | Value |
-|---|---|
-| Preview height | `160px` |
-| Preview border-radius | top corners only (`12px 12px 0 0`) |
-| Preview icon size | `40px` |
-| Card border | `1px solid #E5E7EB` |
-| Card border-radius | `12px` |
-| Card background | `#FFFFFF` |
-| Info area padding | `10px 12px 12px` |
-| Title | `14px`, `font-weight: 500`, `#111827` |
-| Timestamp | `11px`, `#9CA3AF`, `margin-top: 4px` |
-| Overflow `⋯` | `16px`, `#9CA3AF`, hidden by default → opacity `1` on card hover |
-| Hover border | `rgba(91,99,246,0.4)` |
-| Hover shadow | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` |
-| Hover lift | `translateY(-1px)` |
-| Transition | `all 150ms ease-out` |
-| Cursor | `pointer` |
-
-**Card type colour map:**
-
-| Type | Preview bg | Preview icon color | Badge bg | Badge text |
-|---|---|---|---|---|
-| Chart | `#EEF2FF` | `#93A8F4` | `#EEF2FF` | `#5B63F6` |
-| Document | `#FFF7ED` | `#FCA96A` | `#FFF7ED` | `#F97316` |
-| Dashboard | `#F0FDF4` | `#6EE7A6` | `#F0FDF4` | `#16A34A` |
+Overflow button: `opacity: 0` default, `opacity: 1` on card hover. In list view: always `opacity: 1`.
 
 ---
 
 ### Card Type Badge
 
-Inline label beneath the card title indicating the content type.
+`inline-flex`, `gap: 4px`, padding `2px 6px`, radius `4px`, `10px 500`. List view: `width: 96px` fixed, `justify-content: center`.
 
-| Property | Value |
-|---|---|
-| Display | `inline-flex`, `align-items: center`, `gap: 4px` |
-| Padding | `2px 6px` |
-| Border-radius | `4px` |
-| Font | `10px`, `font-weight: 500` |
-| Icon size | `10px` |
-| Margin-top | `4px` from title |
+---
+
+### Card Context Menu
+
+Single `#card-menu` (fixed). Shown on `.overflow-btn` click via `DOMContentLoaded` listeners.
+
+Items: **Share** · **Rename** · **Edit** — each `13px`, `#374151`, radius `7px`, hover bg `#F3F4F6`.
+
+Positioning: below button (`rect.bottom + 4px`); flips above if < 124px from viewport bottom. Closes on outside click.
 
 ---
 
 ### Scrollbar
-
-Applies globally to the content area and workspace submenus.
-
-| Property | Value |
-|---|---|
-| Width | `6px` |
-| Thumb color | `#CBD5E1` |
-| Thumb border-radius | `9999px` |
-| Track color | `transparent` |
 
 ```css
 ::-webkit-scrollbar { width: 6px; }
@@ -644,149 +351,41 @@ Applies globally to the content area and workspace submenus.
 
 ## Modals
 
-### Create Project Modal
+### Create Item Modal
 
-Triggered by: **Create Project** action card click, or **"+ Create a project"** sidebar link click.
+`id="create-modal"` — triggered by all 6 action cards via `openCreateModal(type)`.
 
-Functions: `openNewProjectModal()` / `closeNewProjectModal()` / `createNewProject()`
+Fields:
+- **Name** — `id="modal-name"`, required (red `*`), `h-9` input
+- **Description** — `id="modal-desc"`, optional label, 3-row textarea, `resize: none`
+- **Select project** — `id="modal-project"`, defaults to "My Private Project"
 
-**Anatomy:**
-```
-┌─────────────────────────────────┐
-│  Create Project           [ × ] │
-├─────────────────────────────────┤
-│  Name *                         │
-│  [ Enter project name…        ] │
-│                                 │
-│  Description (optional)         │
-│  [ What is this project…      ] │
-│  [ (textarea, 3 rows)         ] │
-├─────────────────────────────────┤
-│                 [ Close][Create]│
-└─────────────────────────────────┘
-```
-
-| Property | Value |
-|---|---|
-| Backdrop | `rgba(17,24,39,0.45)` + `backdrop-filter: blur(2px)` |
-| Modal width | `max-w-md` (448px) |
-| Border radius | `16px` |
-| Header padding | `24px 24px 16px` |
-| Header border | `1px solid #F3F4F6` (bottom) |
-| Title | `16px`, `font-weight: 600`, `#111827` |
-| Close button | `32×32px`, `border-radius: 8px`, hover bg `#F3F4F6` |
-| Body padding | `24px`, `gap: 16px` between fields |
-| Name label | `13px`, `font-weight: 500`, `#374151` |
-| Name required marker | `*` in `#F87171` (red-400) |
-| Name input | `h-9`, full-width, `border: 1px solid #E5E7EB`, focus ring `#5B63F6` |
-| Description label | `13px`, `font-weight: 500`, `#374151` + `(optional)` in `#9CA3AF` normal weight |
-| Description textarea | `3 rows`, `resize: none`, same border/focus as name input |
-| Footer padding | `0 24px 24px` |
-| Close button style | `h-9 px-4`, gray border, hover bg `#F9FAFB` |
-| Create button style | `h-9 px-5`, bg `#5B63F6`, hover bg `#4850e4`, white text |
-| Enter key | Submits from name field (`onkeydown`) |
-| Backdrop click | Closes modal |
-
-**On Create (JS behaviour):**
-1. Reads `#proj-name` value — focuses field and returns if empty
-2. Generates unique ID: `ws-dyn-{Date.now()}`
-3. Creates a new project `<div>` with chevron toggle, name link, empty submenu
-4. Inserts into `#projects-list` immediately after `firstBlock.nextSibling` (after the pinned entry)
-5. Closes modal
+Backdrop: `rgba(17,24,39,0.45)` + `blur(2px)`. Width `max-w-md`. Closes on backdrop click.
 
 ---
 
-### Create Item Modal
+### Create Project Modal
 
-Triggered by: **Create Dashboard**, **Create Document**, **Create Presentation**, **Create Form**, **AI Chat** action card clicks.
+`id="new-project-modal"` — triggered by sidebar "+ Create a project" link.
 
-Functions: `openCreateModal(type)` / `closeCreateModal()`
+Fields:
+- **Name** — `id="proj-name"`, required, Enter key submits
+- **Description** — `id="proj-desc"`, optional, 3-row textarea
 
-The `type` string is passed as the modal title (e.g. `'Create Dashboard'`).
-
-**Anatomy:**
-```
-┌─────────────────────────────────┐
-│  Create Dashboard         [ × ] │  ← dynamic title
-├─────────────────────────────────┤
-│  Name                           │
-│  [ Enter a name…              ] │
-│                                 │
-│  Select project                 │
-│  [ Choose a project…    ▾     ] │
-├─────────────────────────────────┤
-│                 [ Close][Create]│
-└─────────────────────────────────┘
-```
-
-| Property | Value |
-|---|---|
-| Backdrop | `rgba(17,24,39,0.45)` + `backdrop-filter: blur(2px)` |
-| Modal width | `max-w-md` (448px) |
-| Border radius | `16px` |
-| Title | `16px`, `font-weight: 600`, `#111827` — set dynamically to card name |
-| Name input | `h-9`, full-width, focus ring `#5B63F6` |
-| Select project | Native `<select>`, `h-9`, custom chevron overlay, focus ring `#5B63F6` |
-| Project options | My Private Project, Sovereign Capital Gate |
-| Backdrop click | Closes modal |
-| Close button | Gray border button |
-| Create button | bg `#5B63F6`, hover `#4850e4`, white text |
+On create: injects new project row into `#projects-list` after pinned entry with ID `ws-dyn-{timestamp}`.
 
 ---
 
 ## States & Interactions
 
-### Report Card States
-
-| State | Visual Change |
-|---|---|
-| **Default** | Border `#E5E7EB`, `shadow-card`, overflow `⋯` hidden (`opacity: 0`) |
-| **Hover** | Border `rgba(91,99,246,0.4)`, `shadow-card-hover`, `translateY(-1px)`, `⋯` visible |
-| **Active / pressed** | `translateY(0)`, `shadow-card` |
-
-### Filter Tab States
-
-| State | Visual Change |
-|---|---|
-| **Active** | `#FFFFFF` bg, `1px solid #E5E7EB` border, `shadow-tab-active`, `#111827` text |
-| **Inactive default** | `transparent` bg, `#6B7280` text |
-| **Inactive hover** | `rgba(0,0,0,0.04)` bg |
-
-### Action Card States
-
-| State | Visual Change |
-|---|---|
-| **Default** | Border, flat `shadow-card` |
-| **Hover** | `shadow-card-hover`, `translateY(-1px)` |
-| **Active** | `translateY(0)`, `shadow-card` |
-| **Click (modal cards)** | Opens modal overlay |
-
-### View Toggle States
-
-| State | Visual Change |
-|---|---|
-| **Active button** | `#EEF2FF` bg, brand purple shadow, `#5B63F6` icon |
-| **Inactive button** | `transparent` bg, `#9CA3AF` icon |
-| **Inactive hover** | `rgba(0,0,0,0.05)` bg, `#6B7280` icon |
-
-### Project Chevron States
-
-| State | Visual Change |
-|---|---|
-| **Collapsed** | Chevron points right (`0deg`) |
-| **Expanded** | Chevron rotates to `90deg`, submenu slides in |
-
-### Action Card — Modal Triggers
-
-| Card | Behaviour on Click |
-|---|---|
-| Create Project | Opens Create Project Modal |
-| Create Dashboard | Opens Create Item Modal — title "Create Dashboard" |
-| Create Document | Opens Create Item Modal — title "Create Document" |
-| Create Presentation | Opens Create Item Modal — title "Create Presentation" |
-| Create Form | Opens Create Item Modal — title "Create Form" |
-| AI Chat | Opens Create Item Modal — title "AI Chat" |
-| Add Datasource | No modal — direct action |
+| Component | State | Visual |
+|---|---|---|
+| Report card | Hover | `rgba(91,99,246,0.4)` border, `shadow-card-hover`, `translateY(-1px)`, `...` visible |
+| Filter tab | Active | `#FFFFFF` bg, border, shadow, `#111827` text |
+| View toggle btn | Active | `#EEF2FF` bg, brand shadow, `#5B63F6` icon |
+| Sidebar | Collapsed | `width: 0`, `opacity: 0` |
+| Context menu | Open | `display: block`, fixed positioned |
+| Project chevron | Expanded | rotated `90deg` |
 
 ---
 
@@ -794,48 +393,25 @@ The `type` string is passed as the modal title (e.g. `'Create Dashboard'`).
 
 | Interaction | Duration | Easing | Properties |
 |---|---|---|---|
-| Card hover lift | `150ms` | `ease-out` | `box-shadow`, `transform`, `border-color` |
-| Action card hover | `150ms` | `ease-out` | `box-shadow`, `transform` |
-| `⋯` button appear | `100ms` | `ease` | `opacity` (0 → 1) |
+| Card hover | `150ms` | `ease-out` | `box-shadow`, `transform`, `border-color` |
+| `...` appear | `100ms` | `ease` | `opacity` |
 | Tab switch | `120ms` | `ease` | `background-color`, `box-shadow`, `color` |
-| View toggle switch | `150ms` | `ease` | `background-color`, `box-shadow`, `color` |
-| Nav item hover | `100ms` | `ease` | `background-color` |
-| Project chevron | `150ms` | `ease` | `transform` (rotate 0 → 90deg) |
-| Type dropdown item | `80ms` | `ease` | `background-color` |
-| Modal open/close | instant | — | `display` toggled via `.hidden` class |
-
-**Principles:**
-- Micro-interactions stay ≤ 150ms — feels instant and responsive
-- Only animate `transform`, `opacity`, `background-color`, `box-shadow` — never `width`, `height`, or layout properties
-- Workspace submenu toggles via `display: none ↔ block` (no animation) at this prototype stage
+| View toggle | `150ms` | `ease` | `background-color`, `box-shadow`, `color` |
+| Nav hover | `100ms` | `ease` | `background-color` |
+| Project chevron | `150ms` | `ease` | `transform` |
+| Sidebar collapse | `220ms` / `180ms` | `ease` | `width`, `min-width` / `opacity` |
+| Modal open/close | instant | — | `.hidden` class toggle |
 
 ---
 
 ## Design Principles
 
-### 1. Recency as Priority
-The Recent view is the analytics home base. The 4-column grid maximises visible report count without scrolling, surfacing in-progress analyses immediately.
-
-### 2. Flat Hierarchy with Contextual Depth
-All cards start flat. Elevation (shadow + border shift) appears only on interaction — depth communicates affordance, not decoration.
-
-### 3. Segmented Filtering Without Navigation
-The pill tab bar (`By me` / `By everyone` / `Shared with me`) provides scope filtering in place — no page reload, no URL change.
-
-### 4. Projects as Navigable Containers
-Projects in the sidebar are expandable in-place. The chevron-toggle splits name navigation from expand/collapse to avoid accidental triggers. Submenus cap at 160px with a scroll to prevent sidebar overflow. New projects created via the modal are injected dynamically without page reload.
-
-### 5. Type-Coded Visual Language
-Chat = brand purple `#5B63F6`, Dashboard = green `#16A34A`, Document = orange `#F97316`. This colour system is applied consistently across the sidebar submenu icons, the card type badges, and the Type filter dropdown.
-
-### 6. Progressive Disclosure
-Card `⋯` menus, workspace subitems, and type dropdowns are all hidden by default and surface only when triggered — keeping the resting state clean.
-
-### 7. Accessible Contrast
-- Title text `#111827` on `#FFFFFF` → **16.1:1** (AAA)
-- Timestamp `#9CA3AF` on `#FFFFFF` → **2.85:1** (decorative use)
-- Active tab text `#111827` on `#FFFFFF` → AAA
-- Brand primary `#5B63F6` icon on `#EEF2FF` bg → sufficient for icon context
+1. **Recency as Priority** — 4-column grid maximises visible item count, surfacing in-progress work immediately.
+2. **Flat Hierarchy, Contextual Depth** — elevation appears only on interaction.
+3. **Segmented Filtering In-Place** — 4 tabs + type filter with no page reload.
+4. **Consistent Type Visual Language** — each type has a unique colour applied across sidebar, badges, and filter dropdown.
+5. **Progressive Disclosure** — `...` menus, subitems, and dropdowns hidden until triggered.
+6. **Dual-Mode Grid** — list view preserves all data in compact rows with fixed-width type column.
 
 ---
 
@@ -844,20 +420,20 @@ Card `⋯` menus, workspace subitems, and type dropdowns are all hidden by defau
 ```
 recent-view/
 ├── assets/
-│   └── screenshot.png          ← Place reference screenshot here
+│   └── screenshot.png
 ├── tokens/
-│   ├── colors.json             ← All color tokens
-│   ├── typography.json         ← Type scale tokens
-│   └── spacing.json            ← Spacing, radius, shadow, layout tokens
+│   ├── colors.json
+│   ├── typography.json
+│   └── spacing.json
 ├── components/
-│   ├── page-header.md          ← Page header spec
-│   ├── action-cards.md         ← Action shortcut cards spec
-│   ├── filter-tabs.md          ← Filter pill tab bar spec
-│   ├── workspace-submenu.md    ← Workspace expand/collapse submenu spec
-│   └── report-card.md          ← Report card + type badge spec
-└── README.md                   ← This file
+│   ├── page-header.md
+│   ├── action-cards.md
+│   ├── filter-tabs.md
+│   ├── workspace-submenu.md
+│   └── report-card.md
+└── README.md
 ```
 
 ---
 
-*Design language version 1.3 — Aibii AI Business Intelligence SaaS · Recent View, May 2026.*
+*Design language version 2.0 — Aibii AI Business Intelligence SaaS · Recent View, May 2026.*

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aibii — Recent Reports</title>
+  <title>AiBii - Recent</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -54,13 +54,22 @@
     .action-card { transition: all 150ms ease-out; }
     .action-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); transform: translateY(-1px); }
 
-    /* Overflow button hidden by default */
-    .overflow-btn { opacity: 0; transition: opacity 100ms ease; }
+    /* Overflow button — hidden by default, shown on card hover */
+    .overflow-btn { opacity: 0; transition: opacity 100ms ease; pointer-events: auto; }
+    #report-grid.list-view .overflow-btn { opacity: 1; }
+
+    /* Card context menu */
+    #card-menu { display:none; position:fixed; z-index:200; background:#fff; border:1px solid #E5E7EB; border-radius:10px; padding:4px; box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06); min-width:148px; }
+    #card-menu.open { display:block; }
+    .card-menu-item { display:flex; align-items:center; gap:9px; padding:7px 10px; border-radius:7px; font-size:13px; color:#374151; cursor:pointer; white-space:nowrap; }
+    .card-menu-item:hover { background:#F3F4F6; }
+
+    /* Sidebar collapse */
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
 
     /* Tab transitions */
     .filter-tab { transition: background-color 120ms ease, box-shadow 120ms ease, color 120ms ease; }
-
-    /* List view */
     #report-grid.list-view { display: flex !important; flex-direction: column; gap: 0; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
     #report-grid.list-view .report-card { display: flex !important; flex-direction: row; align-items: center; border-radius: 0 !important; border: none; border-bottom: 1px solid #F3F4F6; box-shadow: none !important; }
     #report-grid.list-view .report-card:last-child { border-bottom: none; }
@@ -114,7 +123,7 @@
   <!-- ═══════════════════════════════════════════
        SIDEBAR  220px fixed
   ════════════════════════════════════════════ -->
-  <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
@@ -311,7 +320,7 @@
 
     <!-- Breadcrumb bar -->
     <div class="flex items-center gap-2 px-8 h-11 border-b border-gray-100 flex-shrink-0">
-      <button class="text-gray-500 hover:text-gray-700">
+      <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
       <button class="text-gray-400 hover:text-gray-600">
@@ -324,7 +333,7 @@
     </div>
 
     <!-- Scrollable content -->
-    <div class="flex-1 overflow-y-auto px-8 py-8">
+    <div class="flex-1 overflow-y-auto px-8 py-4">
 
       <!-- Page header -->
       <div class="mb-6">
@@ -332,7 +341,7 @@
           <svg class="w-6 h-6 text-gray-900 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
           <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Recent</h1>
         </div>
-        <p class="mt-2 text-sm text-gray-500">Your recent reports and insights are displayed here. You can also create new reports and dashboards from here.</p>
+        <p class="mt-2 text-sm text-gray-500">All your recently accessed dashboards, chats, documents, and more - in one place.</p>
       </div>
 
       <!-- Action cards row -->
@@ -345,7 +354,7 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">New Dashboard</p>
-            <p class="text-[13px] text-gray-500">Build charts &amp; visual reports</p>
+            <p class="text-[13px] text-gray-500">Charts, KPIs &amp; visual reports</p>
           </div>
         </button>
 
@@ -356,7 +365,7 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">New Document</p>
-            <p class="text-[13px] text-gray-500">Write, edit &amp; share docs</p>
+            <p class="text-[13px] text-gray-500">Write, collaborate &amp; share</p>
           </div>
         </button>
 
@@ -367,7 +376,7 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">New Presentation</p>
-            <p class="text-[13px] text-gray-500">Create slides &amp; decks</p>
+            <p class="text-[13px] text-gray-500">Slides, decks &amp; pitches</p>
           </div>
         </button>
 
@@ -378,7 +387,7 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">New Form</p>
-            <p class="text-[13px] text-gray-500">Collect data with forms</p>
+            <p class="text-[13px] text-gray-500">Surveys, feedback &amp; data entry</p>
           </div>
         </button>
 
@@ -389,18 +398,18 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">New Chat</p>
-            <p class="text-[13px] text-gray-500">Generate insights from a prompt</p>
+            <p class="text-[13px] text-gray-500">Ask questions, get AI answers</p>
           </div>
         </button>
 
         <!-- Card: Add Datasource -->
-        <button class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+        <button onclick="openCreateModal('Add Datasource')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">Add Datasource</p>
-            <p class="text-[13px] text-gray-500">Link databases, APIs &amp; more</p>
+            <p class="text-[13px] text-gray-500">Connect databases, APIs &amp; files</p>
           </div>
         </button>
 
@@ -777,6 +786,149 @@
       });
     }
 
+    // Card context menu
+    document.addEventListener('DOMContentLoaded', function() {
+      var cardMenu = document.getElementById('card-menu');
+
+      document.querySelectorAll('.overflow-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var rect = btn.getBoundingClientRect();
+          var menuH = 124;
+          var top = (rect.bottom + menuH > window.innerHeight) ? rect.top - menuH : rect.bottom + 4;
+          cardMenu.style.top = top + 'px';
+          cardMenu.style.left = Math.min(rect.left, window.innerWidth - 164) + 'px';
+          cardMenu.classList.add('open');
+        });
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!cardMenu.contains(e.target)) cardMenu.classList.remove('open');
+      });
+
+      cardMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+    });
+
+    function cardMenuAction(action) {
+      document.getElementById('card-menu').classList.remove('open');
+    }
+
+    // Handle Create button — open datasource import flow if type is datasource
+    var currentModalType = '';
+    function handleCreateBtn() {
+      if (currentModalType === 'Add Datasource') {
+        closeCreateModal();
+        openDatasourceModal();
+      } else {
+        closeCreateModal();
+      }
+    }
+
+    // Datasource import modal
+    var dsSelectedApp = 'upload';
+    function openDatasourceModal() {
+      dsGoStep1();
+      document.getElementById('datasource-modal').classList.remove('hidden');
+    }
+    function closeDatasourceModal() {
+      document.getElementById('datasource-modal').classList.add('hidden');
+      document.getElementById('ds-file-list').innerHTML = '';
+      document.getElementById('ds-file-list').classList.add('hidden');
+    }
+    function dsGoStep1() {
+      document.getElementById('ds-body-step1').classList.remove('hidden');
+      document.getElementById('ds-body-step2').classList.add('hidden');
+      // Step 1 active
+      var c1 = document.getElementById('ds-step1-circle');
+      c1.style.background = '#5B63F6'; c1.style.color = '#fff'; c1.textContent = '1';
+      document.getElementById('ds-step1-label').className = 'text-sm font-medium text-gray-900';
+      // Step 2 inactive
+      var c2 = document.getElementById('ds-step2-circle');
+      c2.style.background = '#F3F4F6'; c2.style.color = '#9CA3AF'; c2.textContent = '2';
+      document.getElementById('ds-step2-label').className = 'text-sm font-medium text-gray-400';
+    }
+    function dsGoStep2() {
+      document.getElementById('ds-body-step1').classList.add('hidden');
+      document.getElementById('ds-body-step2').classList.remove('hidden');
+      document.getElementById('ds-file-list').innerHTML = '';
+      document.getElementById('ds-file-list').classList.add('hidden');
+      // Step 1 completed
+      var c1 = document.getElementById('ds-step1-circle');
+      c1.style.background = '#F3F4F6'; c1.style.color = '#6B7280';
+      c1.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+      document.getElementById('ds-step1-label').className = 'text-sm font-medium text-gray-400';
+      // Step 2 active
+      var c2 = document.getElementById('ds-step2-circle');
+      c2.style.background = '#5B63F6'; c2.style.color = '#fff'; c2.textContent = '2';
+      document.getElementById('ds-step2-label').className = 'text-sm font-medium text-gray-900';
+      // Render content based on selected app
+      var content = document.getElementById('ds-step2-content');
+      if (dsSelectedApp === 'upload') {
+        content.innerHTML = '<div class="rounded-xl flex flex-col items-center justify-center py-12 px-6 text-center cursor-pointer transition-all" style="border:2px dashed #93C5FD;background:#F8FBFF" onclick="document.getElementById(\'ds-file-input\').click()" ondragover="event.preventDefault();this.style.background=\'#EFF6FF\'" ondragleave="this.style.background=\'#F8FBFF\'" ondrop="event.preventDefault();this.style.background=\'#F8FBFF\';handleDsFiles(event.dataTransfer.files)">'
+          + '<div class="w-14 h-14 rounded-full flex items-center justify-center mb-4" style="background:#EFF6FF"><svg class="w-7 h-7" style="color:#3B82F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/></svg></div>'
+          + '<p class="text-base font-bold text-gray-800 mb-1">Upload files</p>'
+          + '<p class="text-[13px] text-gray-400 mb-4">Drag and drop or click to browse &bull; Max 10MB</p>'
+          + '<button class="h-9 px-6 text-sm font-semibold text-white rounded-full pointer-events-none" style="background:#5B63F6">Browse Files</button>'
+          + '</div>';
+      } else if (dsSelectedApp === 'gdrive') {
+        content.innerHTML = '<div class="space-y-4">'
+          + '<div class="flex items-center gap-3 p-4 rounded-xl" style="background:#F8FBFF;border:1px solid #E5E7EB">'
+          + '<div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white border border-gray-100"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M6.28 14.4L2 21.6h7.2l4.28-7.2H6.28z" fill="#0F9D58"/><path d="M12 2.4L7.72 9.6h8.56L20.56 2.4H12z" fill="#4285F4"/><path d="M16.28 9.6L12 16.8h8l.28-.48 3.72-6.48-.28-.24h-7.44z" fill="#FBBC05"/></svg></div>'
+          + '<div><p class="text-[13px] font-medium text-gray-800">Paste a Google Drive link</p><p class="text-[12px] text-gray-400 mt-0.5">Folder or file URL — make sure sharing is set to Anyone with the link</p></div></div>'
+          + '<div><label class="block text-[13px] font-medium text-gray-700 mb-1.5">Google Drive URL <span class="text-red-400">*</span></label>'
+          + '<input type="url" placeholder="https://drive.google.com/drive/folders/…" class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" /></div>'
+          + '<div><label class="block text-[13px] font-medium text-gray-700 mb-1.5">Import scope</label>'
+          + '<div class="grid grid-cols-2 gap-2">'
+          + '<label class="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-all"><input type="radio" name="gdrive-scope" value="folder" checked class="accent-[#5B63F6]"/> <span class="text-[13px] text-gray-700">Entire folder</span></label>'
+          + '<label class="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-all"><input type="radio" name="gdrive-scope" value="file" class="accent-[#5B63F6]"/> <span class="text-[13px] text-gray-700">Single file</span></label>'
+          + '</div></div></div>';
+      } else if (dsSelectedApp === 'notion') {
+        content.innerHTML = '<div class="space-y-4">'
+          + '<div class="flex items-center gap-3 p-4 rounded-xl" style="background:#F8FBFF;border:1px solid #E5E7EB">'
+          + '<div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-100"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933z"/></svg></div>'
+          + '<div><p class="text-[13px] font-medium text-gray-800">Connect your Notion workspace</p><p class="text-[12px] text-gray-400 mt-0.5">Requires a Notion integration token with read access</p></div></div>'
+          + '<div><label class="block text-[13px] font-medium text-gray-700 mb-1.5">Integration token <span class="text-red-400">*</span></label>'
+          + '<input type="password" placeholder="secret_…" class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" /></div>'
+          + '<div><label class="block text-[13px] font-medium text-gray-700 mb-1.5">Page or database URL <span class="text-gray-400 font-normal">(optional)</span></label>'
+          + '<input type="url" placeholder="https://notion.so/your-page" class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" /></div>'
+          + '<p class="text-[12px] text-gray-400">Leave blank to import all pages the integration has access to.</p></div>';
+      }
+    }
+    function selectDsApp(btn, app) {
+      dsSelectedApp = app;
+      document.querySelectorAll('.ds-app-btn').forEach(function(b) {
+        b.style.borderColor = '#E5E7EB';
+        b.style.borderWidth = '1px';
+        b.style.background = '';
+      });
+      btn.style.borderColor = '#5B63F6';
+      btn.style.borderWidth = '2px';
+      btn.style.background = '#F8F8FF';
+    }
+    function handleDsFiles(files) {
+      var list = document.getElementById('ds-file-list');
+      list.innerHTML = '';
+      list.classList.remove('hidden');
+      Array.from(files).forEach(function(f) {
+        var kb = (f.size / 1024).toFixed(1);
+        var row = document.createElement('div');
+        row.className = 'flex items-center gap-3 px-3 py-2.5 bg-white border border-gray-200 rounded-lg';
+        row.innerHTML = '<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>'
+          + '<span class="text-[13px] text-gray-700 flex-1 truncate">' + f.name + '</span>'
+          + '<span class="text-[11px] text-gray-400 flex-shrink-0">' + kb + ' KB</span>';
+        list.appendChild(row);
+      });
+    }
+    // Backdrop close for datasource modal
+    document.getElementById('datasource-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeDatasourceModal();
+    });
+
+    // Sidebar toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
     // View toggle
     function setView(active) {
       const grid = document.getElementById('report-grid');
@@ -862,6 +1014,7 @@
 
     // Create modal (dashboard / doc / presentation / form / ai chat)
     function openCreateModal(type) {
+      currentModalType = type;
       document.getElementById('modal-title').textContent = type;
       document.getElementById('create-modal').classList.remove('hidden');
       document.getElementById('modal-name').value = '';
@@ -994,9 +1147,15 @@
       <div class="px-6 py-5 space-y-4">
         <!-- Name field -->
         <div>
-          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name</label>
+          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name <span class="text-red-400">*</span></label>
           <input id="modal-name" type="text" placeholder="Enter a name…"
             class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
+        </div>
+        <!-- Description field -->
+        <div>
+          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Description <span class="text-gray-400 font-normal">(optional)</span></label>
+          <textarea id="modal-desc" placeholder="Add a short description…" rows="3"
+            class="w-full px-3 py-2 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all"></textarea>
         </div>
         <!-- Select project -->
         <div>
@@ -1015,7 +1174,7 @@
       <!-- Modal footer -->
       <div class="flex items-center justify-end gap-2 px-6 pb-6">
         <button onclick="closeCreateModal()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Close</button>
-        <button class="h-9 px-5 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+        <button onclick="handleCreateBtn()" class="h-9 px-5 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
       </div>
     </div>
   </div>
@@ -1049,6 +1208,107 @@
         <button onclick="closeNewProjectModal()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Close</button>
         <button onclick="createNewProject()" class="h-9 px-5 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Datasource Import Modal -->
+  <div id="datasource-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full mx-4" style="max-width:520px">
+      <!-- Header -->
+      <div class="flex items-start justify-between px-7 pt-7 pb-5">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900">Import your documents</h2>
+          <p class="mt-1 text-[13px] text-gray-500 leading-relaxed max-w-sm">Transform your files into an intelligent knowledge base. Upload documents, images, and more to get started.</p>
+        </div>
+        <button onclick="closeDatasourceModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors ml-4 mt-0.5 flex-shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Stepper -->
+      <div class="flex items-center gap-0 px-7 mb-6">
+        <!-- Step 1 -->
+        <div id="ds-step1-indicator" class="flex items-center gap-2.5">
+          <div id="ds-step1-circle" class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0" style="background:#5B63F6">1</div>
+          <span id="ds-step1-label" class="text-sm font-medium text-gray-900">Choose app</span>
+        </div>
+        <!-- Connector -->
+        <div class="flex-1 h-px mx-3" style="background:#E5E7EB"></div>
+        <!-- Step 2 -->
+        <div id="ds-step2-indicator" class="flex items-center gap-2.5">
+          <div id="ds-step2-circle" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0" style="background:#F3F4F6;color:#9CA3AF">2</div>
+          <span id="ds-step2-label" class="text-sm font-medium text-gray-400">Import docs</span>
+        </div>
+      </div>
+
+      <!-- Step 1 body: Choose app -->
+      <div id="ds-body-step1" class="px-7 pb-7">
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Notion -->
+          <button onclick="selectDsApp(this,'notion')" class="ds-app-btn flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-[#5B63F6] hover:bg-[#F8F8FF] transition-all text-left group">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-100">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">Notion</p>
+              <span class="text-[11px] font-medium px-1.5 py-0.5 rounded" style="background:#FEF3C7;color:#92400E">Pro</span>
+            </div>
+          </button>
+          <!-- Google Drive -->
+          <button onclick="selectDsApp(this,'gdrive')" class="ds-app-btn flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-[#5B63F6] hover:bg-[#F8F8FF] transition-all text-left">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-50">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M6.28 14.4L2 21.6h7.2l4.28-7.2H6.28z" fill="#0F9D58"/><path d="M12 2.4L7.72 9.6h8.56L20.56 2.4H12z" fill="#4285F4"/><path d="M16.28 9.6L12 16.8h8l.28-.48 3.72-6.48-.28-.24h-7.44z" fill="#FBBC05"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">Google Drive</p>
+              <span class="text-[11px] font-medium px-1.5 py-0.5 rounded" style="background:#FEF3C7;color:#92400E">Pro</span>
+            </div>
+          </button>
+          <!-- Upload -->
+          <button onclick="selectDsApp(this,'upload')" id="ds-upload-btn" class="ds-app-btn flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left" style="border-color:#5B63F6;background:#F8F8FF">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">Upload</p>
+              <p class="text-[11px] text-gray-400">Files & docs</p>
+            </div>
+          </button>
+        </div>
+        <!-- Next button -->
+        <div class="flex justify-end mt-5">
+          <button onclick="dsGoStep2()" class="h-9 px-6 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 2 body: Import docs -->
+      <div id="ds-body-step2" class="hidden px-7 pb-7">
+        <!-- Dynamic content rendered by dsGoStep2() -->
+        <div id="ds-step2-content"></div>
+        <input id="ds-file-input" type="file" multiple class="hidden" onchange="handleDsFiles(this.files)" />
+        <div id="ds-file-list" class="mt-4 space-y-2 hidden"></div>
+        <!-- Footer -->
+        <div class="flex items-center justify-between mt-5">
+          <button onclick="dsGoStep1()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">← Back</button>
+          <button onclick="closeDatasourceModal()" class="h-9 px-6 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card context menu (shared, single instance) -->
+  <div id="card-menu">
+    <div class="card-menu-item" onclick="cardMenuAction('share')">
+      <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+      Share
+    </div>
+    <div class="card-menu-item" onclick="cardMenuAction('rename')">
+      <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"/></svg>
+      Rename
+    </div>
+    <div class="card-menu-item" onclick="cardMenuAction('edit')">
+      <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"/></svg>
+      Edit
     </div>
   </div>
 
