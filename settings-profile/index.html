@@ -296,14 +296,14 @@
 
         <!-- Workspace sub-tabs -->
         <div class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
-          <button id="wstab-info" onclick="setWsTab('info')" class="stab active">Workspace Info</button>
-          <button id="wstab-users" onclick="setWsTab('users')" class="stab">Users with Access</button>
-          <button id="wstab-datasources" onclick="setWsTab('datasources')" class="stab">Data Sources</button>
+          <button id="wstab-info" onclick="setWsTab('info')" class="stab active">General</button>
+          <button id="wstab-users" onclick="setWsTab('users')" class="stab">Members</button>
+          <button id="wstab-datasources" onclick="setWsTab('datasources')" class="stab">Integrations</button>
           <button id="wstab-billing" onclick="setWsTab('billing')" class="stab">Billing</button>
         </div>
 
         <!-- Sub-panel: Workspace Info -->
-        <div id="wspanel-info" class="ws-panel active max-w-xl">
+        <div id="wspanel-info" class="ws-panel active">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
             <p class="text-[15px] font-semibold text-gray-900 mb-4">Workspace info</p>
             <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
@@ -333,7 +333,7 @@
         </div>
 
         <!-- Sub-panel: Users with Access -->
-        <div id="wspanel-users" class="ws-panel max-w-2xl">
+        <div id="wspanel-users" class="ws-panel">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
             <div class="flex items-center justify-between mb-3">
               <p class="text-[15px] font-semibold text-gray-900">Users with access</p>
