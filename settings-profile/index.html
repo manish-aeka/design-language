@@ -6,6 +6,45 @@
   <title>Aibii — Settings</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // ── Add workspace canvas ──────────────────────────────────────────
+    function openAddWsCanvas() {
+      closeWsModal();
+      var overlay = document.getElementById('add-ws-overlay');
+      var canvas  = document.getElementById('add-ws-canvas');
+      overlay.style.display = 'block';
+      canvas.style.display  = 'block';
+      requestAnimationFrame(function() {
+        canvas.style.transform = 'translateX(0)';
+      });
+    }
+    function closeAddWsCanvas() {
+      var canvas  = document.getElementById('add-ws-canvas');
+      var overlay = document.getElementById('add-ws-overlay');
+      canvas.style.transform = 'translateX(100%)';
+      setTimeout(function() {
+        canvas.style.display  = 'none';
+        overlay.style.display = 'none';
+      }, 280);
+    }
+    function syncLogoPreview(val) {
+      var preview = document.getElementById('ws-logo-preview');
+      if (!preview) return;
+      preview.textContent = val ? val.trim()[0].toUpperCase() : 'W';
+    }
+    function handleLogoUpload(e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var preview = document.getElementById('ws-logo-preview');
+        preview.style.background = 'none';
+        preview.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover rounded-2xl">';
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+
+  <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -62,17 +101,6 @@
     .type-item:hover { background-color: #F3F4F6; }
     /* Workspace switcher dropdown */
     .ws-switcher-dropdown { display: none; }
-    .ws-switcher-dropdown.open {
-      display: block;
-      position: fixed;
-      z-index: 40;
-      background: #fff;
-      border: 1px solid #E5E7EB;
-      border-radius: 12px;
-      padding-top: 4px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
-      overflow: hidden;
-    }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -84,14 +112,11 @@
 
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
-      <button onclick="toggleWsSwitcher()" class="flex items-center gap-2 w-full text-left px-4 py-3">
+      <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors">
         <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
         <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
-        <svg id="ws-switcher-chevron" class="w-4 h-4 text-gray-400 flex-shrink-0" style="transition:transform 150ms ease" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
       </button>
-      <div id="ws-switcher-dropdown" class="ws-switcher-dropdown">
-        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
-      </div>
     </div>
 
     <!-- Primary nav -->
@@ -249,7 +274,7 @@
       </div>
 
       <!-- ── Tab bar — pill style (same as recent-view) ── -->
-      <div class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
+      <div id="settings-tab-bar" class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
         <button id="tab-profile" onclick="setTab('profile')" class="stab active">Profile</button>
         <button id="tab-workspace" onclick="setTab('workspace')" class="stab">Workspace</button>
       </div>
@@ -587,6 +612,25 @@
     </div><!-- /scroll -->
   </main>
 
+  <!-- ── Workspace switcher modal ── -->
+  <div id="ws-modal" onclick="if(event.target===this)closeWsModal()" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
+    <div class="bg-white rounded-2xl shadow-2xl w-[520px] max-w-[92vw] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+        <h2 class="text-[17px] font-bold text-gray-900">Switch workspace</h2>
+        <div class="flex items-center gap-2">
+          <button onclick="closeWsModal();window.location.href='../create-workspace/index.html'" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-[#5B63F6] bg-[#EEF2FF] hover:bg-[#E0E7FF] transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add workspace
+          </button>
+          <button onclick="closeWsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="px-4 py-4 space-y-1.5" id="ws-modal-list"></div>
+    </div>
+  </div>
+
   <script>
     const TABS = ['profile','workspace'];
     const TITLES = {profile:'Profile',workspace:'Workspace'};
@@ -707,37 +751,32 @@
       }
     });
 
-    // ── Workspace switcher ──────────────────────────────────────────
+    // ── Workspace switcher modal ──────────────────────────────────────────
     var wsData = [
       { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
       { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false }
     ];
-    function renderWsSwitcherList() {
-      var list = document.getElementById('ws-switcher-list');
+    function renderWsModalList() {
+      var list = document.getElementById('ws-modal-list');
       if (!list) return;
       list.innerHTML = wsData.map(function(ws) {
-        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm hover:bg-gray-50 transition-colors text-left' + (ws.current ? ' bg-[#EEF2FF]' : '') + '">'
-          + '<span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
-          + '<span class="flex-1 text-sm text-gray-700 truncate' + (ws.current ? ' font-semibold' : '') + '">' + (ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name) + '</span>'
+        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-4 px-4 h-16 rounded-xl text-sm hover:bg-gray-50 transition-colors text-left' + (ws.current ? ' bg-[#EEF2FF]' : '') + '">'
+          + '<span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
+          + '<span class="flex-1 min-w-0">'
+          + '<p class="text-[13px] font-semibold text-gray-900 truncate' + (ws.current ? '' : '') + '">' + ws.name + '</p>'
+          + '<p class="text-[11px] text-gray-400">' + (ws.current ? 'Current workspace' : 'Switch to this') + '</p>'
+          + '</span>'
           + (ws.current ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
           + '</button>';
       }).join('');
     }
-    function positionWsDropdown() {
-      var wrapper = document.getElementById('ws-switcher-wrapper');
-      var dd = document.getElementById('ws-switcher-dropdown');
-      if (!wrapper || !dd) return;
-      var rect = wrapper.getBoundingClientRect();
-      dd.style.top    = (rect.bottom + 4) + 'px';
-      dd.style.left   = (rect.left + 8) + 'px';
-      dd.style.width  = (rect.width - 16) + 'px';
+    function openWsModal() {
+      renderWsModalList();
+      var m = document.getElementById('ws-modal');
+      m.style.display = 'flex';
     }
-    function toggleWsSwitcher() {
-      var dd = document.getElementById('ws-switcher-dropdown');
-      var ch = document.getElementById('ws-switcher-chevron');
-      var open = dd.classList.toggle('open');
-      if (ch) ch.style.transform = open ? 'rotate(180deg)' : '';
-      if (open) { renderWsSwitcherList(); positionWsDropdown(); }
+    function closeWsModal() {
+      document.getElementById('ws-modal').style.display = 'none';
     }
     function selectWorkspace(id) {
       wsData.forEach(function(ws) { ws.current = ws.id === id; });
@@ -746,22 +785,11 @@
         var wrap = document.getElementById('ws-switcher-wrapper');
         var nameEl = wrap ? wrap.querySelector('.truncate') : null;
         var avatarEl = wrap ? wrap.querySelector('.rounded-full') : null;
-        if (nameEl) nameEl.textContent = ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name;
+        if (nameEl) nameEl.textContent = ws.name.length > 22 ? ws.name.slice(0, 22) + '...' : ws.name;
         if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
       }
-      document.getElementById('ws-switcher-dropdown').classList.remove('open');
-      var ch = document.getElementById('ws-switcher-chevron');
-      if (ch) ch.style.transform = '';
+      closeWsModal();
     }
-    document.addEventListener('click', function(e) {
-      var wrap = document.getElementById('ws-switcher-wrapper');
-      var dd = document.getElementById('ws-switcher-dropdown');
-      if (dd && dd.classList.contains('open') && wrap && !wrap.contains(e.target)) {
-        dd.classList.remove('open');
-        var ch = document.getElementById('ws-switcher-chevron');
-        if (ch) ch.style.transform = '';
-      }
-    });
   </script>
 </body>
 </html>
