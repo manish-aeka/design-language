@@ -1,7 +1,6 @@
 ﻿# Recent View — Design Language
 
 > Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Recent View.
-> Place the reference screenshot at `assets/screenshot.png`.
 
 ---
 
@@ -28,8 +27,8 @@
    - [Card Context Menu](#card-context-menu)
    - [Scrollbar](#scrollbar)
 9. [Modals](#modals)
-   - [Create Project Modal](#create-project-modal)
    - [Create Item Modal](#create-item-modal)
+   - [Create Project Modal](#create-project-modal)
 10. [States & Interactions](#states--interactions)
 11. [Motion & Animation](#motion--animation)
 12. [Design Principles](#design-principles)
@@ -41,13 +40,13 @@
 The **Recent** view is the personal analytics home screen — the first screen a user lands on after selecting a workspace in Aibii. It combines a lightweight action strip, a filter/tab mechanism, and a dense report grid to surface the most relevant analyses and dashboards with zero navigation friction.
 
 Key interactions:
-- **6 action-card shortcuts** (New Dashboard, New Document, New Presentation, New Form, New Chat, Add Datasource)
-- **Create Item modal** — shared modal for all 6 action cards, with Name (required) + Description (optional) + Select project
+- **5 action-card shortcuts** — New Dashboard, New Document, New Presentation, New Form, New Chat
+- **Create Item modal** — shared modal for all action cards; Name (required) + Description (optional) + Select project
 - **Create Project modal** — triggered via sidebar "+ Create a project" link
 - **Sidebar toggle** — hamburger button collapses/expands the 220px sidebar with smooth animation
 - **Card context menu** — `...` on any card opens Share / Rename / Edit dropdown
-- **Type filter** — filters report grid by content type; clicking active type clears filter
-- **View toggle** — switches between 4-column card layout and compact list layout
+- **Type filter** — filters report grid by content type; clicking the active type clears the filter
+- **View toggle** — switches between 4-column card grid and compact list layout
 - **4 filter tabs** — By me / By everyone / Shared with me / Everything
 
 ---
@@ -62,15 +61,16 @@ Key interactions:
 │  ─────────────────────────  │     All your recently accessed dashboards,    │
 │  🕐 Recent  ← active        │     chats, documents, and more — in one place │
 │  ⊞  New Dashboard           │                                               │
-│  💬 New Chat                │  [⊞ New Dashboard][📄 Doc][🖥 Pres.][📋 Form] │
-│  ─────────────────────────  │  [💬 New Chat][🗄 Add Datasource]             │ ← 6 Action Cards
-│  PROJECTS            [👁]   │                                               │
-│  ▶ My Private Project 📌    │  [ By me ][ By everyone ][ Shared ][ All ]   │ ← 4 Filter Tabs
-│    ├ 💬 Q4 Strategy         │                            [ Type▾ ][ ≡ ⊞ ]  │
-│    └ …                      │                                               │
-│  ▶ Sovereign Capital Gate   │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐       │
-│  + Create a project         │  │      │ │      │ │      │ │      │       │ ← 12-card Report Grid
-│  ─────────────────────────  │  └──────┘ └──────┘ └──────┘ └──────┘       │
+│  💬 New Chat                │  [⊞ Dashboard][📄 Doc][🖥 Pres][📋 Form][💬 Chat] │ ← 5 Action Cards
+│  ─────────────────────────  │                                               │
+│  PROJECTS                   │  [ By me ][ By everyone ][ Shared ][ All ]   │ ← 4 Filter Tabs
+│  ▶ My Private Project 📌    │                            [ Type▾ ][ ≡ ⊞ ]  │
+│    ├ 💬 Q4 Strategy         │                                               │
+│    └ …                      │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐       │
+│  ▶ Sovereign Capital Gate   │  │      │ │      │ │      │ │      │       │ ← Report Grid
+│  + Create a project         │  └──────┘ └──────┘ └──────┘ └──────┘       │
+│  ─────────────────────────  │                                               │
+│  🗄  Connect Datasource      │                                               │
 │  👤 Shared with me          │                                               │
 │  ⚙  Settings               │                                               │
 │  ─────────────────────────  │                                               │
@@ -90,7 +90,7 @@ Key interactions:
 | `color-brand-hover` | `#4850e4` | Button hover state |
 | `color-bg-base` | `#FFFFFF` | Page background, card surface |
 | `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, active toggle bg |
-| `color-bg-toggle-container` | `#F1F3F4` | View toggle container, Type filter trigger |
+| `color-bg-toggle-container` | `#F1F3F4` | View toggle container, type filter trigger |
 | `color-bg-tab-container` | `#F3F4F6` | Pill group container |
 | `color-bg-tab-active` | `#FFFFFF` | Active pill tab |
 | `color-text-primary` | `#111827` | Page title, card titles, active tab text |
@@ -110,7 +110,6 @@ Key interactions:
 | Document | `#FFF7ED` | `#FCA96A` | `#FFF7ED` | `#F97316` |
 | Presentation | `#F5F3FF` | `#A78BFA` | `#F5F3FF` | `#7C3AED` |
 | Form | `#FDF2F8` | `#F4A8D4` | `#FDF2F8` | `#BE185D` |
-| Datasource | `#F0F9FF` | `#7DD3FC` | `#F0F9FF` | `#0369A1` |
 | Project | `#FFFBEB` | `#FCD34D` | `#FFFBEB` | `#92400E` |
 
 ---
@@ -142,7 +141,7 @@ Font: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-seri
 | `space-6` | 24px | Header → action cards margin |
 | `space-7` | 28px | Action cards → filter tabs margin |
 | Content padding | `px-8 py-4` (32px / 16px) | Main content area |
-| Action cards | `grid-cols-4`, `gap: 16px` | |
+| Action cards | `grid-cols-4` (5 cards across two rows), `gap: 16px` | |
 | Report grid | `grid-cols-4`, `gap: 16px` | Grid view |
 | Sidebar width | `220px` fixed | Collapsible |
 
@@ -171,12 +170,12 @@ Font: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-seri
 
 ## Iconography
 
-All icons: Heroicons outline, inline SVG, stroke-width 1.5px.
+All icons: Heroicons outline, inline SVG, `stroke-width: 1.5px`.
 
 | Location | Icon | Size | Color |
 |---|---|---|---|
 | Page title | Clock | 24px | `#111827` |
-| Action card icons (all) | type-specific (see below) | 20px | `#5B63F6` |
+| Action card icons | type-specific | 20px | `#5B63F6` |
 | Nav: Recent | Clock | 16px | `#6B7280` |
 | Nav: New Dashboard | SquaresGrid | 16px | `#6B7280` |
 | Nav: New Chat | ChatBubble | 16px | `#6B7280` |
@@ -208,7 +207,7 @@ All icons: Heroicons outline, inline SVG, stroke-width 1.5px.
 
 ### Action Cards Row
 
-Six cards in a `grid-cols-4` layout (4 + 2 rows).
+Five active cards in a `grid-cols-4` layout (4 + 1 second row).
 
 | # | Title | Description | Opens |
 |---|---|---|---|
@@ -217,7 +216,8 @@ Six cards in a `grid-cols-4` layout (4 + 2 rows).
 | 3 | New Presentation | Slides, decks & pitches | Create Item Modal |
 | 4 | New Form | Surveys, feedback & data entry | Create Item Modal |
 | 5 | New Chat | Ask questions, get AI answers | Create Item Modal |
-| 6 | Add Datasource | Connect databases, APIs & files | Create Item Modal |
+
+> **Note:** "Add Datasource" card exists in the HTML but is commented out.
 
 Card spec: bg `#FFFFFF`, border `1px solid #E5E7EB`, radius `12px`, padding `16px`, icon wrapper `40×40px` with `rgba(91,99,246,0.08)` bg, icon `20px #5B63F6`. Hover: `shadow-card-hover` + `translateY(-1px)`.
 
@@ -257,27 +257,28 @@ JS: `setView(active)` — toggles `list-view` class and grid Tailwind classes on
 
 ### Type Filter Dropdown
 
-Trigger: pill button with funnel icon + `<span id="type-filter-label">Type</span>`. Label updates to selected type name on selection.
+Trigger: pill button with funnel icon + `<span id="type-filter-label">Type</span>`. Label updates to the selected type name on selection; clicking the active type again clears the filter.
 
-Types: Chat (default active) · Dashboard · Document · Presentation · Form · Datasource · Project.
+Available types: **Chat · Dashboard · Document · Presentation · Form · Project**
 
-JS: `activeTypeFilter` global. `setTypeFilter(type, el)` — toggle logic; clicking active type clears filter. `applyFilters()` — combines search + type filter on `.report-card[data-type]`.
+JS: `activeTypeFilter` global. `setTypeFilter(type, el)` — toggle logic. `applyFilters()` — combines search + type filter on `.report-card[data-type]`.
 
 ---
 
 ### Sidebar Projects Section
 
-Collapsible accordion. Always-first pinned entry: "My Private Project" with thumbtack icon.
+Collapsible accordion. Always-first pinned entry: **My Private Project** with thumbtack icon.
 
 | Property | Value |
 |---|---|
+| Section label | "PROJECTS" — `11px`, uppercase, `#9CA3AF`, no decorative icon |
 | Project row height | `36px` |
 | Chevron open | rotates `90deg`, `150ms ease` |
 | Submenu max-height | `160px`, `overflow-y: auto` |
 | Submenu item | `32px`, `13px`, `#4B5563` |
 | "+ Create a project" | `onclick="openNewProjectModal()"` |
 
-Static projects: **My Private Project** (pinned, 11 items) + **Sovereign Capital Gate** (3 items).
+Static projects: **My Private Project** (pinned, 11 sub-items) + **Sovereign Capital Gate** (3 sub-items).
 
 ---
 
@@ -292,9 +293,7 @@ Transition: `width/min-width 220ms ease`, `opacity 180ms ease`.
 
 ### Report Grid
 
-`<div id="report-grid">` — 12 cards with `data-type` attributes (chat, dashboard, document, presentation, form, datasource, project).
-
-Cards:
+`<div id="report-grid">` — 11 cards with `data-type` attributes (chat, dashboard, document, presentation, form, project).
 
 | Title | Type | Time |
 |---|---|---|
@@ -303,7 +302,6 @@ Cards:
 | Product Brief 2026 | document | 32 min ago |
 | Investor Pitch Deck | presentation | 45 min ago |
 | Customer Feedback Form | form | 1 hour ago |
-| Postgres — prod-db | datasource | 2 hours ago |
 | My Private Project | project | 2 hours ago |
 | Sprint Planning | chat | 3 hours ago |
 | User Analytics | dashboard | 4 hours ago |
@@ -315,9 +313,9 @@ Cards:
 
 ### Report Card
 
-Grid view: colored preview zone (160px) + title/badge/timestamp footer + hidden `...` button.
+**Grid view:** colored preview zone (160px) + title/badge/timestamp footer + hidden `...` button.
 
-List view row: `[40px icon square] [name (max 200px)] [96px badge] [time auto margin-left] [...]`
+**List view row:** `[40px icon square] [name (max 200px)] [96px badge] [time auto margin-left] [...]`
 
 Overflow button: `opacity: 0` default, `opacity: 1` on card hover. In list view: always `opacity: 1`.
 
@@ -333,7 +331,7 @@ Overflow button: `opacity: 0` default, `opacity: 1` on card hover. In list view:
 
 Single `#card-menu` (fixed). Shown on `.overflow-btn` click via `DOMContentLoaded` listeners.
 
-Items: **Share** · **Rename** · **Edit** — each `13px`, `#374151`, radius `7px`, hover bg `#F3F4F6`.
+Items: **Share · Rename · Edit** — each `13px`, `#374151`, radius `7px`, hover bg `#F3F4F6`.
 
 Positioning: below button (`rect.bottom + 4px`); flips above if < 124px from viewport bottom. Closes on outside click.
 
@@ -353,7 +351,7 @@ Positioning: below button (`rect.bottom + 4px`); flips above if < 124px from vie
 
 ### Create Item Modal
 
-`id="create-modal"` — triggered by all 6 action cards via `openCreateModal(type)`.
+`id="create-modal"` — triggered by all 5 active action cards via `openCreateModal(type)`.
 
 Fields:
 - **Name** — `id="modal-name"`, required (red `*`), `h-9` input
@@ -372,7 +370,7 @@ Fields:
 - **Name** — `id="proj-name"`, required, Enter key submits
 - **Description** — `id="proj-desc"`, optional, 3-row textarea
 
-On create: injects new project row into `#projects-list` after pinned entry with ID `ws-dyn-{timestamp}`.
+On create: injects a new project row into `#projects-list` after the pinned entry with ID `ws-dyn-{timestamp}`.
 
 ---
 
@@ -410,8 +408,8 @@ On create: injects new project row into `#projects-list` after pinned entry with
 2. **Flat Hierarchy, Contextual Depth** — elevation appears only on interaction.
 3. **Segmented Filtering In-Place** — 4 tabs + type filter with no page reload.
 4. **Consistent Type Visual Language** — each type has a unique colour applied across sidebar, badges, and filter dropdown.
-5. **Progressive Disclosure** — `...` menus, subitems, and dropdowns hidden until triggered.
-6. **Dual-Mode Grid** — list view preserves all data in compact rows with fixed-width type column.
+5. **Progressive Disclosure** — `...` menus, sub-items, and dropdowns hidden until triggered.
+6. **Dual-Mode Grid** — list view preserves all data in compact rows with a fixed-width type column.
 
 ---
 
@@ -420,20 +418,16 @@ On create: injects new project row into `#projects-list` after pinned entry with
 ```
 recent-view/
 ├── assets/
-│   └── screenshot.png
 ├── tokens/
 │   ├── colors.json
 │   ├── typography.json
 │   └── spacing.json
 ├── components/
-│   ├── page-header.md
-│   ├── action-cards.md
-│   ├── filter-tabs.md
-│   ├── workspace-submenu.md
-│   └── report-card.md
+├── RECENT_VIEW_COMPONENT.md
+├── SVELTEKIT_MIGRATION.md
 └── README.md
 ```
 
 ---
 
-*Design language version 2.0 — Aibii AI Business Intelligence SaaS · Recent View, May 2026.*
+*Design language version 2.1 — Aibii AI Business Intelligence SaaS · Recent View, May 2026.*
