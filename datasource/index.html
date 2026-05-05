@@ -115,7 +115,8 @@
         <svg id="ws-switcher-chevron" class="w-4 h-4 text-gray-400 flex-shrink-0" style="transition:transform 150ms ease" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div id="ws-switcher-dropdown" class="ws-switcher-dropdown">
-        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
+
       </div>
     </div>
 
@@ -282,7 +283,7 @@
   <main class="flex-1 flex flex-col overflow-hidden">
 
     <!-- ─── VIEW 1: Connect Your Data ─── -->
-    <div id="view-connect" class="view active flex-col flex-1 overflow-hidden">
+    <div id="view-connect" class="view flex-col flex-1 overflow-hidden">
 
       <!-- Top bar -->
       <div class="flex items-center gap-2 px-6 h-11 border-b border-gray-100 flex-shrink-0 bg-white">
@@ -432,7 +433,7 @@
 
 
     <!-- ─── VIEW 2: Add Datasource (connector picker) ─── -->
-    <div id="view-add" class="view flex-col flex-1 overflow-hidden">
+    <div id="view-add" class="view active flex-col flex-1 overflow-hidden">
 
       <!-- Top bar -->
       <div class="flex items-center gap-2 px-6 h-11 border-b border-gray-100 flex-shrink-0 bg-white">
@@ -766,39 +767,10 @@
           <div id="step-2" class="step-pane">
             <div class="step-card">
               <h2 class="text-[15px] font-semibold text-gray-900 mb-1">Connection Details</h2>
-              <p class="text-[13px] text-gray-500 mb-5">Enter your database credentials to establish a secure connection</p>
+              <p id="step2-subtitle" class="text-[13px] text-gray-500 mb-5">Enter your credentials to establish a secure connection</p>
 
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <label class="block">
-                  <span class="text-[13px] font-semibold text-gray-700 mb-1.5 flex items-center gap-1">Host <span class="text-red-500">*</span></span>
-                  <input type="text" placeholder="e.g. db.example.com"
-                    class="w-full h-10 px-3.5 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 transition-shadow" />
-                </label>
-                <label class="block">
-                  <span class="text-[13px] font-semibold text-gray-700 mb-1.5 flex items-center gap-1">Port <span class="text-red-500">*</span></span>
-                  <input type="text" placeholder="5432"
-                    class="w-full h-10 px-3.5 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 transition-shadow" />
-                </label>
-              </div>
-
-              <label class="block mb-4">
-                <span class="text-[13px] font-semibold text-gray-700 mb-1.5 flex items-center gap-1">Database Name <span class="text-red-500">*</span></span>
-                <input type="text" placeholder="e.g. analytics_prod"
-                  class="w-full h-10 px-3.5 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 transition-shadow" />
-              </label>
-
-              <div class="grid grid-cols-2 gap-4 mb-6">
-                <label class="block">
-                  <span class="text-[13px] font-semibold text-gray-700 mb-1.5 flex items-center gap-1">Username <span class="text-red-500">*</span></span>
-                  <input type="text" placeholder="postgres"
-                    class="w-full h-10 px-3.5 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 transition-shadow" />
-                </label>
-                <label class="block">
-                  <span class="text-[13px] font-semibold text-gray-700 mb-1.5 flex items-center gap-1">Password <span class="text-red-500">*</span></span>
-                  <input type="password" placeholder="••••••••"
-                    class="w-full h-10 px-3.5 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 transition-shadow" />
-                </label>
-              </div>
+              <!-- Dynamic connector fields rendered by JS -->
+              <div id="wiz-fields" class="mb-5"></div>
 
               <!-- Test connection states -->
               <div id="conn-idle" class="conn-idle flex items-center justify-between">
@@ -818,16 +790,28 @@
                 </div>
               </div>
 
-              <div id="conn-success" class="conn-success items-center justify-between">
-                <div class="flex items-center gap-2 text-[13px] font-medium" style="color:#16A34A">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  Connection successful!
+              <div id="conn-success" class="conn-success flex-col gap-0">
+                <!-- Success header -->
+                <div class="flex items-center gap-2 text-[13px] font-semibold mb-4" style="color:#16A34A">
+                  <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Connection successful — <span id="found-count">4</span> tables discovered
                 </div>
-                <button onclick="goStep(3)"
-                  class="px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity"
-                  style="background:#5B63F6">
-                  Continue
-                </button>
+                <!-- Tables preview -->
+                <div class="rounded-xl border border-gray-100 overflow-hidden mb-5">
+                  <div class="px-4 py-2 bg-gray-50 border-b border-gray-100 grid grid-cols-3 gap-2">
+                    <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider col-span-2">Table</span>
+                    <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-right">Rows</span>
+                  </div>
+                  <div id="wiz-table-preview" class="divide-y divide-gray-100"></div>
+                </div>
+                <!-- Footer buttons -->
+                <div class="flex items-center justify-between">
+                  <button onclick="resetConnTest()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-500 border border-gray-200 hover:bg-gray-50 transition-colors">Re-test</button>
+                  <button onclick="goToSelectTables()" class="flex items-center gap-2 px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                    Continue — Select Tables
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                  </button>
+                </div>
               </div>
 
               <div id="conn-error" class="conn-error items-center justify-between">
@@ -853,64 +837,15 @@
               <!-- Select all row -->
               <div class="flex items-center justify-between px-3 py-2 mb-2 rounded-lg bg-gray-50 border border-gray-100">
                 <label class="flex items-center gap-2.5 cursor-pointer">
-                  <input type="checkbox" id="select-all-tables" onchange="toggleAllTables(this)"
+                  <input type="checkbox" id="select-all-tables" onchange="toggleAllTables(this)" checked
                     class="w-4 h-4 rounded" style="accent-color:#5B63F6" />
-                  <span class="text-[13px] font-semibold text-gray-700">Select all tables</span>
+                  <span class="text-[13px] font-semibold text-gray-700">Select all</span>
                 </label>
-                <span class="text-[11px] text-gray-400" id="table-count">6 tables found</span>
+                <span class="text-[11px] text-gray-400" id="table-count">4 tables found</span>
               </div>
 
-              <!-- Table rows -->
-              <div class="space-y-1 mb-6" id="table-list">
-                <label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
-                  <input type="checkbox" class="table-check w-4 h-4 rounded" style="accent-color:#5B63F6" checked />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-medium text-gray-900">users</p>
-                    <p class="text-[11px] text-gray-400">42,810 rows · 12 columns</p>
-                  </div>
-                  <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center" style="background:#EEF2FF; color:#5B63F6">Primary</span>
-                </label>
-                <label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
-                  <input type="checkbox" class="table-check w-4 h-4 rounded" style="accent-color:#5B63F6" checked />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-medium text-gray-900">orders</p>
-                    <p class="text-[11px] text-gray-400">1,204,519 rows · 18 columns</p>
-                  </div>
-                  <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center bg-gray-100 text-gray-500">Fact</span>
-                </label>
-                <label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
-                  <input type="checkbox" class="table-check w-4 h-4 rounded" style="accent-color:#5B63F6" checked />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-medium text-gray-900">products</p>
-                    <p class="text-[11px] text-gray-400">3,847 rows · 9 columns</p>
-                  </div>
-                  <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center bg-gray-100 text-gray-500">Dimension</span>
-                </label>
-                <label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
-                  <input type="checkbox" class="table-check w-4 h-4 rounded" style="accent-color:#5B63F6" />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-medium text-gray-900">events</p>
-                    <p class="text-[11px] text-gray-400">8,421,033 rows · 7 columns</p>
-                  </div>
-                  <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center bg-gray-100 text-gray-500">Log</span>
-                </label>
-                <label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
-                  <input type="checkbox" class="table-check w-4 h-4 rounded" style="accent-color:#5B63F6" />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-medium text-gray-900">sessions</p>
-                    <p class="text-[11px] text-gray-400">2,109,447 rows · 11 columns</p>
-                  </div>
-                  <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center bg-gray-100 text-gray-500">Log</span>
-                </label>
-                <label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
-                  <input type="checkbox" class="table-check w-4 h-4 rounded" style="accent-color:#5B63F6" />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-medium text-gray-900">revenue_snapshots</p>
-                    <p class="text-[11px] text-gray-400">365 rows · 5 columns</p>
-                  </div>
-                  <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center bg-gray-100 text-gray-500">Dimension</span>
-                </label>
-              </div>
+              <!-- Dynamic table list (populated by JS after test) -->
+              <div class="space-y-1.5 mb-6" id="table-list"></div>
 
               <div class="flex items-center justify-between">
                 <button onclick="goStep(2)" class="px-4 h-10 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Back</button>
@@ -944,6 +879,7 @@
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
+
 
     // ─── Connected Datasources table ──────────────────────────
     const connectedDatasources = [
@@ -1078,17 +1014,94 @@
       document.getElementById('no-connectors').classList.toggle('hidden', anyVisible);
     }
 
+    // ─── Connector field schemas (minimal, only necessary) ─────
+    const WIZ_FIELDS = {
+      'Postgres':     { cat:'db',  sub:'Enter your database credentials',         fields:[
+        {l:'Host',id:'host',ph:'db.example.com',r:true},{l:'Port',id:'port',ph:'5432',r:true,sm:true},
+        {l:'Database Name',id:'db',ph:'analytics_prod',r:true,full:true},
+        {l:'Username',id:'user',ph:'postgres',r:true},{l:'Password',id:'pass',t:'password',ph:'\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',r:true,sm:true}]},
+      'MySQL':        { cat:'db',  sub:'Enter your MySQL credentials',             fields:[
+        {l:'Host',id:'host',ph:'db.example.com',r:true},{l:'Port',id:'port',ph:'3306',r:true,sm:true},
+        {l:'Database Name',id:'db',ph:'my_db',r:true,full:true},
+        {l:'Username',id:'user',ph:'root',r:true},{l:'Password',id:'pass',t:'password',ph:'\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',r:true,sm:true}]},
+      'MongoDB':      { cat:'db',  sub:'Enter your MongoDB connection string',     fields:[
+        {l:'Connection String',id:'connstr',ph:'mongodb+srv://user:pass@cluster.mongodb.net/db',r:true,full:true}]},
+      'SQL Server':   { cat:'db',  sub:'Enter your SQL Server credentials',        fields:[
+        {l:'Host',id:'host',ph:'server.example.com',r:true},{l:'Port',id:'port',ph:'1433',sm:true},
+        {l:'Database Name',id:'db',ph:'master',r:true,full:true},
+        {l:'Username',id:'user',ph:'sa',r:true},{l:'Password',id:'pass',t:'password',ph:'\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',r:true,sm:true}]},
+      'Excel':        { cat:'file', sub:'Upload your Excel file',                  fields:[{l:'Upload Excel file (.xlsx)',id:'file',t:'file',accept:'.xlsx,.xls',full:true}]},
+      'CSV':          { cat:'file', sub:'Upload your CSV file',                    fields:[{l:'Upload CSV file',id:'file',t:'file',accept:'.csv',full:true}]},
+      'JSON / JSONL': { cat:'file', sub:'Upload your JSON or JSONL file',          fields:[{l:'Upload JSON / JSONL file',id:'file',t:'file',accept:'.json,.jsonl',full:true}]},
+      'MCP':          { cat:'api',  sub:'Configure your MCP Server connection',    fields:[
+        {l:'Server URL',id:'url',ph:'https://mcp.example.com',r:true,full:true},
+        {l:'API Key',id:'key',t:'password',ph:'sk-\u2026'}]},
+      'REST API':     { cat:'api',  sub:'Configure your REST API connection',      fields:[
+        {l:'Base URL',id:'url',ph:'https://api.example.com/v1',r:true,full:true},
+        {l:'Authentication',id:'auth',t:'select',opts:['None','Bearer Token','API Key'],full:true},
+        {l:'Token / Key',id:'token',t:'password',ph:'sk-\u2026'}]},
+      'GraphQL':      { cat:'api',  sub:'Configure your GraphQL API connection',   fields:[
+        {l:'Endpoint URL',id:'url',ph:'https://api.example.com/graphql',r:true,full:true},
+        {l:'Authentication',id:'auth',t:'select',opts:['None','Bearer Token','API Key'],full:true},
+        {l:'Token / Key',id:'token',t:'password',ph:'sk-\u2026'}]},
+    };
+
+    // ─── Mock tables per connector category ────────────────────
+    const MOCK_TABLES = {
+      db:   [{n:'users',           r:'42,810',      c:12, tag:'Primary',   tagBg:'#EEF2FF',tagCl:'#5B63F6'},
+             {n:'orders',          r:'1,204,519',   c:18, tag:'Fact',      tagBg:'#F3F4F6',tagCl:'#6B7280'},
+             {n:'products',        r:'3,847',       c:9,  tag:'Dimension', tagBg:'#F3F4F6',tagCl:'#6B7280'},
+             {n:'analytics_events',r:'8,421,033',   c:7,  tag:'Log',       tagBg:'#FFF7ED',tagCl:'#F97316'}],
+      file: [{n:'Sheet1',          r:'1,240',       c:8,  tag:'Data',      tagBg:'#F0FDF4',tagCl:'#16A34A'},
+             {n:'Revenue',         r:'365',         c:6,  tag:'Data',      tagBg:'#F0FDF4',tagCl:'#16A34A'},
+             {n:'Expenses',        r:'284',         c:5,  tag:'Data',      tagBg:'#F0FDF4',tagCl:'#16A34A'},
+             {n:'Summary',         r:'12',          c:10, tag:'Aggregate', tagBg:'#F3F4F6',tagCl:'#6B7280'}],
+      api:  [{n:'/users',          r:'\u2014',      c:8,  tag:'Resource',  tagBg:'#F0FDF4',tagCl:'#16A34A'},
+             {n:'/orders',         r:'\u2014',      c:15, tag:'Resource',  tagBg:'#F0FDF4',tagCl:'#16A34A'},
+             {n:'/products',       r:'\u2014',      c:9,  tag:'Resource',  tagBg:'#F0FDF4',tagCl:'#16A34A'},
+             {n:'/webhooks',       r:'\u2014',      c:5,  tag:'Event',     tagBg:'#FDF2F8',tagCl:'#C026D3'}],
+    };
+
+    const INP_CLS = 'w-full h-10 px-3.5 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent';
+
+    function renderWizFields(fields) {
+      const container = document.getElementById('wiz-fields');
+      let html = '';
+      let half = null;
+
+      const labelHtml = (f) => `<span class="block text-[13px] font-semibold text-gray-700 mb-1.5">${f.l}${f.r ? ' <span class="text-red-500">*</span>' : ''}</span>`;
+      const inputHtml = (f) => {
+        if (f.t === 'select') return `<select class="${INP_CLS}" style="--tw-ring-color:rgba(91,99,246,.25)">${f.opts.map(o=>`<option>${o}</option>`).join('')}</select>`;
+        if (f.t === 'file')   return `<label class="flex flex-col items-center justify-center gap-2 w-full h-20 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-colors"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg><span class="text-[12px] text-gray-400">Click to upload or drag &amp; drop</span><input type="file" class="hidden" accept="${f.accept||'*'}"/></label>`;
+        return `<input type="${f.t||'text'}" placeholder="${f.ph||''}" class="${INP_CLS}" style="--tw-ring-color:rgba(91,99,246,.25)" />`;
+      };
+      const wrap = (f) => `<div>${labelHtml(f)}${inputHtml(f)}</div>`;
+
+      fields.forEach(f => {
+        if (f.full || f.t === 'file') {
+          if (half) { html += `<div class="grid grid-cols-2 gap-4 mb-4">${half}<div></div></div>`; half = null; }
+          html += `<div class="mb-4">${labelHtml(f)}${inputHtml(f)}</div>`;
+        } else {
+          if (half) { html += `<div class="grid grid-cols-2 gap-4 mb-4">${half}${wrap(f)}</div>`; half = null; }
+          else { half = wrap(f); }
+        }
+      });
+      if (half) html += `<div class="grid grid-cols-2 gap-4 mb-4">${half}<div></div></div>`;
+      container.innerHTML = html;
+    }
+
     // ─── Open wizard for connector ─────────────────────────────
+    let _wizCat = 'db';
     function openWizard(name) {
+      const schema = WIZ_FIELDS[name] || { cat:'db', sub:'Configure your connection', fields:[] };
+      _wizCat = schema.cat;
+
       document.getElementById('wizard-title-bar').textContent = 'Add ' + name;
       document.getElementById('wizard-heading').textContent   = 'Add ' + name;
+      document.getElementById('wizard-subheading').textContent = 'Configure your connection step by step';
+      document.getElementById('step2-subtitle').textContent   = schema.sub;
 
-      const fileTypes = ['Excel', 'CSV', 'JSON / JSONL'];
-      const apiTypes  = ['MCP', 'REST API', 'GraphQL'];
-      let sub = 'Configure your database connection step by step';
-      if (fileTypes.includes(name))   sub = 'Upload and configure your file connection';
-      if (apiTypes.includes(name))    sub = 'Configure your API connection step by step';
-      document.getElementById('wizard-subheading').textContent = sub;
+      renderWizFields(schema.fields);
 
       // Reset wizard to step 1
       goStep(1, true);
@@ -1155,11 +1168,36 @@
     function testConnection() {
       setConnState('loading');
       setTimeout(() => {
-        // Simulate 80% success
-        const ok = Math.random() > 0.2;
-        setConnState(ok ? 'success' : 'error');
-      }, 2000);
+        const tables = MOCK_TABLES[_wizCat] || MOCK_TABLES.db;
+        // Populate preview in step 2
+        document.getElementById('found-count').textContent = tables.length;
+        document.getElementById('wiz-table-preview').innerHTML = tables.map(t =>
+          `<div class="grid grid-cols-3 gap-2 px-4 py-2.5 hover:bg-gray-50 transition-colors">
+            <div class="col-span-2 flex items-center gap-2 min-w-0">
+              <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125v.375a1.125 1.125 0 001.125 1.125m0 0h1.5M3.375 7.5h1.5m12 0h1.5m-15.75 0A2.625 2.625 0 013 4.875M20.625 7.5A2.625 2.625 0 0121 4.875m0 0A2.625 2.625 0 0018.375 2.25H5.625A2.625 2.625 0 003 4.875m0 0h18"/></svg>
+              <span class="text-[13px] font-medium text-gray-900 truncate">${t.n}</span>
+            </div>
+            <span class="text-[12px] text-gray-500 text-right self-center">${t.r}</span>
+          </div>`
+        ).join('');
+        // Seed step-3 table list
+        document.getElementById('table-list').innerHTML = tables.map(t =>
+          `<label class="table-row flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer">
+            <input type="checkbox" class="table-check w-4 h-4 rounded flex-shrink-0" style="accent-color:#5B63F6" checked />
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-medium text-gray-900">${t.n}</p>
+              <p class="text-[11px] text-gray-400">${t.r} rows \xB7 ${t.c} columns</p>
+            </div>
+            <span class="text-[10px] font-medium px-2 h-5 rounded-full flex items-center flex-shrink-0" style="background:${t.tagBg};color:${t.tagCl}">${t.tag}</span>
+          </label>`
+        ).join('');
+        document.getElementById('table-count').textContent = tables.length + ' tables found';
+        document.getElementById('select-all-tables').checked = true;
+        setConnState('success');
+      }, 1500);
     }
+
+    function goToSelectTables() { goStep(3); }
 
     function setConnState(state) {
       ['idle','loading','success','error'].forEach(s => {
