@@ -26,16 +26,21 @@
     "modal":        { "value": "0 20px 60px rgba(0,0,0,0.18)", "comment": "Modals and popovers" }
   },
   "layout": {
-    "sidebarWidth":      { "value": "220px",  "comment": "Fixed sidebar width" },
-    "contentPaddingX":   { "value": "32px",   "comment": "Content area horizontal padding" },
-    "formMaxWidth":      { "value": "600px",  "comment": "Maximum width of the settings form" },
-    "inputHeight":       { "value": "40px",   "comment": "Height of a text input field" },
-    "avatarSize":        { "value": "48px",   "comment": "Avatar image width and height" },
-    "tabHeight":         { "value": "34px",   "comment": "Height of each settings tab" },
-    "tabPaddingX":       { "value": "16px",   "comment": "Horizontal padding inside a tab" },
-    "tabPaddingY":       { "value": "6px",    "comment": "Vertical padding inside a tab" },
-    "nameFieldGap":      { "value": "16px",   "comment": "Gap between first name and last name inputs" },
-    "breadcrumbHeight":  { "value": "44px",   "comment": "Height of the top breadcrumb bar" },
-    "navItemHeight":     { "value": "36px",   "comment": "Sidebar nav item height" }
+    "sidebarWidth":       { "value": "220px",  "comment": "Fixed sidebar — connector browser left edge also at 220px" },
+    "breadcrumbHeight":   { "value": "44px",   "comment": "h-11 breadcrumb bar" },
+    "contentPaddingX":    { "value": "32px",   "comment": "px-8" },
+    "contentPaddingY":    { "value": "32px",   "comment": "py-8" },
+    "inputHeight":        { "value": "36px",   "comment": "h-9 — all main inputs and primary buttons" },
+    "smallButtonHeight":  { "value": "32px",   "comment": "h-8 — icon+text action buttons inside cards" },
+    "roleSelectHeight":   { "value": "28px",   "comment": "h-7 — role select inside table rows" },
+    "avatarTableSize":    { "value": "28px",   "comment": "w-7 h-7 — avatar in member/user table rows" },
+    "avatarCardSize":     { "value": "48px",   "comment": "w-12 h-12 — avatar in card header rows" },
+    "connectorIconSize":  { "value": "48px",   "comment": "w-12 h-12 rounded-xl — connector logo container" },
+    "profileAvatarSize":  { "value": "64px",   "comment": "w-16 h-16 — profile picture" },
+    "profileFormMax":     { "value": "576px",  "comment": "max-w-xl for Profile tab" },
+    "wizardFormMax":      { "value": "640px",  "comment": "max-width of connector wizard card" },
+    "tableMaxHeight":     { "value": "280px",  "comment": "max-height on datasource tables (scrollable)" },
+    "modalWidth":         { "value": "440px",  "comment": "w-[440px] for New Member / workspace switcher" },
+    "navItemHeight":      { "value": "36px",   "comment": "h-9 sidebar nav items" }
   }
 }

@@ -1,41 +1,55 @@
 {
   "color": {
     "brand": {
-      "primary":           { "value": "#5B63F6", "comment": "Focus rings, active tab indicator" },
-      "secondary":         { "value": "#7C6FF7", "comment": "Upgrade accent" },
+      "primary":           { "value": "#5B63F6", "comment": "Primary buttons, active pill tab, focus rings, progress bars, active nav indicator" },
+      "secondary":         { "value": "#7C6FF7", "comment": "Gradient/upgrade accent" },
+      "upgrade":           { "value": "#7C3AED", "comment": "Upgrade CTA" },
       "gradientStart":     { "value": "#4F6EF7", "comment": "Logo gradient start" },
       "gradientEnd":       { "value": "#8B5CF6", "comment": "Logo gradient end" }
     },
     "background": {
-      "base":              { "value": "#FFFFFF", "comment": "Page background, input backgrounds" },
-      "sidebar":           { "value": "#F8F9FC", "comment": "Left navigation sidebar" },
-      "hover":             { "value": "#EEF2FF", "comment": "Nav item hover" },
-      "tabActive":         { "value": "#FFFFFF", "comment": "Active settings tab" },
-      "tabContainer":      { "value": "transparent", "comment": "Tab row sits on page bg" },
-      "input":             { "value": "#FFFFFF", "comment": "Editable text input background" },
-      "inputDisabled":     { "value": "#F9FAFB", "comment": "Read-only / disabled input background" },
-      "btnSecondary":      { "value": "#FFFFFF", "comment": "Upload a picture button" }
+      "page":              { "value": "#FFFFFF", "comment": "Main content area background" },
+      "sidebar":           { "value": "#FFFFFF", "comment": "Sidebar (bg-white in Settings, not #F8F9FC)" },
+      "card":              { "value": "#FFFFFF", "comment": "Settings cards" },
+      "pillTabBar":        { "value": "#F3F4F6", "comment": "Pill tab bar container (gray-100)" },
+      "pillTabActive":     { "value": "#FFFFFF", "comment": "Active pill tab" },
+      "tableHeader":       { "value": "#F9FAFB", "comment": "Table header rows (bg-gray-50)" },
+      "inputReadOnly":     { "value": "#F9FAFB", "comment": "Read-only / URL display fields (bg-gray-50)" },
+      "inputEditable":     { "value": "#FFFFFF", "comment": "Editable inputs" },
+      "navHover":          { "value": "#EEF2FF", "comment": "Sidebar nav item hover and active bg" },
+      "bannerBg":          { "value": "#E8EEFF", "comment": "Explore free features banner" },
+      "bannerIcon":        { "value": "#C7D2FE", "comment": "Banner icon circle bg" },
+      "billingPlanCard":   { "value": "linear-gradient(135deg,#EEF2FF 0%,#F5F3FF 100%)", "comment": "Current billing plan card bg" },
+      "ownerBadge":        { "value": "#EEF2FF", "comment": "Owner/Pro-Plan badge bg (indigo-50)" },
+      "paidBadge":         { "value": "#F0FDF4", "comment": "Paid / Connected status badge bg (green-50)" },
+      "errorBadge":        { "value": "#FEE2E2", "comment": "Error status badge bg (red-50)" },
+      "fileTypeBadge":     { "value": "#FFF7ED", "comment": "File-type badge bg (orange-50)" }
     },
     "text": {
-      "primary":           { "value": "#111827", "comment": "Page title, input values, section labels" },
-      "secondary":         { "value": "#6B7280", "comment": "Subtitle, inactive tab text, field labels" },
-      "tertiary":          { "value": "#9CA3AF", "comment": "Read-only input text, disabled states" },
-      "link":              { "value": "#5B63F6", "comment": "Active tab text" },
-      "upgrade":           { "value": "#7C3AED", "comment": "Upgrade this workspace link" }
+      "primary":           { "value": "#111827", "comment": "Page titles, input values, card headers (gray-900)" },
+      "secondary":         { "value": "#374151", "comment": "Slightly dimmed body text (gray-700)" },
+      "tertiary":          { "value": "#6B7280", "comment": "Subtitles, inactive tab labels, placeholders (gray-500)" },
+      "label":             { "value": "#4B5563", "comment": "Form field labels (gray-600)" },
+      "muted":             { "value": "#9CA3AF", "comment": "Meta text, breadcrumb, read-only email (gray-400)" },
+      "link":              { "value": "#5B63F6", "comment": "Active underline tab, owner badge text, banner heading" },
+      "tableHeader":       { "value": "#9CA3AF", "comment": "Table column header text (gray-400 uppercase)" },
+      "upgrade":           { "value": "#7C3AED", "comment": "Upgrade link" },
+      "paid":              { "value": "#16A34A", "comment": "Paid / Connected status text" },
+      "error":             { "value": "#EF4444", "comment": "Error state text" },
+      "fileType":          { "value": "#F97316", "comment": "File-type badge/icon text (orange-500)" },
+      "apiType":           { "value": "#22C55E", "comment": "API-type badge/icon text (green-500)" }
     },
     "border": {
-      "default":           { "value": "#E5E7EB", "comment": "Input borders, tab border, avatar ring" },
-      "subtle":            { "value": "#F3F4F6", "comment": "Sidebar dividers, breadcrumb bottom" },
-      "inputFocus":        { "value": "#5B63F6", "comment": "Focused input border" },
-      "tabActive":         { "value": "#E5E7EB", "comment": "Active tab pill outline" },
-      "inputError":        { "value": "#EF4444", "comment": "Input border in error state" }
+      "default":           { "value": "#E5E7EB", "comment": "Cards, inputs, pill tab active border (gray-200)" },
+      "subtle":            { "value": "#F3F4F6", "comment": "Sidebar dividers, table row dividers, card internal dividers (gray-100)" },
+      "inputFocus":        { "value": "rgba(99,102,241,1)", "comment": "ring-indigo-400 on focus" },
+      "activeNav":         { "value": "#5B63F6", "comment": "Active nav item left border (2px solid)" },
+      "billingCard":       { "value": "#E0E7FF", "comment": "Billing plan card border (indigo-100)" }
     },
     "icon": {
-      "muted":             { "value": "#9CA3AF", "comment": "Breadcrumb chevrons, inactive icons" },
-      "brand":             { "value": "#5B63F6", "comment": "Brand-colored icons" }
-    },
-    "avatar": {
-      "ring":              { "value": "#E5E7EB", "comment": "Thin ring around the avatar image" }
+      "muted":             { "value": "#9CA3AF", "comment": "Breadcrumb chevrons, table column icons (gray-400)" },
+      "secondary":         { "value": "#6B7280", "comment": "Nav icons at rest (gray-500)" },
+      "brand":             { "value": "#5B63F6", "comment": "Brand-accent icons (filter funnel, active tab icon)" }
     }
   }
 }

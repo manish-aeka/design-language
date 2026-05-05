@@ -99,8 +99,21 @@
     .ws-item.open .ws-chevron { transform: rotate(90deg); }
     .type-item { transition: background-color 80ms ease; }
     .type-item:hover { background-color: #F3F4F6; }
+    .connector-card { transition: all 150ms ease-out; cursor: pointer; }
+    .connector-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); border-color: rgba(91,99,246,0.35); transform: translateY(-1px); }
     /* Workspace switcher dropdown */
     .ws-switcher-dropdown { display: none; }
+    /* Connector wizard step flow */
+    .cb-step-pane { display: none; }
+    .cb-step-pane.active { display: block; }
+    .cb-step-line { height: 1px; background: #E5E7EB; flex: 1; min-width: 28px; }
+    .cb-step-line.done { background: #5B63F6; }
+    .cb-conn-idle    { display: flex; }
+    .cb-conn-loading { display: none; }
+    .cb-conn-success { display: none; }
+    .cb-conn-error   { display: none; }
+    @keyframes cb-spin { to { transform: rotate(360deg); } }
+    .cb-spinner { animation: cb-spin 0.8s linear infinite; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -210,14 +223,6 @@
 
     <!-- Bottom utility nav -->
     <nav class="px-3 py-2 space-y-0.5">
-      <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/>
-          <path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/>
-          <path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/>
-        </svg>
-        Connect Datasource
-      </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
         Shared with me
@@ -277,6 +282,7 @@
       <div id="settings-tab-bar" class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit" style="background:#F3F4F6">
         <button id="tab-profile" onclick="setTab('profile')" class="stab active">Profile</button>
         <button id="tab-workspace" onclick="setTab('workspace')" class="stab">Workspace</button>
+        <button id="tab-organisation" onclick="setTab('organisation')" class="stab">Organisation</button>
       </div>
 
       <!-- ══ PROFILE ══ -->
@@ -325,7 +331,7 @@
         <!-- Underline tab bar -->
         <div class="flex items-center gap-6 border-b border-gray-200 mb-7">
           <button id="wstab-info" onclick="setWsTab('info')" class="ws-utab active">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
             General
           </button>
           <button id="wstab-users" onclick="setWsTab('users')" class="ws-utab">
@@ -334,11 +340,7 @@
           </button>
           <button id="wstab-datasources" onclick="setWsTab('datasources')" class="ws-utab">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
-            Integrations
-          </button>
-          <button id="wstab-billing" onclick="setWsTab('billing')" class="ws-utab">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
-            Billing
+            Datasources
           </button>
         </div>
 
@@ -354,12 +356,6 @@
               </div>
             </div>
             <div class="space-y-3 flex-1">
-              <div>
-                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Workspace URL</label>
-                <div class="flex items-center h-9 px-3 border border-gray-200 rounded-lg bg-gray-50 text-[13px] text-gray-500">
-                  aibii.com/<span class="text-gray-800 font-medium">manish-workspace</span>
-                </div>
-              </div>
               <div>
                 <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>
                 <textarea rows="2" placeholder="What is this workspace about?"
@@ -446,14 +442,13 @@
           </div>
 
         </div>
-        </div>
 
         <!-- Sub-panel: Data Sources -->
         <div id="wspanel-datasources" class="ws-panel">
         <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
           <div class="flex items-center justify-between mb-4">
             <p class="text-[15px] font-semibold text-gray-900">Data sources</p>
-            <button onclick="showAddDataSource()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">
+            <button onclick="showAddDataSource()" class="flex items-center gap-2 px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               Add a datasource
             </button>
@@ -463,15 +458,15 @@
             <div class="relative flex-1">
               <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
               <input id="settings-ds-search" type="text" placeholder="Search datasources…" oninput="filterSettingDs(this.value)"
-                class="w-full h-9 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors"
+                class="w-full h-10 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors"
                 style="box-shadow:0 1px 2px rgba(0,0,0,0.04)" />
             </div>
             <div class="relative flex-shrink-0">
               <button onclick="toggleSettingDsTypeDropdown()"
-                class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
+                class="flex items-center gap-1.5 px-3 h-10 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                 style="width:120px; justify-content:space-between;">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                <span id="settings-ds-type-label">Type</span>
+                <span id="settings-ds-type-label">Category</span>
                 <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
               <div id="settings-ds-type-dropdown"
@@ -502,8 +497,8 @@
             <table class="w-full text-[13px] table-fixed">
               <thead class="sticky top-0 z-10">
                 <tr class="bg-gray-50 border-b border-gray-200">
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:38%">Name</th>
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:22%">Type</th>
+                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
+                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Connector</th>
                   <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
                   <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
                 </tr>
@@ -514,103 +509,307 @@
           </div>
 
           <!-- Add datasource modal hint -->
-          <div id="add-ds-hint" class="hidden mt-3 p-3 rounded-xl border border-dashed border-indigo-300 bg-indigo-50 flex items-center gap-3">
-            <svg class="w-5 h-5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-            <p class="text-[13px]" style="color:#5B63F6">Choose a source: Google Sheets, PostgreSQL, REST API, Notion, or CSV upload.</p>
-            <button onclick="document.getElementById('add-ds-hint').classList.add('hidden')" class="ml-auto text-gray-400 hover:text-gray-600">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-          </div>
+          <!-- removed inline hint; picker modal is shared -->
         </div><!-- /data sources -->
         </div>
 
+      </div><!-- /section-workspace -->
+
+      <!-- ══ ORGANISATION ══ -->
+      <div id="section-organisation" class="settings-panel">
+
+        <!-- Underline tab bar -->
+        <div class="flex items-center gap-6 border-b border-gray-200 mb-7">
+          <button id="orgtab-info" onclick="setOrgTab('info')" class="ws-utab active">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+            General
+          </button>
+          <button id="orgtab-users" onclick="setOrgTab('users')" class="ws-utab">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+            Members
+          </button>
+          <button id="orgtab-datasources" onclick="setOrgTab('datasources')" class="ws-utab">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+            Datasources
+          </button>
+          <button id="orgtab-billing" onclick="setOrgTab('billing')" class="ws-utab">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+            Billing
+          </button>
+        </div>
+
+        <!-- Sub-panel: General -->
+        <div id="orgpanel-info" class="ws-panel active">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
+            <p class="text-[15px] font-semibold text-gray-900 mb-4">Organisation info</p>
+            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style="background:#5B63F6">A</div>
+              <div class="flex-1 min-w-0">
+                <input type="text" value="Aibii Inc." class="w-full text-[14px] font-semibold text-gray-900 border-none outline-none bg-transparent focus:bg-white focus:border focus:border-indigo-300 focus:rounded px-1" />
+                <p class="text-[12px] text-gray-400 mt-0.5 px-1">3 workspaces</p>
+              </div>
+            </div>
+            <div class="space-y-3 flex-1">
+              <div>
+                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Organisation Email</label>
+                <input type="email" value="admin@aibii.com" class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>
+                <textarea rows="2" placeholder="What does your organisation do?" class="w-full px-3 py-2 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"></textarea>
+              </div>
+            </div>
+            <div class="flex justify-end mt-4 pt-4 border-t border-gray-100">
+              <button class="px-4 h-9 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">Save changes</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-panel: Members -->
+        <div id="orgpanel-users" class="ws-panel">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[15px] font-semibold text-gray-900">Manage Members</p>
+              <button onclick="openNewMemberModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                New member
+              </button>
+            </div>
+            <div class="relative mb-3">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+              <input type="text" placeholder="Search members..." oninput="filterOrgMembers(this.value)" class="w-full h-9 pl-8 pr-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="overflow-hidden rounded-xl border border-gray-100 flex-1">
+              <div class="flex items-center px-4 h-8 bg-gray-50 border-b border-gray-100">
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">Member</span>
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-24 text-right">Role</span>
+              </div>
+              <div id="org-members-list" class="divide-y divide-gray-100">
+                <div class="flex items-center px-4 h-12">
+                  <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Manish Kumar</p><p class="text-[11px] text-gray-400 truncate">manish@aibii.com</p></div></div>
+                  <div class="w-24 flex justify-end"><span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span></div>
+                </div>
+                <div class="flex items-center px-4 h-12">
+                  <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#0F9D58">A</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Arjun Patel</p><p class="text-[11px] text-gray-400 truncate">arjun@aibii.com</p></div></div>
+                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                </div>
+                <div class="flex items-center px-4 h-12">
+                  <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">S</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Sneha Rao</p><p class="text-[11px] text-gray-400 truncate">sneha@aibii.com</p></div></div>
+                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                </div>
+                <div class="flex items-center px-4 h-12">
+                  <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#8B5CF6">R</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Riya Sharma</p><p class="text-[11px] text-gray-400 truncate">riya@aibii.com</p></div></div>
+                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                </div>
+                <div class="flex items-center px-4 h-12">
+                  <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#22C55E">D</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Dev Verma</p><p class="text-[11px] text-gray-400 truncate">dev@aibii.com</p></div></div>
+                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-panel: Datasources -->
+        <div id="orgpanel-datasources" class="ws-panel">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-[15px] font-semibold text-gray-900">Datasources</p>
+              <button onclick="showAddDataSource()" class="flex items-center gap-2 px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                Add a datasource
+              </button>
+            </div>
+            <!-- Search + Type row -->
+            <div class="flex items-center gap-3 mb-4">
+              <div class="relative flex-1">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+                <input id="org-ds-search" type="text" placeholder="Search datasources…" oninput="filterOrgDs(this.value)"
+                  class="w-full h-10 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors"
+                  style="box-shadow:0 1px 2px rgba(0,0,0,0.04)" />
+              </div>
+              <div class="relative flex-shrink-0">
+                <button onclick="toggleOrgDsTypeDropdown()"
+                  class="flex items-center gap-1.5 px-3 h-10 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                  style="width:120px; justify-content:space-between;">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+                  <span id="org-ds-type-label">Category</span>
+                  <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="org-ds-type-dropdown"
+                  class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white"
+                  style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
+                  <button onclick="filterOrgDsType('All')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5"/></svg>
+                    All
+                  </button>
+                  <button onclick="filterOrgDsType('Database')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                    Database
+                  </button>
+                  <button onclick="filterOrgDsType('File')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    File
+                  </button>
+                  <button onclick="filterOrgDsType('API')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#22C55E" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                    API
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-xl border border-gray-200 overflow-hidden" style="max-height:280px; overflow-y:auto;">
+              <table class="w-full text-[13px] table-fixed">
+                <thead class="sticky top-0 z-10">
+                  <tr class="bg-gray-50 border-b border-gray-200">
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Connector</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
+                  </tr>
+                </thead>
+                <tbody id="org-ds-tbody"></tbody>
+              </table>
+              <div id="org-ds-empty" class="hidden py-10 text-center text-[13px] text-gray-400">No datasources found</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Sub-panel: Billing -->
-        <div id="wspanel-billing" class="ws-panel">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
-          <div class="flex items-center justify-between mb-5">
-            <p class="text-[15px] font-semibold text-gray-900">Billing</p>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold" style="background:#EEF2FF;color:#5B63F6">
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
-              Pro Plan
-            </span>
-          </div>
-
-          <!-- Current plan card -->
-          <div class="rounded-xl border border-indigo-100 p-4 mb-4" style="background:linear-gradient(135deg,#EEF2FF 0%,#F5F3FF 100%)">
-            <div class="flex items-start justify-between">
-              <div>
-                <p class="text-[13px] font-semibold text-gray-900">Pro · $29 / month</p>
-                <p class="text-[12px] text-gray-500 mt-0.5">Next billing date: <span class="font-medium text-gray-700">June 1, 2026</span></p>
-              </div>
-              <button class="px-3 h-8 rounded-lg border border-indigo-200 text-[12px] font-medium text-indigo-600 bg-white hover:bg-indigo-50 transition-colors">Manage plan</button>
+        <div id="orgpanel-billing" class="ws-panel">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
+            <div class="flex items-center justify-between mb-5">
+              <p class="text-[15px] font-semibold text-gray-900">Billing</p>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold" style="background:#EEF2FF;color:#5B63F6">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
+                Pro Plan
+              </span>
             </div>
-            <div class="mt-3 pt-3 border-t border-indigo-100 grid grid-cols-3 gap-3">
-              <div>
-                <p class="text-[11px] text-gray-400 mb-0.5">AI Credits used</p>
-                <p class="text-[14px] font-bold text-gray-900">1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span></p>
-                <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
-              </div>
-              <div>
-                <p class="text-[11px] text-gray-400 mb-0.5">Datasources</p>
-                <p class="text-[14px] font-bold text-gray-900">5 <span class="text-[11px] font-normal text-gray-400">/ 20</span></p>
-                <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
-              </div>
-              <div>
-                <p class="text-[11px] text-gray-400 mb-0.5">Workspaces</p>
-                <p class="text-[14px] font-bold text-gray-900">2 <span class="text-[11px] font-normal text-gray-400">/ 5</span></p>
-                <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:40%;background:#5B63F6"></div></div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Payment method -->
-          <div class="flex items-center justify-between py-3 border-t border-gray-100">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-6 rounded flex items-center justify-center border border-gray-200 bg-white flex-shrink-0">
-                <svg class="w-6 h-4" viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="4" fill="#1A1F71"/><path d="M14.5 16.5h-2l1.25-7h2L14.5 16.5zm8.5-6.84c-.4-.15-.98-.32-1.74-.32-1.92 0-3.27 1.02-3.28 2.48-.02 1.08.96 1.68 1.7 2.04.75.37 1 .6 1 .93-.01.5-.6.73-1.16.73-.77 0-1.18-.11-1.82-.38l-.25-.12-.27 1.67c.45.2 1.28.38 2.14.39 2.02 0 3.34-1 3.35-2.55.01-.85-.5-1.5-1.6-2.03-.67-.34-1.08-.57-1.08-.92 0-.31.35-.63 1.1-.63.63-.01 1.08.13 1.44.28l.17.08.26-1.65zm4.96-.16h-1.5c-.46 0-.8.13-.99.6L23.5 16.5h2.02l.4-1.1h2.46l.23 1.1H30l-1.54-7h-1.5zm-2.34 4.12l.77-2.07.44 2.07h-1.21zm-12.62-4.12L11 14.34l-.21-1.05c-.37-1.24-1.5-2.59-2.79-3.26l1.74 6.47h2.04l3.03-7h-2.04z" fill="white"/></svg>
-              </div>
-              <div>
-                <p class="text-[13px] font-medium text-gray-900">Visa ending in 4242</p>
-                <p class="text-[11px] text-gray-400">Expires 08 / 2027</p>
-              </div>
-            </div>
-            <button class="px-3 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
-          </div>
-
-          <!-- Billing history -->
-          <div class="mt-3 pt-3 border-t border-gray-100">
-            <p class="text-[12px] font-semibold text-gray-500 mb-2">Recent invoices</p>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-3">
-                  <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                  <span class="text-[13px] text-gray-700">May 1, 2026</span>
+            <!-- Current plan card -->
+            <div class="rounded-xl border border-indigo-100 p-4 mb-4" style="background:linear-gradient(135deg,#EEF2FF 0%,#F5F3FF 100%)">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-[13px] font-semibold text-gray-900">Pro · $29 / month</p>
+                  <p class="text-[12px] text-gray-500 mt-0.5">Next billing date: <span class="font-medium text-gray-700">June 1, 2026</span></p>
                 </div>
-                <div class="flex items-center gap-3">
-                  <span class="text-[12px] font-medium text-gray-900">$29.00</span>
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:#F0FDF4;color:#16A34A">Paid</span>
-                  <button class="text-indigo-500 hover:text-indigo-700 text-[12px] font-medium">Download</button>
+                <button class="px-3 h-8 rounded-lg border border-indigo-200 text-[12px] font-medium text-indigo-600 bg-white hover:bg-indigo-50 transition-colors">Manage plan</button>
+              </div>
+              <div class="mt-3 pt-3 border-t border-indigo-100 grid grid-cols-3 gap-3">
+                <div>
+                  <p class="text-[11px] text-gray-400 mb-0.5">AI Credits used</p>
+                  <p class="text-[14px] font-bold text-gray-900">1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span></p>
+                  <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
+                </div>
+                <div>
+                  <p class="text-[11px] text-gray-400 mb-0.5">Datasources</p>
+                  <p class="text-[14px] font-bold text-gray-900">5 <span class="text-[11px] font-normal text-gray-400">/ 20</span></p>
+                  <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
+                </div>
+                <div>
+                  <p class="text-[11px] text-gray-400 mb-0.5">Workspaces</p>
+                  <p class="text-[14px] font-bold text-gray-900">2 <span class="text-[11px] font-normal text-gray-400">/ 5</span></p>
+                  <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:40%;background:#5B63F6"></div></div>
                 </div>
               </div>
-              <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-3">
-                  <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                  <span class="text-[13px] text-gray-700">Apr 1, 2026</span>
+            </div>
+
+            <!-- Payment method -->
+            <div class="flex items-center justify-between py-3 border-t border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-6 rounded flex items-center justify-center border border-gray-200 bg-white flex-shrink-0">
+                  <svg class="w-6 h-4" viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="4" fill="#1A1F71"/><path d="M14.5 16.5h-2l1.25-7h2L14.5 16.5zm8.5-6.84c-.4-.15-.98-.32-1.74-.32-1.92 0-3.27 1.02-3.28 2.48-.02 1.08.96 1.68 1.7 2.04.75.37 1 .6 1 .93-.01.5-.6.73-1.16.73-.77 0-1.18-.11-1.82-.38l-.25-.12-.27 1.67c.45.2 1.28.38 2.14.39 2.02 0 3.34-1 3.35-2.55.01-.85-.5-1.5-1.6-2.03-.67-.34-1.08-.57-1.08-.92 0-.31.35-.63 1.1-.63.63-.01 1.08.13 1.44.28l.17.08.26-1.65zm4.96-.16h-1.5c-.46 0-.8.13-.99.6L23.5 16.5h2.02l.4-1.1h2.46l.23 1.1H30l-1.54-7h-1.5zm-2.34 4.12l.77-2.07.44 2.07h-1.21zm-12.62-4.12L11 14.34l-.21-1.05c-.37-1.24-1.5-2.59-2.79-3.26l1.74 6.47h2.04l3.03-7h-2.04z" fill="white"/></svg>
                 </div>
-                <div class="flex items-center gap-3">
-                  <span class="text-[12px] font-medium text-gray-900">$29.00</span>
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:#F0FDF4;color:#16A34A">Paid</span>
-                  <button class="text-indigo-500 hover:text-indigo-700 text-[12px] font-medium">Download</button>
+                <div>
+                  <p class="text-[13px] font-medium text-gray-900">Visa ending in 4242</p>
+                  <p class="text-[11px] text-gray-400">Expires 08 / 2027</p>
+                </div>
+              </div>
+              <button class="px-3 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
+            </div>
+
+            <!-- Billing history -->
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <p class="text-[12px] font-semibold text-gray-500 mb-2">Recent invoices</p>
+              <div class="space-y-1">
+                <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    <span class="text-[13px] text-gray-700">May 1, 2026</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="text-[12px] font-medium text-gray-900">$29.00</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:#F0FDF4;color:#16A34A">Paid</span>
+                    <button class="text-indigo-500 hover:text-indigo-700 text-[12px] font-medium">Download</button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    <span class="text-[13px] text-gray-700">Apr 1, 2026</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="text-[12px] font-medium text-gray-900">$29.00</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:#F0FDF4;color:#16A34A">Paid</span>
+                    <button class="text-indigo-500 hover:text-indigo-700 text-[12px] font-medium">Download</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div><!-- /billing -->
 
-      </div>
+      </div><!-- /section-organisation -->
 
     </div><!-- /scroll -->
   </main>
+
+  <!-- ═══ NEW MEMBER MODAL ═══ -->
+  <div id="new-member-overlay" onclick="if(event.target===this)closeNewMemberModal()"
+    style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[92vw] overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <h2 class="text-[17px] font-bold text-gray-900">New member</h2>
+        <button onclick="closeNewMemberModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Body -->
+      <div class="px-6 py-5">
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">First name</label>
+            <input id="nm-firstname" type="text" placeholder="Jane"
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          </div>
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Last name</label>
+            <input id="nm-lastname" type="text" placeholder="Doe"
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email address</label>
+          <input id="nm-email" type="email" placeholder="jane@example.com"
+            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Role</label>
+          <select id="nm-role"
+            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
+            <option value="User" selected>User</option>
+            <option value="Owner">Owner</option>
+          </select>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="flex items-center justify-end gap-2 px-6 pb-5">
+        <button onclick="closeNewMemberModal()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="addOrgMember()" class="px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Add</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Workspace switcher modal ── -->
   <div id="ws-modal" onclick="if(event.target===this)closeWsModal()" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
@@ -632,11 +831,12 @@
   </div>
 
   <script>
-    const TABS = ['profile','workspace'];
-    const TITLES = {profile:'Profile',workspace:'Workspace'};
+    const TABS = ['profile','workspace','organisation'];
+    const TITLES = {profile:'Profile',workspace:'Workspace',organisation:'Organisation'};
     const ICONS = {
       profile:   '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>',
-      workspace: '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>'
+      workspace:     '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>',
+      organisation:  '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>'
     };
 
     function setTab(active) {
@@ -649,11 +849,11 @@
     }
 
     const SETTING_DS_DATA = [
-      { name: 'Q4 Revenue Sheet', type: 'File',     status: 'Connected', tables: 3,  bg: '#0F9D58' },
-      { name: 'Analytics DB',     type: 'Database', status: 'Error',     tables: 12, bg: '#336791' },
-      { name: 'Sales API',        type: 'API',      status: 'Connected', tables: 5,  bg: '#22C55E' },
-      { name: 'CRM Export',       type: 'File',     status: 'Connected', tables: 8,  bg: '#F97316' },
-      { name: 'User Events DB',   type: 'Database', status: 'Syncing',   tables: 24, bg: '#5B63F6' },
+      { name: 'Q4 Revenue Sheet', type: 'File',     connector: 'Google Sheets', status: 'Connected', tables: 3,  bg: '#0F9D58' },
+      { name: 'Analytics DB',     type: 'Database', connector: 'PostgreSQL',    status: 'Error',     tables: 12, bg: '#336791' },
+      { name: 'Sales API',        type: 'API',      connector: 'REST API',      status: 'Connected', tables: 5,  bg: '#22C55E' },
+      { name: 'CRM Export',       type: 'File',     connector: 'CSV',           status: 'Connected', tables: 8,  bg: '#F97316' },
+      { name: 'User Events DB',   type: 'Database', connector: 'MySQL',         status: 'Syncing',   tables: 24, bg: '#5B63F6' },
     ];
     let settingDsTypeFilter = 'All';
     let settingDsSearchTerm = '';
@@ -667,6 +867,12 @@
       Connected: { bg: '#F0FDF4', color: '#16A34A' },
       Error:     { bg: '#FEF2F2', color: '#DC2626' },
       Syncing:   { bg: '#EFF6FF', color: '#2563EB' },
+    };
+    const TYPE_BADGE = {
+      Database: { bg:'#EEF2FF', color:'#5B63F6' },
+      File:     { bg:'#FFF7ED', color:'#F97316' },
+      API:      { bg:'#F0FDF4', color:'#22C55E' },
+      Cloud:    { bg:'#E0F2FE', color:'#0EA5E9' },
     };
 
     function renderSettingDsTable() {
@@ -685,18 +891,21 @@
       empty.classList.add('hidden');
       tbody.innerHTML = rows.map((d, i) => {
         const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
+        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280', icon:'' };
         return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors" style="${i === rows.length-1 ? 'border-bottom:none' : ''}">
           <td class="px-4 py-3">
             <span class="font-medium text-gray-900">${d.name}</span>
           </td>
-          <td class="px-4 py-3 text-gray-600">${d.type}</td>
           <td class="px-4 py-3">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}">
+            <span class="text-[12px] font-medium" style="color:${tb.color}">${d.connector}</span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}">
               <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
               ${d.status}
             </span>
           </td>
-          <td class="px-4 py-3 text-gray-600">${d.tables}</td>
+          <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
         </tr>`;
       }).join('');
     }
@@ -708,17 +917,13 @@
 
     function filterSettingDsType(type) {
       settingDsTypeFilter = type;
-      document.getElementById('settings-ds-type-label').textContent = type === 'All' ? 'Type' : type;
+      document.getElementById('settings-ds-type-label').textContent = type === 'All' ? 'Category' : type;
       document.getElementById('settings-ds-type-dropdown').classList.remove('open');
       renderSettingDsTable();
     }
 
     function toggleSettingDsTypeDropdown() {
       document.getElementById('settings-ds-type-dropdown').classList.toggle('open');
-    }
-
-    function showAddDataSource() {
-      document.getElementById('add-ds-hint').classList.toggle('hidden');
     }
 
     function toggleWorkspace(id) {
@@ -733,7 +938,7 @@
       // placeholder — add modal HTML if needed
     }
 
-    const WS_TABS = ['info','users','datasources','billing'];
+    const WS_TABS = ['info','users','datasources'];
     function setWsTab(active) {
       WS_TABS.forEach(t => {
         document.getElementById('wstab-' + t).classList.toggle('active', t === active);
@@ -741,13 +946,132 @@
       });
     }
 
+    const ORG_TABS = ['info','users','datasources','billing'];
+
+    /* ── Org member search ──────────────────────────────── */
+    function filterOrgMembers(q) {
+      const rows = document.querySelectorAll('#org-members-list > div');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+      });
+    }
+
+    /* ── New member modal ───────────────────────────────── */
+    const NM_AVATAR_COLORS = ['#3B5BDB','#0F9D58','#F97316','#8B5CF6','#22C55E','#DD344C','#D97706','#0EA5E9'];
+
+    function openNewMemberModal() {
+      document.getElementById('nm-firstname').value = '';
+      document.getElementById('nm-lastname').value  = '';
+      document.getElementById('nm-email').value     = '';
+      document.getElementById('nm-role').value      = 'User';
+      const ov = document.getElementById('new-member-overlay');
+      ov.style.display = 'flex';
+    }
+
+    function closeNewMemberModal() {
+      document.getElementById('new-member-overlay').style.display = 'none';
+    }
+
+    function syncNmRoleStyles() {}
+
+    document.addEventListener('change', function(e) {});
+
+    function addOrgMember() {
+      const first = document.getElementById('nm-firstname').value.trim();
+      const last  = document.getElementById('nm-lastname').value.trim();
+      const email = document.getElementById('nm-email').value.trim();
+      const role  = document.getElementById('nm-role').value;
+      if (!first || !email) {
+        document.getElementById(first ? 'nm-email' : 'nm-firstname').focus();
+        return;
+      }
+      const fullName = (first + ' ' + last).trim();
+      const initial  = first[0].toUpperCase();
+      const bg       = NM_AVATAR_COLORS[Math.floor(Math.random() * NM_AVATAR_COLORS.length)];
+      const isOwner  = role === 'Owner';
+      const roleCellHtml = isOwner
+        ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span>`
+        : `<select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select>`;
+      const row = document.createElement('div');
+      row.className = 'flex items-center px-4 h-12';
+      row.innerHTML = `
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:${bg}">${initial}</div>
+          <div class="min-w-0">
+            <p class="text-[13px] font-medium text-gray-900 truncate">${fullName}</p>
+            <p class="text-[11px] text-gray-400 truncate">${email}</p>
+          </div>
+        </div>
+        <div class="w-24 flex justify-end">${roleCellHtml}</div>`;
+      document.getElementById('org-members-list').appendChild(row);
+      closeNewMemberModal();
+    }
+
+    function setOrgTab(active) {
+      ORG_TABS.forEach(t => {
+        document.getElementById('orgtab-' + t).classList.toggle('active', t === active);
+        document.getElementById('orgpanel-' + t).classList.toggle('active', t === active);
+      });
+    }
+
+    const ORG_DS_DATA = [
+      { name: 'Company CRM',        type: 'Database', connector: 'PostgreSQL',    status: 'Connected', tables: 18 },
+      { name: 'Marketing Sheet',    type: 'File',     connector: 'Google Sheets', status: 'Connected', tables: 4  },
+      { name: 'Billing API',        type: 'API',      connector: 'REST API',      status: 'Connected', tables: 6  },
+      { name: 'Prod Analytics DB',  type: 'Database', connector: 'Snowflake',     status: 'Syncing',   tables: 31 },
+      { name: 'Customer Exports',   type: 'File',     connector: 'CSV',           status: 'Connected', tables: 9  },
+    ];
+    let orgDsTypeFilter = 'All';
+    let orgDsSearchTerm = '';
+
+    function renderOrgDsTable() {
+      const tbody = document.getElementById('org-ds-tbody');
+      const empty = document.getElementById('org-ds-empty');
+      if (!tbody) return;
+      const rows = ORG_DS_DATA.filter(d => {
+        const matchType   = orgDsTypeFilter === 'All' || d.type === orgDsTypeFilter;
+        const matchSearch = d.name.toLowerCase().includes(orgDsSearchTerm) || d.type.toLowerCase().includes(orgDsSearchTerm);
+        return matchType && matchSearch;
+      });
+      if (!rows.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      tbody.innerHTML = rows.map(d => {
+        const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
+        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280', icon:'' };
+        return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <td class="px-4 py-3"><span class="font-medium text-gray-900">${d.name}</span></td>
+          <td class="px-4 py-3"><span class="text-[12px] font-medium" style="color:${tb.color}">${d.connector}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
+          <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
+        </tr>`;
+      }).join('');
+    }
+    function filterOrgDs(q) { orgDsSearchTerm = q.toLowerCase(); renderOrgDsTable(); }
+    function filterOrgDsType(type) {
+      orgDsTypeFilter = type;
+      document.getElementById('org-ds-type-label').textContent = type === 'All' ? 'Category' : type;
+      document.getElementById('org-ds-type-dropdown').classList.remove('open');
+      renderOrgDsTable();
+    }
+    function toggleOrgDsTypeDropdown() {
+      document.getElementById('org-ds-type-dropdown').classList.toggle('open');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       renderSettingDsTable();
+      renderOrgDsTable();
     });
 
     document.addEventListener('click', e => {
       if (!e.target.closest('#settings-ds-type-dropdown') && !e.target.closest('[onclick="toggleSettingDsTypeDropdown()"]')) {
         document.getElementById('settings-ds-type-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('#org-ds-type-dropdown') && !e.target.closest('[onclick="toggleOrgDsTypeDropdown()"]')) {
+        document.getElementById('org-ds-type-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('#cb-cat-dropdown') && !e.target.closest('[onclick="cbToggleCatDropdown()"]')) {
+        document.getElementById('cb-cat-dropdown')?.classList.remove('open');
       }
     });
 
@@ -789,6 +1113,648 @@
         if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
       }
       closeWsModal();
+    }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CONNECTOR BROWSER — covers main area (left:220px), no category sidebar
+       Step 1: All connectors grouped on canvas with search
+       Step 2: Credentials form
+  ════════════════════════════════════════════════════════ -->
+  <div id="connector-browser"
+    style="display:none;position:fixed;left:220px;top:0;right:0;bottom:0;z-index:50;
+           background:white;flex-direction:column;
+           opacity:0;transform:translateY(8px);
+           transition:opacity 200ms ease,transform 200ms ease;">
+
+    <!-- Top bar — breadcrumb style matching Settings page -->
+    <div class="flex items-center gap-2 px-8 h-11 border-b border-gray-100 bg-white flex-shrink-0">
+      <button class="text-gray-400 hover:text-gray-600">
+        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      </button>
+      <button onclick="cbGoBack()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+      </button>
+      <button class="text-gray-400 hover:text-gray-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      </button>
+      <span class="text-[13px] text-gray-500">Settings</span>
+      <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      <span id="cb-topbar-title" class="text-[13px] text-gray-500">Add Datasource</span>
+    </div>
+
+    <!-- STEP 1: Connector picker —  all groups, no sidebar -->
+    <div id="cb-step-pick" class="flex-1 overflow-y-auto overflow-x-hidden" style="display:block">
+      <div class="px-8 py-8 bg-white">
+
+        <!-- Page heading — matches Settings page style -->
+        <div class="mb-6">
+          <div class="flex items-center gap-2">
+            <span class="flex-shrink-0">
+              <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+            </span>
+            <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add Datasource</h1>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">Choose a connector to connect more data to your workspace</p>
+        </div>
+
+        <!-- Search + Category filter row -->
+        <div class="flex items-center gap-3 mb-7">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z"/></svg>
+            </span>
+            <input id="cb-search" type="text" placeholder="Search connectors..."
+              oninput="cbFilterSearch(this.value)"
+              class="w-full h-9 pl-9 pr-4 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"/>
+          </div>
+          <div class="relative flex-shrink-0">
+            <button onclick="cbToggleCatDropdown()"
+              class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+              style="width:130px; justify-content:space-between;">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+              <span id="cb-cat-label">Category</span>
+              <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="cb-cat-dropdown"
+              class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white"
+              style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
+              <button onclick="cbSetCat('all','All')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5"/></svg>
+                All
+              </button>
+              <button onclick="cbSetCat('database','Database')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
+                Database
+              </button>
+              <button onclick="cbSetCat('file','File')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                File
+              </button>
+              <button onclick="cbSetCat('api','API')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#22C55E" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                API
+              </button>
+              <button onclick="cbSetCat('cloud','Cloud')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#0EA5E9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z"/></svg>
+                Cloud
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- All connector groups rendered here by JS -->
+        <div id="cb-all-sections"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Credentials form -->
+    <div id="cb-step-creds" class="flex-1 overflow-y-auto" style="display:none;background:white">
+      <div class="px-8 py-8">
+        <div id="cb-creds-inner"></div>
+      </div>
+    </div>
+
+  </div><!-- /connector-browser -->
+
+  <script>
+    /* ── DS Connectors data ─────────────────────────────── */
+    const DS_CONNECTORS = {
+      database: [
+        { name:'PostgreSQL',  sub:'Relational database',   bg:'#E8F0F8', color:'#336791',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="12" cy="9.5" rx="6" ry="6" fill="#336791"/>
+            <path d="M18 6.5c1-.8 2.5-.5 3 .7.5 1.2-.2 2.8-1.2 3.8l-.8 1.5" stroke="#336791" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M10 19v-4M14 19v-4" stroke="#336791" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="10.5" cy="9" r=".8" fill="white"/>
+            <circle cx="13.5" cy="9" r=".8" fill="white"/>
+            <path d="M10.5 11.5 C11 12.2 13 12.2 13.5 11.5" stroke="white" stroke-width=".7" stroke-linecap="round" fill="none"/>
+          </svg>` },
+        { name:'MySQL',       sub:'Open-source RDBMS',     bg:'#FFF5E5', color:'#00758F',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18 C4 13 8 9 12 7 C15 5.5 17.5 5 19.5 5.5" stroke="#00758F" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M12 7 C14 8 17 11 19 14.5" stroke="#00758F" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <circle cx="20.5" cy="7" r="2.2" fill="#F29111"/>
+            <path d="M20.5 4.8 C22 4 23 5.2 22.5 6.5" stroke="#F29111" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+          </svg>` },
+        { name:'SQL Server',  sub:'Microsoft SQL database',bg:'#FEF0EF', color:'#CC2927',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="12" cy="5.5" rx="8" ry="2.5" fill="#CC2927"/>
+            <path d="M4 5.5v4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5v-4" fill="#CC2927" opacity="0.85"/>
+            <path d="M4 9.5v4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5v-4" fill="#CC2927" opacity="0.65"/>
+            <path d="M4 13.5v4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5v-4" fill="#CC2927" opacity="0.42"/>
+          </svg>` },
+        { name:'MongoDB',     sub:'Document database',     bg:'#EDFAF3', color:'#13AA52',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C9.2 2 6.5 5.8 6.5 10.2C6.5 14.2 9.2 17.5 12 21C14.8 17.5 17.5 14.2 17.5 10.2C17.5 5.8 14.8 2 12 2Z" fill="#13AA52"/>
+            <path d="M12 4.5 L12 18.5" stroke="#A4DFC0" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+            <path d="M11 9 C11 9 12 7.5 13 9" stroke="#A4DFC0" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.6"/>
+          </svg>` },
+      ],
+      file: [
+        { name:'CSV',         sub:'Comma-separated values',bg:'#EDFAF3', color:'#1A7A4A',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="2" width="16" height="20" rx="2" fill="#1A7A4A" opacity="0.12"/>
+            <rect x="4" y="2" width="16" height="20" rx="2" stroke="#1A7A4A" stroke-width="1.5"/>
+            <text x="12" y="12.5" font-size="6.5" font-weight="800" font-family="monospace,sans-serif" fill="#1A7A4A" text-anchor="middle" dominant-baseline="middle">CSV</text>
+            <line x1="7" y1="16.5" x2="17" y2="16.5" stroke="#1A7A4A" stroke-width="1.2" opacity="0.45"/>
+            <line x1="7" y1="19.5" x2="17" y2="19.5" stroke="#1A7A4A" stroke-width="1.2" opacity="0.45"/>
+          </svg>` },
+        { name:'Excel',       sub:'Microsoft Excel files', bg:'#EDFAF3', color:'#217346',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="2" width="18" height="20" rx="2" fill="#217346"/>
+            <rect x="11" y="2" width="10" height="20" rx="0" fill="#1A5C38"/>
+            <path d="M6 8 L10 16 M10 8 L6 16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="13.5" y1="8.5" x2="19" y2="8.5" stroke="white" stroke-width="1.2" opacity="0.75"/>
+            <line x1="13.5" y1="12" x2="19" y2="12" stroke="white" stroke-width="1.2" opacity="0.75"/>
+            <line x1="13.5" y1="15.5" x2="19" y2="15.5" stroke="white" stroke-width="1.2" opacity="0.75"/>
+          </svg>` },
+        { name:'JSON/JSONL',  sub:'JSON & line-delimited',  bg:'#FFFBEB', color:'#D97706',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 4 C5 4 4 5.2 4 7 L4 9.5 C4 11 3 12 3 12 C3 12 4 13 4 14.5 L4 17 C4 18.8 5 20 7 20" stroke="#D97706" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M17 4 C19 4 20 5.2 20 7 L20 9.5 C20 11 21 12 21 12 C21 12 20 13 20 14.5 L20 17 C20 18.8 19 20 17 20" stroke="#D97706" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="12" cy="12" r="1.8" fill="#D97706"/>
+          </svg>` },
+      ],
+      api: [
+        { name:'MCP Server',  sub:'Model Context Protocol',bg:'#FAF5FF', color:'#9333EA',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3.5" width="18" height="5" rx="2" fill="#9333EA" opacity="0.9"/>
+            <rect x="3" y="10" width="18" height="5" rx="2" fill="#9333EA" opacity="0.65"/>
+            <rect x="3" y="16.5" width="18" height="4" rx="2" fill="#9333EA" opacity="0.4"/>
+            <circle cx="18.5" cy="6" r="1.2" fill="white"/>
+            <circle cx="15.5" cy="6" r="1.2" fill="white" opacity="0.55"/>
+            <circle cx="18.5" cy="12.5" r="1.2" fill="white"/>
+          </svg>` },
+        { name:'REST API',    sub:'HTTP REST endpoints',   bg:'#F0FFF4', color:'#16A34A',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 8.5 H15 M12 5.5 L15 8.5 L12 11.5" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 15.5 H9 M12 12.5 L9 15.5 L12 18.5" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>` },
+        { name:'GraphQL',     sub:'GraphQL API',           bg:'#FDF2F8', color:'#E535AB',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="12,2.5 20.5,7.25 20.5,16.75 12,21.5 3.5,16.75 3.5,7.25" stroke="#E535AB" stroke-width="1.5" fill="none"/>
+            <line x1="3.5" y1="7.25" x2="20.5" y2="16.75" stroke="#E535AB" stroke-width="1.2" opacity="0.45"/>
+            <line x1="3.5" y1="16.75" x2="20.5" y2="7.25" stroke="#E535AB" stroke-width="1.2" opacity="0.45"/>
+            <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="#E535AB" stroke-width="1.2" opacity="0.45"/>
+            <circle cx="12" cy="2.5" r="1.8" fill="#E535AB"/>
+            <circle cx="20.5" cy="7.25" r="1.8" fill="#E535AB"/>
+            <circle cx="20.5" cy="16.75" r="1.8" fill="#E535AB"/>
+            <circle cx="12" cy="21.5" r="1.8" fill="#E535AB"/>
+            <circle cx="3.5" cy="16.75" r="1.8" fill="#E535AB"/>
+            <circle cx="3.5" cy="7.25" r="1.8" fill="#E535AB"/>
+          </svg>` },
+      ],
+      cloud: [
+        { name:'Snowflake',     sub:'Cloud data warehouse', bg:'#EFF9FF', color:'#29B5E8',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="12" y1="2" x2="12" y2="22" stroke="#29B5E8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="2" y1="12" x2="22" y2="12" stroke="#29B5E8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="5.1" y1="5.1" x2="18.9" y2="18.9" stroke="#29B5E8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="18.9" y1="5.1" x2="5.1" y2="18.9" stroke="#29B5E8" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="12,3.5 10.8,5.8 13.2,5.8" fill="#29B5E8"/>
+            <polygon points="12,20.5 10.8,18.2 13.2,18.2" fill="#29B5E8"/>
+            <polygon points="3.5,12 5.8,10.8 5.8,13.2" fill="#29B5E8"/>
+            <polygon points="20.5,12 18.2,10.8 18.2,13.2" fill="#29B5E8"/>
+          </svg>` },
+        { name:'BigQuery',      sub:'Google analytics DW',  bg:'#EFF6FF', color:'#4285F4',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.5 L21 7.5 L21 16.5 L12 21.5 L3 16.5 L3 7.5 Z" fill="#4285F4" opacity="0.12"/>
+            <path d="M12 2.5 L21 7.5 L12 12 L3 7.5 Z" fill="#4285F4"/>
+            <path d="M3 7.5 L12 12 L12 21.5 L3 16.5 Z" fill="#34A853"/>
+            <path d="M12 12 L21 7.5 L21 16.5 L12 21.5 Z" fill="#FBBC04"/>
+            <circle cx="12" cy="12.5" r="3.2" fill="white"/>
+            <circle cx="12" cy="12.5" r="2" fill="white" stroke="#4285F4" stroke-width="1.2"/>
+            <path d="M13.5 14 L15.5 16" stroke="#4285F4" stroke-width="2" stroke-linecap="round"/>
+          </svg>` },
+        { name:'Google Sheets', sub:'Spreadsheet cloud',    bg:'#F0FFF4', color:'#0F9D58',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="2" width="16" height="20" rx="2" fill="#0F9D58"/>
+            <rect x="10" y="2" width="10" height="20" fill="#0B7A45"/>
+            <rect x="10" y="2" width="10" height="20" rx="0" style="border-radius:0 2px 2px 0" fill="#0B7A45"/>
+            <rect x="7" y="7" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
+            <rect x="7" y="11" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
+            <rect x="7" y="15" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
+            <rect x="9.5" y="7" width=".8" height="10" fill="white" opacity="0.4"/>
+          </svg>` },
+        { name:'Redshift',      sub:'AWS data warehouse',   bg:'#FFF1F2', color:'#DD344C',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2 L19.5 5.5 L19.5 10 L12 11.5 L4.5 10 L4.5 5.5 Z" fill="#DD344C"/>
+            <path d="M4.5 10 L12 11.5 L19.5 10 L19.5 14.5 L12 16 L4.5 14.5 Z" fill="#DD344C" opacity="0.72"/>
+            <path d="M4.5 14.5 L12 16 L19.5 14.5 L19.5 18 L12 22 L4.5 18 Z" fill="#DD344C" opacity="0.44"/>
+            <path d="M4.5 5.5 L12 4 L12 2 L4.5 5.5 Z" fill="white" opacity="0.25"/>
+          </svg>` },
+      ],
+    };
+
+    const CB_CAT_LABELS = { database:'DATABASE', file:'FILE', api:'API', cloud:'CLOUD' };
+    const CB_CAT_LABELS_TITLE = { database:'Database', file:'File', api:'API', cloud:'Cloud' };
+    const CB_CAT_ORDER  = ['database','file','api','cloud'];
+
+    /* ── Credential field definitions per connector ───── */
+    const CB_FIELDS = {
+      'PostgreSQL':  [{id:'cname',label:'Connection name',type:'text',placeholder:'My PostgreSQL',full:true},{id:'host',label:'Host',type:'text',placeholder:'localhost',half:true},{id:'port',label:'Port',type:'text',placeholder:'5432',half:true},{id:'database',label:'Database',type:'text',placeholder:'mydb',half:true},{id:'username',label:'Username',type:'text',placeholder:'postgres',half:true},{id:'password',label:'Password',type:'password',placeholder:'••••••••',full:true}],
+      'MySQL':       [{id:'cname',label:'Connection name',type:'text',placeholder:'My MySQL',full:true},{id:'host',label:'Host',type:'text',placeholder:'localhost',half:true},{id:'port',label:'Port',type:'text',placeholder:'3306',half:true},{id:'database',label:'Database',type:'text',placeholder:'mydb',half:true},{id:'username',label:'Username',type:'text',placeholder:'root',half:true},{id:'password',label:'Password',type:'password',placeholder:'••••••••',full:true}],
+      'SQL Server':  [{id:'cname',label:'Connection name',type:'text',placeholder:'My SQL Server',full:true},{id:'host',label:'Host',type:'text',placeholder:'localhost',half:true},{id:'port',label:'Port',type:'text',placeholder:'1433',half:true},{id:'database',label:'Database',type:'text',placeholder:'mydb',half:true},{id:'username',label:'Username',type:'text',placeholder:'sa',half:true},{id:'password',label:'Password',type:'password',placeholder:'••••••••',full:true}],
+      'MongoDB':     [{id:'cname',label:'Connection name',type:'text',placeholder:'My MongoDB',full:true},{id:'uri',label:'Connection URI',type:'text',placeholder:'mongodb://localhost:27017/mydb',full:true}],
+      'CSV':         [{id:'cname',label:'Connection name',type:'text',placeholder:'My CSV',full:true},{id:'file',label:'Upload CSV file',type:'file',accept:'.csv',full:true}],
+      'Excel':       [{id:'cname',label:'Connection name',type:'text',placeholder:'My Excel',full:true},{id:'file',label:'Upload Excel file',type:'file',accept:'.xlsx,.xls',full:true}],
+      'JSON/JSONL':  [{id:'cname',label:'Connection name',type:'text',placeholder:'My JSON',full:true},{id:'file',label:'Upload JSON / JSONL file',type:'file',accept:'.json,.jsonl',full:true}],
+      'MCP Server':  [{id:'cname',label:'Connection name',type:'text',placeholder:'My MCP Server',full:true},{id:'url',label:'Server URL',type:'text',placeholder:'https://mcp.example.com',full:true},{id:'key',label:'API Key (optional)',type:'password',placeholder:'sk-...',full:true}],
+      'REST API':    [{id:'cname',label:'Connection name',type:'text',placeholder:'My REST API',full:true},{id:'url',label:'Base URL',type:'text',placeholder:'https://api.example.com',full:true},{id:'auth',label:'Auth type',type:'select',options:['None','Bearer Token','API Key','Basic Auth'],half:true},{id:'token',label:'Token / Key',type:'password',placeholder:'••••••••',half:true}],
+      'GraphQL':     [{id:'cname',label:'Connection name',type:'text',placeholder:'My GraphQL',full:true},{id:'url',label:'Endpoint URL',type:'text',placeholder:'https://api.example.com/graphql',full:true},{id:'auth',label:'Auth type',type:'select',options:['None','Bearer Token','API Key'],half:true},{id:'token',label:'Token / Key',type:'password',placeholder:'••••••••',half:true}],
+      'Snowflake':   [{id:'cname',label:'Connection name',type:'text',placeholder:'My Snowflake',full:true},{id:'account',label:'Account identifier',type:'text',placeholder:'xy12345.us-east-1',full:true},{id:'warehouse',label:'Warehouse',type:'text',placeholder:'COMPUTE_WH',half:true},{id:'database',label:'Database',type:'text',placeholder:'MYDB',half:true},{id:'schema',label:'Schema',type:'text',placeholder:'PUBLIC',half:true},{id:'username',label:'Username',type:'text',placeholder:'MYUSER',half:true},{id:'password',label:'Password',type:'password',placeholder:'••••••••',full:true}],
+      'BigQuery':    [{id:'cname',label:'Connection name',type:'text',placeholder:'My BigQuery',full:true},{id:'project',label:'Project ID',type:'text',placeholder:'my-gcp-project',half:true},{id:'dataset',label:'Dataset',type:'text',placeholder:'my_dataset',half:true},{id:'sa',label:'Service account JSON',type:'textarea',placeholder:'{ "type": "service_account", ... }',full:true}],
+      'Google Sheets':[{id:'cname',label:'Connection name',type:'text',placeholder:'My Sheets',full:true},{id:'url',label:'Spreadsheet URL',type:'text',placeholder:'https://docs.google.com/spreadsheets/d/...',full:true},{id:'sa',label:'Service account JSON (optional)',type:'textarea',placeholder:'{ "type": "service_account", ... }',full:true}],
+      'Redshift':    [{id:'cname',label:'Connection name',type:'text',placeholder:'My Redshift',full:true},{id:'host',label:'Host',type:'text',placeholder:'cluster.region.redshift.amazonaws.com',full:true},{id:'port',label:'Port',type:'text',placeholder:'5439',half:true},{id:'database',label:'Database',type:'text',placeholder:'dev',half:true},{id:'username',label:'Username',type:'text',placeholder:'awsuser',half:true},{id:'password',label:'Password',type:'password',placeholder:'••••••••',half:true}],
+    };
+
+    /* ── Connector Browser logic ──────────────────────── */
+    function showAddDataSource() { openConnectorBrowser(); }
+
+    function openConnectorBrowser() {
+      const el = document.getElementById('connector-browser');
+      el.style.display = 'flex';
+      requestAnimationFrame(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+      cbShowPicker();
+    }
+
+    function closeConnectorBrowser() {
+      const el = document.getElementById('connector-browser');
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(8px)';
+      setTimeout(() => { el.style.display = 'none'; }, 200);
+    }
+
+    function cbGoBack() {
+      const inCreds = document.getElementById('cb-step-creds').style.display !== 'none';
+      if (inCreds) cbShowPicker();
+      else closeConnectorBrowser();
+    }
+
+    function cbShowPicker() {
+      document.getElementById('cb-step-pick').style.display  = 'block';
+      document.getElementById('cb-step-creds').style.display = 'none';
+      document.getElementById('cb-topbar-title').textContent = 'Add Datasource';
+      const s = document.getElementById('cb-search');
+      if (s) s.value = '';
+      cbActiveCat = 'all';
+      const lbl = document.getElementById('cb-cat-label');
+      if (lbl) lbl.textContent = 'Category';
+      cbRenderSections('');
+    }
+
+    let cbActiveCat = 'all';
+
+    function cbToggleCatDropdown() {
+      document.getElementById('cb-cat-dropdown').classList.toggle('open');
+    }
+
+    function cbSetCat(cat, label) {
+      cbActiveCat = cat;
+      const lbl = document.getElementById('cb-cat-label');
+      if (lbl) lbl.textContent = cat === 'all' ? 'Category' : label;
+      document.getElementById('cb-cat-dropdown').classList.remove('open');
+      const q = document.getElementById('cb-search');
+      cbRenderSections(q ? q.value.toLowerCase() : '');
+    }
+
+    function cbFilterSearch(q) { cbRenderSections(q.toLowerCase()); }
+
+    function cbRenderSections(q) {
+      let html = '';
+      CB_CAT_ORDER.forEach(cat => {
+        if (cbActiveCat !== 'all' && cbActiveCat !== cat) return;
+        const conns = DS_CONNECTORS[cat].filter(c =>
+          !q || c.name.toLowerCase().includes(q) || c.sub.toLowerCase().includes(q)
+        );
+        if (!conns.length) return;
+        const label = CB_CAT_LABELS[cat];
+        const cards = conns.map(c => {
+          const safeN = c.name.replace(/'/g, "\\'");
+          return `<button
+            onclick="cbOpenCreds('${safeN}','${cat}')"
+            class="connector-card bg-white border border-gray-200 rounded-xl p-5 flex flex-col items-center text-center shadow-card"
+          >
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 flex-shrink-0" style="background:${c.bg}">
+              ${c.icon.replace(/class="w-6 h-6"/g,'class="w-6 h-6"')}
+            </div>
+            <p class="text-[13px] font-semibold text-gray-900">${c.name}</p>
+            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">${c.sub}</p>
+          </button>`;
+        }).join('');
+        html += `<div class="mb-7">
+          <h2 class="text-[15px] font-semibold text-gray-900 mb-3 connector-group-label">${CB_CAT_LABELS_TITLE[cat]}</h2>
+          <div class="grid grid-cols-4 gap-3">${cards}</div>
+        </div>`;
+      });
+      document.getElementById('cb-all-sections').innerHTML =
+        html || `<p class="text-[13px] text-center py-12" style="color:#9CA3AF">No connectors found.</p>`;
+    }
+
+    function cbFieldHtml(f) {
+      const LBL = `block text-[12px] font-medium text-gray-600 mb-1.5`;
+      const INP = `w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent`;
+      if (f.type === 'toggle') return `
+        <div class="flex items-center justify-between py-2">
+          <span class="${LBL} mb-0">${f.label}</span>
+          <button type="button" role="switch" onclick="this.dataset.on=this.dataset.on?'':'1';this.style.background=this.dataset.on?'#5B63F6':'#E5E7EB';this.querySelector('span').style.transform=this.dataset.on?'translateX(18px)':'translateX(2px)'"
+            class="relative inline-flex w-10 h-5 rounded-full transition-colors flex-shrink-0"
+            style="background:#E5E7EB">
+            <span class="inline-block w-4 h-4 bg-white rounded-full shadow transition-transform mt-0.5" style="transform:translateX(2px)"></span>
+          </button>
+        </div>`;
+      if (f.type === 'select') return `
+        <div>
+          <label class="${LBL}">${f.label}</label>
+          <select class="${INP}">
+            ${(f.options||[]).map(o=>`<option>${o}</option>`).join('')}
+          </select>
+        </div>`;
+      if (f.type === 'textarea') return `
+        <div>
+          <label class="${LBL}">${f.label}</label>
+          <textarea rows="4" placeholder="${f.placeholder||''}"
+            class="w-full px-3 py-2 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"></textarea>
+        </div>`;
+      if (f.type === 'file') return `
+        <div>
+          <label class="${LBL}">${f.label}</label>
+          <label class="flex flex-col items-center justify-center gap-2 w-full py-5 rounded-lg border-2 border-dashed border-gray-200 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-colors">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+            <span class="text-[12px] text-gray-400">Click to upload or drag &amp; drop</span>
+            <input type="file" class="hidden" accept="${f.accept||''}">
+          </label>
+        </div>`;
+      return `
+        <div>
+          <label class="${LBL}">${f.label}</label>
+          <input type="${f.type}" placeholder="${f.placeholder||''}" class="${INP}" />
+        </div>`;
+    }
+
+    let cbW = {};
+
+    function cbOpenCreds(name, cat) {
+      var conn        = DS_CONNECTORS[cat].find(function(c){ return c.name === name; });
+      var allFields   = CB_FIELDS[name] || [];
+      var step2Fields = allFields.filter(function(f){ return f.id !== 'cname'; });
+
+      var MOCK = {
+        database: [{name:'users',rows:'42,810'},{name:'orders',rows:'1,204,519'},{name:'products',rows:'3,847'},{name:'analytics_events',rows:'8,421,033'}],
+        cloud:    [{name:'users',rows:'42,810'},{name:'orders',rows:'1,204,519'},{name:'products',rows:'3,847'},{name:'analytics_events',rows:'8,421,033'}],
+        file:     [{name:'Sheet1',rows:'1,240'},{name:'Revenue',rows:'365'},{name:'Expenses',rows:'284'}],
+        api:      [{name:'/users',rows:'\u2014'},{name:'/orders',rows:'\u2014'},{name:'/products',rows:'\u2014'},{name:'/webhooks',rows:'\u2014'}],
+      };
+      cbW = { name:name, cat:cat, conn:conn, mockTables: MOCK[cat] || MOCK.database };
+
+      /* Build step-2 field rows (skip cname, handled in step 1) */
+      var fieldRows = '';
+      var i = 0;
+      while (i < step2Fields.length) {
+        var f = step2Fields[i];
+        if (f.half && step2Fields[i+1] && step2Fields[i+1].half) {
+          fieldRows += '<div class="grid grid-cols-2 gap-4 mb-4">' + cbFieldHtml(f) + cbFieldHtml(step2Fields[i+1]) + '</div>';
+          i += 2;
+        } else {
+          fieldRows += '<div class="mb-4">' + cbFieldHtml(f) + '</div>';
+          i++;
+        }
+      }
+      if (!fieldRows) fieldRows = '<p class="text-[13px] text-gray-400 py-1">No additional configuration required.</p>';
+
+      document.getElementById('cb-step-pick').style.display  = 'none';
+      document.getElementById('cb-step-creds').style.display = 'block';
+      document.getElementById('cb-topbar-title').textContent  = 'Add ' + name;
+
+      document.getElementById('cb-creds-inner').innerHTML =
+        /* ── Heading ── */
+        '<div class="mb-6" style="max-width:640px">'
+          + '<div class="flex items-center gap-3">'
+            + '<div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:' + conn.bg + '">'
+              + conn.icon
+            + '</div>'
+            + '<h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add ' + name + '</h1>'
+          + '</div>'
+          + '<p class="mt-2 text-sm text-gray-500">Configure your ' + name + ' connection step by step</p>'
+        + '</div>'
+
+        /* ── Step indicator ── */
+        + '<div class="flex items-center mb-7" style="max-width:640px">'
+          + '<div class="flex items-center gap-2">'
+            + '<div id="cb-ind-1" class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style="background:#5B63F6">1</div>'
+            + '<span id="cb-ind-lbl-1" class="text-[13px] font-medium text-gray-900">General Info</span>'
+          + '</div>'
+          + '<div class="cb-step-line mx-3" id="cb-line-1"></div>'
+          + '<div class="flex items-center gap-2">'
+            + '<div id="cb-ind-2" class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-semibold border-2 flex-shrink-0" style="border-color:#D1D5DB;color:#9CA3AF;background:#fff">2</div>'
+            + '<span id="cb-ind-lbl-2" class="text-[13px] font-medium text-gray-400">Test Connection</span>'
+          + '</div>'
+          + '<div class="cb-step-line mx-3" id="cb-line-2"></div>'
+          + '<div class="flex items-center gap-2">'
+            + '<div id="cb-ind-3" class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-semibold border-2 flex-shrink-0" style="border-color:#D1D5DB;color:#9CA3AF;background:#fff">3</div>'
+            + '<span id="cb-ind-lbl-3" class="text-[13px] font-medium text-gray-400">Select Tables</span>'
+          + '</div>'
+        + '</div>'
+
+        /* ── Step 1: General Information ── */
+        + '<div id="cb-step-pane-1" class="cb-step-pane active" style="max-width:640px">'
+          + '<div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">'
+            + '<h2 class="text-[15px] font-semibold text-gray-900 mb-1">General Information</h2>'
+            + '<p class="text-[13px] text-gray-500 mb-5">Name your connection and add a brief description</p>'
+            + '<div class="mb-4">'
+              + '<label class="block text-[12px] font-medium text-gray-600 mb-1.5">Connection Name <span class="text-red-500">*</span></label>'
+              + '<input id="cb-conn-name" type="text" placeholder="e.g. Production Analytics Database" oninput="cbValidateStep1()"'
+              + ' class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />'
+            + '</div>'
+            + '<div class="mb-5">'
+              + '<label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>'
+              + '<textarea id="cb-conn-desc" rows="3" placeholder="Briefly describe the purpose of this connection..."'
+              + ' class="w-full px-3 py-2 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"></textarea>'
+            + '</div>'
+            + '<div class="flex justify-end pt-4 border-t border-gray-100">'
+              + '<button id="cb-step1-continue" onclick="cbGoStep(2)" disabled'
+              + ' class="px-4 h-9 rounded-lg text-[13px] font-medium text-white transition-opacity"'
+              + ' style="background:#5B63F6;opacity:0.5;cursor:not-allowed">Continue</button>'
+            + '</div>'
+          + '</div>'
+        + '</div>'
+
+        /* ── Step 2: Connection Details ── */
+        + '<div id="cb-step-pane-2" class="cb-step-pane" style="max-width:640px">'
+          + '<div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">'
+            + '<h2 class="text-[15px] font-semibold text-gray-900 mb-1">Connection Details</h2>'
+            + '<p class="text-[13px] text-gray-500 mb-5">Enter your credentials to establish a secure connection</p>'
+            + '<div class="mb-2">' + fieldRows + '</div>'
+            + '<div id="cb-conn-idle" class="cb-conn-idle items-center justify-between pt-3 border-t border-gray-100">'
+              + '<button onclick="cbGoStep(1)" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">Back</button>'
+              + '<button onclick="cbTestConn()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Test Connection</button>'
+            + '</div>'
+            + '<div id="cb-conn-loading" class="cb-conn-loading items-center justify-between pt-3 border-t border-gray-100">'
+              + '<button class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-400 border border-gray-200 cursor-not-allowed">Back</button>'
+              + '<div class="flex items-center gap-2 text-[13px] text-gray-500">'
+                + '<svg class="cb-spinner w-4 h-4" style="color:#5B63F6" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>'
+                + 'Testing connection...'
+              + '</div>'
+            + '</div>'
+            + '<div id="cb-conn-success" class="cb-conn-success flex-col gap-0 pt-3">'
+              + '<div class="flex items-center gap-2 text-[13px] font-semibold mb-4" style="color:#16A34A">'
+                + '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+                + 'Connection successful \u2014 <span id="cb-found-count">4</span> items discovered'
+              + '</div>'
+              + '<div class="rounded-xl border border-gray-100 overflow-hidden mb-5">'
+                + '<div class="px-4 py-2 bg-gray-50 border-b border-gray-100 grid grid-cols-3 gap-2">'
+                  + '<span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider col-span-2">Table / Resource</span>'
+                  + '<span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-right">Rows</span>'
+                + '</div>'
+                + '<div id="cb-table-preview" class="divide-y divide-gray-100"></div>'
+              + '</div>'
+              + '<div class="flex items-center justify-between">'
+                + '<button onclick="cbResetConnTest()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-500 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">Re-test</button>'
+                + '<button onclick="cbGoToSelectTables()" class="flex items-center gap-2 px-4 h-9 rounded-lg text-[13px] font-medium text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">'
+                  + 'Continue \u2014 Select Tables'
+                  + '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>'
+                + '</button>'
+              + '</div>'
+            + '</div>'
+            + '<div id="cb-conn-error" class="cb-conn-error items-center justify-between pt-3">'
+              + '<div class="flex items-center gap-2 text-[13px] font-medium text-red-500">'
+                + '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>'
+                + 'Connection failed. Check your credentials.'
+              + '</div>'
+              + '<button onclick="cbResetConnTest()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Retry</button>'
+            + '</div>'
+          + '</div>'
+        + '</div>'
+
+        /* ── Step 3: Select Tables ── */
+        + '<div id="cb-step-pane-3" class="cb-step-pane" style="max-width:640px">'
+          + '<div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">'
+            + '<h2 class="text-[15px] font-semibold text-gray-900 mb-1">Select Tables</h2>'
+            + '<p class="text-[13px] text-gray-500 mb-5">Choose which tables to include in your workspace</p>'
+            + '<div class="flex items-center justify-between px-3 py-2 mb-2 rounded-lg bg-gray-50 border border-gray-100">'
+              + '<label class="flex items-center gap-2.5 cursor-pointer">'
+                + '<input type="checkbox" id="cb-select-all" onchange="cbToggleAllTables(this)" checked class="w-4 h-4 rounded" style="accent-color:#5B63F6" />'
+                + '<span class="text-[12px] font-medium text-gray-700">Select all</span>'
+              + '</label>'
+              + '<span class="text-[11px] text-gray-400" id="cb-table-count">4 items found</span>'
+            + '</div>'
+            + '<div class="space-y-1.5 mb-5" id="cb-table-list"></div>'
+            + '<div class="flex items-center justify-between pt-4 border-t border-gray-100">'
+              + '<button onclick="cbGoStep(2)" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">Back</button>'
+              + '<button onclick="cbFinishConnector()" class="flex items-center gap-2 px-4 h-9 rounded-lg text-[13px] font-medium text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">'
+                + 'Connect Datasource'
+                + '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>'
+              + '</button>'
+            + '</div>'
+          + '</div>'
+        + '</div>';
+    }
+
+    function cbValidateStep1() {
+      var val = (document.getElementById('cb-conn-name') ? document.getElementById('cb-conn-name').value : '').trim();
+      var btn = document.getElementById('cb-step1-continue');
+      if (!btn) return;
+      btn.disabled      = !val;
+      btn.style.opacity = val ? '1' : '0.5';
+      btn.style.cursor  = val ? 'pointer' : 'not-allowed';
+    }
+
+    function cbGoStep(n) {
+      [1,2,3].forEach(function(s) {
+        var pane = document.getElementById('cb-step-pane-' + s);
+        if (pane) pane.className = 'cb-step-pane' + (s === n ? ' active' : '');
+      });
+      [1,2,3].forEach(function(s) {
+        var ind = document.getElementById('cb-ind-' + s);
+        var lbl = document.getElementById('cb-ind-lbl-' + s);
+        if (!ind) return;
+        var base = 'width:28px;height:28px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+        if (s < n) {
+          ind.style.cssText = base + 'background:#5B63F6;color:white;border:none;';
+          ind.innerHTML = '<svg style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>';
+          if (lbl) lbl.className = 'text-[13px] font-medium text-gray-900';
+        } else if (s === n) {
+          ind.style.cssText = base + 'background:#5B63F6;color:white;border:none;font-weight:700;';
+          ind.textContent = String(s);
+          if (lbl) lbl.className = 'text-[13px] font-medium text-gray-900';
+        } else {
+          ind.style.cssText = base + 'background:#fff;color:#9CA3AF;border:2px solid #D1D5DB;font-weight:600;';
+          ind.textContent = String(s);
+          if (lbl) lbl.className = 'text-[13px] font-medium text-gray-400';
+        }
+      });
+      var line1 = document.getElementById('cb-line-1');
+      var line2 = document.getElementById('cb-line-2');
+      if (line1) line1.className = 'cb-step-line mx-3' + (n > 1 ? ' done' : '');
+      if (line2) line2.className = 'cb-step-line mx-3' + (n > 2 ? ' done' : '');
+      cbW.step = n;
+      if (n === 2) cbResetConnTest();
+      var sc = document.getElementById('cb-step-creds');
+      if (sc) sc.scrollTop = 0;
+    }
+
+    function cbTestConn() {
+      var idle    = document.getElementById('cb-conn-idle');
+      var loading = document.getElementById('cb-conn-loading');
+      if (idle)    idle.style.display    = 'none';
+      if (loading) loading.style.display = 'flex';
+      setTimeout(function() {
+        if (loading) loading.style.display = 'none';
+        var tables  = cbW.mockTables || [];
+        var preview = document.getElementById('cb-table-preview');
+        if (preview) {
+          preview.innerHTML = tables.map(function(t) {
+            return '<div class="px-4 py-2.5 grid grid-cols-3 gap-2 hover:bg-gray-50 transition-colors">'
+              + '<span class="text-[13px] text-gray-700 col-span-2" style="font-family:ui-monospace,monospace">' + t.name + '</span>'
+              + '<span class="text-[13px] text-gray-500 text-right">' + t.rows + '</span>'
+            + '</div>';
+          }).join('');
+        }
+        var countEl = document.getElementById('cb-found-count');
+        if (countEl) countEl.textContent = tables.length;
+        var success = document.getElementById('cb-conn-success');
+        if (success) success.style.display = 'flex';
+      }, 1600);
+    }
+
+    function cbResetConnTest() {
+      var idle    = document.getElementById('cb-conn-idle');
+      var loading = document.getElementById('cb-conn-loading');
+      var success = document.getElementById('cb-conn-success');
+      var error   = document.getElementById('cb-conn-error');
+      if (idle)    idle.style.display    = 'flex';
+      if (loading) loading.style.display = 'none';
+      if (success) success.style.display = 'none';
+      if (error)   error.style.display   = 'none';
+    }
+
+    function cbGoToSelectTables() {
+      var tables = cbW.mockTables || [];
+      cbGoStep(3);
+      var list  = document.getElementById('cb-table-list');
+      var count = document.getElementById('cb-table-count');
+      if (count) count.textContent = tables.length + ' items found';
+      if (list) {
+        list.innerHTML = tables.map(function(t) {
+          return '<label class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors">'
+            + '<input type="checkbox" checked class="w-4 h-4 rounded flex-shrink-0" style="accent-color:#5B63F6" />'
+            + '<span class="text-[13px] font-medium text-gray-700 flex-1" style="font-family:ui-monospace,monospace">' + t.name + '</span>'
+            + '<span class="text-[12px] text-gray-400">' + t.rows + '</span>'
+          + '</label>';
+        }).join('');
+      }
+    }
+
+    function cbToggleAllTables(cb) {
+      document.querySelectorAll('#cb-table-list input[type=checkbox]').forEach(function(c) { c.checked = cb.checked; });
+    }
+
+    function cbFinishConnector() {
+      closeConnectorBrowser();
     }
   </script>
 </body>
