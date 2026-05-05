@@ -1,7 +1,7 @@
-# Chat — Design Language
+﻿# Chat — Design Language
 
-**Version:** 1.0  
-**File:** `chat/index.html`  
+**Version:** 2.0
+**File:** `chat/index.html`
 **Purpose:** AI-powered data chat interface for Aibii
 
 ---
@@ -9,22 +9,22 @@
 ## 1. Screen Anatomy
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  SIDEBAR (220px)  │  TOP BAR (h-11)                     │
-│                   ├─────────────────────────────────────│
-│                   │                                     │
-│                   │  MESSAGES AREA (flex-1, scroll)     │
-│                   │                                     │
-│                   │  · User bubble (right-aligned)      │
-│                   │  · AI response (left-aligned)       │
-│                   │  · Typing indicator                 │
-│                   │                                     │
-│                   ├─────────────────────────────────────│
-│                   │  INPUT BAR                          │
-└─────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│  SIDEBAR (220px)   │  TOP BAR (h-11)                       │
+│  id="sidebar"      ├────────────────────────────────────── │
+│                    │                                       │
+│                    │  MESSAGES AREA (flex-1, scroll)       │
+│                    │                                       │
+│                    │  · User bubble (right-aligned)        │
+│                    │  · AI response (left-aligned)         │
+│                    │  · Typing indicator                   │
+│                    │                                       │
+│                    ├────────────────────────────────────── │
+│                    │  INPUT BAR (px-6 pb-5)                │
+└────────────────────────────────────────────────────────────┘
 ```
 
-The layout is a full-height `flex` row (`h-screen overflow-hidden`) with a fixed sidebar and a fluid main column that itself is a `flex-col`.
+Root element: `body.font-sans.bg-white.text-gray-900.flex.h-screen.overflow-hidden`
 
 ---
 
@@ -32,18 +32,19 @@ The layout is a full-height `flex` row (`h-screen overflow-hidden`) with a fixed
 
 | Token | Value | Usage |
 |---|---|---|
-| `brand.primary` | `#5B63F6` | Active nav indicator, AI icon bg tint, send button, bar chart fills |
-| `brand.secondary` | `#7C6FF7` | Gradient end on AI icon |
-| `hover` | `#EEF2FF` | Nav item hover, active nav background, AI icon container bg |
-| `#F3F4F6` | — | User bubble background (light shade) |
+| `brand.primary` | `#5B63F6` | Active nav indicator, AI icon tint, send button, bar chart fills |
+| `brand.secondary` | `#7C6FF7` | Bar chart secondary fill |
+| `hover` | `#EEF2FF` | Nav hover, active nav bg, AI icon container |
+| `#F3F4F6` | — | User bubble background |
 | `#E8EEFF` | — | Explore banner background |
 | `#C7D2FE` | — | Explore banner icon circle |
 | `gray-100` | `#F3F4F6` | Border dividers, bar chart track |
 | `gray-200` | `#E5E7EB` | Input bar border, button borders, table borders |
-| `#16A34A` | — | Positive metric values (green) |
-| `#EF4444` | — | Negative metric values (red) |
+| `#16A34A` | — | Positive metric values |
+| `#EF4444` | — | Negative metric values |
 | `#0F9D58` | — | Google Sheets source pill dot |
-| `#336791` | — | PostgreSQL/Analytics DB source pill dot |
+| `#336791` | — | Analytics DB source pill dot |
+| `#3B5BDB` | — | User avatar background |
 
 ---
 
@@ -51,8 +52,6 @@ The layout is a full-height `flex` row (`h-screen overflow-hidden`) with a fixed
 
 | Element | Size | Weight | Color |
 |---|---|---|---|
-| Breadcrumb parent | `13px` | 400 | `gray-500` |
-| Breadcrumb active | `13px` | 500 | `gray-700` |
 | Message body | `14px` | 400 | `gray-900` / `#111827` |
 | Message note / secondary | `13px` | 400 | `gray-600` |
 | Table header | `11px` | 600 | `gray-400`, uppercase, `tracking-widest` |
@@ -65,8 +64,11 @@ The layout is a full-height `flex` row (`h-screen overflow-hidden`) with a fixed
 | Timestamp | `11px` | 400 | `gray-400` |
 | Sidebar section header | `11px` | 500 | `gray-400`, uppercase, `tracking-widest` |
 | Sidebar nav item | `14px` | 400/500 | `gray-700` / `gray-900` (active) |
+| Notification item | `13px` | 400 | `gray-900` |
+| User dropdown name | `13px` | 600 | `gray-900` |
+| User dropdown email | `11px` | 400 | `gray-400` |
 
-**Font stack:** Inter → system-ui → -apple-system → sans-serif  
+**Font stack:** Inter → system-ui → -apple-system → sans-serif
 **Weights loaded:** 400, 500, 600, 700, 800 via Google Fonts
 
 ---
@@ -89,20 +91,42 @@ The layout is a full-height `flex` row (`h-screen overflow-hidden`) with a fixed
 
 ## 5. Sidebar
 
-Identical spec shared across all Aibii views. In this view **New chat** is the active item.
+Shared sidebar pattern across all Aibii views. **New Chat** is the active item on this page.
 
-### Structure (top → bottom)
+```
+aside#sidebar  w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100
+├── Workspace switcher   border-b border-gray-100  id="ws-switcher-wrapper"
+├── Primary nav          px-3 py-2 space-y-0.5
+├── Divider              mx-3 my-1 border-t border-gray-100
+├── Projects section     px-3 py-1
+│   ├── My Private Project (pinned, ws2)
+│   │   └── 11 sub-items  id="ws2-sub"
+│   └── Sovereign Capital Gate (ws1)
+│       └── 9 sub-items   id="ws1-sub"
+├── Spacer               flex-1
+├── Divider              mx-3 border-t border-gray-100
+├── Bottom nav           px-3 py-2 space-y-0.5
+└── Explore banner       mx-3 mb-3 rounded-xl bg-[#E8EEFF]
+```
 
-1. **Workspace switcher** — `px-4 py-3 border-b border-gray-100`. Avatar circle `w-7 h-7 rounded-full`, name `text-sm font-semibold`, chevron icon.
-2. **Primary nav** — `px-3 py-2 space-y-0.5`. Three items: Recent, New dashboard, New chat.
-3. **Divider** — `mx-3 my-1 border-t border-gray-100`
-4. **Workspaces section** — Section label `text-[11px] uppercase tracking-widest text-gray-400`. Two collapsible workspace rows with chevron toggle + child items (Chat, Dashboard, Document colour-coded).
-5. **Spacer** — `flex-1`
-6. **Divider** — `mx-3 border-t border-gray-100`
-7. **Bottom utility nav** — Shared with me + Settings (links to `../settings-profile/index.html`)
-8. **Explore banner** — `rounded-xl bg-[#E8EEFF] px-3 py-2.5`
+### Workspace switcher button
+```html
+<button onclick="openWsModal()">
+  <span id="ws-avatar">M</span>   <!-- w-7 h-7 rounded-full bg:#3B5BDB -->
+  <span id="ws-name">Manish kumar's Work…</span>  <!-- text-sm font-semibold -->
+  <svg><!-- up-down chevron --></svg>
+</button>
+```
 
-### Active state (New chat)
+### Primary nav items
+
+| Item | State | href |
+|---|---|---|
+| Recent | plain | `../recent-view/index.html` |
+| New Dashboard | plain | `#` |
+| New Chat | **ACTIVE** | `#` |
+
+### Active state (New Chat)
 ```css
 background: #EEF2FF;
 border-left: 2px solid #5B63F6;
@@ -111,276 +135,307 @@ font-weight: 500;
 color: #111827;
 ```
 
-### Inactive hover state
-```css
-.nav-item:hover { background-color: #EEF2FF; }
-transition: background-color 100ms ease;
+### Projects section
+Label: `text-[11px] uppercase tracking-widest text-gray-400` — "Projects"
+
+Each workspace row:
+```
+div.nav-item flex items-center gap-1 px-2 h-9 rounded-lg
+  button#ws{n}-btn  onclick="toggleWorkspace('ws{n}')"   → chevron toggle
+  a                 workspace name
+  svg               pin icon (ws2 only, color #5B63F6)
+div#ws{n}-sub.ws-submenu pl-4 mt-0.5 space-y-0.5
+  a × N             child items (chat/dashboard/document icons, colour-coded)
 ```
 
-### Workspace submenu
+Sub-item icon colours: `#5B63F6` chat, `#16A34A` dashboard, `#F97316` document, `#8B5CF6` presentation, `#EC4899` list
+
+### Bottom nav
+
+| Item | Icon | href |
+|---|---|---|
+| Settings | gear | `../settings-profile/index.html` |
+
+### Explore banner
+```
+div.mx-3.mb-3.mt-1.rounded-xl.px-3.py-2.5  bg:#E8EEFF
+  div.w-8.h-8.rounded-full  bg:#C7D2FE  → sparkle SVG color:#4F6EF7
+  p "Explore free features"  text-[12px] font-semibold color:#3B4ECC
+  p "Credit left: 15"        text-[11px] color:#6B7ADE
+```
+
+### CSS
 ```css
+.nav-item { transition: background-color 100ms ease; }
+.nav-item:hover { background-color: #EEF2FF; }
 .ws-submenu { display: none; }
 .ws-submenu.open { display: block; }
 .ws-chevron { transition: transform 150ms ease; }
-.ws-item.open .ws-chevron { transform: rotate(90deg); }
+#sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+#sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
 ```
 
 ---
 
-## 6. Top Bar
+## 6. Workspace Switcher Modal
 
-Height `h-11`, `border-b border-gray-100`, `px-6`, `flex items-center justify-between`.
+Triggered by `openWsModal()` from the workspace switcher button.
 
-**Left side:**
-- Hamburger icon (`w-[18px]`)
-- Back / Forward navigation chevrons (`w-4 h-4 text-gray-400`)
-- Breadcrumb: `"Chat"` (`text-[13px] text-gray-500`) → chevron (`text-gray-300`) → `"Q4 Revenue Analysis"` (`text-[13px] font-medium text-gray-700`)
+```
+#ws-modal-backdrop  fixed inset-0 z-50  bg rgba(17,24,39,0.45) blur(2px)
+  #ws-modal  bg-white rounded-2xl max-w-lg  max-height:620px
+    header  "Switch Workspace" + "New Workspace" button (bg:#5B63F6)
+    search  #ws-search  oninput="filterWsList()"
+    list    #ws-modal-list  rendered by renderWsModalList()
+```
 
-**Right side (gap-1.5):**
+```css
+#ws-modal-backdrop { display: none; }
+#ws-modal-backdrop.open { display: flex; }
+```
 
-| Button | Size | Style |
+### New Workspace modal
+```
+#new-ws-modal  hidden fixed inset-0 z-[60]  bg:#F3F4F6
+  topbar  Aibii logo + close button
+  form card  bg-white rounded-2xl max-w-sm
+    #ws-preview-avatar  w-11 h-11 rounded-xl  onclick="cycleWsColor()"
+    #ws-preview-name
+    input#new-ws-name   oninput="onWsNameInput(this.value)"
+    textarea#new-ws-desc
+    Cancel + Create buttons
+```
+
+---
+
+## 7. Top Bar
+
+Height `h-11`, `px-4`, `border-b border-gray-100`, `flex items-center justify-between`.
+
+**Left:** hamburger button `onclick="toggleSidebar()"` — `w-8 h-8 rounded-lg hover:bg-gray-100`
+
+**Right (gap-1):**
+
+| Element | ID | Detail |
 |---|---|---|
-| `N sources` | `h-7 px-2.5 rounded-lg` | Border `gray-200`, icon `#0F9D58`, `text-[12px] text-gray-600` |
-| Share | `h-7 px-2.5 rounded-lg` | Same |
-| More (⋯) | `w-7 h-7 rounded-lg` | Square, same border |
+| Notification bell | `#notif-wrapper` | `w-8 h-8 rounded-lg`, red dot `w-1.5 h-1.5 bg-red-500` |
+| Notification dropdown | `#notif-dropdown` | `w-80 rounded-xl`, 5 items, "Mark all read" link |
+| User avatar | `#user-menu-wrapper` | `w-7 h-7 rounded-full` bg `#3B5BDB`, initial "M" |
+| User dropdown | `#user-dropdown` | `w-52 rounded-xl`, name + email + Logout button |
 
-All right-side buttons: `hover:bg-gray-50 transition-colors`
-
----
-
-## 7. Messages Area
-
-`flex-1 overflow-y-auto px-6 py-6 space-y-6`
-
-Auto-scrolls to bottom on load and after each new message (`area.scrollTop = area.scrollHeight`).
-
----
-
-## 8. Message Components
-
-### 8a. User Bubble
-
+### Notification dropdown
 ```
-.msg-user — flex justify-end
-  └─ max-w-[68%] flex flex-col items-end gap-1
-       ├─ .bubble — px-4 py-2.5 text-[14px] leading-relaxed
-       │    background: #F3F4F6
-       │    color: #111827
-       │    border-radius: 18px 18px 4px 18px  ← bottom-right clipped
-       └─ timestamp — text-[11px] text-gray-400
+#notif-dropdown  hidden absolute right-0 top-full mt-1 w-80
+  header  "Notifications" + "Mark all read"
+  5 items:
+    Sara M.  → shared Revenue Overview   (avatar #5B63F6, unread dot)
+    Riya K.  → commented on Q4 Strategy (avatar #16A34A, unread dot)
+    Aibii AI → finished analyzing        (avatar #F97316)
+    Priya N. → invited to SCG            (avatar #8B5CF6)
+    Aibii AI → report-ready export done  (avatar #0EA5E9)
 ```
 
-The **bottom-right** corner is clipped (`4px`) to indicate message origin.
-
----
-
-### 8b. AI Response
-
+### User dropdown
 ```
-.msg-ai — flex gap-3
-  ├─ AI Icon — w-6 h-6 rounded-lg bg-[#EEF2FF], mt-1, flex-shrink-0
-  │    Inner SVG: w-3.5 h-3.5 color:#5B63F6 (sparkle/AI icon)
-  └─ flex-1 max-w-[78%] flex flex-col gap-2
-       ├─ .bubble — px-4 py-3 text-[14px] leading-relaxed
-       │    no background (transparent)
-       │    color: #111827
-       │    border-radius: 18px 18px 18px 4px  ← bottom-left clipped
-       ├─ Source pills row
-       └─ Action buttons row
-```
-
-The **bottom-left** corner is clipped (`4px`) to indicate AI origin. No background on AI bubble — content sits directly on the canvas white.
-
----
-
-### 8c. Inline Data Table
-
-Used inside AI bubbles to display structured metrics.
-
-```
-rounded-xl border border-gray-200 overflow-hidden bg-white
-  ├─ Header row — bg-gray-50 border-b border-gray-100
-  │    h-9, px-4, grid grid-cols-3
-  │    text-[11px] font-semibold text-gray-400 uppercase tracking-widest
-  └─ Data rows — divide-y divide-gray-100
-       h-10, px-4, grid grid-cols-3, text-[13px]
-       Positive change: color #16A34A
-       Negative change: color #EF4444
-       Neutral: text-gray-400
+#user-dropdown  hidden absolute right-0 top-full mt-1 w-52
+  Manish Kumar  (text-[13px] font-semibold)
+  manish@aibii.com  (text-[11px] text-gray-400)
+  Logout button  (text-[13px] text-red-500 hover:bg-red-50)
 ```
 
 ---
 
-### 8d. Inline Bar Chart
+## 8. Messages Area
 
-Used inside AI bubbles to display segment comparisons.
+`#messages-area` — `flex-1 overflow-y-auto px-6 py-6 space-y-6`
 
-```
-space-y-2.5
-  └─ each row:
-       ├─ flex justify-between — label text-[12px] font-medium text-gray-700
-       │                          value text-[12px] font-semibold text-gray-900
-       └─ track: h-2 bg-gray-100 rounded-full overflow-hidden
-            fill:  h-2 rounded-full
-                   Primary:   background #5B63F6
-                   Secondary: background #7C6FF7
-                   Tertiary:  background #A5B4FC
-                   Negative:  background #FCA5A5
-```
+Auto-scrolls to bottom on load (`scrollTop = 9999`) and after each new message.
 
 ---
 
-### 8e. Source Pills
+## 9. Message Components
+
+### 9a. User Bubble
 
 ```
-flex items-center gap-2 flex-wrap
-  ├─ label: text-[11px] text-gray-400 "Sources:"
-  └─ .source-pill — px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50
-       text-[11px] font-medium text-gray-600
-       gap-1.5 with 2×2 colour dot (rounded-sm = sheets, rounded-full = DB)
-       hover: background #E0E7FF
-       transition: background-color 100ms ease
+.msg-user  flex justify-end
+  div  max-w-[68%] flex flex-col items-end gap-1
+    .bubble  px-4 py-2.5 text-[14px] leading-relaxed
+      background: #F3F4F6
+      color: #111827
+      border-radius: 18px 18px 4px 18px   ← bottom-right clipped
+    span  text-[11px] text-gray-400  (timestamp)
+```
+
+### 9b. AI Response
+
+```
+.msg-ai  flex gap-3
+  div  w-6 h-6 rounded-lg bg-[#EEF2FF] flex-shrink-0 mt-1
+    svg  w-3.5 h-3.5 color:#5B63F6  (sparkle icon)
+  div  flex-1 max-w-[78%] flex flex-col gap-2
+    .bubble  px-4 py-3 text-[14px] leading-relaxed
+      no background (transparent canvas)
+      color: #111827
+      border-radius: 18px 18px 18px 4px   ← bottom-left clipped
+    source pills row
+    action buttons row
+```
+
+### 9c. Inline Data Table
+
+```
+div  rounded-xl border border-gray-200 overflow-hidden bg-white
+  header row  grid grid-cols-3 px-4 h-9 bg-gray-50 border-b border-gray-100
+    text-[11px] font-semibold text-gray-400 uppercase tracking-widest
+  data rows  divide-y divide-gray-100
+    h-10 px-4 grid grid-cols-3 text-[13px]
+    Positive change: color #16A34A
+    Negative change: color #EF4444
+    Neutral: text-gray-400
+```
+
+### 9d. Inline Bar Chart
+
+```
+div  space-y-2.5
+  each row:
+    flex justify-between  label text-[12px] font-medium text-gray-700
+                          value text-[12px] font-semibold text-gray-900
+    track  h-2 bg-gray-100 rounded-full overflow-hidden
+      fill  h-2 rounded-full
+        Primary:   #5B63F6  (82% width example)
+        Secondary: #7C6FF7
+        Tertiary:  #A5B4FC
+        Negative:  #FCA5A5
+```
+
+### 9e. Source Pills
+
+```
+div  flex items-center gap-2 flex-wrap
+  span  text-[11px] text-gray-400  "Sources:"
+  .source-pill  px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50
+    text-[11px] font-medium text-gray-600
+    hover: background #E0E7FF  (transition 100ms)
 ```
 
 | Source | Dot colour | Dot shape |
 |---|---|---|
-| Google Sheets | `#0F9D58` | `rounded-sm` |
-| Analytics DB | `#336791` | `rounded-full` |
+| Google Sheets | `#0F9D58` | `rounded-sm` (2×2) |
+| Analytics DB | `#336791` | `rounded-full` (2×2) |
 
----
+### 9f. AI Action Buttons
 
-### 8f. AI Action Buttons
-
-```
-.ai-action — flex items-center gap-1.5 px-2.5 h-7 rounded-lg
-  text-[12px] font-medium text-gray-500
-  hover: background #E5E7EB, color #374151
-  transition: background-color 100ms ease, color 100ms ease
+```css
+.ai-action {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 10px; height: 28px; border-radius: 8px;
+  font-size: 12px; font-weight: 500; color: #6B7280;
+  transition: background-color 100ms, color 100ms;
+}
+.ai-action:hover { background: #E5E7EB; color: #374151; }
 ```
 
 Actions: **Copy**, **Export**, **Regenerate**
 
----
+### 9g. Typing Indicator
 
-### 8g. Typing Indicator
+Hidden by default (`hidden`), shown while AI is responding.
 
-Hidden by default (`hidden`), shown while AI response is loading.
-
-```
-#typing-indicator — .msg-ai flex gap-3
-  └─ .bubble px-4 py-3 flex items-center gap-1
-       └─ 3× .dot
+```html
+<div id="typing-indicator" class="msg-ai flex gap-3 hidden">
+  <div class="bubble px-4 py-3 flex items-center gap-1">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+</div>
 ```
 
 ```css
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #9CA3AF;
-  animation: blink 1.2s infinite;
-}
+@keyframes blink { 0%,80%,100% { opacity: 0; } 40% { opacity: 1; } }
+.dot { width:6px; height:6px; border-radius:50%; background:#9CA3AF; animation: blink 1.2s infinite; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes blink { 0%,80%,100% { opacity: 0; } 40% { opacity: 1; } }
 ```
 
 ---
 
-## 9. Input Bar
+## 10. Input Bar
 
 ```
-px-6 pb-5
-└─ flex items-end gap-3
-   border border-gray-200 rounded-2xl px-4 py-3
-   shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)
-   focus-within: border-indigo-300 + ring 0 0 0 3px rgba(91,99,246,0.12)
-   transition: all
-   ├─ Attach button — w-5 h-5 text-gray-400 hover:text-gray-600
-   ├─ #chat-input textarea — flex-1 text-[14px] text-gray-900
-   │    placeholder: text-gray-400
-   │    resize: none; max-height: 160px; overflow-y: auto
-   │    auto-grows via oninput → autoGrow(this)
-   │    Enter = send, Shift+Enter = newline
-   └─ Send button — w-8 h-8 rounded-xl background:#5B63F6
-        icon: paper-plane SVG w-4 h-4 text-white
+div  px-6 pb-5 flex-shrink-0
+  div  flex items-end gap-3 bg-white border border-gray-200 rounded-2xl px-4 py-3
+       shadow-card  focus-within: border-indigo-300 + ring rgba(91,99,246,0.12)
+    button  attach icon  w-5 h-5 text-gray-400 hover:text-gray-600
+    textarea#chat-input  flex-1 text-[14px] placeholder-gray-400
+      resize:none  max-height:160px  overflow-y:auto
+      oninput="autoGrow(this)"  onkeydown="handleKey(event)"
+      placeholder "Ask anything about your data…"
+    button#send-btn  onclick="sendMessage()"
+      w-8 h-8 rounded-xl  background:#5B63F6
+      send SVG  w-4 h-4 text-white
 ```
 
 ---
 
-## 10. Scrollbar
+## 11. JS Functions
 
-```css
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-::-webkit-scrollbar-track { background: transparent; }
-```
+### Chat functions
 
----
-
-## 11. Shadows
-
-| Token | Value | Used on |
+| Function | Trigger | Behaviour |
 |---|---|---|
-| `card` | `0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)` | Input bar |
-| `card-hover` | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` | Reserved |
-| `input` | `0 0 0 3px rgba(91,99,246,0.12)` | Input bar focus ring |
+| `autoGrow(el)` | `oninput` on textarea | Sets height to `scrollHeight`, capped at 160px |
+| `handleKey(e)` | `onkeydown` on textarea | Enter → `sendMessage()`; Shift+Enter → newline |
+| `sendMessage()` | Send button / Enter | Appends user bubble, shows typing indicator, appends AI response after 1.6s |
+| `useSuggestion(btn)` | suggestion chip click | Fills textarea with chip text |
+| `escapeHtml(s)` | internal | Escapes `& < > "` |
+| `currentTime()` | internal | Returns `HH:MM` string |
 
----
+AI responses rotate through a pool of 4 pre-built responses (`AI_RESPONSES` array, `responseIndex`).
 
-## 12. Borders & Radius
+### Sidebar & workspace functions
 
-| Element | Radius |
+| Function | Behaviour |
 |---|---|
-| Input bar container | `rounded-2xl` (16px) |
-| User bubble | `18px 18px 4px 18px` |
-| AI bubble | `18px 18px 18px 4px` |
-| AI icon | `rounded-lg` (8px) |
-| Action buttons | `rounded-lg` (8px) |
-| Source pills | `rounded-full` |
-| Inline data table | `rounded-xl` (12px) |
-| Bar chart track + fill | `rounded-full` |
-| Send button | `rounded-xl` (12px) |
-| Sidebar nav items | `rounded-lg` (8px) |
-| Explore banner | `rounded-xl` (12px) |
+| `toggleSidebar()` | Toggles `#sidebar.collapsed` |
+| `toggleWorkspace(id)` | Toggles `#ws{id}-sub.open`, rotates chevron 90° |
+| `openWsModal()` | Opens `#ws-modal-backdrop`, renders list, focuses search |
+| `closeWsModal(e)` | Closes if click target is backdrop itself |
+| `selectWorkspace(id)` | Marks workspace current, updates `#ws-avatar` + `#ws-name`, closes modal |
+| `renderWsModalList(filter)` | Renders filtered workspace buttons into `#ws-modal-list` |
+| `filterWsList()` | Reads `#ws-search` value, calls `renderWsModalList` |
+| `openNewWsModal()` | Hides ws-modal-backdrop, shows `#new-ws-modal` |
+| `closeNewWsModal()` | Hides `#new-ws-modal` |
+| `cycleWsColor()` | Cycles through 8-colour palette on avatar click |
+| `onWsNameInput(val)` | Updates preview avatar initial + name |
+| `createNewWs()` | Creates new ws entry, pushes to `wsData`, calls `selectWorkspace` |
 
----
+### Dropdown functions
 
-## 13. JavaScript Behaviour
-
-| Function | Purpose |
+| Function | Behaviour |
 |---|---|
-| `toggleWorkspace(id)` | Toggle `.open` on workspace submenu + chevron button |
-| `autoGrow(el)` | Expand textarea height up to `160px` max |
-| `handleKey(e)` | `Enter` → `sendMessage()`, `Shift+Enter` → newline |
-| `sendMessage()` | Appends user bubble → shows typing indicator → after 1.6s appends AI response from `AI_RESPONSES` pool |
-| `escapeHtml(s)` | XSS-safe string escaping for user input |
-| `currentTime()` | Returns `HH:MM AM/PM` timestamp string |
+| `toggleNotifications()` | Closes `#user-dropdown`, toggles `#notif-dropdown` |
+| `markAllRead()` | Sets all blue unread dots to `#D1D5DB` |
+| `toggleUserMenu()` | Closes `#notif-dropdown`, toggles `#user-dropdown` |
 
-### AI Response Pool
-
-`AI_RESPONSES` is an array of 4 objects, each with `text`, `extra` (inline HTML: table or bar chart), and `note`. The pool cycles via `responseIndex % AI_RESPONSES.length`, so responses rotate on each send.
+Click-outside listener closes both `#notif-dropdown` and `#user-dropdown` when clicking outside their wrappers.
 
 ---
 
-## 14. Design Principles
+## 12. Workspace Data
 
-1. **Conversation-first** — The chat canvas is white with no backgrounds on AI bubbles; content breathes without visual noise.
-2. **Directional corners** — User bubbles clip bottom-right; AI bubbles clip bottom-left. The clipped corner points toward the origin.
-3. **Data inline** — Tables and bar charts are embedded directly in bubbles, not in modal overlays, keeping the conversation context intact.
-4. **Minimal chrome** — No footer text, no model badges in the input bar. The input bar itself is the only affordance needed.
-5. **Consistent sidebar** — The sidebar is pixel-identical across all Aibii views. Only the active item changes.
-
----
-
-## 15. File Structure
-
-```
-chat/
-├── index.html   — single-file prototype (HTML + Tailwind CDN + vanilla JS)
-└── README.md    — this design language document
+```js
+var wsData = [
+  { id:'ws1', name:'Sovereign Capital Gate', initial:'S', color:'#5B63F6', current:false },
+  { id:'ws2', name:'My Private Project',     initial:'M', color:'#3B5BDB', current:true  },
+  { id:'ws3', name:'Product Team',           initial:'P', color:'#16A34A', current:false },
+  { id:'ws4', name:'Growth & Marketing',     initial:'G', color:'#F97316', current:false },
+  { id:'ws5', name:'Finance Ops',            initial:'F', color:'#8B5CF6', current:false },
+  { id:'ws6', name:'Design System',          initial:'D', color:'#0EA5E9', current:false }
+];
 ```
 
-**External dependencies (CDN only):**
-- `https://cdn.tailwindcss.com` — utility CSS
-- `https://fonts.googleapis.com` — Inter typeface
+New workspace colour palette (cycled via `cycleWsColor()`):
+`#5B63F6` · `#3B5BDB` · `#16A34A` · `#F97316` · `#8B5CF6` · `#0EA5E9` · `#EC4899` · `#EF4444`
