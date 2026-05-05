@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -73,6 +73,20 @@
     .type-dropdown { display: none; }
     .type-dropdown.open { display: block; }
 
+    /* List view */
+    #report-grid.list-view { display: flex !important; flex-direction: column; gap: 0; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
+    #report-grid.list-view .report-card { display: flex !important; flex-direction: row; align-items: center; border-radius: 0 !important; border: none; border-bottom: 1px solid #F3F4F6; box-shadow: none !important; }
+    #report-grid.list-view .report-card:last-child { border-bottom: none; }
+    #report-grid.list-view .report-card:hover { transform: none !important; background: #F9FAFB; }
+    #report-grid.list-view .report-card > div:first-child { height: 40px !important; width: 40px !important; min-width: 40px; border-radius: 8px !important; margin: 10px 12px 10px 16px; flex-shrink: 0; }
+    #report-grid.list-view .report-card > div:first-child svg { width: 20px !important; height: 20px !important; }
+    #report-grid.list-view .report-card > div:last-child { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 10px 16px 10px 0; min-width: 0; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 10px; min-width: 0; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child > p:first-child { margin: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child > span { margin-top: 0 !important; flex-shrink: 0; width: 96px; justify-content: center; overflow: hidden; }
+    #report-grid.list-view .report-card > div:last-child > div:first-child > p:last-child { margin: 0; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+    #report-grid.list-view .report-card > div:last-child > button { margin-top: 0 !important; opacity: 1; flex-shrink: 0; }
+
     /* Workspace submenu */
     .ws-submenu { display: none; }
     .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
@@ -84,19 +98,12 @@
     /* Member avatar stack */
     .avatar-stack .avatar { margin-left: -8px; }
     .avatar-stack .avatar:first-child { margin-left: 0; }
-    /* Workspace switcher dropdown */
-    .ws-switcher-dropdown { display: none; }
-    .ws-switcher-dropdown.open {
-      display: block;
-      position: fixed;
-      z-index: 40;
-      background: #fff;
-      border: 1px solid #E5E7EB;
-      border-radius: 12px;
-      padding-top: 4px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
-      overflow: hidden;
-    }
+    /* Sidebar collapse */
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
+    /* Workspace switcher modal */
+    #ws-modal-backdrop { display: none; }
+    #ws-modal-backdrop.open { display: flex; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -104,19 +111,15 @@
   <!-- -------------------------------------------
        SIDEBAR  220px fixed
   -------------------------------------------- -->
-  <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
-      <button onclick="toggleWsSwitcher()" class="flex items-center gap-2 w-full text-left px-4 py-3">
-        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
-        <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
-        <svg id="ws-switcher-chevron" class="w-4 h-4 text-gray-400 flex-shrink-0" style="transition:transform 150ms ease" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-2">
+        <span id="ws-avatar" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+        <span id="ws-name" class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
       </button>
-      <div id="ws-switcher-dropdown" class="ws-switcher-dropdown">
-        <div class="px-2 pb-1 space-y-0.5" id="ws-switcher-list"></div>
-
-      </div>
     </div>
 
     <!-- Primary nav -->
@@ -140,9 +143,8 @@
 
     <!-- Projects section -->
     <div class="px-3 py-1">
-      <div class="flex items-center justify-between px-3 h-7">
+      <div class="flex items-center px-3 h-7">
         <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
-        <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
       </div>
       <div id="projects-list" class="space-y-0.5 mt-0.5">
 
@@ -155,8 +157,9 @@
             </button>
             <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
             <!-- Pin icon -->
-            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="currentColor" viewBox="0 0 24 24" title="Pinned">
-              <path d="M16 2a1 1 0 00-1 1v1H9V3a1 1 0 00-2 0v1H6a2 2 0 00-2 2v1c0 2.21 1.34 4.11 3.25 4.93V19a1 1 0 00.55.89l3 1.5a1 1 0 00.9 0l3-1.5A1 1 0 0015 19v-7.07C16.66 11.11 18 9.21 18 7V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1z"/>
+            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Pinned">
+              <path d="M12 17v5"/>
+              <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76z"/>
             </svg>
           </div>
           <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
@@ -211,23 +214,47 @@
         <div>
           <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px;">
             <button onclick="toggleWorkspace('ws1')" id="ws1-btn"
-              class="ws-item open flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
-              <svg class="ws-chevron w-3 h-3 text-gray-400" style="transform:rotate(90deg)" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
             <a href="#" class="flex-1 text-sm font-medium text-gray-900 truncate">Sovereign Capital Gate</a>
           </div>
-          <div id="ws1-sub" class="ws-submenu open pl-4 mt-0.5 space-y-0.5">
+          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-              Chat
+              Investor Briefing
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Dashboard
+              Capital Flow Analysis
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Document
+              Deal Memo Q2
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#8B5CF6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+              Pitch Deck 2026
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Portfolio Overview
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Risk Register
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+              Market Signals
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+              LP Survey
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Valuation Model
             </a>
           </div>
         </div>
@@ -247,10 +274,10 @@
 
     <!-- Bottom utility nav -->
     <nav class="px-3 py-2 space-y-0.5">
-      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+      <!-- <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
         Shared with me
-      </a>
+      </a> -->
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
@@ -275,37 +302,106 @@
   -------------------------------------------- -->
   <main class="flex-1 flex flex-col overflow-hidden">
 
-    <!-- Breadcrumb bar -->
-    <div class="flex items-center gap-2 px-8 h-11 border-b border-gray-100 flex-shrink-0">
-      <button class="text-gray-500 hover:text-gray-700">
+    <!-- Topbar -->
+    <div class="flex items-center justify-between px-8 h-11 border-b border-gray-100 flex-shrink-0">
+      <!-- Left: sidebar toggle -->
+      <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
-      <button class="text-gray-400 hover:text-gray-600">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-      </button>
-      <button class="text-gray-400 hover:text-gray-600">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-      </button>
-      <a href="../recent-view/index.html" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Workspaces</a>
-      <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-      <span class="text-[13px] font-medium text-gray-700">Sovereign Capital Gate</span>
+      <!-- Right: notification bell + user avatar -->
+      <div class="flex items-center gap-1.5">
 
+        <!-- Notification bell -->
+        <div class="relative" id="notif-wrapper">
+          <button onclick="toggleNotifications()" id="notif-btn" class="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors" aria-label="Notifications">
+            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500"></span>
+          </button>
+
+          <!-- Notification dropdown -->
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+              <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
+              <button onclick="markAllRead()" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Mark all as read</button>
+            </div>
+            <!-- Items -->
+            <div class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+
+              <!-- Unread -->
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#16A34A">S</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Sara M.</span> shared <span class="font-medium">Capital Flow Analysis</span> with you</p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">2 minutes ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+
+              <!-- Unread -->
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#F97316">R</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Riya K.</span> commented on <span class="font-medium">Investor Briefing</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">18 minutes ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+
+              <!-- Unread -->
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#8B5CF6">A</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Aibii AI</span> finished processing <span class="font-medium">Valuation Model</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">1 hour ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+
+              <!-- Read -->
+              <div class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#EC4899">P</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-700"><span class="font-semibold">Priya N.</span> invited you to <span class="font-medium">Sovereign Capital Gate</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">Yesterday</p>
+                </div>
+              </div>
+
+              <!-- Read -->
+              <div class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+                  <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-700">Your <span class="font-medium">Portfolio Overview</span> report is ready to view</p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">2 days ago</p>
+                </div>
+              </div>
+
+            </div>
+            <!-- Footer -->
+            <div class="px-4 py-2.5 border-t border-gray-100 text-center">
+              <button class="text-[12px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">View all notifications</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User avatar + name -->
+        <button class="flex items-center gap-2 pl-1 pr-2.5 h-8 rounded-full hover:bg-gray-100 transition-colors" aria-label="User menu">
+          <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+          <span class="text-[13px] font-medium text-gray-700">Manish Kumar</span>
+        </button>
+
+      </div>
     </div>
 
     <!-- Scrollable content -->
-    <div class="flex-1 overflow-y-auto px-8 py-8">
+    <div class="flex-1 overflow-y-auto px-8 py-5">
 
       <!-- Page header -->
-      <div class="mb-7">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
-            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
-          </div>
-          <div>
-            <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Sovereign Capital Gate</h1>
-            <p class="text-xs text-gray-500 mt-0.5">  Last updated about 1 hour ago</p>
-          </div>
-        </div>
+      <div class="mb-6">
+        <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Sovereign Capital Gate</h1>
+        <p class="mt-2 text-sm text-gray-500">Capital markets intelligence — dashboards, memos, and research in one place.</p>
       </div>
 
       <!-- Action cards row -->
@@ -366,7 +462,8 @@
           </div>
         </button>
 
-        <!-- Card: Add Datasource -->
+        <!-- Card: Add Datasource (commented out) -->
+        <!--
         <button class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
             <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
@@ -376,6 +473,7 @@
             <p class="text-[13px] text-gray-500">Connect databases, APIs &amp; files</p>
           </div>
         </button>
+        -->
 
       </div><!-- /action cards -->
 
@@ -388,12 +486,12 @@
 
           <!-- Search bar -->
           <div class="relative">
-            <span class="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
-              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"/></svg>
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             </span>
-            <input id="search-input" type="text" placeholder="Search items..."
+            <input id="search-input" type="text" placeholder="Search…"
               oninput="filterItems(this.value)"
-              class="h-9 w-64 pl-8 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent focus:w-80 transition-all" />
+              class="h-9 w-64 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent focus:w-80 transition-all" />
           </div>
 
           <!-- Type filter -->
@@ -402,37 +500,41 @@
               class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700"
               style="background:#F1F3F4; border:1px solid #E5E7EB">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-              Type
+              <span id="type-filter-label">Type</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div id="type-dropdown"
               class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[180px] bg-white"
               style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               <!-- Chat -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" style="background:#EEF2FF" onclick="setTypeFilter('chat', this)">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-                <span class="text-[13px] text-gray-700">Chat</span>
+                <span class="text-[13px] font-medium" style="color:#5B63F6">Chat</span>
               </div>
               <!-- Dashboard -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('dashboard', this)">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
                 <span class="text-[13px] text-gray-700">Dashboard</span>
               </div>
               <!-- Document -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('document', this)">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                 <span class="text-[13px] text-gray-700">Document</span>
               </div>
               <!-- Presentation -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
-                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M3.75 3H2.25m0 0H1.5m19.5 0h-.75m0 0H21.75M12 16.5v4.5m-3 0h6"/></svg>
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('presentation', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#8B5CF6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
                 <span class="text-[13px] text-gray-700">Presentation</span>
               </div>
               <!-- Form -->
-              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1">
-                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
-                
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('form', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
                 <span class="text-[13px] text-gray-700">Form</span>
+              </div>
+              <!-- Project -->
+              <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" onclick="setTypeFilter('project', this)">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F59E0B" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+                <span class="text-[13px] text-gray-700">Project</span>
               </div>
             </div>
           </div>
@@ -440,11 +542,11 @@
           <!-- View toggle -->
           <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background:#F1F3F4; border:1px solid rgba(0,0,0,0.06)">
             <button id="view-list" onclick="setView('list')"
-              class="toggle-btn toggle-active flex items-center justify-center w-8 h-8 rounded-md">
+              class="toggle-btn flex items-center justify-center w-8 h-8 rounded-md">
               <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
             </button>
             <button id="view-grid" onclick="setView('grid')"
-              class="toggle-btn flex items-center justify-center w-8 h-8 rounded-md">
+              class="toggle-btn toggle-active flex items-center justify-center w-8 h-8 rounded-md">
               <svg class="w-[15px] h-[15px]" fill="currentColor" viewBox="0 0 24 24">
                 <rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/>
                 <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/>
@@ -457,10 +559,10 @@
       </div>
 
       <!-- Items grid � 3 items for Sovereign Capital Gate -->
-      <div class="grid grid-cols-4 gap-4">
+      <div id="report-grid" class="grid grid-cols-4 gap-4">
 
-         <!-- Card: Capital Flow Analysis � Dashboard -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <!-- Card: Capital Flow Analysis � Dashboard -->
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="dashboard">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
             <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
           </div>
@@ -480,7 +582,7 @@
         </div>
 
         <!-- Card: Deal Memo Q2 � Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="document">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
@@ -500,7 +602,7 @@
         </div>
 
         <!-- Card: Investor Briefing � Chat -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="chat">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
             <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
@@ -520,7 +622,7 @@
         </div>
 
         <!-- Card: Dashboard -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="dashboard">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
             <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
           </div>
@@ -540,7 +642,7 @@
         </div>
 
         <!-- Card: Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="document">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
@@ -562,7 +664,7 @@
        
 
         <!-- Card: Risk Register � Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="document">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
@@ -582,7 +684,7 @@
         </div>
 
         <!-- Card: Portfolio Overview � Dashboard -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="dashboard">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#F0FDF4">
             <svg class="w-10 h-10" style="color:#6EE7A6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
           </div>
@@ -602,7 +704,7 @@
         </div>
 
         <!-- Card: Valuation Model � Chat -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="chat">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
             <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
@@ -622,7 +724,7 @@
         </div>
 
         <!-- Card: Exit Strategy � Document -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="document">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#FFF7ED">
             <svg class="w-10 h-10" style="color:#FCA96A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
@@ -642,7 +744,7 @@
         </div>
 
         <!-- Card: Market Signals � Chat -->
-        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+        <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" data-type="chat">
           <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
             <svg class="w-10 h-10" style="color:#93A8F4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
           </div>
@@ -669,14 +771,20 @@
   <script>
     // View toggle
     function setView(active) {
+      const grid = document.getElementById('report-grid');
+      if (active === 'list') {
+        grid.classList.remove('grid', 'grid-cols-4', 'gap-4');
+        grid.classList.add('list-view');
+      } else {
+        grid.classList.remove('list-view');
+        grid.classList.add('grid', 'grid-cols-4', 'gap-4');
+      }
       ['list', 'grid'].forEach(id => {
         const btn = document.getElementById('view-' + id);
         if (id === active) {
           btn.classList.add('toggle-active');
         } else {
           btn.classList.remove('toggle-active');
-          btn.style.background = '';
-          btn.style.boxShadow = '';
         }
       });
     }
@@ -689,10 +797,48 @@
       btn.classList.toggle('open', isOpen);
     }
 
-    // Type filter dropdown
+    // Type filter
+    var activeTypeFilter = null;
+
     function toggleTypeFilter() {
       document.getElementById('type-dropdown').classList.toggle('open');
     }
+
+    function setTypeFilter(type, el) {
+      if (type === 'everything' || activeTypeFilter === type) {
+        activeTypeFilter = null;
+        document.querySelectorAll('.type-item').forEach(item => {
+          item.style.background = '';
+          item.querySelector('span').style.color = '';
+          item.querySelector('span').style.fontWeight = '';
+        });
+        document.getElementById('type-filter-label').textContent = 'Type';
+      } else {
+        activeTypeFilter = type;
+        document.querySelectorAll('.type-item').forEach(item => {
+          item.style.background = '';
+          item.querySelector('span').style.fontWeight = '';
+        });
+        el.style.background = '#EEF2FF';
+        el.querySelector('span').style.fontWeight = '600';
+        const label = el.querySelector('span').textContent.trim();
+        document.getElementById('type-filter-label').textContent = label;
+      }
+      applyFilters();
+      document.getElementById('type-dropdown').classList.remove('open');
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      document.querySelectorAll('.report-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const cardType = card.getAttribute('data-type');
+        const matchSearch = !q || text.includes(q);
+        const matchType = !activeTypeFilter || cardType === activeTypeFilter;
+        card.style.display = (matchSearch && matchType) ? '' : 'none';
+      });
+    }
+
     document.addEventListener('click', function(e) {
       const dd = document.getElementById('type-dropdown');
       if (!e.target.closest('.relative')) dd.classList.remove('open');
@@ -700,22 +846,79 @@
 
     // Search
     function filterItems(query) {
-      const q = query.toLowerCase().trim();
-      document.querySelectorAll('.report-card').forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = (!q || text.includes(q)) ? '' : 'none';
-      });
+      applyFilters();
     }
 
     // Create Item modal
+    var currentModalType = '';
     function openCreateModal(type) {
+      currentModalType = type;
       document.getElementById('modal-title').textContent = type;
       document.getElementById('create-modal').classList.remove('hidden');
       document.getElementById('modal-name').value = '';
+      document.getElementById('modal-desc').value = '';
       document.getElementById('modal-name').focus();
     }
     function closeCreateModal() {
       document.getElementById('create-modal').classList.add('hidden');
+    }
+    function createItem() {
+      const nameInput = document.getElementById('modal-name');
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); nameInput.classList.add('ring-2','ring-red-400','border-transparent'); return; }
+      nameInput.classList.remove('ring-2','ring-red-400','border-transparent');
+
+      // Derive type key from modal title
+      const t = currentModalType.toLowerCase();
+      const typeMap = {
+        dashboard:    { key:'dashboard',    label:'Dashboard',    bg:'#F0FDF4', iconColor:'#6EE7A6', badgeBg:'#F0FDF4', badgeColor:'#16A34A',
+          svg:'<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>',
+          badgeSvg:'<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>'
+        },
+        document:     { key:'document',     label:'Document',    bg:'#FFF7ED', iconColor:'#FCA96A', badgeBg:'#FFF7ED', badgeColor:'#F97316',
+          svg:'<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>',
+          badgeSvg:'<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>'
+        },
+        presentation: { key:'presentation', label:'Presentation', bg:'#F5F3FF', iconColor:'#A78BFA', badgeBg:'#F5F3FF', badgeColor:'#8B5CF6',
+          svg:'<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/>',
+          badgeSvg:'<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/>'
+        },
+        form:         { key:'form',         label:'Form',         bg:'#FDF2F8', iconColor:'#F9A8D4', badgeBg:'#FDF2F8', badgeColor:'#EC4899',
+          svg:'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>',
+          badgeSvg:'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>'
+        },
+        chat:         { key:'chat',         label:'Chat',         bg:'#EEF2FF', iconColor:'#93A8F4', badgeBg:'#EEF2FF', badgeColor:'#5B63F6',
+          svg:'<path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/>',
+          badgeSvg:'<path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/>'
+        }
+      };
+      const key = Object.keys(typeMap).find(k => t.includes(k)) || 'dashboard';
+      const m = typeMap[key];
+
+      const card = document.createElement('div');
+      card.className = 'report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer';
+      card.setAttribute('data-type', m.key);
+      card.innerHTML = `
+        <div class="h-40 rounded-t-xl flex items-center justify-center" style="background:${m.bg}">
+          <svg class="w-10 h-10" style="color:${m.iconColor}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">${m.svg}</svg>
+        </div>
+        <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-900">${name}</p>
+            <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${m.badgeBg};color:${m.badgeColor}">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${m.badgeSvg}</svg>
+              ${m.label}
+            </span>
+            <p class="text-[11px] text-gray-400 mt-1">Just now</p>
+          </div>
+          <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+          </button>
+        </div>`;
+
+      const grid = document.getElementById('report-grid');
+      grid.insertBefore(card, grid.firstChild);
+      closeCreateModal();
     }
 
     // New Project modal
@@ -754,61 +957,133 @@
       if (e.target === projModal) closeNewProjectModal();
     });
 
-    // -- Workspace switcher ------------------------------------------
+    // -- Workspace switcher ──────────────────────────────────────────
     var wsData = [
       { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
-      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false }
+      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
+      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
+      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
+      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
+      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
     ];
-    function renderWsSwitcherList() {
-      var list = document.getElementById('ws-switcher-list');
+    try {
+      var _saved = JSON.parse(localStorage.getItem('aibii_workspaces') || '[]');
+      _saved.forEach(function(ws) {
+        if (!wsData.find(function(w) { return w.id === ws.id; })) {
+          wsData.push({ id: ws.id, name: ws.name, initial: ws.initial, color: ws.color, current: false });
+        }
+      });
+    } catch(e) {}
+    function renderWsModalList(filter) {
+      var list = document.getElementById('ws-modal-list');
       if (!list) return;
-      list.innerHTML = wsData.map(function(ws) {
-        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm hover:bg-gray-50 transition-colors text-left' + (ws.current ? ' bg-[#EEF2FF]' : '') + '">'
-          + '<span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
-          + '<span class="flex-1 text-sm text-gray-700 truncate' + (ws.current ? ' font-semibold' : '') + '">' + (ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name) + '</span>'
-          + (ws.current ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
+      var q = (filter || '').toLowerCase();
+      var items = wsData.filter(function(ws) { return !q || ws.name.toLowerCase().includes(q); });
+      var container = list.parentElement;
+      var ROW_H = 44; var SHOWN = 5;
+      container.style.maxHeight = (items.length > SHOWN ? ROW_H * SHOWN + 12 : '') + 'px';
+      container.style.overflowY = items.length > SHOWN ? 'auto' : 'visible';
+      if (!items.length) {
+        list.innerHTML = '<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>';
+        return;
+      }
+      list.innerHTML = items.map(function(ws) {
+        var isCurrent = ws.current;
+        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors ' + (isCurrent ? 'bg-indigo-50' : 'hover:bg-gray-50') + '">'
+          + '<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
+          + '<span class="flex-1 text-[13px] ' + (isCurrent ? 'font-semibold text-gray-900' : 'font-medium text-gray-700') + ' truncate">' + ws.name + '</span>'
+          + (isCurrent ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
           + '</button>';
       }).join('');
     }
-    function positionWsDropdown() {
-      var wrapper = document.getElementById('ws-switcher-wrapper');
-      var dd = document.getElementById('ws-switcher-dropdown');
-      if (!wrapper || !dd) return;
-      var rect = wrapper.getBoundingClientRect();
-      dd.style.top    = (rect.bottom + 4) + 'px';
-      dd.style.left   = (rect.left + 8) + 'px';
-      dd.style.width  = (rect.width - 16) + 'px';
+    function filterWsList() {
+      renderWsModalList(document.getElementById('ws-search').value);
     }
-    function toggleWsSwitcher() {
-      var dd = document.getElementById('ws-switcher-dropdown');
-      var ch = document.getElementById('ws-switcher-chevron');
-      var open = dd.classList.toggle('open');
-      if (ch) ch.style.transform = open ? 'rotate(180deg)' : '';
-      if (open) { renderWsSwitcherList(); positionWsDropdown(); }
+    function openWsModal() {
+      var input = document.getElementById('ws-search');
+      if (input) input.value = '';
+      renderWsModalList('');
+      document.getElementById('ws-modal-backdrop').classList.add('open');
+    }
+    function closeWsModal(e) {
+      if (!e || e.target === document.getElementById('ws-modal-backdrop')) {
+        document.getElementById('ws-modal-backdrop').classList.remove('open');
+      }
     }
     function selectWorkspace(id) {
       wsData.forEach(function(ws) { ws.current = ws.id === id; });
       var ws = wsData.find(function(ws) { return ws.id === id; });
       if (ws) {
-        var wrap = document.getElementById('ws-switcher-wrapper');
-        var nameEl = wrap ? wrap.querySelector('.truncate') : null;
-        var avatarEl = wrap ? wrap.querySelector('.rounded-full') : null;
+        var nameEl = document.getElementById('ws-name');
+        var avatarEl = document.getElementById('ws-avatar');
         if (nameEl) nameEl.textContent = ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name;
         if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
       }
-      document.getElementById('ws-switcher-dropdown').classList.remove('open');
-      var ch = document.getElementById('ws-switcher-chevron');
-      if (ch) ch.style.transform = '';
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+    function openNewWsModal() {
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+      document.getElementById('new-ws-modal').classList.remove('hidden');
+      document.getElementById('new-ws-name').value = '';
+      document.getElementById('new-ws-desc').value = '';
+      wsNewColor = '#5B63F6';
+      wsColorIndex = 0;
+      onWsNameInput('');
+      setTimeout(function() { document.getElementById('new-ws-name').focus(); }, 80);
+    }
+    function closeNewWsModal() {
+      document.getElementById('new-ws-modal').classList.add('hidden');
+    }
+    var wsColors = ['#5B63F6','#16A34A','#F97316','#8B5CF6','#EC4899','#0EA5E9','#EAB308'];
+    var wsNewColor = '#5B63F6';
+    var wsColorIndex = 0;
+    function cycleWsColor() {
+      wsColorIndex = (wsColorIndex + 1) % wsColors.length;
+      wsNewColor = wsColors[wsColorIndex];
+      var el = document.getElementById('ws-preview-avatar');
+      if (el) { el.style.background = wsNewColor; el.style.boxShadow = '0 4px 16px ' + wsNewColor + '55'; }
+    }
+    function onWsNameInput(val) {
+      var preview = document.getElementById('ws-preview-name');
+      var avatarEl = document.getElementById('ws-preview-avatar');
+      if (preview) preview.textContent = val.trim() || 'Your workspace';
+      if (avatarEl) avatarEl.textContent = val.trim() ? val.trim()[0].toUpperCase() : 'A';
+    }
+    function createNewWs() {
+      var name = document.getElementById('new-ws-name').value.trim();
+      if (!name) { document.getElementById('new-ws-name').focus(); return; }
+      var newWs = { id: 'ws-dyn-' + Date.now(), name: name, initial: name[0].toUpperCase(), color: wsNewColor, current: false };
+      wsData.push(newWs);
+      closeNewWsModal();
+      selectWorkspace(newWs.id);
+    }
+
+    // Notification dropdown
+    function toggleNotifications() {
+      var dd = document.getElementById('notif-dropdown');
+      dd.classList.toggle('hidden');
+    }
+    function markAllRead() {
+      document.querySelectorAll('#notif-dropdown .bg-indigo-50\/40').forEach(function(el) {
+        el.classList.remove('bg-indigo-50/40');
+      });
+      document.querySelectorAll('#notif-dropdown .w-2.h-2.rounded-full.bg-indigo-500').forEach(function(el) {
+        el.remove();
+      });
+      document.getElementById('notif-dot').classList.add('hidden');
     }
     document.addEventListener('click', function(e) {
-      var wrap = document.getElementById('ws-switcher-wrapper');
-      var dd = document.getElementById('ws-switcher-dropdown');
-      if (dd && dd.classList.contains('open') && wrap && !wrap.contains(e.target)) {
-        dd.classList.remove('open');
-        var ch = document.getElementById('ws-switcher-chevron');
-        if (ch) ch.style.transform = '';
+      var wrapper = document.getElementById('notif-wrapper');
+      var dd = document.getElementById('notif-dropdown');
+      if (dd && !dd.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
+        dd.classList.add('hidden');
       }
     });
+
+    // Sidebar toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
   </script>
 
   <!-- Create Item Modal -->
@@ -824,28 +1099,20 @@
       <!-- Body -->
       <div class="px-6 py-5 space-y-4">
         <div>
-          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name</label>
-          <input id="modal-name" type="text" placeholder="Enter a name�"
+          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name <span class="text-red-400">*</span></label>
+          <input id="modal-name" type="text" placeholder="Enter a name…"
             class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Select project</label>
-          <div class="relative">
-            <select class="w-full h-9 pl-3 pr-8 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all">
-              <option value="" disabled selected>Choose a project�</option>
-              <option value="scg">Sovereign Capital Gate</option>
-              <option value="ws2">My Private Project</option>
-            </select>
-            <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-            </span>
-          </div>
+          <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Description <span class="text-[12px] font-normal text-gray-400">(optional)</span></label>
+          <textarea id="modal-desc" rows="3" placeholder="Add a short description…"
+            class="w-full px-3 py-2 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all resize-none"></textarea>
         </div>
       </div>
       <!-- Footer -->
       <div class="flex items-center justify-end gap-2 px-6 pb-6">
         <button onclick="closeCreateModal()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Close</button>
-        <button class="h-9 px-5 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+        <button onclick="createItem()" class="h-9 px-5 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
       </div>
     </div>
   </div>
@@ -874,9 +1141,85 @@
         </div>
       </div>
       <!-- Footer -->
+      <!-- Footer -->
       <div class="flex items-center justify-end gap-2 px-6 pb-6">
         <button onclick="closeNewProjectModal()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
         <button onclick="createNewProject()" class="h-9 px-5 text-sm font-medium text-white rounded-lg transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workspace Switcher Modal -->
+  <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
+    <div id="ws-modal" class="bg-white rounded-2xl w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Select a workspace to switch to</p>
+        </div>
+        <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          New Workspace
+        </button>
+      </div>
+      <div class="px-4 pt-3 pb-2 flex-shrink-0">
+        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
+          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+          <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
+        </div>
+      </div>
+      <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
+        <div id="ws-modal-list" class="space-y-0.5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Workspace full-screen -->
+  <div id="new-ws-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background:#F3F4F6">
+    <div class="flex items-center justify-between px-6 h-11 bg-white border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:#5B63F6">A</span>
+        <span class="text-[13px] font-semibold text-gray-800">Aibii</span>
+      </div>
+      <button onclick="closeNewWsModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
+      <div class="bg-white rounded-2xl w-full max-w-sm mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
+        <div class="mb-6">
+          <h2 class="text-[17px] font-bold text-gray-900">New workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-1">A shared space for your team's work.</p>
+        </div>
+        <div class="flex items-center gap-3 mb-5">
+          <div id="ws-preview-avatar" class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all" style="background:#5B63F6" onclick="cycleWsColor()" title="Click to change color">A</div>
+          <div class="flex-1 min-w-0">
+            <p id="ws-preview-name" class="text-[13px] font-semibold text-gray-800 truncate">Your workspace</p>
+            <p class="text-[11px] text-gray-400">Click avatar to change color</p>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Name <span class="text-red-400">*</span></label>
+            <input id="new-ws-name" type="text" placeholder="e.g. Design Team" autocomplete="off" maxlength="48"
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400"
+              oninput="onWsNameInput(this.value)"
+              onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+              onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"
+              onkeydown="if(event.key==='Enter')createNewWs()">
+          </div>
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Description <span class="text-gray-400 font-normal">optional</span></label>
+            <textarea id="new-ws-desc" rows="2" placeholder="What is this workspace for?"
+              class="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400"
+              onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+              onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"></textarea>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-5">
+          <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="createNewWs()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+        </div>
       </div>
     </div>
   </div>
