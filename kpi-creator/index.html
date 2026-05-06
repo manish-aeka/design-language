@@ -305,9 +305,9 @@
   <main class="flex-1 flex flex-col overflow-hidden">
 
     <!-- Topbar -->
-    <div class="flex items-center justify-between px-8 h-11 border-b border-gray-100 flex-shrink-0">
+    <div id="nav-bar" class="flex items-center justify-between px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
       <!-- Left: sidebar toggle -->
-      <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
+      <button onclick="toggleSidebar()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
       <!-- Right: notification bell + user avatar -->
@@ -357,11 +357,26 @@
           </div>
         </div>
 
-        <!-- User avatar + name -->
-        <button class="flex items-center gap-2 pl-1 pr-2.5 h-8 rounded-full hover:bg-gray-100 transition-colors" aria-label="User menu">
-          <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
-          <span class="text-[13px] font-medium text-gray-700">Manish Kumar</span>
-        </button>
+        <!-- User avatar -->
+        <div class="relative" id="user-menu-wrapper">
+          <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB" aria-label="User menu">M</button>
+          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+            <div class="px-4 py-3 border-b border-gray-100">
+              <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
+              <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
+            </div>
+            <div class="py-1">
+              <a href="../settings-profile/index.html" class="w-full flex items-center gap-2.5 px-4 h-9 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Profile &amp; Settings
+              </a>
+              <button onclick="toggleUserMenu()" class="w-full flex items-center gap-2.5 px-4 h-9 text-[13px] text-red-500 hover:bg-red-50 transition-colors">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -775,11 +790,19 @@
     /* ── Notifications ── */
     function toggleNotifications() {
       document.getElementById('notif-dropdown').classList.toggle('hidden');
+      document.getElementById('user-dropdown').classList.add('hidden');
+    }
+    function toggleUserMenu() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+      document.getElementById('notif-dropdown').classList.add('hidden');
     }
     document.addEventListener('click', function(e) {
-      var w = document.getElementById('notif-wrapper');
-      var d = document.getElementById('notif-dropdown');
-      if (w && d && !w.contains(e.target)) d.classList.add('hidden');
+      var nw = document.getElementById('notif-wrapper');
+      var nd = document.getElementById('notif-dropdown');
+      if (nw && nd && !nw.contains(e.target)) nd.classList.add('hidden');
+      var uw = document.getElementById('user-menu-wrapper');
+      var ud = document.getElementById('user-dropdown');
+      if (uw && ud && !uw.contains(e.target)) ud.classList.add('hidden');
     });
     function markAllRead() {
       document.getElementById('notif-dot').style.display = 'none';
