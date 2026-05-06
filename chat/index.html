@@ -86,6 +86,11 @@
     /* Workspace switcher modal */
     #ws-modal-backdrop { display: none; }
     #ws-modal-backdrop.open { display: flex; }
+    /* Model dropdown */
+    #model-dropdown { display: none; }
+    #model-dropdown.open { display: block; }
+    .model-option:hover { background: #F3F4F6; }
+    .model-option.selected { background: #EEF2FF; color: #5B63F6; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -328,6 +333,71 @@
             <button class="w-full flex items-center gap-2.5 px-4 py-2 mt-1 text-[13px] text-red-500 hover:bg-red-50 transition-colors text-left">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
               Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second topbar: title + actions -->
+    <div class="flex items-center justify-between px-5 h-11 border-b border-gray-100 flex-shrink-0">
+      <!-- Left: chat title -->
+      <div class="flex items-center gap-2 min-w-0">
+        <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+        <h2 class="text-[14px] font-semibold text-gray-900 truncate">New Chat</h2>
+      </div>
+      <!-- Right: Sources, Share, Model picker -->
+      <div class="flex items-center gap-2">
+        <!-- Sources -->
+        <button class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          Sources
+        </button>
+        <!-- Share -->
+        <button class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          Share
+        </button>
+        <!-- Model picker -->
+        <div class="relative" id="model-picker-wrapper">
+          <button onclick="toggleModelDropdown()" class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition-colors flex-shrink-0">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+            <span id="model-label">GPT-4o</span>
+            <svg class="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="model-dropdown" class="absolute right-0 top-[calc(100%+6px)] z-50 w-52 bg-white border border-gray-200 rounded-xl py-1" style="box-shadow:0 8px 24px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.05)">
+            <div class="px-3 py-1.5">
+              <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400">OpenAI</p>
+            </div>
+            <button onclick="selectModel('GPT-4o', this)" class="model-option selected w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-left">
+              <span>GPT-4o</span>
+              <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </button>
+            <button onclick="selectModel('GPT-4o mini', this)" class="model-option w-full flex items-center justify-between px-3 py-2 text-[13px] text-gray-700 text-left">
+              <span>GPT-4o mini</span>
+            </button>
+            <button onclick="selectModel('GPT-4 Turbo', this)" class="model-option w-full flex items-center justify-between px-3 py-2 text-[13px] text-gray-700 text-left">
+              <span>GPT-4 Turbo</span>
+            </button>
+            <button onclick="selectModel('o1', this)" class="model-option w-full flex items-center justify-between px-3 py-2 text-[13px] text-gray-700 text-left">
+              <span>o1</span>
+            </button>
+            <div class="mx-3 my-1 border-t border-gray-100"></div>
+            <div class="px-3 py-1.5">
+              <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Anthropic</p>
+            </div>
+            <button onclick="selectModel('Claude 3.5 Sonnet', this)" class="model-option w-full flex items-center justify-between px-3 py-2 text-[13px] text-gray-700 text-left">
+              <span>Claude 3.5 Sonnet</span>
+            </button>
+            <button onclick="selectModel('Claude 3 Haiku', this)" class="model-option w-full flex items-center justify-between px-3 py-2 text-[13px] text-gray-700 text-left">
+              <span>Claude 3 Haiku</span>
+            </button>
+            <div class="mx-3 my-1 border-t border-gray-100"></div>
+            <div class="px-3 py-1.5">
+              <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Google</p>
+            </div>
+            <button onclick="selectModel('Gemini 1.5 Pro', this)" class="model-option w-full flex items-center justify-between px-3 py-2 text-[13px] text-gray-700 text-left">
+              <span>Gemini 1.5 Pro</span>
             </button>
           </div>
         </div>
@@ -713,6 +783,34 @@
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
+
+    // ── Model dropdown ──────────────────────────────────────────────
+    function toggleModelDropdown() {
+      document.getElementById('model-dropdown').classList.toggle('open');
+    }
+    function selectModel(name, el) {
+      document.getElementById('model-label').textContent = name;
+      document.querySelectorAll('.model-option').forEach(function(btn) {
+        btn.classList.remove('selected');
+        btn.querySelector('svg') && btn.querySelector('svg').remove();
+      });
+      el.classList.add('selected');
+      var check = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      check.setAttribute('class','w-3.5 h-3.5'); check.setAttribute('fill','none');
+      check.setAttribute('stroke','currentColor'); check.setAttribute('stroke-width','2.5');
+      check.setAttribute('viewBox','0 0 24 24'); check.style.color='#5B63F6';
+      var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
+      path.setAttribute('d','M4.5 12.75l6 6 9-13.5');
+      check.appendChild(path); el.appendChild(check);
+      document.getElementById('model-dropdown').classList.remove('open');
+    }
+    document.addEventListener('click', function(e) {
+      var wrapper = document.getElementById('model-picker-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('model-dropdown').classList.remove('open');
+      }
+    });
 
     // ── Workspace expand/collapse ───────────────────────────────────
     function toggleWorkspace(id) {
