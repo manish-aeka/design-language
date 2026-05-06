@@ -650,15 +650,20 @@ Three `.dot` spans use `dotBounce` animation (see Animations section). Text: `te
 
 #### Generated Chart Card
 
-Rendered inside `#chart-output` with `fade-up` animation. Max width `max-w-[860px]`.
+Rendered inside `#chart-output` with `fade-up` animation. Max width `max-w-[860px]`. Each chart is stored as `{ prompt, source }` in a `charts[]` array; `currentChartIndex` tracks the active position.
 
 ```html
 <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden"
      style="box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);">
 
-  <!-- Header: px-6 pt-5 pb-0 -->
+  <!-- Header: title (left) + source badge (right) -->
   <div class="flex items-start justify-between px-6 pt-5 pb-0">
     <h3 class="text-[18px] font-bold text-gray-900">{prompt text}</h3>
+    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium mt-1 flex-shrink-0"
+          style="background:{source.bg}; color:{source.color};">
+      <!-- source icon 12×12 (file / database / api) -->
+      {source.name}
+    </span>
   </div>
 
   <!-- Chart placeholder: mx-6 my-5 h-[380px] -->
@@ -669,11 +674,20 @@ Rendered inside `#chart-output` with `fade-up` animation. Max width `max-w-[860p
     <p class="text-[11px] text-gray-300">Connect a real datasource to populate</p>
   </div>
 
-  <!-- Footer: px-6 pb-5 pt-4 border-t border-gray-100 -->
+  <!-- Footer: nav (left) + Add to Dashboard (right) -->
   <div class="flex items-center justify-between px-6 pb-5 pt-4 border-t border-gray-100">
-    <!-- Left: workspace avatar w-5 h-5 rounded-full bg-[#5B63F6] + name text-[11px] text-gray-400 -->
-    <!-- Right: Cancel (outline h-7) + Add to Dashboard (primary h-7) -->
-    <button class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[11px] font-semibold text-white"
+    <!-- Chart navigation -->
+    <div class="flex items-center gap-1.5">
+      <button onclick="prevChart()" class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500">
+        <!-- left chevron SVG 14×14 stroke 2.5 -->
+      </button>
+      <span class="text-[12px] font-semibold text-gray-500 tabular-nums px-1">1 / 1</span>
+      <button onclick="nextChart()" class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500">
+        <!-- right chevron SVG 14×14 stroke 2.5 -->
+      </button>
+    </div>
+    <!-- CTA -->
+    <button onclick="addToDashboard()" class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[11px] font-semibold text-white"
             style="background:#5B63F6;">
       <svg …plus icon…/> Add to Dashboard
     </button>
@@ -681,8 +695,21 @@ Rendered inside `#chart-output` with `fade-up` animation. Max width `max-w-[860p
 </div>
 ```
 
-**Card bg:** `bg-gray-50` (slightly off-white to separate from `#fcfdff` canvas).  
-**Footer button heights:** `h-7` (compact — smaller than standard `h-8`/`h-9`).
+**Card bg:** `bg-gray-50` (off-white to separate from `#fcfdff` canvas).  
+**Footer button heights:** `h-7` (compact — smaller than standard `h-8`/`h-9`).  
+**Nav buttons disabled state:** `opacity-40 cursor-not-allowed` + `disabled` attribute when at first/last chart.  
+**Source badge:** same colour token system as datasource type badges in Settings — file=orange, api=green, database=indigo. See `resolveSource(prompt)` in JS for keyword mapping.
+
+#### Source Detection Logic
+
+| Prompt keywords | Source | Icon | bg | color |
+|---|---|---|---|---|
+| revenue, sales, q4, region | Q4 Revenue Sheet | file | `#FFF7ED` | `#F97316` |
+| customer, retention, cohort, returning | CRM Export | database | `#EEF2FF` | `#5B63F6` |
+| marketing, spend, roi | Marketing Sheet | file | `#FFF7ED` | `#F97316` |
+| product, top, inventory | Sales API | api | `#F0FDF4` | `#22C55E` |
+| event, user, session | User Events DB | database | `#EEF2FF` | `#5B63F6` |
+| *(fallback)* | Analytics DB | database | `#EEF2FF` | `#5B63F6` |
 
 #### Chat Panel
 
@@ -729,13 +756,17 @@ empty-state visible
 empty-state hidden + generating-state visible + thinking bubble in chat
     ↓ (2.2s timeout)
 generating-state hidden + chart-output visible (fade-up) + AI response bubble
+    ↓ (user sends again)
+new chart pushed to charts[] + renderChartAtIndex(latest) — nav counter updates
 ```
 
-JS functions: `sendChip(text)` → `triggerSend(text)` → `appendUserBubble` + `appendThinkingBubble` → timeout → `removeThinkingBubble` + `appendAIBubble` + `showGeneratedChart`.
+JS functions: `sendChip(text)` → `triggerSend(text)` → `appendUserBubble` + `appendThinkingBubble` → timeout → `removeThinkingBubble` + `appendAIBubble` + `showGeneratedChart`.  
+`showGeneratedChart(prompt)` calls `resolveSource(prompt)` then pushes `{prompt, source}` to `charts[]` and calls `renderChartAtIndex(currentChartIndex)`.  
+`prevChart()` / `nextChart()` update `currentChartIndex` and re-render.
 
 #### Clear / Reset
 
-`confirmClear()` checks if >1 AI/user bubble exists before prompting. `clearChat()` resets all three states and re-injects the greeting bubble.
+`confirmClear()` checks if >1 AI/user bubble exists before prompting. `clearChat()` resets all three states, clears `charts.length = 0`, sets `currentChartIndex = -1`, and re-injects the greeting bubble.
 
 ### Recent View (`recent-view/index.html`)
 

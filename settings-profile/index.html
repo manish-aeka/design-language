@@ -42,6 +42,31 @@
       };
       reader.readAsDataURL(file);
     }
+    function handleOrgLogoUpload(e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var badge = document.getElementById('org-logo-badge');
+        if (!badge) return;
+        badge.textContent = '';
+        badge.style.background = 'none';
+        badge.style.border = 'none';
+        badge.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover">';
+      };
+      reader.readAsDataURL(file);
+    }
+    function handleProfilePicUpload(e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var box = document.querySelector('#section-profile .w-16');
+        if (!box) return;
+        box.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover">';
+      };
+      reader.readAsDataURL(file);
+    }
   </script>
 
   <script>
@@ -71,7 +96,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar { width: 1px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
     ::-webkit-scrollbar-track { background: transparent; }
     .nav-item { transition: background-color 100ms ease; cursor: pointer; }
@@ -99,8 +124,18 @@
     .ws-item.open .ws-chevron { transform: rotate(90deg); }
     .type-item { transition: background-color 80ms ease; }
     .type-item:hover { background-color: #F3F4F6; }
+    /* Sidebar collapse */
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
     .connector-card { transition: all 150ms ease-out; cursor: pointer; }
     .connector-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); border-color: rgba(91,99,246,0.35); transform: translateY(-1px); }
+    .ds-filter-scroll { max-height: 260px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #D1D5DB transparent; }
+    .ds-filter-scroll::-webkit-scrollbar { width: 4px; }
+    .ds-filter-scroll::-webkit-scrollbar-track { background: transparent; }
+    .ds-filter-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+    #billing-year-dropdown::-webkit-scrollbar { width: 2px; }
+    #billing-year-dropdown::-webkit-scrollbar-track { background: transparent; }
+    #billing-year-dropdown::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
     /* Workspace switcher dropdown */
     .ws-switcher-dropdown { display: none; }
     /* Connector wizard step flow */
@@ -114,6 +149,7 @@
     .cb-conn-error   { display: none; }
     @keyframes cb-spin { to { transform: rotate(360deg); } }
     .cb-spinner { animation: cb-spin 0.8s linear infinite; }
+    html { overflow-x: hidden; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -121,11 +157,11 @@
   <!-- ═══════════════════════════════════════════
        SIDEBAR  220px fixed
   ════════════════════════════════════════════ -->
-  <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
-      <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors">
+      <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-2">
         <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
         <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
@@ -140,11 +176,11 @@
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-        Create Dashboard
+        New Dashboard
       </a>
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-        AI Chat
+        New Chat
       </a>
     </nav>
 
@@ -153,9 +189,8 @@
 
     <!-- Projects section -->
     <div class="px-3 py-1">
-      <div class="flex items-center justify-between px-3 h-7">
+      <div class="flex items-center px-3 h-7">
         <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
-        <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
       </div>
       <div id="projects-list" class="space-y-0.5 mt-0.5">
 
@@ -223,10 +258,6 @@
 
     <!-- Bottom utility nav -->
     <nav class="px-3 py-2 space-y-0.5">
-      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-        Shared with me
-      </a>
       <!-- Settings — ACTIVE -->
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-gray-900" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px;">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -250,32 +281,78 @@
   <!-- ═══ MAIN ═══ -->
   <main class="flex-1 flex flex-col overflow-hidden">
 
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 px-8 h-11 border-b border-gray-100 flex-shrink-0">
-      <button class="text-gray-400 hover:text-gray-600">
+    <!-- Topbar -->
+    <div class="flex items-center justify-between px-8 h-11 border-b border-gray-100 flex-shrink-0">
+      <!-- Left: sidebar toggle -->
+      <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
-      <button class="text-gray-400 hover:text-gray-600">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-      </button>
-      <button class="text-gray-400 hover:text-gray-600">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-      </button>
-      <span class="text-[13px] text-gray-500">Settings</span>
+      <!-- Right: notification bell + user avatar -->
+      <div class="flex items-center gap-1.5">
+
+        <!-- Notification bell -->
+        <div class="relative" id="notif-wrapper">
+          <button onclick="toggleNotifications()" id="notif-btn" class="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors" aria-label="Notifications">
+            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500"></span>
+          </button>
+
+          <!-- Notification dropdown -->
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+              <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
+              <button onclick="markAllRead()" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Mark all as read</button>
+            </div>
+            <!-- Items -->
+            <div class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#16A34A">S</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Sara M.</span> shared <span class="font-medium">Revenue Overview</span> with you</p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">2 minutes ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#F97316">R</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Riya K.</span> commented on <span class="font-medium">Q4 Strategy Discussion</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">18 minutes ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+              <div class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#EC4899">P</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-700"><span class="font-semibold">Priya N.</span> invited you to <span class="font-medium">Sovereign Capital Gate</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">Yesterday</p>
+                </div>
+              </div>
+            </div>
+            <!-- Footer -->
+            <div class="px-4 py-2.5 border-t border-gray-100 text-center">
+              <button class="text-[12px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">View all notifications</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User avatar + name -->
+        <button class="flex items-center gap-2 pl-1 pr-2.5 h-8 rounded-full hover:bg-gray-100 transition-colors" aria-label="User menu">
+          <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+          <span class="text-[13px] font-medium text-gray-700">Manish Kumar</span>
+        </button>
+
+      </div>
     </div>
 
     <!-- Scrollable content -->
-    <div class="flex-1 overflow-hidden flex flex-col px-8 py-8">
+    <div class="flex-1 overflow-hidden flex flex-col px-8 py-6">
 
       <!-- Page heading -->
       <div class="mb-6 flex-shrink-0">
-        <div class="flex items-center gap-2">
-          <span id="heading-icon" class="flex-shrink-0">
-            <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-          </span>
-          <h1 id="page-title" class="text-[28px] font-extrabold text-gray-900 leading-tight">Profile</h1>
-        </div>
-        <p class="mt-2 text-sm text-gray-500">Manage your team and preferences here.</p>
+        <h1 id="page-title" class="text-[28px] font-extrabold text-gray-900 leading-tight">Profile</h1>
+        <p class="mt-2 text-sm text-gray-500">Manage your account and preferences here.</p>
       </div>
 
       <!-- ── Tab bar — pill style (same as recent-view) ── -->
@@ -286,16 +363,16 @@
       </div>
 
       <!-- ══ PROFILE ══ -->
-      <div id="section-profile" class="settings-panel active max-w-2xl">
+      <div id="section-profile" class="settings-panel active">
         <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
 
           <!-- Picture -->
-          <p class="text-[15px] font-semibold text-gray-900 mb-4">Picture</p>
           <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
             <div class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center">
               <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
             </div>
-            <button class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload a picture</button>
+            <button onclick="document.getElementById('profile-pic-input').click()" class="px-4 h-9 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload an image</button>
+            <input type="file" id="profile-pic-input" accept="image/*" onchange="handleProfilePicUpload(event)" class="hidden" />
           </div>
 
           <!-- First / Last name -->
@@ -326,7 +403,7 @@
       </div>
 
       <!-- ══ WORKSPACE ══ -->
-      <div id="section-workspace" class="settings-panel max-w-2xl">
+      <div id="section-workspace" class="settings-panel">
 
         <!-- Underline tab bar -->
         <div class="flex items-center gap-6 border-b border-gray-200 mb-7">
@@ -347,15 +424,20 @@
         <!-- Sub-panel: Workspace Info -->
         <div id="wspanel-info" class="ws-panel active">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
-            <p class="text-[15px] font-semibold text-gray-900 mb-4">Workspace info</p>
             <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
               <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
               <div class="flex-1 min-w-0">
-                <input type="text" value="Manish kumar's Workspace" class="w-full text-[14px] font-semibold text-gray-900 border-none outline-none bg-transparent focus:bg-white focus:border focus:border-indigo-300 focus:rounded px-1" />
+                <p id="ws-display-name" class="text-[14px] font-semibold text-gray-900 px-1">Manish kumar's Workspace</p>
                 <p class="text-[12px] text-gray-400 mt-0.5 px-1">Created April 2024 · 3 members</p>
               </div>
             </div>
             <div class="space-y-3 flex-1">
+              <div>
+                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Workspace name</label>
+                <input type="text" id="ws-name-input" value="Manish kumar's Workspace"
+                  oninput="document.getElementById('ws-display-name').textContent=this.value||'Workspace'"
+                  class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
               <div>
                 <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>
                 <textarea rows="2" placeholder="What is this workspace about?"
@@ -371,17 +453,30 @@
         <!-- Sub-panel: Users with Access -->
         <div id="wspanel-users" class="ws-panel">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-[15px] font-semibold text-gray-900">Users with access</p>
-              <button onclick="openAddUserModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">
+            <!-- Toolbar: search + role filter + add -->
+            <div class="flex items-center gap-3 mb-4">
+              <div class="relative flex-1">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                <input type="text" placeholder="Search users…" oninput="filterWsUsers(this.value)" class="w-full h-9 pl-8 pr-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
+              <div class="relative flex-shrink-0">
+                <button onclick="toggleWsRoleDropdown()" class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors" style="width:110px;justify-content:space-between;">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                  <span id="ws-role-label">Role</span>
+                  <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="ws-role-dropdown" class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[140px] bg-white" style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+                  <button onclick="filterWsRole('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">All roles</button>
+                 
+                  <button onclick="filterWsRole('Admin')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">Admin</button>
+                  <button onclick="filterWsRole('Editor')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">Editor</button>
+                  <button onclick="filterWsRole('Viewer')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">Viewer</button>
+                </div>
+              </div>
+              <button onclick="openAddUserModal()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Add user
               </button>
-            </div>
-            <!-- Search bar -->
-            <div class="relative mb-3">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-              <input type="text" placeholder="Search users..." class="w-full h-9 pl-8 pr-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
             </div>
             <!-- Users table -->
             <div class="rounded-xl border border-gray-100 overflow-hidden flex flex-col flex-1 min-h-0">
@@ -400,7 +495,7 @@
                     </div>
                   </div>
                   <div class="w-24 flex justify-end">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Admin</span>
                   </div>
                 </div>
                 <!-- Admin -->
@@ -446,50 +541,30 @@
         <!-- Sub-panel: Data Sources -->
         <div id="wspanel-datasources" class="ws-panel">
         <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0">
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-[15px] font-semibold text-gray-900">Data sources</p>
-            <button onclick="showAddDataSource()" class="flex items-center gap-2 px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Add a datasource
-            </button>
-          </div>
-          <!-- Search + Type row -->
+          <!-- Toolbar: search + category filter + add -->
           <div class="flex items-center gap-3 mb-4">
             <div class="relative flex-1">
               <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
               <input id="settings-ds-search" type="text" placeholder="Search datasources…" oninput="filterSettingDs(this.value)"
-                class="w-full h-10 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors"
-                style="box-shadow:0 1px 2px rgba(0,0,0,0.04)" />
+                class="w-full h-9 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors" />
             </div>
             <div class="relative flex-shrink-0">
               <button onclick="toggleSettingDsTypeDropdown()"
-                class="flex items-center gap-1.5 px-3 h-10 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                 style="width:120px; justify-content:space-between;">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
                 <span id="settings-ds-type-label">Category</span>
                 <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
               <div id="settings-ds-type-dropdown"
-                class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white"
+                class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white ds-filter-scroll"
                 style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
-                <button onclick="filterSettingDsType('All')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5"/></svg>
-                  All
-                </button>
-                <button onclick="filterSettingDsType('Database')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
-                  Database
-                </button>
-                <button onclick="filterSettingDsType('File')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                  File
-                </button>
-                <button onclick="filterSettingDsType('API')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#22C55E" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
-                  API
-                </button>
               </div>
             </div>
+            <button onclick="showAddDataSource()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Add datasource
+            </button>
           </div>
 
           <!-- Table -->
@@ -498,7 +573,7 @@
               <thead class="sticky top-0 z-10">
                 <tr class="bg-gray-50 border-b border-gray-200">
                   <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Connector</th>
+                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Type</th>
                   <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
                   <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
                 </tr>
@@ -507,16 +582,13 @@
             </table>
             <div id="settings-ds-empty" class="hidden py-10 text-center text-[13px] text-gray-400">No datasources found</div>
           </div>
-
-          <!-- Add datasource modal hint -->
-          <!-- removed inline hint; picker modal is shared -->
         </div><!-- /data sources -->
         </div>
 
       </div><!-- /section-workspace -->
 
       <!-- ══ ORGANISATION ══ -->
-      <div id="section-organisation" class="settings-panel max-w-2xl">
+      <div id="section-organisation" class="settings-panel">
 
         <!-- Underline tab bar -->
         <div class="flex items-center gap-6 border-b border-gray-200 mb-7">
@@ -540,26 +612,32 @@
 
         <!-- Sub-panel: General -->
         <div id="orgpanel-info" class="ws-panel active">
-          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
-            <p class="text-[15px] font-semibold text-gray-900 mb-4">Organisation info</p>
-            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style="background:#5B63F6">A</div>
-              <div class="flex-1 min-w-0">
-                <input type="text" value="Aibii Inc." class="w-full text-[14px] font-semibold text-gray-900 border-none outline-none bg-transparent focus:bg-white focus:border focus:border-indigo-300 focus:rounded px-1" />
-                <p class="text-[12px] text-gray-400 mt-0.5 px-1">3 workspaces</p>
-              </div>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
+
+            <!-- Logo row — mirrors Profile picture row -->
+            <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
+              <div id="org-logo-badge" class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center text-gray-400 text-2xl font-bold">A</div>
+              <button onclick="document.getElementById('org-logo-input').click()" class="px-4 h-9 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload a logo</button>
+              <input type="file" id="org-logo-input" accept="image/*" onchange="handleOrgLogoUpload(event)" class="hidden" />
             </div>
-            <div class="space-y-3 flex-1">
+
+            <!-- Form fields -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Organisation Email</label>
+                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Organisation name</label>
+                <input type="text" value="Aibii Inc." class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Organisation email</label>
                 <input type="email" value="admin@aibii.com" class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
               </div>
-              <div>
-                <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>
-                <textarea rows="2" placeholder="What does your organisation do?" class="w-full px-3 py-2 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"></textarea>
-              </div>
             </div>
-            <div class="flex justify-end mt-4 pt-4 border-t border-gray-100">
+            <div class="mb-5">
+              <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description</label>
+              <textarea rows="2" placeholder="What does your organisation do?" class="w-full px-3 py-2 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"></textarea>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t border-gray-100">
               <button class="px-4 h-9 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">Save changes</button>
             </div>
           </div>
@@ -568,16 +646,28 @@
         <!-- Sub-panel: Members -->
         <div id="orgpanel-users" class="ws-panel">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-[15px] font-semibold text-gray-900">Manage Members</p>
-              <button onclick="openNewMemberModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-white" style="background:#5B63F6">
+            <!-- Toolbar: search + role filter + new member -->
+            <div class="flex items-center gap-3 mb-4">
+              <div class="relative flex-1">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                <input type="text" placeholder="Search members…" oninput="filterOrgMembers(this.value)" class="w-full h-9 pl-8 pr-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
+              <div class="relative flex-shrink-0">
+                <button onclick="toggleOrgRoleDropdown()" class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors" style="width:110px;justify-content:space-between;">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                  <span id="org-role-label">Role</span>
+                  <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="org-role-dropdown" class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[130px] bg-white" style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+                  <button onclick="filterOrgRole('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">All roles</button>
+                  <button onclick="filterOrgRole('Owner')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">Owner</button>
+                  <button onclick="filterOrgRole('User')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">User</button>
+                </div>
+              </div>
+              <button onclick="openNewMemberModal()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 New member
               </button>
-            </div>
-            <div class="relative mb-3">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-              <input type="text" placeholder="Search members..." oninput="filterOrgMembers(this.value)" class="w-full h-9 pl-8 pr-3 text-[13px] text-gray-900 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
             </div>
             <div class="rounded-xl border border-gray-100 overflow-hidden flex flex-col flex-1 min-h-0">
               <div class="flex items-center px-4 h-8 bg-gray-50 border-b border-gray-100 flex-shrink-0">
@@ -613,57 +703,37 @@
         <!-- Sub-panel: Datasources -->
         <div id="orgpanel-datasources" class="ws-panel">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0">
-            <div class="flex items-center justify-between mb-4">
-              <p class="text-[15px] font-semibold text-gray-900">Datasources</p>
-              <button onclick="showAddDataSource()" class="flex items-center gap-2 px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                Add a datasource
-              </button>
-            </div>
-            <!-- Search + Type row -->
+            <!-- Toolbar: search + category filter + add -->
             <div class="flex items-center gap-3 mb-4">
               <div class="relative flex-1">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
                 <input id="org-ds-search" type="text" placeholder="Search datasources…" oninput="filterOrgDs(this.value)"
-                  class="w-full h-10 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors"
-                  style="box-shadow:0 1px 2px rgba(0,0,0,0.04)" />
+                  class="w-full h-9 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors" />
               </div>
               <div class="relative flex-shrink-0">
                 <button onclick="toggleOrgDsTypeDropdown()"
-                  class="flex items-center gap-1.5 px-3 h-10 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                  class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                   style="width:120px; justify-content:space-between;">
                   <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
                   <span id="org-ds-type-label">Category</span>
                   <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div id="org-ds-type-dropdown"
-                  class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white"
+                  class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white ds-filter-scroll"
                   style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
-                  <button onclick="filterOrgDsType('All')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5"/></svg>
-                    All
-                  </button>
-                  <button onclick="filterOrgDsType('Database')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path stroke-linecap="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/><path stroke-linecap="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/></svg>
-                    Database
-                  </button>
-                  <button onclick="filterOrgDsType('File')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                    File
-                  </button>
-                  <button onclick="filterOrgDsType('API')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#22C55E" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
-                    API
-                  </button>
                 </div>
               </div>
+              <button onclick="showAddDataSource()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                Add datasource
+              </button>
             </div>
             <div class="rounded-xl border border-gray-200 flex-1 min-h-0 overflow-y-auto" style="overflow-x:hidden;">
               <table class="w-full text-[13px] table-fixed">
                 <thead class="sticky top-0 z-10">
                   <tr class="bg-gray-50 border-b border-gray-200">
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Connector</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Type</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
                   </tr>
@@ -677,85 +747,85 @@
 
         <!-- Sub-panel: Billing -->
         <div id="orgpanel-billing" class="ws-panel">
-          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0">
-            <div class="flex items-center justify-between mb-5">
-              <p class="text-[15px] font-semibold text-gray-900">Billing</p>
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold" style="background:#EEF2FF;color:#5B63F6">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
-                Pro Plan
-              </span>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0 gap-0">
+
+            <!-- Plan header row -->
+            <div class="flex items-start justify-between mb-1.5">
+              <div>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold mb-2" style="background:#EEF2FF;color:#5B63F6">
+                  <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
+                  Pro plan
+                </span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-[26px] font-extrabold text-gray-900 leading-none">$29</span>
+                  <span class="text-[13px] text-gray-400">/ month</span>
+                </div>
+                <p class="text-[12px] text-gray-400 mt-0.5">Next billing: <span class="font-medium text-gray-600">June 1, 2026</span></p>
+              </div>
+              <button class="px-4 h-6 rounded-full border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors mt-1">Manage plan</button>
             </div>
 
-            <!-- Current plan card -->
-            <div class="rounded-xl border border-indigo-100 p-4 mb-4" style="background:linear-gradient(135deg,#EEF2FF 0%,#F5F3FF 100%)">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-[13px] font-semibold text-gray-900">Pro · $29 / month</p>
-                  <p class="text-[12px] text-gray-500 mt-0.5">Next billing date: <span class="font-medium text-gray-700">June 1, 2026</span></p>
-                </div>
-                <button class="px-3 h-8 rounded-lg border border-indigo-200 text-[12px] font-medium text-indigo-600 bg-white hover:bg-indigo-50 transition-colors">Manage plan</button>
+            <!-- Usage stats -->
+            <div class="grid grid-cols-3 gap-4 pb-4 border-b border-gray-100">
+              <div>
+                <p class="text-[11px] text-gray-400 mb-1">AI credits</p>
+                <p class="text-[13px] font-semibold text-gray-900 mb-1.5">1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span></p>
+                <div class="h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
               </div>
-              <div class="mt-3 pt-3 border-t border-indigo-100 grid grid-cols-3 gap-3">
-                <div>
-                  <p class="text-[11px] text-gray-400 mb-0.5">AI Credits used</p>
-                  <p class="text-[14px] font-bold text-gray-900">1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span></p>
-                  <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
-                </div>
-                <div>
-                  <p class="text-[11px] text-gray-400 mb-0.5">Datasources</p>
-                  <p class="text-[14px] font-bold text-gray-900">5 <span class="text-[11px] font-normal text-gray-400">/ 20</span></p>
-                  <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
-                </div>
-                <div>
-                  <p class="text-[11px] text-gray-400 mb-0.5">Workspaces</p>
-                  <p class="text-[14px] font-bold text-gray-900">2 <span class="text-[11px] font-normal text-gray-400">/ 5</span></p>
-                  <div class="mt-1 h-1.5 rounded-full bg-indigo-100 overflow-hidden"><div class="h-full rounded-full" style="width:40%;background:#5B63F6"></div></div>
-                </div>
+              <div>
+                <p class="text-[11px] text-gray-400 mb-1">Datasources</p>
+                <p class="text-[13px] font-semibold text-gray-900 mb-1.5">5 <span class="text-[11px] font-normal text-gray-400">/ 20</span></p>
+                <div class="h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
+              </div>
+              <div>
+                <p class="text-[11px] text-gray-400 mb-1">Workspaces</p>
+                <p class="text-[13px] font-semibold text-gray-900 mb-1.5">2 <span class="text-[11px] font-normal text-gray-400">/ 5</span></p>
+                <div class="h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full rounded-full" style="width:40%;background:#F97316"></div></div>
               </div>
             </div>
 
             <!-- Payment method -->
-            <div class="flex items-center justify-between py-3 border-t border-gray-100">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-6 rounded flex items-center justify-center border border-gray-200 bg-white flex-shrink-0">
-                  <svg class="w-6 h-4" viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="4" fill="#1A1F71"/><path d="M14.5 16.5h-2l1.25-7h2L14.5 16.5zm8.5-6.84c-.4-.15-.98-.32-1.74-.32-1.92 0-3.27 1.02-3.28 2.48-.02 1.08.96 1.68 1.7 2.04.75.37 1 .6 1 .93-.01.5-.6.73-1.16.73-.77 0-1.18-.11-1.82-.38l-.25-.12-.27 1.67c.45.2 1.28.38 2.14.39 2.02 0 3.34-1 3.35-2.55.01-.85-.5-1.5-1.6-2.03-.67-.34-1.08-.57-1.08-.92 0-.31.35-.63 1.1-.63.63-.01 1.08.13 1.44.28l.17.08.26-1.65zm4.96-.16h-1.5c-.46 0-.8.13-.99.6L23.5 16.5h2.02l.4-1.1h2.46l.23 1.1H30l-1.54-7h-1.5zm-2.34 4.12l.77-2.07.44 2.07h-1.21zm-12.62-4.12L11 14.34l-.21-1.05c-.37-1.24-1.5-2.59-2.79-3.26l1.74 6.47h2.04l3.03-7h-2.04z" fill="white"/></svg>
+            <div class="py-1.5 border-b border-gray-100">
+              <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2.5">Payment method</p>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-7 rounded-md flex items-center justify-center border border-gray-200 bg-white flex-shrink-0">
+                    <svg class="w-7 h-4" viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="4" fill="#1A1F71"/><path d="M14.5 16.5h-2l1.25-7h2L14.5 16.5zm8.5-6.84c-.4-.15-.98-.32-1.74-.32-1.92 0-3.27 1.02-3.28 2.48-.02 1.08.96 1.68 1.7 2.04.75.37 1 .6 1 .93-.01.5-.6.73-1.16.73-.77 0-1.18-.11-1.82-.38l-.25-.12-.27 1.67c.45.2 1.28.38 2.14.39 2.02 0 3.34-1 3.35-2.55.01-.85-.5-1.5-1.6-2.03-.67-.34-1.08-.57-1.08-.92 0-.31.35-.63 1.1-.63.63-.01 1.08.13 1.44.28l.17.08.26-1.65zm4.96-.16h-1.5c-.46 0-.8.13-.99.6L23.5 16.5h2.02l.4-1.1h2.46l.23 1.1H30l-1.54-7h-1.5zm-2.34 4.12l.77-2.07.44 2.07h-1.21zm-12.62-4.12L11 14.34l-.21-1.05c-.37-1.24-1.5-2.59-2.79-3.26l1.74 6.47h2.04l3.03-7h-2.04z" fill="white"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-[13px] font-medium text-gray-900">Visa ···· 4242</p>
+                    <p class="text-[11px] text-gray-400">Expires 08 / 2027</p>
+                  </div>
                 </div>
-                <div>
-                  <p class="text-[13px] font-medium text-gray-900">Visa ending in 4242</p>
-                  <p class="text-[11px] text-gray-400">Expires 08 / 2027</p>
-                </div>
+                <button class="px-3 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
               </div>
-              <button class="px-3 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
             </div>
 
-            <!-- Billing history -->
-            <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col flex-1 min-h-0">
-              <p class="text-[12px] font-semibold text-gray-500 mb-2 flex-shrink-0">Recent invoices</p>
-              <div class="space-y-1 overflow-y-auto flex-1 min-h-0">
-                <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center gap-3">
-                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                    <span class="text-[13px] text-gray-700">May 1, 2026</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <span class="text-[12px] font-medium text-gray-900">$29.00</span>
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:#F0FDF4;color:#16A34A">Paid</span>
-                    <button class="text-indigo-500 hover:text-indigo-700 text-[12px] font-medium">Download</button>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center gap-3">
-                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                    <span class="text-[13px] text-gray-700">Apr 1, 2026</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <span class="text-[12px] font-medium text-gray-900">$29.00</span>
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium" style="background:#F0FDF4;color:#16A34A">Paid</span>
-                    <button class="text-indigo-500 hover:text-indigo-700 text-[12px] font-medium">Download</button>
+            <!-- Recent invoices -->
+            <div class="pt-1.5 flex flex-col flex-1 min-h-0">
+              <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
+                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Recent invoices</p>
+                <div class="relative flex-shrink-0">
+                  <button onclick="toggleBillingYearDropdown()" id="billing-year-btn"
+                    class="flex items-center gap-1.5 px-2.5 h-6 rounded-md text-[12px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
+                    style="min-width:68px;justify-content:space-between;">
+                    <span id="billing-year-label">2026</span>
+                    <svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                  <div id="billing-year-dropdown"
+                    class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-0.5 bg-white overflow-y-auto"
+                    style="min-width:80px;max-height:120px;overflow-x:hidden;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06);scrollbar-width:thin;scrollbar-color:#D1D5DB transparent;">
+                    <button onclick="selectBillingYear(2026)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50 font-medium">2026</button>
+                    <button onclick="selectBillingYear(2025)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2025</button>
+                    <button onclick="selectBillingYear(2024)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2024</button>
+                    <button onclick="selectBillingYear(2023)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2023</button>
+                    <button onclick="selectBillingYear(2022)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2022</button>
                   </div>
                 </div>
               </div>
+              <div id="billing-invoice-list" class="overflow-y-auto overflow-x-hidden ds-filter-scroll flex-1 min-h-0 divide-y divide-gray-100"></div>
             </div>
+
           </div>
         </div><!-- /billing -->
 
@@ -886,15 +956,31 @@
   <script>
     const TABS = ['profile','workspace','organisation'];
     const TITLES = {profile:'Profile',workspace:'Workspace',organisation:'Organisation'};
-    const ICONS = {
-      profile:   '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>',
-      workspace:     '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>',
-      organisation:  '<svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>'
-    };
 
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function toggleNotifications() {
+      var d = document.getElementById('notif-dropdown');
+      d.classList.toggle('hidden');
+    }
+    document.addEventListener('click', function(e) {
+      var w = document.getElementById('notif-wrapper');
+      var d = document.getElementById('notif-dropdown');
+      if (w && d && !w.contains(e.target)) d.classList.add('hidden');
+    });
+    function markAllRead() {
+      document.getElementById('notif-dot').style.display = 'none';
+      document.querySelectorAll('#notif-dropdown .bg-indigo-50\/40').forEach(function(el) {
+        el.classList.remove('bg-indigo-50/40');
+      });
+      document.querySelectorAll('#notif-dropdown .w-2').forEach(function(el) {
+        el.style.display = 'none';
+      });
+    }
     function setTab(active) {
       document.getElementById('page-title').textContent = TITLES[active];
-      document.getElementById('heading-icon').innerHTML = ICONS[active];
       TABS.forEach(t => {
         document.getElementById('tab-' + t).classList.toggle('active', t === active);
         document.getElementById('section-' + t).classList.toggle('active', t === active);
@@ -925,39 +1011,25 @@
       Database: { bg:'#EEF2FF', color:'#5B63F6' },
       File:     { bg:'#FFF7ED', color:'#F97316' },
       API:      { bg:'#F0FDF4', color:'#22C55E' },
-      Cloud:    { bg:'#E0F2FE', color:'#0EA5E9' },
     };
 
     function renderSettingDsTable() {
       const tbody = document.getElementById('settings-ds-tbody');
       const empty = document.getElementById('settings-ds-empty');
       const rows = SETTING_DS_DATA.filter(d => {
-        const matchType = settingDsTypeFilter === 'All' || d.type === settingDsTypeFilter;
-        const matchSearch = d.name.toLowerCase().includes(settingDsSearchTerm) || d.type.toLowerCase().includes(settingDsSearchTerm);
-        return matchType && matchSearch;
+        const matchConnector = settingDsTypeFilter === 'All' || d.connector === settingDsTypeFilter;
+        const matchSearch = d.name.toLowerCase().includes(settingDsSearchTerm) || d.connector.toLowerCase().includes(settingDsSearchTerm);
+        return matchConnector && matchSearch;
       });
-      if (!rows.length) {
-        tbody.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
+      if (!rows.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
       tbody.innerHTML = rows.map((d, i) => {
         const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
-        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280', icon:'' };
+        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280' };
         return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors" style="${i === rows.length-1 ? 'border-bottom:none' : ''}">
-          <td class="px-4 py-3">
-            <span class="font-medium text-gray-900">${d.name}</span>
-          </td>
-          <td class="px-4 py-3">
-            <span class="text-[12px] font-medium" style="color:${tb.color}">${d.connector}</span>
-          </td>
-          <td class="px-4 py-3">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}">
-              <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
-              ${d.status}
-            </span>
-          </td>
+          <td class="px-4 py-3"><span class="font-medium text-gray-900">${d.name}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
           <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
         </tr>`;
       }).join('');
@@ -968,9 +1040,9 @@
       renderSettingDsTable();
     }
 
-    function filterSettingDsType(type) {
-      settingDsTypeFilter = type;
-      document.getElementById('settings-ds-type-label').textContent = type === 'All' ? 'Category' : type;
+    function filterSettingDsType(connector) {
+      settingDsTypeFilter = connector;
+      document.getElementById('settings-ds-type-label').textContent = connector === 'All' ? 'Category' : connector;
       document.getElementById('settings-ds-type-dropdown').classList.remove('open');
       renderSettingDsTable();
     }
@@ -1002,12 +1074,56 @@
     const ORG_TABS = ['info','users','datasources','billing'];
 
     /* ── Org member search ──────────────────────────────── */
-    function filterOrgMembers(q) {
-      const rows = document.querySelectorAll('#org-members-list > div');
+    /* ── Workspace users search + role filter ──────────────────── */
+    let _wsRoleFilter = 'All';
+    let _wsSearchTerm = '';
+    function filterWsUsers(q) {
+      _wsSearchTerm = q.toLowerCase();
+      _applyWsFilter();
+    }
+    function filterWsRole(role) {
+      _wsRoleFilter = role;
+      document.getElementById('ws-role-label').textContent = role === 'All' ? 'Role' : role;
+      document.getElementById('ws-role-dropdown').classList.remove('open');
+      _applyWsFilter();
+    }
+    function toggleWsRoleDropdown() {
+      document.getElementById('ws-role-dropdown').classList.toggle('open');
+    }
+    function _applyWsFilter() {
+      const rows = document.querySelectorAll('#wspanel-users .divide-y > div');
       rows.forEach(row => {
         const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+        const matchSearch = text.includes(_wsSearchTerm);
+        const roleEl = row.querySelector('span[style], select');
+        const roleText = roleEl ? roleEl.textContent.trim() : '';
+        const matchRole = _wsRoleFilter === 'All' || roleText.toLowerCase().includes(_wsRoleFilter.toLowerCase());
+        row.style.display = matchSearch && matchRole ? '' : 'none';
       });
+    }
+
+    /* ── Org members search + role filter ───────────────────────── */
+    let _orgRoleFilter = 'All';
+    function filterOrgMembers(q) {
+      const rows = document.querySelectorAll('#org-members-list > div');
+      const qLow = q.toLowerCase();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const roleEl = row.querySelector('span[style], select');
+        const roleText = roleEl ? roleEl.textContent.trim() : '';
+        const matchSearch = text.includes(qLow);
+        const matchRole = _orgRoleFilter === 'All' || roleText.toLowerCase().includes(_orgRoleFilter.toLowerCase());
+        row.style.display = matchSearch && matchRole ? '' : 'none';
+      });
+    }
+    function filterOrgRole(role) {
+      _orgRoleFilter = role;
+      document.getElementById('org-role-label').textContent = role === 'All' ? 'Role' : role;
+      document.getElementById('org-role-dropdown').classList.remove('open');
+      filterOrgMembers(document.querySelector('#orgpanel-users input[placeholder]')?.value || '');
+    }
+    function toggleOrgRoleDropdown() {
+      document.getElementById('org-role-dropdown').classList.toggle('open');
     }
 
     /* ── New member modal ───────────────────────────────── */
@@ -1156,27 +1272,27 @@
       const empty = document.getElementById('org-ds-empty');
       if (!tbody) return;
       const rows = ORG_DS_DATA.filter(d => {
-        const matchType   = orgDsTypeFilter === 'All' || d.type === orgDsTypeFilter;
-        const matchSearch = d.name.toLowerCase().includes(orgDsSearchTerm) || d.type.toLowerCase().includes(orgDsSearchTerm);
-        return matchType && matchSearch;
+        const matchConnector = orgDsTypeFilter === 'All' || d.connector === orgDsTypeFilter;
+        const matchSearch = d.name.toLowerCase().includes(orgDsSearchTerm) || d.connector.toLowerCase().includes(orgDsSearchTerm);
+        return matchConnector && matchSearch;
       });
       if (!rows.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
       tbody.innerHTML = rows.map(d => {
         const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
-        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280', icon:'' };
+        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280' };
         return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
           <td class="px-4 py-3"><span class="font-medium text-gray-900">${d.name}</span></td>
-          <td class="px-4 py-3"><span class="text-[12px] font-medium" style="color:${tb.color}">${d.connector}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
           <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
         </tr>`;
       }).join('');
     }
     function filterOrgDs(q) { orgDsSearchTerm = q.toLowerCase(); renderOrgDsTable(); }
-    function filterOrgDsType(type) {
-      orgDsTypeFilter = type;
-      document.getElementById('org-ds-type-label').textContent = type === 'All' ? 'Category' : type;
+    function filterOrgDsType(connector) {
+      orgDsTypeFilter = connector;
+      document.getElementById('org-ds-type-label').textContent = connector === 'All' ? 'Category' : connector;
       document.getElementById('org-ds-type-dropdown').classList.remove('open');
       renderOrgDsTable();
     }
@@ -1184,9 +1300,111 @@
       document.getElementById('org-ds-type-dropdown').classList.toggle('open');
     }
 
+    function buildDsConnectorDropdown(dropdownId, filterFn) {
+      const dd = document.getElementById(dropdownId);
+      if (!dd) return;
+      const all = Object.values(DS_CONNECTORS).flat().sort((a, b) => a.name.localeCompare(b.name));
+      dd.innerHTML = `<button onclick="${filterFn}('All')" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5"/></svg>All</button>`
+        + all.map(c => {
+          const safe = c.name.replace(/'/g, "\\'");
+          return `<button onclick="${filterFn}('${safe}')" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><span class="w-2 h-2 rounded-full flex-shrink-0" style="background:${c.color}"></span>${c.name}</button>`;
+        }).join('');
+    }
+
+    const BILLING_INVOICES = {
+      2026: [
+        { date:'May 1, 2026',  amount:'$29.00', status:'Paid' },
+        { date:'Apr 1, 2026',  amount:'$29.00', status:'Paid' },
+        { date:'Mar 1, 2026',  amount:'$29.00', status:'Paid' },
+        { date:'Feb 1, 2026',  amount:'$29.00', status:'Paid' },
+        { date:'Jan 1, 2026',  amount:'$29.00', status:'Paid' },
+      ],
+      2025: [
+        { date:'Dec 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Nov 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Oct 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Sep 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Aug 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Jul 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Jun 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'May 1, 2025',  amount:'$29.00', status:'Paid' },
+        { date:'Apr 1, 2025',  amount:'$19.00', status:'Paid' },
+        { date:'Mar 1, 2025',  amount:'$19.00', status:'Paid' },
+        { date:'Feb 1, 2025',  amount:'$19.00', status:'Paid' },
+        { date:'Jan 1, 2025',  amount:'$19.00', status:'Paid' },
+      ],
+      2024: [
+        { date:'Dec 1, 2024',  amount:'$19.00', status:'Paid' },
+        { date:'Nov 1, 2024',  amount:'$19.00', status:'Paid' },
+        { date:'Oct 1, 2024',  amount:'$19.00', status:'Paid' },
+        { date:'Sep 1, 2024',  amount:'$19.00', status:'Paid' },
+        { date:'Aug 1, 2024',  amount:'$19.00', status:'Paid' },
+        { date:'Jul 1, 2024',  amount:'$19.00', status:'Paid' },
+        { date:'Jun 1, 2024',  amount:'$9.00',  status:'Paid' },
+        { date:'May 1, 2024',  amount:'$9.00',  status:'Paid' },
+      ],
+      2023: [
+        { date:'Dec 1, 2023',  amount:'$9.00',  status:'Paid' },
+        { date:'Nov 1, 2023',  amount:'$9.00',  status:'Paid' },
+        { date:'Oct 1, 2023',  amount:'$9.00',  status:'Paid' },
+        { date:'Sep 1, 2023',  amount:'$9.00',  status:'Paid' },
+        { date:'Aug 1, 2023',  amount:'$9.00',  status:'Paid' },
+      ],
+      2022: [
+        { date:'Dec 1, 2022',  amount:'$9.00',  status:'Paid' },
+        { date:'Nov 1, 2022',  amount:'$9.00',  status:'Paid' },
+        { date:'Oct 1, 2022',  amount:'$9.00',  status:'Paid' },
+      ],
+    };
+
+    const _invIcon = `<svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#A5B4FC" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>`;
+
+    function toggleBillingYearDropdown() {
+      document.getElementById('billing-year-dropdown').classList.toggle('open');
+    }
+    function selectBillingYear(year) {
+      document.getElementById('billing-year-label').textContent = year;
+      // bold the selected button
+      document.querySelectorAll('#billing-year-dropdown button').forEach(btn => {
+        btn.style.fontWeight = btn.textContent.trim() == year ? '600' : '';
+        btn.style.color     = btn.textContent.trim() == year ? '#5B63F6' : '';
+      });
+      document.getElementById('billing-year-dropdown').classList.remove('open');
+      renderBillingInvoices(year);
+    }
+
+    function renderBillingInvoices(year) {
+      const list = document.getElementById('billing-invoice-list');
+      if (!list) return;
+      const invoices = BILLING_INVOICES[year] || [];
+      if (!invoices.length) {
+        list.innerHTML = '<p class="text-[13px] text-gray-400 text-center py-8">No invoices for this year.</p>';
+        return;
+      }
+      list.innerHTML = invoices.map(inv => {
+        const isPaid = inv.status === 'Paid';
+        return `<div class="flex items-center justify-between py-2.5 group hover:bg-gray-50 rounded-lg px-1 transition-colors">
+          <div>
+            <p class="text-[13px] font-semibold text-gray-900">${inv.date}</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">Pro plan — monthly</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[13px] font-semibold text-gray-900">${inv.amount}</span>
+            <span class="text-[12px] font-medium" style="color:${isPaid ? '#16A34A' : '#DC2626'}">${inv.status.toLowerCase()}</span>
+            <button class="w-6 h-6 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 opacity-0 group-hover:opacity-100 transition-all" title="Download PDF">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      buildDsConnectorDropdown('settings-ds-type-dropdown', 'filterSettingDsType');
+      buildDsConnectorDropdown('org-ds-type-dropdown',      'filterOrgDsType');
       renderSettingDsTable();
       renderOrgDsTable();
+      renderBillingInvoices(2026);
     });
 
     document.addEventListener('click', e => {
@@ -1195,6 +1413,15 @@
       }
       if (!e.target.closest('#org-ds-type-dropdown') && !e.target.closest('[onclick="toggleOrgDsTypeDropdown()"]')) {
         document.getElementById('org-ds-type-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('#ws-role-dropdown') && !e.target.closest('[onclick="toggleWsRoleDropdown()"]')) {
+        document.getElementById('ws-role-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('#org-role-dropdown') && !e.target.closest('[onclick="toggleOrgRoleDropdown()"]')) {
+        document.getElementById('org-role-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('#billing-year-dropdown') && !e.target.closest('#billing-year-btn')) {
+        document.getElementById('billing-year-dropdown')?.classList.remove('open');
       }
       if (!e.target.closest('#cb-cat-dropdown') && !e.target.closest('[onclick="cbToggleCatDropdown()"]')) {
         document.getElementById('cb-cat-dropdown')?.classList.remove('open');
@@ -1401,6 +1628,16 @@
             <path d="M17 4 C19 4 20 5.2 20 7 L20 9.5 C20 11 21 12 21 12 C21 12 20 13 20 14.5 L20 17 C20 18.8 19 20 17 20" stroke="#D97706" stroke-width="2" stroke-linecap="round" fill="none"/>
             <circle cx="12" cy="12" r="1.8" fill="#D97706"/>
           </svg>` },
+        { name:'Google Sheets', sub:'Google Sheets spreadsheet', bg:'#F0FFF4', color:'#0F9D58',
+          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="2" width="16" height="20" rx="2" fill="#0F9D58"/>
+            <rect x="10" y="2" width="10" height="20" fill="#0B7A45"/>
+            <rect x="10" y="2" width="10" height="20" rx="0" style="border-radius:0 2px 2px 0" fill="#0B7A45"/>
+            <rect x="7" y="7" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
+            <rect x="7" y="11" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
+            <rect x="7" y="15" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
+            <rect x="9.5" y="7" width=".8" height="10" fill="white" opacity="0.4"/>
+          </svg>` },
       ],
       api: [
         { name:'MCP Server',  sub:'Model Context Protocol',bg:'#FAF5FF', color:'#9333EA',
@@ -1452,16 +1689,6 @@
             <circle cx="12" cy="12.5" r="3.2" fill="white"/>
             <circle cx="12" cy="12.5" r="2" fill="white" stroke="#4285F4" stroke-width="1.2"/>
             <path d="M13.5 14 L15.5 16" stroke="#4285F4" stroke-width="2" stroke-linecap="round"/>
-          </svg>` },
-        { name:'Google Sheets', sub:'Spreadsheet cloud',    bg:'#F0FFF4', color:'#0F9D58',
-          icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="2" width="16" height="20" rx="2" fill="#0F9D58"/>
-            <rect x="10" y="2" width="10" height="20" fill="#0B7A45"/>
-            <rect x="10" y="2" width="10" height="20" rx="0" style="border-radius:0 2px 2px 0" fill="#0B7A45"/>
-            <rect x="7" y="7" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
-            <rect x="7" y="11" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
-            <rect x="7" y="15" width="10" height="1.8" rx=".5" fill="white" opacity="0.85"/>
-            <rect x="9.5" y="7" width=".8" height="10" fill="white" opacity="0.4"/>
           </svg>` },
         { name:'Redshift',      sub:'AWS data warehouse',   bg:'#FFF1F2', color:'#DD344C',
           icon:`<svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
