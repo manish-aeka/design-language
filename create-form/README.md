@@ -1,406 +1,383 @@
-# Create Form — Design Language
-
-> Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Form Builder screen.  
-> Place the reference screenshot at `assets/screenshot.png`.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Screen Anatomy](#screen-anatomy)
-3. [Color System](#color-system)
-4. [Typography](#typography)
-5. [Spacing & Grid](#spacing--grid)
-6. [Border Radius & Elevation](#border-radius--elevation)
-7. [Components](#components)
-   - [Topbar](#topbar)
-   - [Sidebar](#sidebar)
-   - [Canvas Heading Row](#canvas-heading-row)
-   - [Question Card](#question-card)
-   - [Field Inputs](#field-inputs)
-   - [Radio / Checkbox Rows](#radio--checkbox-rows)
-   - [Drag Handle](#drag-handle)
-   - [Floating Add Button](#floating-add-button)
-   - [Submit Row](#submit-row)
-   - [Scrollbar](#scrollbar)
-8. [Modals](#modals)
-   - [Add Field Modal](#add-field-modal)
-   - [Delete Confirm Modal](#delete-confirm-modal)
-9. [Edit vs Preview Mode](#edit-vs-preview-mode)
-10. [Drag & Drop](#drag--drop)
-11. [States & Interactions](#states--interactions)
-12. [Motion & Animation](#motion--animation)
-13. [Design Principles](#design-principles)
-
----
+﻿# Create Form
 
 ## Overview
 
-The **Create Form** screen is a Google Forms-style drag-and-drop form builder. Users can add, reorder, label, and delete question fields and toggle between an **Edit** mode (for authoring) and a **Preview** mode (for filling in the form as a respondent).
+The **Create Form** page is a drag-and-drop form builder within Aibii. Users can add, reorder, label, and delete question fields, then toggle between **Edit** mode (authoring) and **Preview** mode (filling in the form as a respondent).
 
-Key capabilities:
-- **9 field types**: Short answer, Email, Number, Long text, Dropdown, Checkboxes, Multiple choice, Date, File upload
-- **Inline label editing** via `contenteditable` — click any label in Edit mode to rename it
-- **HTML5 drag-and-drop** reordering of fields
-- **Add Field modal** — choose type, write label, mark required, define options
-- **Delete confirm modal** — two-step deletion guard
-- **Edit / Preview toggle** — button sits inline to the right of the form title in the canvas
-- **Submit row** — Clear form + Submit buttons visible only in Preview mode
-- **Floating Add Field pill** — visible only in Edit mode (fixed bottom-right)
-
-![Reference Screenshot](assets/screenshot.png)
+**File:** `create-form/index.html`
+**Stack:** Plain HTML · Tailwind CSS CDN · Font Awesome 6.5 (icons inside form cards) · Heroicons SVG inline (sidebar/topbar) · Inter font (Google Fonts)
 
 ---
 
-## Screen Anatomy
+## Page Layout
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ SIDEBAR (220px)            │  CONTENT AREA (fluid)                           │
-│                            │                                                 │
-│  [M] Manish kumar's Work…  │  TOPBAR (56px)                                  │
-│  ──────────────────────    │  ┌─────────────────────────────────────────┐    │
-│  🕐 Recent                 │  │ 📋 / Untitled Form                      │    │
-│  ▦  Create Dashboard       │  └─────────────────────────────────────────┘    │
-│  📋 Create Form ← active   │                                                 │
-│  💬 AI Chat                │  CANVAS (scrollable, bg #ede7f6)                │
-│  ──────────────────────    │  ┌─────────────────────────────────────────┐    │
-│  PROJECTS                  │  │ Untitled Form           [Edit Form btn] │    │
-│  ▶ My Private Project      │  │ Fill in the fields below…               │    │
-│  ▶ Sovereign Capital Gate  │  │                                         │    │
-│  + Create a project        │  │  ┌── Question Card ──────────────────┐  │    │
-│  ──────────────────────    │  │  │  Label*                           │  │    │
-│  👥 Shared with me         │  │  │  ─────────────────── (input)      │  │    │
-│  ⚙  Settings               │  │  └───────────────────────────────────┘  │    │
-│  ──────────────────────    │  │  ┌── Question Card ──────────────────┐  │    │
-│  [AI] Explore free feat…   │  │  │  ...                              │  │    │
-│                            │  │  └───────────────────────────────────┘  │    │
-│                            │  │                          [Clear] [Submit]│    │
-│                            │  └─────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  SIDEBAR (220px)            │  TOPBAR (44px h-11)                           │
+│  ──────────────────────────  │  ☰                            🔔  [M]         │
+│  [M] Manish kumar's Work… ▾  │                                               │
+│  ──────────────────────────  │  CANVAS (scrollable py-10 px-8)              │
+│  🕐 Recent                   │                                               │
+│  ⊞  New Dashboard            │  Untitled Form (h1 22px 700)  [Edit Form btn]│
+│  💬 New Chat                 │  Fill in the fields below…                   │
+│  ──────────────────────────  │                                               │
+│  PROJECTS                    │  ┌── Question Card ──────────────────────┐   │
+│  ▶ My Private Project 📌     │  │  Label *                              │   │
+│  ▶ Sovereign Capital Gate    │  │  ────────────────────── (input)       │   │
+│  + Create a project          │  └───────────────────────────────────────┘   │
+│  ──────────────────────────  │  ┌── Question Card ──────────────────────┐   │
+│  ⚙  Settings                 │  │  ...                                  │   │
+│  ──────────────────────────  │  └───────────────────────────────────────┘   │
+│  🔵 Explore free features    │                        [Clear form] [Submit]  │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Color System
+## Sidebar
 
-| Token | Hex | Usage |
+### Workspace Switcher
+
+| Property | Value |
+|---|---|
+| Avatar id | `ws-avatar` |
+| Name label id | `ws-name` |
+| Avatar size | `28×28px` (`w-7 h-7`), `rounded-full` |
+| Avatar background | `#3B5BDB` |
+| Avatar letter | `M` |
+| Display name | `"Manish kumar's Work..."` (truncated) |
+| Chevron | ChevronUpDown, 16px, `#9CA3AF` |
+| Click handler | `openWsModal()` |
+
+### Primary Nav
+
+Three links. Row height `36px` (`h-9`), text `14px`. All inactive on this page.
+
+| Item | Icon | Link |
 |---|---|---|
-| `brand-primary` | `#5B63F6` | Active nav, FAB gradient start, focus rings |
-| `brand-secondary` | `#7C6FF7` | FAB gradient end, submit gradient end |
-| `canvas-bg` | `#ede7f6` | Canvas scroll area background |
-| `card-bg` | `#ffffff` | Question card background |
-| `label-text` | `#202124` | Question labels, input values |
-| `placeholder` | `#80868b` | Input placeholders (disabled state) |
-| `input-border` | `#dadce0` | Bottom border on all inputs (1px) |
-| `input-focus` | `#1a73e8` | Bottom border on focus (2px) |
-| `req-star` | `#d93025` | Required field asterisk |
-| `sidebar-bg` | `#F8F9FC` | Sidebar background |
-| `nav-active-bg` | `#EEF2FF` | Active nav item + mode badge background |
-| `nav-active-border` | `#5B63F6` | Active nav left-border accent (2px) |
-| `scrollbar-thumb` | `#CBD5E1` | Custom scrollbar thumb |
+| Recent | Clock 16px | `../recent-view/index.html` |
+| New Dashboard | SquaresGrid 16px | `#` |
+| New Chat | ChatBubble 16px | `#` |
 
----
+### Projects Section
 
-## Typography
+Label: `"PROJECTS"` — 11px uppercase `#9CA3AF`.
 
-| Element | Size | Weight | Color |
+**ws2 — My Private Project** (pinned, collapsed): Heroicons outline pin icon `color:#5B63F6`. 11 sub-items.
+
+**ws1 — Sovereign Capital Gate** (collapsed): 9 sub-items:
+
+| # | Name | Type | Icon color |
 |---|---|---|---|
-| Canvas page title | 22px | 700 | `#111827` |
-| Canvas subtitle | 13px | 400 | `#6B7280` |
-| Question label | 15px | 600 | `#202124` |
-| Required star | 15px | 400 | `#d93025` |
-| Input value / option | 14px | 400 | `#202124` |
-| Topbar breadcrumb | 14px | 600 | `#1F2937` |
-| Nav items | 13–14px | 500 | `#374151` |
-| Modal headings | 17px | 700 | `#111827` |
-| Modal field labels | 12px | 600 | `#374151` |
-| FAB label | 13px | 600 | `#ffffff` |
-| Submit button | 13px | 600 | `#ffffff` |
+| 1 | Investor Briefing | Chat | `#5B63F6` |
+| 2 | Capital Analysis | Dashboard | `#16A34A` |
+| 3 | Deal Memo Q2 | Document | `#F97316` |
+| 4 | Pitch Deck 2026 | Presentation | `#8B5CF6` |
+| 5 | Portfolio Overview | Dashboard | `#16A34A` |
+| 6 | Risk Register | Document | `#F97316` |
+| 7 | Market Signals | Chat | `#5B63F6` |
+| 8 | LP Survey | Form | `#EC4899` |
+| 9 | Valuation Model | Dashboard | `#16A34A` |
 
-Font family: **Inter**, system-ui, sans-serif (via Google Fonts).
+`+ Create a project` → `onclick="event.preventDefault();openNewProjectModal()"`
+
+### Bottom Nav
+
+Settings only — `href="../settings-profile/index.html"`. Connect Datasource and Shared with me are commented out.
+
+### Explore Banner
+
+`background:#E8EEFF`, sparkle icon `#4F6EF7` on `#C7D2FE` bg circle.
+- Label: `"Explore free features"` — 12px 600 `#3B4ECC`
+- Sub-label: `"Credit left: 15"` — 11px `#6B7ADE`
 
 ---
 
-## Spacing & Grid
+## Topbar
 
-| Element | Value |
+Fixed `44px` (`h-11`) bar with `border-b border-gray-100`. Layout: `flex items-center justify-between px-8`.
+
+| Zone | Content |
 |---|---|
-| Sidebar width | 220px (fixed) |
-| Topbar height | 56px |
-| Canvas vertical padding | 40px (py-10) |
-| Canvas horizontal padding | 32px (px-8) |
-| Card internal padding | 24px horizontal × 20px vertical (px-6 py-5) |
-| Gap between cards | 12px (mb-3) |
-| Label → input gap | 12px (mb-3) |
-| Option row vertical padding | 7px each |
-| Option row icon gap | 12px |
+| Left | Hamburger button → `toggleSidebar()` |
+| Right | Notification bell (`#notif-wrapper`) + user avatar (`#user-menu-wrapper`) |
 
----
+### Notification Bell
 
-## Border Radius & Elevation
-
-| Element | Radius | Shadow |
-|---|---|---|
-| Question card | 12px (rounded-xl) | `0 1px 2px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.08)` |
-| Question card (hover) | 12px | `0 2px 12px rgba(0,0,0,0.10)` |
-| FAB (Add Field) | 9999px (pill) | `0 6px 22px rgba(91,99,246,0.42)` |
-| Submit button | 12px (rounded-xl) | `0 4px 14px rgba(91,99,246,0.35)` |
-| Modal box | 20px | `0 24px 64px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.06)` |
-| Modal inputs | 10px | none (border only) |
-| Topbar icon | — | — |
-| Drag-over card | 12px | `outline: 2px solid #5B63F6` |
-
----
-
-## Components
-
-### Topbar
-
-Fixed 56px bar spanning the full width of the content area.
-
-```
-[icon] / Untitled Form
-```
-
-- Left: gradient icon chip + `/` breadcrumb separator + page name (`#topbar-title`)
-- Right: *empty* — Edit/Preview button was moved to the canvas heading row
-- Background: `#ffffff`; bottom `box-shadow: 0 1px 3px rgba(0,0,0,0.04)`
-
----
-
-### Sidebar
-
-220px fixed, identical to all other screens in the design system.
-
-| Element | Style |
+| Property | Value |
 |---|---|
-| Active item background | `#EEF2FF` |
-| Active item border | `border-left: 2px solid #5B63F6; padding-left: 10px` |
-| Hover state | `background: #EEF2FF` |
-| Pinned project icon | filled pin SVG, `#5B63F6` |
-| AI promo card | `background: #E8EEFF`, rounded-xl |
+| Button id | `notif-btn` |
+| Click | `toggleNotifications()` |
+| Unread dot | `id="notif-dot"`, `w-1.5 h-1.5`, `bg-red-500` |
+| Dropdown id | `notif-dropdown` |
+| Width | `320px` (`w-80`) |
+| Radius | `rounded-2xl` |
 
----
+**5 notification items:**
 
-### Canvas Heading Row
-
-```
-Untitled Form                           [Editing badge] [Edit Form ▾]
-Fill in the fields below. Required fields are marked with *
-```
-
-- Title: `text-[22px] font-bold text-gray-900`
-- Edit/Preview button (`#toggle-mode-btn`) sits at the right end of a `flex items-center justify-between` row
-- Mode badge (`#mode-badge`): hidden in preview mode, visible in edit mode — `#EEF2FF` bg, `#5B63F6` text
-
----
-
-### Question Card
-
-```
-╔════════════════════════════════════════╗
-║  [≡ grip]  Label text *               ║
-║            ───────────────── (input)  ║
-╚════════════════════════════════════════╝
-```
-
-HTML structure:
-
-```html
-<div class="q-card bg-white rounded-xl px-6 py-5 mb-3">
-  <div class="flex items-start gap-2">
-    <div class="drag-handle …">⋮⋮</div>
-    <div class="flex-1 min-w-0">
-      <div class="mb-3">
-        <span class="q-label" contenteditable="…">Label</span>
-        <span class="req-star">*</span>  <!-- required fields only -->
-      </div>
-      <!-- input rendered by buildInput() -->
-    </div>
-    <div class="q-edit-controls …">  <!-- edit mode only -->
-      <button>🗑</button>
-    </div>
-  </div>
-</div>
-```
-
-- **No type badge** — clean Google Forms style
-- **No question number** — no q-num chip
-- Required asterisk sits immediately after the label text (inline `<span>`)
-
----
-
-### Field Inputs
-
-All inputs use bottom-border-only styling — no full border box.
-
-| CSS class | Element | Notes |
+| State | Sender | Content |
 |---|---|---|
-| `.f-input` | `<input>` | `border-bottom: 1px solid #dadce0`; focus → `2px solid #1a73e8` |
-| `.f-textarea` | `<textarea>` | Same border rules; `resize: none; rows="3"` |
-| `.f-select` | `<select>` | Extends `.f-input`; extra left padding |
+| Unread | Sara M. (green `#16A34A`) | Shared "Revenue Overview" with you |
+| Unread | Riya K. (orange `#F97316`) | Commented on "Q4 Strategy Discussion" |
+| Unread | Aibii AI (purple `#8B5CF6`) | Finished processing "Investor Pitch Deck" |
+| Read | Priya N. (pink `#EC4899`) | Invited you to "Sovereign Capital Gate" |
+| Read | Aibii AI (indigo) | "User Analytics" report is ready |
 
-Disabled in **Edit mode** (inputs are not fillable while editing structure).
+**Footer:** "View all notifications" — 12px `#5B63F6`.
 
----
+`markAllRead()` removes unread row highlights and hides `#notif-dot`.
 
-### Radio / Checkbox Rows
+### User Menu
 
-```html
-<label class="opt-row">
-  <input type="radio" …>  Option text
-</label>
-```
+| Property | Value |
+|---|---|
+| Wrapper id | `user-menu-wrapper` |
+| Avatar | `w-7 h-7 rounded-full`, `background:#3B5BDB`, letter `M` |
+| Click | `toggleUserMenu()` |
+| Dropdown id | `user-dropdown` |
+| Width | `224px` (`w-56`) |
 
-- `display: flex; align-items: center; gap: 12px; padding: 7px 0`
-- Native `<input>` with `accent-color: #1a73e8` and `width/height: 18px`
+Dropdown:
+- Name: `"Manish Kumar"` — 13px 600 `#111827`
+- Email: `"manish@aibii.com"` — 12px `#9CA3AF`
+- Log out button: `text-red-500 hover:bg-red-50`
 
----
-
-### Drag Handle
-
-- `.drag-handle`: `display: none` by default; `display: flex` inside `.edit-mode`
-- Cursor: `grab` / `grabbing`
-- Icon: Font Awesome `fa-grip-vertical`, 13px, `#CBD5E1`
-
----
-
-### Floating Add Button
-
-`#fab-add` — fixed `bottom: 28px; right: 28px; z-index: 40`
-
-```
-[ + Add field ]
-```
-
-- Pill shape (`border-radius: 9999px`), height 44px, padding `0 20px`
-- Gradient: `linear-gradient(135deg, #5B63F6 0%, #7C6FF7 100%)`
-- `display: none` by default; `display: flex` in Edit mode only
-- Hover: `translateY(-2px)` + stronger shadow
+`toggleNotifications()` closes `#user-dropdown`; `toggleUserMenu()` closes `#notif-dropdown`. Shared outside-click listener.
 
 ---
 
-### Submit Row
+## Canvas
 
-`#submit-row` — `display: none` by default; `display: flex` in Preview mode only.
+Scrollable: `flex-1 overflow-y-auto py-10 px-8`, `id="canvas-scroll"`.
+
+### Form Header Row
 
 ```
-                                  [Clear form]  [Submit]
+┌─────────────────────────────────────────────────────┐
+│  Untitled Form (h1 22px 700)     [✏ Edit Form btn]  │
+│  Fill in the fields below…  (13px gray-500)         │
+└─────────────────────────────────────────────────────┘
 ```
 
-- `justify-end`, `gap: 12px`, `margin-top: 24px`
-- **Clear form**: plain text button, `#9CA3AF`
-- **Submit**: gradient pill `#5B63F6 → #7C6FF7`, `border-radius: 12px`, height 40px
+- Title `id="topbar-title"` — also appears in canvas heading but NOT in topbar anymore (topbar is now hamburger + bell + user only)
+- Badge `id="mode-badge"` (`hidden` by default): `"✏ Editing"` — 11px 600 `#5B63F6` on `#EEF2FF` bg, `rounded-full`
+- Toggle button `id="toggle-mode-btn"` / `onclick="toggleMode()"`:
+  - **Preview mode** (default): `"Edit Form"` label, pen icon, white bg `border #E5E7EB`
+  - **Edit mode**: `"Preview"` label, eye icon, `bg #EEF2FF border #C7D2FE color #5B63F6`
 
----
+### Question Cards (`id="fields-container"`)
 
-### Scrollbar
+Built by `renderFields()` → `buildCard(field, idx)`.
 
-```css
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-::-webkit-scrollbar-track { background: transparent; }
+**Card anatomy:**
+
+```
+┌──────────────────────────────────────────────────────┐
+│  [≡ drag handle]  Label *          (contenteditable) │
+│                   ────────────────────── (input)     │
+│                                        [🗑 delete]   │
+└──────────────────────────────────────────────────────┘
 ```
 
-Matches the scrollbar across all other Aibii screens.
+- Container: `q-card bg-white rounded-xl px-6 py-5 mb-3`, `box-shadow: 0 1px 2px…`
+- Hover: `0 2px 12px rgba(0,0,0,0.10)`
+- `.drag-handle` — hidden by default; `display:flex` in `.edit-mode`
+- `.q-edit-controls` (delete button) — hidden by default; `display:flex` in `.edit-mode`
+- `.q-label` — 15px 600 `#202124`, `contenteditable` in edit mode; underline appears on hover/focus
+
+**5 default fields:**
+
+| id | Type | Label | Required |
+|---|---|---|---|
+| f1 | text | Full name | yes |
+| f2 | email | Email address | yes |
+| f3 | dropdown | How did you hear about us? | no |
+| f4 | checkbox | What topics interest you? | no |
+| f5 | textarea | Additional comments | no |
+
+### Field Input Types (`.f-input` / `.f-textarea`)
+
+All inputs use a Google Forms-style underline border (`border-bottom: 1px solid #dadce0`), no box.
+
+| Type | Element | Notes |
+|---|---|---|
+| text | `<input type="text">` | Placeholder "Short answer text" |
+| email | `<input type="email">` | Placeholder "example@email.com" |
+| number | `<input type="number">` | |
+| date | `<input type="date">` | |
+| textarea | `<textarea rows="3">` | `.f-textarea` class |
+| dropdown | `<select>` | `.f-input.f-select`, `padding: 10px 4px 6px` |
+| checkbox | `<label class="opt-row">` rows | `accent-color: #1a73e8` |
+| radio | `<label class="opt-row">` rows | `name=field.id` |
+| file | `<label>` + hidden `<input type="file">` | Dashed border, hover `#5B63F6` |
+
+Focus state: `border-bottom: 2px solid #1a73e8`. Disabled state (edit mode): `color:#80868b`.
+
+### Required Star
+
+`.req-star` — `color:#d93025`, 15px, `margin-left:4px`.
+
+### Submit Row (`id="submit-row"`)
+
+- `display:none` by default; `display:flex` in preview mode
+- "Clear form" — 13px gray-400
+- "Submit" — `px-6 h-10 rounded-xl 13px 600 white bg:blue box-shadow`
+
+### Floating Add Button (`id="fab-add"`)
+
+- `display:none` by default; `display:flex` in edit mode
+- Fixed `bottom:28px right:28px`, `h-44px px-20px`, `border-radius:9999px`
+- Background: `linear-gradient(135deg, #5B63F6, #7C6FF7)`
+- Shadow: `0 6px 22px rgba(91,99,246,0.42)`
+- Hover: `translateY(-2px)` + shadow intensifies
 
 ---
 
 ## Modals
 
-### Add Field Modal
+### Add Field Modal (`id="add-modal"`)
 
-Triggered by `#fab-add` (Edit mode only).
+Class `.modal-bg` backdrop: `rgba(10,10,24,0.40) blur(3px)`.
+Box `.modal-box`: `bg-white rounded-[20px] max-w-480px p-28px`, `popIn` animation.
 
-| Field | Control |
+Fields:
+- **Question label** (required) — `.m-input`, red border on empty submit
+- **Field type** — `<select id="m-type-select">`, 9 options (see field types table above)
+- **Options** (`id="m-options-row"`, hidden unless type is dropdown/checkbox/radio) — comma-separated
+- **Required field** checkbox
+
+`confirmAdd()` — validates label, pushes to `fields[]`, calls `renderFields()`, scrolls to bottom.
+
+### Delete Confirm Modal (`id="del-modal"`)
+
+Two-step deletion guard. Shows label preview in message body.
+`confirmDelete()` — removes field from `fields[]` by `id`, re-renders.
+
+### Workspace Switcher Modal (`id="ws-modal-backdrop"`)
+
+| Property | Value |
 |---|---|
-| Question label | Text `<input>` (required) |
-| Field type | `<select>` with 9 options |
-| Required toggle | Checkbox |
-| Options textarea | Shown for dropdown / checkbox / radio only (one option per line) |
+| Backdrop | `fixed inset-0 z-50`, `rgba(17,24,39,0.45) blur(2px)` |
+| Modal max-width | `lg (512px)` |
+| Max-height | `620px` |
+| Close | Click outside → `closeWsModal(e)` |
 
-- `backdrop-filter: blur(3px)`, overlay `rgba(10,10,24,0.40)`
-- Box: `max-width: 480px`, `border-radius: 20px`, `padding: 28px`
-- Animation: `popIn` — `opacity 0→1`, `translateY(10px)→0`, `scale(.97→1)`, 180ms
+Header: "Switch Workspace" + "New Workspace" button → `openNewWsModal()`.
+Search: `id="ws-search"`, `oninput="filterWsList()"`.
+List: `id="ws-modal-list"`, rendered by `renderWsModalList(filter)`.
 
-### Delete Confirm Modal
+`wsData` (5 workspaces): Manish kumar's Workspace (current), Sovereign Capital Gate, Design System, Data Analytics, Product Research.
 
-Two-step guard before removing a field.
+### New Workspace Full-Screen (`id="new-ws-modal"`)
 
-- Shows field label to confirm correct target
-- **Cancel** (gray) / **Delete** (red gradient) buttons
+`hidden fixed inset-0 z-[60]`, `background:#F3F4F6`.
+- Avatar preview `id="ws-preview-avatar"` (44px `rounded-xl`, click → `cycleWsColor()`)
+- Name preview `id="ws-preview-name"`
+- Name input `id="new-ws-name"` → `onWsNameInput(val)`
+- Description textarea `id="new-ws-desc"`
+- `createNewWs()` — pushes to `wsData`, selects it
 
 ---
 
 ## Edit vs Preview Mode
 
-| Feature | Edit mode | Preview mode |
+| Feature | Preview (default) | Edit mode |
 |---|---|---|
-| Canvas class | `.edit-mode` on `#form-canvas` | — |
-| Labels | `contenteditable="true"` | `contenteditable="false"` |
-| Inputs | `disabled` | enabled |
-| Drag handles | visible | hidden |
-| Delete buttons | visible | hidden |
-| FAB (Add field) | visible | hidden |
-| Submit row | hidden | visible |
-| Edit button label | "Preview" | "Edit Form" |
-| Mode badge | "Editing" (shown) | hidden |
-
-Toggle function: `toggleMode()` — flips `isEditMode` boolean and calls `renderFields()`.
+| Toggle button label | "Edit Form" + pen icon | "Preview" + eye icon |
+| Mode badge | hidden | visible (`#EEF2FF #5B63F6`) |
+| Drag handles | hidden | visible |
+| Delete buttons | hidden | visible |
+| Labels `contenteditable` | `false` | `true` |
+| Inputs | active | `disabled` |
+| Submit row | `display:flex` | `display:none` |
+| Floating Add button | `display:none` | `display:flex` |
+| Canvas class | — | `.edit-mode` on `#form-canvas` |
 
 ---
 
 ## Drag & Drop
 
-Uses the native HTML5 Drag and Drop API.
+Native HTML5 drag-and-drop on `.q-card` elements (edit mode only).
 
-| Event | Action |
+| State class | Visual |
 |---|---|
-| `dragstart` | Stores source card in `dragSrcEl`, adds `.is-dragging` class |
-| `dragover` | Adds `.drag-over` class, prevents default |
-| `dragleave` | Removes `.drag-over` class |
-| `drop` | Swaps `fields[]` array entries by id, re-renders |
-| `dragend` | Cleans up classes on all cards |
+| `.is-dragging` | `opacity: 0.35` |
+| `.drag-over` | `outline: 2px solid #5B63F6` |
 
-Cards are only `draggable="true"` in Edit mode.
+Reorder logic: `onDrop` splices `fields[]` array and calls `renderFields()`.
 
 ---
 
-## States & Interactions
+## JavaScript Functions Reference
 
-| Component | State | Visual |
+| Function | Description |
+|---|---|
+| `toggleSidebar()` | Toggles `.collapsed` on `#sidebar` |
+| `toggleWorkspace(id)` | Toggles `.open` on submenu `#wsN-sub` + chevron |
+| `toggleMode()` | Switches edit / preview mode |
+| `renderFields()` | Clears `#fields-container`, re-renders all cards |
+| `buildCard(field, idx)` | Builds a single `.q-card` DOM element |
+| `buildInput(field)` | Returns HTML string for field's input control |
+| `onLabelBlur(el)` | Saves inline label edits to `fields[]` |
+| `openAddModal()` / `closeAddModal()` | Add Field modal lifecycle |
+| `onModalTypeChange()` | Shows/hides options row based on type |
+| `confirmAdd()` | Validates + pushes field, re-renders |
+| `openDelModal(id)` / `closeDelModal()` | Delete Confirm modal lifecycle |
+| `confirmDelete()` | Removes field from `fields[]`, re-renders |
+| `onDragStart/Over/Leave/Drop/End` | HTML5 drag-and-drop handlers |
+| `handleBgClick(e, id)` | Closes modal on backdrop click |
+| `esc(s)` | HTML entity escaper for safe innerHTML injection |
+| `toggleNotifications()` | Toggles `#notif-dropdown`, closes `#user-dropdown` |
+| `markAllRead()` | Clears unread highlights, hides `#notif-dot` |
+| `toggleUserMenu()` | Toggles `#user-dropdown`, closes `#notif-dropdown` |
+| `openWsModal()` / `closeWsModal(e)` | Workspace Switcher modal lifecycle |
+| `renderWsModalList(filter)` | Renders filtered workspace rows in `#ws-modal-list` |
+| `filterWsList()` | Calls `renderWsModalList` from `#ws-search` |
+| `selectWorkspace(id)` | Switches active workspace, updates sidebar header |
+| `openNewWsModal()` / `closeNewWsModal()` | New Workspace full-screen lifecycle |
+| `cycleWsColor()` | Cycles avatar color through 7 presets |
+| `onWsNameInput(val)` | Live preview for workspace name + avatar letter |
+| `createNewWs()` | Pushes new workspace to `wsData`, selects it |
+
+---
+
+## CSS Custom Classes
+
+| Class | Purpose |
+|---|---|
+| `.nav-item` | Sidebar row hover: `hover:bg-gray-100 rounded-lg` |
+| `.ws-submenu` | Project submenu; `display:none` → `display:block` via `.open` |
+| `.ws-chevron` | Rotates 90° when submenu is open |
+| `.q-card` | Question card; hover shadow lift |
+| `.q-card.is-dragging` | `opacity:0.35` during drag |
+| `.q-card.drag-over` | `outline:2px solid #5B63F6` drop target |
+| `.drag-handle` | Hidden; `display:flex` inside `.edit-mode` |
+| `.q-edit-controls` | Hidden; `display:flex` inside `.edit-mode` |
+| `.q-label` | 15px 600 contenteditable label |
+| `.req-star` | Red `*` for required fields |
+| `.f-input` | Underline-only input (no border box) |
+| `.f-textarea` | Underline-only textarea |
+| `.f-select` | Dropdown with top padding |
+| `.opt-row` | Radio/checkbox option row |
+| `.modal-bg` | Fixed backdrop with blur |
+| `.modal-box` | White card, `rounded-[20px]`, `popIn` animation |
+| `.m-input` | Modal field input |
+| `.m-label` | Modal field label |
+| `.m-select` | Modal select with custom chevron via background-image |
+| `#fab-add` | Floating pill button; `display:none` → `flex` in edit mode |
+| `#submit-row` | Submit row; `display:none` → `flex` in preview mode |
+| `#sidebar.collapsed` | Collapses sidebar to zero width |
+| `#ws-modal-backdrop.open` | Shows WS modal (`display:none` → `flex`) |
+
+---
+
+## Design Tokens (Tailwind config)
+
+| Token | Hex | Usage |
 |---|---|---|
-| Question card | Default | `box-shadow: 0 1px 2px …` |
-| Question card | Hover | Shadow lifts to `0 2px 12px rgba(0,0,0,0.10)` |
-| Question card | Drag-over | `outline: 2px solid #5B63F6` |
-| Question card | Dragging | `opacity: 0.35` |
-| Label | Hover (edit) | `border-bottom: 1px solid #dadce0` |
-| Label | Focus (edit) | `border-bottom: 1px solid #1a73e8` |
-| Input | Focus | `border-bottom: 2px solid #1a73e8` |
-| Delete button | Hover | `color: #F87171; background: #FEF2F2` |
-| FAB | Hover | `translateY(-2px)` + stronger shadow |
-| Nav item | Hover | `background: #EEF2FF` |
-
----
-
-## Motion & Animation
-
-| Element | Animation |
-|---|---|
-| Modal open | `popIn` 180ms — fade + slide up 10px + scale from 0.97 |
-| FAB hover | `transform: translateY(-2px)` 150ms ease |
-| Card hover shadow | `box-shadow` 180ms ease |
-| Input focus border | `border-color` 150ms ease |
-| Drag handle | `opacity/display` on `.edit-mode` class toggle |
-
----
-
-## Design Principles
-
-1. **Google Forms familiarity** — bottom-border inputs, no decorative type badges, inline asterisk for required fields, lavender canvas background — immediately familiar to anyone who has used Google Forms.
-2. **Edit / Preview duality** — the entire form experience changes with a single toggle, keeping the authoring and respondent views clearly separated without navigating away.
-3. **Minimal chrome** — no question numbers, no type labels, no color-coded badges. The question and its input are the only things that matter.
-4. **Inline editing** — `contenteditable` labels mean zero friction: click the text, change it, click away. No modal needed.
-5. **Shared design tokens** — scrollbar, sidebar, modals, fonts, and shadow scale all match the other Aibii screens for a cohesive system.
+| `brand.primary` | `#5B63F6` | Active states, CTAs, focus rings |
+| `brand.secondary` | `#7C6FF7` | FAB gradient endpoint |
+| `sidebar` | `#F8F9FC` | Sidebar background |
+| `hover` | `#EEF2FF` | Nav item hover, edit mode badge |
+| `card` shadow | `0 1px 3px rgba(0,0,0,0.06)…` | Default card shadow |
+| `modal` shadow | `0 20px 60px rgba(0,0,0,0.18)` | WS modal shadow |

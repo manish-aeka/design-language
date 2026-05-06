@@ -1,316 +1,206 @@
-﻿# Recent View — Design Language
-
-> Design system derived from the **Aibii** AI Business Intelligence SaaS platform — Recent View.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Screen Anatomy](#screen-anatomy)
-3. [Color System](#color-system)
-4. [Typography](#typography)
-5. [Spacing & Grid](#spacing--grid)
-6. [Border Radius & Elevation](#border-radius--elevation)
-7. [Iconography](#iconography)
-8. [Components](#components)
-   - [Topbar](#topbar)
-   - [Notification Dropdown](#notification-dropdown)
-   - [Page Header](#page-header)
-   - [Action Cards Row](#action-cards-row)
-   - [Filter Tab Bar](#filter-tab-bar)
-   - [Search Bar](#search-bar)
-   - [View Toggle](#view-toggle)
-   - [Type Filter Dropdown](#type-filter-dropdown)
-   - [Sidebar Workspace Switcher](#sidebar-workspace-switcher)
-   - [Sidebar Primary Nav](#sidebar-primary-nav)
-   - [Sidebar Projects Section](#sidebar-projects-section)
-   - [Sidebar Bottom Nav & Banner](#sidebar-bottom-nav--banner)
-   - [Sidebar Toggle](#sidebar-toggle)
-   - [Report Grid](#report-grid)
-   - [Report Card](#report-card)
-   - [Card Type Badge](#card-type-badge)
-   - [Card Context Menu](#card-context-menu)
-   - [Scrollbar](#scrollbar)
-9. [Modals](#modals)
-   - [Create Item Modal](#create-item-modal)
-   - [Create Project Modal](#create-project-modal)
-   - [Workspace Switcher Modal](#workspace-switcher-modal)
-   - [New Workspace Modal](#new-workspace-modal)
-   - [Datasource Import Modal](#datasource-import-modal)
-10. [States & Interactions](#states--interactions)
-11. [Motion & Animation](#motion--animation)
-12. [Design Principles](#design-principles)
-
----
+﻿# Recent View
 
 ## Overview
 
-The **Recent** view is the personal analytics home screen — the first screen a user lands on after selecting a workspace in Aibii. It combines a global topbar, a lightweight action strip, a filter/tab mechanism, and a dense report grid to surface the most relevant analyses and dashboards with zero navigation friction.
+The **Recent** page shows all items the user has recently accessed — dashboards, documents, chats, presentations, forms, and projects — in one place. It is the reference page for the sidebar and topbar patterns shared across the design language.
 
-Key interactions:
-- **Workspace switcher** — avatar + name button at the top of the sidebar opens a searchable workspace list modal; "New Workspace" button inside opens a full-screen creation flow
-- **Topbar** — hamburger sidebar toggle on the left; notification bell + user identity pill on the right
-- **Notification dropdown** — bell opens a `320px` panel listing recent activity; unread dot; "Mark all as read" action
-- **5 action-card shortcuts** — New Dashboard, New Document, New Presentation, New Form, New Chat
-- **Create Item modal** — shared modal for all 5 action cards; Name (required) + Description (optional) + Select project
-- **Create Project modal** — triggered via sidebar "+ Create a project" link; inserts new project row into sidebar and prepends a card to the grid
-- **Sidebar toggle** — hamburger button collapses/expands the 220px sidebar with smooth animation
-- **Card context menu** — `...` on any card opens Share / Rename / Edit dropdown
-- **Type filter** — filters report grid by content type; clicking the active type clears the filter
-- **Search bar** — live text search, combined with the active type filter
-- **View toggle** — switches between 4-column card grid and compact list layout
-- **4 filter tabs** — By me / By everyone / Shared with me / Everything
-- **4 filter tabs** — By me / By everyone / Shared with me / Everything
+**File:** `recent-view/index.html`
+**Stack:** Plain HTML · Tailwind CSS CDN · Heroicons SVG inline · Inter font (Google Fonts)
 
 ---
 
-## Screen Anatomy
+## Page Layout
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ ≡  TOPBAR                                        🔔  [M] Manish Kumar      │ ← Topbar
-├─────────────────────────────────────────────────────────────────────────────┤
-│ SIDEBAR (220px)             │  CONTENT AREA (fluid)                         │
-│                             │                                               │
-│  [M] Manish kumar's Work… ▾ │  🕐 Recent                                    │ ← Workspace switcher
-│  ─────────────────────────  │     All your recently accessed dashboards,    │
-│  🕐 Recent  ← active        │     chats, documents, and more — in one place │
-│  ⊞  New Dashboard           │                                               │
-│  💬 New Chat                │  [⊞ Dashboard][📄 Doc][🖥 Pres][📋 Form][💬 Chat] │ ← 5 Action Cards
-│  ─────────────────────────  │                                               │
-│  PROJECTS                   │  [ By me ][ By everyone ][ Shared ][ All ]   │ ← 4 Filter Tabs
-│  ▶ My Private Project 📌    │        [Search…]  [ Type▾ ][ ≡ ⊞ ]          │
-│    ├ 💬 Q4 Strategy         │                                               │
-│    └ …                      │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐       │
-│  ▶ Sovereign Capital Gate   │  │      │ │      │ │      │ │      │       │ ← Report Grid
-│  + Create a project         │  └──────┘ └──────┘ └──────┘ └──────┘       │
-│  ─────────────────────────  │                                               │
-│  ⚙  Settings                │                                               │
-│  ─────────────────────────  │                                               │
-│  🔵 Explore free features   │                                               │
+│  SIDEBAR (220px)            │  TOPBAR (44px h-11)                           │
+│  ──────────────────────────  │  ☰                            🔔  [M]         │
+│  [M] Manish kumar's Work… ▾  │                                               │
+│  ──────────────────────────  │  CONTENT (scrollable px-8 py-4)              │
+│  🕐 Recent         ◀ active  │                                               │
+│  ⊞  New Dashboard            │  Recent (h1 28px 800)                        │
+│  💬 New Chat                 │  All your recently accessed items…           │
+│  ──────────────────────────  │                                               │
+│  PROJECTS                    │  [⊞ Dashboard][📄 Doc][🖥 Pres][📋 Form][💬 Chat] │
+│  ▶ My Private Project 📌     │                                               │
+│    ├ 💬 Q4 Strategy (×11)    │  [ By me ][ By everyone ][ Shared ][ All ]  │
+│  ▶ Sovereign Capital Gate    │        [Search…]  [ Type▾ ][ ≡ ⊞ ]         │
+│  + Create a project          │                                               │
+│  ──────────────────────────  │  Report grid (4 cols, 11 cards)              │
+│  ⚙  Settings                 │                                               │
+│  ──────────────────────────  │                                               │
+│  🔵 Explore free features    │                                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Color System
+## Sidebar
 
-### Palette
+### Workspace Switcher
 
-| Token | Hex | Usage |
+Full-width button at the top of the sidebar. Clicking opens the Workspace Switcher modal.
+
+| Property | Value |
+|---|---|
+| Avatar id | `ws-avatar` |
+| Name label id | `ws-name` |
+| Avatar size | `28×28px` (`w-7 h-7`), `rounded-full` |
+| Avatar background | `#3B5BDB` |
+| Avatar letter | `M` |
+| Display name | `"Manish kumar's Work…"` (truncated) |
+| Chevron | ChevronUpDown, 16px, `#9CA3AF` |
+| Click handler | `openWsModal()` |
+
+### Primary Nav
+
+Three links below the workspace divider. Row height `36px` (`h-9`), text `14px`.
+
+| Item | Icon | State |
 |---|---|---|
-| `color-brand-primary` | `#5B63F6` | Active nav border, active toggle icon, focus rings, action card icons |
-| `color-brand-hover` | `#4850e4` | Button hover state |
-| `color-bg-base` | `#FFFFFF` | Page background, card surface |
-| `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, active toggle bg |
-| `color-bg-toggle-container` | `#F1F3F4` | View toggle container, type filter trigger |
-| `color-bg-tab-container` | `#F3F4F6` | Pill group container |
-| `color-bg-tab-active` | `#FFFFFF` | Active pill tab |
-| `color-text-primary` | `#111827` | Page title, card titles, active tab text |
-| `color-text-secondary` | `#374151` | Nav labels, context menu items |
-| `color-text-tertiary` | `#6B7280` | Subtitles, timestamps, inactive tab text |
-| `color-text-muted` | `#9CA3AF` | Toggle icon (inactive), placeholder labels |
-| `color-border-default` | `#E5E7EB` | Card borders, type filter border |
-| `color-border-subtle` | `#F3F4F6` | Sidebar dividers, list-view row separators |
-| `color-border-active-nav` | `#5B63F6` | 2px left border on active sidebar nav item |
+| Recent | Clock 16px | **Active** (`id="nav-recent"`) — `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px` |
+| New Dashboard | SquaresGrid 16px | Inactive |
+| New Chat | ChatBubble 16px | Inactive |
 
-### Type Colour Map
+### Projects Section
 
-| Type | Preview bg | Icon color | Badge bg | Badge text |
-|---|---|---|---|---|
-| Chat | `#EEF2FF` | `#93A8F4` | `#EEF2FF` | `#5B63F6` |
-| Dashboard | `#F0FDF4` | `#6EE7A6` | `#F0FDF4` | `#16A34A` |
-| Document | `#FFF7ED` | `#FCA96A` | `#FFF7ED` | `#F97316` |
-| Presentation | `#F5F3FF` | `#A78BFA` | `#F5F3FF` | `#8B5CF6` |
-| Form | `#FDF2F8` | `#F4A8D4` | `#FDF2F8` | `#EC4899` |
-| Project | `#FFFBEB` | `#FCD34D` | `#FFFBEB` | `#F59E0B` |
+Collapsible accordion. Label: `"PROJECTS"` — 11px uppercase `#9CA3AF`.
 
----
+**ws2 — My Private Project** (pinned, always first):
 
-## Typography
+Pin icon: custom thumbtack SVG, `color:#5B63F6`. 11 sub-items (`h-8`, `13px`, `text-gray-600`):
 
-| Token | Size | Weight | Usage |
+| # | Name | Type | Icon color |
 |---|---|---|---|
-| `type-display` | 28px | 800 | Page title ("Recent") |
-| `type-subtitle` | 14px | 400 | Page subtitle |
-| `type-heading-md` | 16px | 600 | Modal headings |
-| `type-body-md` | 14px | 500 | Action card labels, nav labels |
-| `type-body-sm` | 13px | 400 | Descriptions, dropdown items, context menu |
-| `type-card-title` | 14px | 500 | Report card title (grid view) |
-| `type-list-name` | 13px | 500 | Report card name (list view) |
-| `type-timestamp` | 11px | 400 | "Updated X ago" |
-| `type-badge` | 10px | 500 | Card type badge |
-| `type-tab` | 14px | 500 | Filter tab labels |
+| 1 | Q4 Strategy | Chat | `#5B63F6` |
+| 2 | Revenue Overview | Dashboard | `#16A34A` |
+| 3 | Project Brief | Document | `#F97316` |
+| 4 | Investor Update | Chat | `#5B63F6` |
+| 5 | Meeting Notes | Document | `#F97316` |
+| 6 | KPI Tracker | Dashboard | `#16A34A` |
+| 7 | Product Feedback | Chat | `#5B63F6` |
+| 8 | User Analytics | Dashboard | `#16A34A` |
+| 9 | Sprint Planning | Chat | `#5B63F6` |
+| 10 | Roadmap 2026 | Document | `#F97316` |
+| 11 | API Docs | Document | `#F97316` |
 
-Font: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
+**ws1 — Sovereign Capital Gate** (links to `../sovereign-capital-gate/index.html`):
 
----
+9 sub-items: Investor Briefing (Chat `#5B63F6`), Capital Analysis (Dashboard `#16A34A`), Deal Memo Q2 (Doc `#F97316`), Pitch Deck 2026 (Presentation `#8B5CF6`), Portfolio Overview (Dashboard `#16A34A`), Risk Register (Doc `#F97316`), Market Signals (Chat `#5B63F6`), LP Survey (Form `#EC4899`), Valuation Model (Dashboard `#16A34A`).
 
-## Spacing & Grid
+`+ Create a project` → `onclick="event.preventDefault();openNewProjectModal()"`
 
-| Token | Value | Usage |
-|---|---|---|
-| `space-4` | 16px | Card padding, section gaps |
-| `space-6` | 24px | Header → action cards margin |
-| `space-7` | 28px | Action cards → filter tabs margin |
-| Content padding | `px-8 py-4` (32px / 16px) | Main content area |
-| Action cards | `grid-cols-4` (5 cards, wraps to second row), `gap: 16px` | |
-| Report grid | `grid-cols-4`, `gap: 16px` | Grid view |
-| Sidebar width | `220px` fixed | Collapsible |
+Submenu toggle: `toggleWorkspace(id)` adds `.open` to `#wsN-sub` and `#wsN-btn`; chevron rotates 90° via CSS.
 
----
+### Bottom Nav
 
-## Border Radius & Elevation
+Settings only — `href="../settings-profile/index.html"`. Connect Datasource and Shared with me are commented out.
 
-| Token | Value | Used on |
-|---|---|---|
-| `radius-sm` | 4px | Badges |
-| `radius-md` | 8px | Buttons, icon backgrounds, nav items, context menu items |
-| `radius-lg` | 12px | Cards, action cards, dropdown panel, context menu |
-| `radius-xl` | 16px | Modals, workspace switcher modal |
-| `radius-full` | 9999px | Pill tabs, type filter trigger |
+### Explore Banner
 
-| Shadow token | Value | Used on |
-|---|---|---|
-| `shadow-card` | `0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)` | Cards at rest |
-| `shadow-card-hover` | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` | Cards on hover |
-| `shadow-tab-active` | `0 1px 4px rgba(0,0,0,0.10)` | Active pill tab |
-| `shadow-toggle-active` | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` | Active view toggle button |
-| `shadow-context-menu` | `0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)` | Card context menu |
-| `shadow-modal` | `0 20px 60px rgba(0,0,0,0.18)` | Modals |
+`background:#E8EEFF`, sparkle icon `#4F6EF7` on `#C7D2FE` bg circle.
+- Label: `"Explore free features"` — 12px 600 `#3B4ECC`
+- Sub-label: `"Credit left: 15"` — 11px `#6B7ADE`
 
 ---
 
-## Iconography
+## Topbar
 
-All icons: Heroicons outline, inline SVG, `stroke-width: 1.5px`.
-
-| Location | Icon | Size | Color |
-|---|---|---|---|
-| Page title | Clock | 24px | `#111827` |
-| Action card icons | type-specific | 20px | `#5B63F6` |
-| Nav: Recent | Clock | 16px | `#6B7280` |
-| Nav: New Dashboard | SquaresGrid | 16px | `#6B7280` |
-| Nav: New Chat | ChatBubble | 16px | `#6B7280` |
-| Topbar: Hamburger | Bars3 | 18px | `#6B7280` |
-| Topbar: Notification bell | Bell | 18px | `#6B7280` |
-| Topbar: Unread dot | — | 6px dot | `#EF4444` |
-| Type filter funnel | Funnel | 14px | `#5B63F6` |
-| Card overflow | EllipsisHorizontal | 16px | `#9CA3AF` |
-| Context menu: Share | ShareNodes | 14px | `#9CA3AF` |
-| Context menu: Rename | PencilSquare | 14px | `#9CA3AF` |
-| Context menu: Edit | AdjustmentsHorizontal | 14px | `#9CA3AF` |
-| Sidebar pin | Thumbtack (custom) | 12px | `#5B63F6` |
-| Project chevron | ChevronRight | 12px | `#9CA3AF` |
-| Workspace switcher chevron | ChevronUpDown | 16px | `#9CA3AF` |
-
----
-
-## Components
-
-### Topbar
-
-Fixed `44px` (`h-11`) bar spanning the full width above the sidebar + content area. Separated from content by `1px solid #F3F4F6` (`border-b border-gray-100`).
+Fixed `44px` (`h-11`) bar with `border-b border-gray-100`. Layout: `flex items-center justify-between px-8`.
 
 | Zone | Content |
 |---|---|
-| Left | Hamburger button — toggles sidebar via `toggleSidebar()` |
-| Right | Notification bell button + User identity pill |
+| Left | Hamburger button → `toggleSidebar()` |
+| Right | Notification bell (`#notif-wrapper`) + user avatar (`#user-menu-wrapper`) |
 
-Layout: `flex items-center justify-between px-8`.
-
----
-
-### Notification Dropdown
-
-Triggered by the bell button (`id="notif-btn"`) via `toggleNotifications()`. Positioned `right-0` below the bell.
+### Notification Bell
 
 | Property | Value |
 |---|---|
-| `id` | `notif-dropdown` |
+| Button id | `notif-btn` |
+| Click | `toggleNotifications()` |
+| Unread dot | `id="notif-dot"`, `w-1.5 h-1.5`, `bg-red-500`, top-right of button |
+| Dropdown id | `notif-dropdown` |
 | Width | `320px` (`w-80`) |
-| Offset | `top-[calc(100%+6px)]` |
-| Background | `#FFFFFF` |
-| Border | `1px solid #E5E7EB` |
-| Radius | `16px` (`rounded-2xl`) |
+| Position | `right-0 top-[calc(100%+6px)]` |
+| Radius | `rounded-2xl` |
 | Shadow | `0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)` |
-| z-index | `50` |
 
-**Header row:** "Notifications" label (`14px 600`) + "Mark all as read" text button.
+**Header:** "Notifications" label + "Mark all as read" → `markAllRead()`.
 
-**Notification item anatomy:**
+**5 notification items:**
 
-```
-[avatar circle]  [Title 13px 500]          [time 11px #9CA3AF]
-                 [Body  13px #6B7280]                    [● dot]
-```
+| State | Sender | Content |
+|---|---|---|
+| Unread | Sara M. (green) | Shared "Revenue Overview" with you |
+| Unread | Riya K. (orange) | Commented on "Q4 Strategy Discussion" |
+| Unread | Aibii AI (purple) | Finished processing "Investor Pitch Deck" |
+| Read | Priya N. (pink) | Invited you to "Sovereign Capital Gate" |
+| Read | Aibii AI (indigo) | "User Analytics" report is ready |
 
-- Unread: `bg-indigo-50/40` row + `w-2 h-2 bg-indigo-500` dot
-- Read: white background, no dot
-- Separator: `divide-y divide-gray-50`
+Unread rows: `bg-indigo-50/40` + `w-2 h-2 bg-indigo-500` dot. `markAllRead()` removes both and hides `#notif-dot`.
 
-**Footer:** "View all notifications" — `12px`, `#5B63F6`, `8px` top border.
+**Footer:** "View all notifications" — 12px `#5B63F6`.
 
-JS:
-- `toggleNotifications()` — toggles `hidden` on `#notif-dropdown`
-- `markAllRead()` — removes `bg-indigo-50/40` rows and `bg-indigo-500` dots; hides `#notif-dot`
-- Outside-click listener closes on click outside `#notif-wrapper`
+### User Menu
 
-**User identity pill:** `flex items-center gap-2 h-8 pl-1 pr-2.5 rounded-full hover:bg-gray-100`. Avatar: `24×24px` `#3B5BDB`. Label: `13px 500 #374151`.
+| Property | Value |
+|---|---|
+| Wrapper id | `user-menu-wrapper` |
+| Avatar | `w-7 h-7 rounded-full`, `background:#3B5BDB`, letter `M` |
+| Click | `toggleUserMenu()` |
+| Dropdown id | `user-dropdown` |
+| Width | `224px` (`w-56`) |
+| Position | `right-0 top-[calc(100%+6px)]` |
+
+Dropdown contents:
+- Name: `"Manish Kumar"` — 13px 600 `#111827`
+- Email: `"manish@aibii.com"` — 12px `#9CA3AF`
+- Log out button: `text-red-500 hover:bg-red-50`, ArrowRightOnRectangle icon
+
+`toggleNotifications()` closes `#user-dropdown`; `toggleUserMenu()` closes `#notif-dropdown`. Both have a shared outside-click listener.
 
 ---
+
+## Content Area
+
+Scrollable: `flex-1 overflow-y-auto px-8 py-4`.
 
 ### Page Header
 
-| Property | Value |
-|---|---|
-| Icon | Clock, 24px, `#111827` |
-| Title | "Recent", 28px, `font-weight: 800`, `#111827` |
-| Subtitle | "All your recently accessed dashboards, chats, documents, and more - in one place." |
-| Subtitle style | 14px, `#6B7280` |
-| Bottom margin | `mb-6` (24px) |
+- Title: `"Recent"` — `text-[28px] font-extrabold text-gray-900`
+- Subtitle: `"All your recently accessed dashboards, chats, documents, and more - in one place."` — `text-sm text-gray-500 mt-2`
 
----
+### Action Cards
 
-### Action Cards Row
+5 cards, `grid grid-cols-4 gap-4 mb-7`. Each card: `bg-white border border-gray-200 rounded-xl`, icon wrapper `40×40px` `rgba(91,99,246,0.08)`, icon `20px #5B63F6`. Click → `openCreateModal(type)`. Hover: `translateY(-1px)` + shadow.
 
-Five active cards in a `grid-cols-4` layout (4 on row 1, 1 on row 2).
+| # | Label | Description |
+|---|---|---|
+| 1 | New Dashboard | Charts, KPIs & visual reports |
+| 2 | New Document | Write, collaborate & share |
+| 3 | New Presentation | Slides, decks & pitches |
+| 4 | New Form | Surveys, feedback & data entry |
+| 5 | New Chat | Ask questions, get AI answers |
 
-| # | Title | Description | Opens |
-|---|---|---|---|
-| 1 | New Dashboard | Charts, KPIs & visual reports | Create Item Modal |
-| 2 | New Document | Write, collaborate & share | Create Item Modal |
-| 3 | New Presentation | Slides, decks & pitches | Create Item Modal |
-| 4 | New Form | Surveys, feedback & data entry | Create Item Modal |
-| 5 | New Chat | Ask questions, get AI answers | Create Item Modal |
-
-> **Note:** "Add Datasource" card exists in the HTML but is commented out. Its modal (`#datasource-modal`) is fully implemented and reachable via `openDatasourceModal()`.
-
-Card spec: bg `#FFFFFF`, border `1px solid #E5E7EB`, radius `12px`, padding `16px`, icon wrapper `40×40px` with `rgba(91,99,246,0.08)` bg, icon `20px #5B63F6`. Hover: `shadow-card-hover` + `translateY(-1px)`.
-
----
+> "Add Datasource" card exists in the HTML but is commented out. Its modal (`#datasource-modal`) is fully implemented.
 
 ### Filter Tab Bar
 
-Four pill tabs. Default active: **By me**.
+Layout: `flex items-center justify-between`. Left: pill tabs. Right: search + type filter + view toggle.
 
-| Tab | id |
-|---|---|
-| By me | `tab-me` |
-| By everyone | `tab-everyone` |
-| Shared with me | `tab-shared` |
-| Everything | `tab-everything` |
+**Pill tabs** — container `background:#F3F4F6 rounded-full p-1`.
 
-Container: bg `#F3F4F6`, radius `9999px`, padding `4px`. Active tab: bg `#FFFFFF`, `1px solid #E5E7EB`, `shadow-tab-active`, text `#111827`. Inactive: transparent, text `#6B7280`.
+| Tab | `id` | Default |
+|---|---|---|
+| By me | `tab-me` | **Active** |
+| By everyone | `tab-everyone` | Inactive |
+| Shared with me | `tab-shared` | Inactive |
+| Everything | `tab-everything` | Inactive |
 
-JS: `setTab(active)` — iterates all 4 tab IDs.
+Active: `bg-white border border-gray-200 box-shadow:0 1px 4px rgba(0,0,0,0.10)`. JS: `setTab(active)`.
 
----
-
-### Search Bar
-
-Inline in the filter row, to the right of the pill tabs.
+**Search bar:**
 
 | Property | Value |
 |---|---|
@@ -318,357 +208,211 @@ Inline in the filter row, to the right of the pill tabs.
 | Default width | `256px` (`w-64`) |
 | Focus width | `320px` (`focus:w-80`) |
 | Height | `36px` (`h-9`) |
-| Icon | MagnifyingGlass, `14px`, `#9CA3AF`, absolute left `12px` |
-| Placeholder | `Search…` |
+| Icon | MagnifyingGlass, 14px, absolute left |
+| Input handler | `filterItems(query)` → `applyFilters()` |
 
-JS: `filterItems(query)` → `applyFilters()`. Search text + active type filter apply simultaneously.
+**Type filter dropdown:**
 
----
+Trigger: pill button (`background:#F1F3F4 border:1px solid #E5E7EB`) with funnel icon + `id="type-filter-label"`. Dropdown `id="type-dropdown"`, `min-w-[180px]`, `rounded-xl`.
 
-### View Toggle
+Types: Chat (default highlighted — `background:#EEF2FF`, `color:#5B63F6`), Dashboard, Document, Presentation, Form, Project.
 
-Default active: **grid**.
+`setTypeFilter(type, el)` — clicking the active type again clears the filter. `applyFilters()` combines search + type simultaneously. Outside-click closes the dropdown.
 
-| State | Layout |
-|---|---|
-| Grid (default) | `grid grid-cols-4 gap-4` on `#report-grid` |
-| List | `.list-view` class; grid classes removed |
+**View toggle:**
 
-List view card row: `[40px icon] [name (max 200px)] [96px badge] [timestamp] [...]`. Rows separated by `1px solid #F3F4F6`. Container: `1px solid #E5E7EB`, `border-radius: 12px`.
-
-JS: `setView(active)` — toggles `list-view` class and grid Tailwind classes on `#report-grid`.
-
----
-
-### Type Filter Dropdown
-
-Trigger: pill button with funnel icon + `<span id="type-filter-label">Type</span>`. Label updates on selection; clicking active type again clears.
-
-Available types: **Chat · Dashboard · Document · Presentation · Form · Project**
-
-Default active item (on open): **Chat** — rendered with `background:#EEF2FF` and `color:#5B63F6`.
-
-JS: `activeTypeFilter` global. `setTypeFilter(type, el)` — toggle. `applyFilters()` — search + type. Outside-click on non-`.relative` ancestor closes.
-
----
-
-### Sidebar Workspace Switcher
-
-Top section of sidebar, separated from primary nav by `1px solid #F3F4F6`.
-
-| Property | Value |
-|---|---|
-| Avatar | `28×28px` circle, `#3B5BDB` bg (`id="ws-avatar"`) |
-| Name | `id="ws-name"` — `14px 600 #111827`, truncated |
-| Chevron | ChevronUpDown, `16px`, `#9CA3AF` |
-| Click | Full row → `openWsModal()` |
-
-`selectWorkspace(id)` updates both `#ws-name` and `#ws-avatar`.
-
----
-
-### Sidebar Primary Nav
-
-Three links below the workspace switcher divider:
-
-| Item | Icon | Default state |
-|---|---|---|
-| Recent | Clock, 16px | Active: `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px` |
-| New Dashboard | SquaresGrid, 16px | Inactive |
-| New Chat | ChatBubble (with dots), 16px | Inactive |
-
-Active item ID: `id="nav-recent"`. Cleared by `clearSidebarActive()` when a project is activated.
-
----
-
-### Sidebar Projects Section
-
-Collapsible accordion. The pinned project is always first in `#projects-list`.
-
-| Property | Value |
-|---|---|
-| Section label | "PROJECTS" — `11px`, uppercase, `#9CA3AF` |
-| Project row height | `36px` |
-| Chevron open | rotates `90deg`, `150ms ease` |
-| Submenu max-height | `160px`, `overflow-y: auto` |
-| Submenu item height | `32px`, `13px`, `#4B5563` |
-| Sub-item icon color | Type-specific (e.g. `#5B63F6` chat, `#16A34A` dashboard, `#F97316` doc) |
-| "+ Create a project" | `onclick="openNewProjectModal()"` |
-
-**Static projects:**
-
-| ID | Name | Pin | Sub-items |
-|---|---|---|---|
-| `ws2` | My Private Project | ✓ | Q4 Strategy (chat), Revenue Overview (dashboard), Project Brief (doc), Investor Update (chat), Meeting Notes (doc), KPI Tracker (dashboard), Product Feedback (chat), User Analytics (dashboard), Sprint Planning (chat), Roadmap 2026 (doc), API Docs (doc) |
-| `ws1` | Sovereign Capital Gate | — | Chat, Dashboard, Document |
-
-**Dynamic projects** (`proj-nav-row` class): Inserted after the pinned block by `createNewProject()`. Active state: `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px`. Project name is `text-gray-900` (never brand blue).
-
-**Single active state:** `clearSidebarActive()` resets `#nav-recent` and all `.proj-nav-row` elements before highlighting the new item.
-
----
-
-### Sidebar Bottom Nav & Banner
-
-**Bottom utility nav:**
-
-| Item | Link |
-|---|---|
-| Settings | `../settings-profile/index.html` |
-
-> Connect Datasource and Shared with me links exist in the HTML but are commented out.
-
-**"Explore free features" banner** — pinned at bottom (`mx-3 mb-3`):
-
-| Property | Value |
-|---|---|
-| Background | `#E8EEFF` |
-| Icon circle | `32×32px`, `#C7D2FE` bg, sparkle icon `#4F6EF7` |
-| Title | "Explore free features", `12px 600`, `#3B4ECC` |
-| Subtitle | "Credit left: 15", `11px`, `#6B7ADE` |
-
----
-
-### Sidebar Toggle
-
-Hamburger (`Bars3`, `18px`, `#6B7280`) in topbar left → `toggleSidebar()` → toggles `.collapsed` on `#sidebar`.
-
-Collapsed: `width: 0`, `min-width: 0`, `opacity: 0`, `border-right: none`.
-Transition: `width/min-width 220ms ease`, `opacity 180ms ease`.
-
----
+Segmented control, `background:#F1F3F4 border:1px solid rgba(0,0,0,0.06) rounded-lg p-0.5`. Grid active by default (`id="view-grid"` has `.toggle-active`). JS: `setView(active)`.
 
 ### Report Grid
 
-`<div id="report-grid">` — 12 cards with `data-type` attributes.
+`id="report-grid"`. Default: `grid grid-cols-4 gap-4`. List view: `.list-view` class added.
 
-| Title | Type | Time |
-|---|---|---|
-| Q4 Strategy Discussion | chat | 5 min ago |
-| Revenue Overview | dashboard | 19 min ago |
-| Product Brief 2026 | document | 32 min ago |
-| Investor Pitch Deck | presentation | 45 min ago |
-| Customer Feedback Form | form | 1 hour ago |
-| My Private Project | project | 2 hours ago |
-| Sprint Planning | chat | 3 hours ago |
-| User Analytics | dashboard | 4 hours ago |
-| Sovereign Capital Gate | project | yesterday |
-| Roadmap 2026 | presentation | yesterday |
-| Onboarding Survey | form | 2 days ago |
+11 sample cards (`data-type` attribute drives filtering):
 
----
+| # | Name | Type | Preview bg | Icon color |
+|---|---|---|---|---|
+| 1 | Q4 Strategy Discussion | `chat` | `#EEF2FF` | `#93A8F4` |
+| 2 | Revenue Overview | `dashboard` | `#F0FDF4` | `#6EE7A6` |
+| 3 | Product Brief 2026 | `document` | `#FFF7ED` | `#FCA96A` |
+| 4 | Investor Pitch Deck | `presentation` | `#F5F3FF` | `#A78BFA` |
+| 5 | Customer Feedback Form | `form` | `#FDF2F8` | `#F4A8D4` |
+| 6 | My Private Project | `project` | `#FFFBEB` | `#FCD34D` |
+| 7 | Sprint Planning | `chat` | `#EEF2FF` | `#93A8F4` |
+| 8 | User Analytics | `dashboard` | `#F0FDF4` | `#6EE7A6` |
+| 9 | Sovereign Capital Gate | `project` | `#FFFBEB` | `#FCD34D` |
+| 10 | Roadmap 2026 | `presentation` | `#F5F3FF` | `#A78BFA` |
+| 11 | Onboarding Survey | `form` | `#FDF2F8` | `#F4A8D4` |
 
-### Report Card
+**Card anatomy:**
 
-**Grid view:** colored preview zone (`160px`) + title/badge/timestamp footer + hidden `...` button.
-
-**List view row:** `[40px icon square] [name (max 200px)] [96px badge] [time auto margin-left] [...]`
-
-Overflow button: `opacity: 0` default, `opacity: 1` on card hover. In list view: always `opacity: 1`.
-
----
-
-### Card Type Badge
-
-`inline-flex`, `gap: 4px`, padding `2px 6px`, radius `4px`, `10px 500`. List view: `width: 96px` fixed, `justify-content: center`.
-
----
-
-### Card Context Menu
-
-Single `#card-menu` (fixed). Shown on `.overflow-btn` click via `DOMContentLoaded` listeners.
-
-Items: **Share · Rename · Edit** — each `13px`, `#374151`, radius `7px`, hover bg `#F3F4F6`.
-
-Positioning: below button (`rect.bottom + 4px`); flips above if < 124px from viewport bottom. Closes on outside click.
-
----
-
-### Scrollbar
-
-```css
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-::-webkit-scrollbar-track { background: transparent; }
 ```
+┌─────────────────────────────┐
+│  Preview area h-40          │  ← type-colored bg + 40px icon
+├─────────────────────────────┤
+│  Title  (14px 500)          │
+│  [type icon  Badge]         │  ← 10px badge
+│  Updated X ago (11px)       │
+│                       [···] │  ← overflow-btn
+└─────────────────────────────┘
+```
+
+Overflow button (`.overflow-btn`): opacity 0 at rest, 1 on `.report-card:hover`. Click → opens `#card-menu` positioned near the button.
+
+---
+
+## Card Context Menu (`#card-menu`)
+
+Fixed-position context menu. Opens via `.overflow-btn` click with smart vertical positioning (flips up if near bottom of viewport). Items: **Share**, **Rename**, **Edit**. All call `cardMenuAction(action)`. Closes on outside click.
 
 ---
 
 ## Modals
 
-### Create Item Modal
+### 1. Create Item (`#create-modal`)
 
-`id="create-modal"` — triggered by all 5 action cards via `openCreateModal(type)`.
-
-Fields:
-- **Name** — `id="modal-name"`, required (red `*`), `h-9` input
-- **Description** — `id="modal-desc"`, optional, 3-row textarea, `resize: none`
-- **Select project** — `id="modal-project"`, static options: "My Private Project" (default), "Sovereign Capital Gate"
-
-Backdrop: `rgba(17,24,39,0.45)` + `blur(2px)`. Width `max-w-md`. Closes on backdrop click or Close button. `handleCreateBtn()` closes the modal (or routes to datasource modal if type is "Add Datasource").
-
----
-
-### Create Project Modal
-
-`id="new-project-modal"` — triggered by "+ Create a project" via `openNewProjectModal()`.
+Opened by `openCreateModal(type)`. Backdrop: `rgba(17,24,39,0.45) blur(2px)`. Max-width `448px`, `rounded-2xl`.
 
 Fields:
-- **Name** — `id="proj-name"`, required, Enter key submits (`onkeydown`)
-- **Description** — `id="proj-desc"`, optional, 3-row textarea
+- **Name** (required) — validation: red ring if empty
+- **Description** (optional) — 3-row textarea
+- **Select project** — dropdown: My Private Project, Sovereign Capital Gate
 
-On `createNewProject()`:
-1. Calls `clearSidebarActive()`
-2. Inserts a new `proj-nav-row` block into `#projects-list` after the pinned project
-3. Row is immediately active (`background:#EEF2FF; border-left:2px solid #5B63F6`)
-4. Name is `text-gray-900` — never brand blue
-5. Includes a `ws-submenu` div (`id="ws-dyn-{timestamp}-sub"`) for future sub-items
-6. Prepends a project card to `#report-grid` (folder icon, `#EEF2FF` bg, "Just now" timestamp, optional description)
+`handleCreateBtn()`:
+- If type is `"Add Datasource"` → closes this modal, opens datasource modal
+- Otherwise → creates a new `.report-card` matching the type, prepends to `#report-grid`, closes modal
 
----
+Closing: `closeCreateModal()` or clicking backdrop.
 
-### Workspace Switcher Modal
+### 2. New Project (`#new-project-modal`)
 
-`id="ws-modal-backdrop"` — triggered by the sidebar workspace switcher button.
+Opened by `openNewProjectModal()` from sidebar `+ Create a project`. Max-width `448px`, `rounded-2xl`.
+
+Fields: **Name** (required, Enter submits) + **Description** (optional).
+
+`createNewProject()`:
+1. Calls `clearSidebarActive()` to remove any active nav state
+2. Inserts new collapsible project row into `#projects-list` (after pinned ws2 block), highlighted with `background:#EEF2FF; border-left:2px solid #5B63F6`
+3. Prepends a project card (`data-type="project"`) to `#report-grid`
+4. Closes modal
+
+### 3. Workspace Switcher (`#ws-modal-backdrop` / `#ws-modal`)
+
+Opened by `openWsModal()`. Backdrop: `rgba(17,24,39,0.45) backdrop-filter:blur(2px)`. Click backdrop → `closeWsModal(event)`.
 
 | Property | Value |
 |---|---|
-| Backdrop | `rgba(17,24,39,0.45)` + `blur(2px)`, full-screen, `z-50` |
-| Modal card | `max-w-lg`, `border-radius: 16px`, `max-height: 620px` |
+| Modal max-width | `512px` (`max-w-lg`) |
+| Max-height | `620px` |
+| Radius | `rounded-2xl` |
 | Shadow | `0 20px 60px rgba(0,0,0,0.18)` |
 
-**Header:** "Switch Workspace" title + "New Workspace" button → `openNewWsModal()`.
+**Header:** "Switch Workspace" title + "New Workspace" button (`background:#5B63F6`) → `openNewWsModal()`.  
+**Search:** `id="ws-search"`, `oninput="filterWsList()"` → `renderWsModalList(filter)`.  
+**List:** `id="ws-modal-list"`. Shows 5 rows; scrolls beyond.
 
-**Search:** `id="ws-search"`, `oninput="filterWsList()"`, real-time filter.
+`wsData` array (6 entries, merged with `localStorage('aibii_workspaces')`):
 
-**Workspace list** (`#ws-modal-list`): `renderWsModalList(filter)`. Max 5 visible rows (`44px × 5`), scrolls beyond. Current workspace: `bg-indigo-50` + checkmark.
-
-**`wsData` (6 defaults):**
-
-| id | Name | Color |
-|---|---|---|
-| `ws-manish` | Manish kumar's Workspace | `#3B5BDB` |
-| `ws-scg` | Sovereign Capital Gate | `#5B63F6` |
-| `ws-design` | Design System | `#16A34A` |
-| `ws-data` | Data Analytics | `#F97316` |
-| `ws-prod` | Product Research | `#8B5CF6` |
-| `ws-mkt` | Marketing Hub | `#EC4899` |
-
-Workspaces from the create-workspace page are merged from `localStorage` key `aibii_workspaces` on load.
-
-JS: `openWsModal()`, `closeWsModal(e)`, `filterWsList()`, `renderWsModalList(filter)`, `selectWorkspace(id)`.
-
----
-
-### New Workspace Modal
-
-`id="new-ws-modal"` — full-screen (not a centered overlay). Triggered by "New Workspace" inside the switcher modal.
-
-**Structure:**
-- Fixed topbar: Aibii logo + close (`closeNewWsModal()`)
-- Centered card (`max-w-sm`, white, `border-radius: 16px`)
-
-**Fields:**
-- **Avatar preview** (`id="ws-preview-avatar"`) — `44×44px` rounded-xl, click → `cycleWsColor()`
-- **Name preview** (`id="ws-preview-name"`) — updates live via `onWsNameInput()`
-- **Name** (`id="new-ws-name"`) — required, Enter submits
-- **Description** (`id="new-ws-desc"`) — optional, 2-row textarea
-
-`cycleWsColor()` cycles 7 colors: `#5B63F6 #16A34A #F97316 #8B5CF6 #EC4899 #0EA5E9 #EAB308`.
-
-`createNewWs()` pushes to `wsData` and calls `selectWorkspace(newWs.id)`.
-
----
-
-### Datasource Import Modal
-
-`id="datasource-modal"` — 2-step wizard, `max-width: 520px`. Triggered via `openDatasourceModal()`.
-
-**Step indicator:** Circles `ds-step1-circle` / `ds-step2-circle` + `1px` connector. Active = `#5B63F6` + white text. Completed = gray + checkmark SVG.
-
-**Step 1 — Choose app** (`ds-body-step1`): Grid of `ds-app-btn` tiles.
-
-| Source | Notes |
-|---|---|
-| File Upload | Drag-and-drop or browse; max 10MB |
-| Google Drive | Paste folder/file URL; scope toggle (folder vs single file) |
-| Notion | Integration token (password input) + optional page URL |
-
-Selected app tile: `2px solid #5B63F6` + `#F8F8FF` bg. Advance → `dsGoStep2()`.
-
-**Step 2 — Import docs** (`ds-body-step2`): Rendered dynamically by `dsGoStep2()` based on `dsSelectedApp`. Upload zone: `ondrop` → `handleDsFiles(files)` renders name + KB per file.
-
-JS: `openDatasourceModal()`, `closeDatasourceModal()`, `dsGoStep1()`, `dsGoStep2()`, `selectDsApp(btn, app)`, `handleDsFiles(files)`.
-
----
-
-## States & Interactions
-
-| Component | State | Visual |
-|---|---|---|
-| Topbar hamburger | Hover | `rounded-md bg-gray-100` |
-| Notification bell | Hover | `rounded-lg bg-gray-100` |
-| Notification bell | Open | `#notif-dropdown` visible, outside-click closes |
-| Notification item | Unread | `bg-indigo-50/40`, `bg-indigo-500` dot |
-| Notification item | After markAllRead | white bg, dots removed |
-| User pill | Hover | `bg-gray-100` |
-| Report card | Hover | `rgba(91,99,246,0.4)` border, `shadow-card-hover`, `translateY(-1px)`, `...` visible |
-| Filter tab | Active | `#FFFFFF` bg, border, shadow, `#111827` text |
-| View toggle btn | Active | `#EEF2FF` bg, brand shadow, `#5B63F6` icon |
-| Sidebar | Collapsed | `width: 0`, `opacity: 0` |
-| Context menu | Open | `.open` class, `display: block`, fixed |
-| Project chevron | Expanded | rotated `90deg` |
-| Workspace switcher modal | Open | `#ws-modal-backdrop.open` (`display: flex`) |
-| New workspace modal | Open | `#new-ws-modal` removes `.hidden` |
-| Active sidebar nav (Recent) | — | `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px` |
-| Active sidebar nav (project row) | — | `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px` |
-| Type filter item | Active | `background:#EEF2FF`, `font-weight:600` |
-
----
-
-## Motion & Animation
-
-| Interaction | Duration | Easing | Properties |
+| `id` | Name | Initial | Color |
 |---|---|---|---|
-| Card hover | `150ms` | `ease-out` | `box-shadow`, `transform`, `border-color` |
-| `...` appear | `100ms` | `ease` | `opacity` |
-| Tab switch | `120ms` | `ease` | `background-color`, `box-shadow`, `color` |
-| View toggle | `150ms` | `ease` | `background-color`, `box-shadow`, `color` |
-| Nav hover | `100ms` | `ease` | `background-color` |
-| Type filter item hover | `80ms` | `ease` | `background-color` |
-| Project chevron | `150ms` | `ease` | `transform` |
-| Sidebar collapse | `220ms` / `180ms` | `ease` | `width`, `min-width` / `opacity` |
-| Modal open/close | instant | — | `.hidden` toggle |
-| Workspace modal open/close | instant | — | `.open` toggle |
+| `ws-manish` | Manish kumar's Workspace | M | `#3B5BDB` |
+| `ws-scg` | Sovereign Capital Gate | S | `#5B63F6` |
+| `ws-design` | Design System | D | `#16A34A` |
+| `ws-data` | Data Analytics | A | `#F97316` |
+| `ws-prod` | Product Research | P | `#8B5CF6` |
+| `ws-mkt` | Marketing Hub | H | `#EC4899` |
+
+`selectWorkspace(id)` — sets `ws.current`, updates `#ws-name` (truncated at 24 chars) and `#ws-avatar` bg/initial, closes modal.
+
+### 4. New Workspace (`#new-ws-modal`, full-screen)
+
+Opened by `openNewWsModal()`. Full-screen `background:#F3F4F6` with a mini Aibii topbar (close ×).
+
+Form fields: **Name** (required, Enter submits) + **Description** (optional).
+
+Live preview: `id="ws-preview-avatar"` + `id="ws-preview-name"` (updates via `onWsNameInput(val)`).
+
+`cycleWsColor()` — clicking avatar cycles through 7 colors: `#5B63F6 → #16A34A → #F97316 → #8B5CF6 → #EC4899 → #0EA5E9 → #EAB308`.
+
+`createNewWs()` — pushes new entry to `wsData`, calls `selectWorkspace(newWs.id)`, closes screen.
+
+### 5. Datasource Import (`#datasource-modal`)
+
+Triggered from `handleCreateBtn()` when type is `"Add Datasource"`. 2-step wizard, max-width `520px`.
+
+**Step 1 — Choose app:** Grid of source buttons (`.ds-app-btn`). `selectDsApp(btn, app)` highlights selection with `border-color:#5B63F6 border-width:2px`. `dsSelectedApp` defaults to `"upload"`.
+
+**Step 2 — Import docs:** Content rendered by `dsGoStep2()` based on `dsSelectedApp`:
+- `"upload"` → drag-and-drop zone; `handleDsFiles(files)` renders file list in `#ds-file-list`
+- `"gdrive"` → URL input + scope radio (Entire folder / Single file)
+- `"notion"` → Integration token input + optional page URL
+
+Stepper: `dsGoStep1()` / `dsGoStep2()` update circle backgrounds and label styles.
 
 ---
 
-## Design Principles
+## JavaScript Functions Reference
 
-1. **Recency as Priority** — 4-column grid maximises visible item count, surfacing in-progress work immediately.
-2. **Flat Hierarchy, Contextual Depth** — elevation appears only on interaction.
-3. **Segmented Filtering In-Place** — 4 tabs + type filter + search, no page reload.
-4. **Consistent Type Visual Language** — each type has a unique colour across sidebar sub-items, badges, card thumbnails, and the filter dropdown.
-5. **Progressive Disclosure** — `...` menus, sub-items, and dropdowns hidden until triggered.
-6. **Dual-Mode Grid** — list view preserves all data in compact rows with a fixed-width type column.
-7. **Single Active State** — only one sidebar item (Recent or a project row) is highlighted at a time; `clearSidebarActive()` enforces this.
+| Function | Description |
+|---|---|
+| `setTab(active)` | Activates a filter tab (`me` / `everyone` / `shared` / `everything`) |
+| `setView(active)` | Switches `#report-grid` between grid and list layout |
+| `toggleSidebar()` | Toggles `.collapsed` on `#sidebar` |
+| `toggleWorkspace(id)` | Toggles `.open` on project submenu `#wsN-sub` |
+| `clearSidebarActive()` | Removes active styles from Recent nav + all project rows |
+| `toggleTypeFilter()` | Opens / closes `#type-dropdown` |
+| `setTypeFilter(type, el)` | Sets active type filter; clicking same type clears it |
+| `applyFilters()` | Hides / shows `.report-card` elements by search + type |
+| `filterItems(query)` | Calls `applyFilters()` from search input |
+| `openCreateModal(type)` / `closeCreateModal()` | Create Item modal lifecycle |
+| `handleCreateBtn()` | Validates, creates new card, closes modal |
+| `openNewProjectModal()` / `closeNewProjectModal()` | New Project modal lifecycle |
+| `createNewProject()` | Adds sidebar row + grid card for new project |
+| `cardMenuAction(action)` | Handles context menu item clicks |
+| `toggleNotifications()` | Toggles `#notif-dropdown`, closes `#user-dropdown` |
+| `markAllRead()` | Clears unread bg/dots, hides `#notif-dot` |
+| `toggleUserMenu()` | Toggles `#user-dropdown`, closes `#notif-dropdown` |
+| `openWsModal()` / `closeWsModal(e)` | Workspace Switcher modal lifecycle |
+| `renderWsModalList(filter)` | Renders filtered workspace rows in `#ws-modal-list` |
+| `filterWsList()` | Calls `renderWsModalList` from `#ws-search` input |
+| `selectWorkspace(id)` | Switches active workspace, updates sidebar header |
+| `openNewWsModal()` / `closeNewWsModal()` | New Workspace full-screen lifecycle |
+| `cycleWsColor()` | Cycles avatar color through 7 presets |
+| `onWsNameInput(val)` | Updates live preview name + avatar letter |
+| `createNewWs()` | Pushes new workspace to `wsData`, selects it |
+| `openDatasourceModal()` / `closeDatasourceModal()` | Datasource Import modal lifecycle |
+| `dsGoStep1()` / `dsGoStep2()` | Datasource wizard step transitions |
+| `selectDsApp(btn, app)` | Highlights selected source app button |
+| `handleDsFiles(files)` | Renders dropped / browsed file list in `#ds-file-list` |
 
 ---
 
-## File Structure
+## CSS Custom Classes
 
-```
-recent-view/
-├── assets/
-├── tokens/
-│   ├── colors.json
-│   ├── typography.json
-│   └── spacing.json
-├── components/
-├── index.html
-└── README.md
-```
+| Class | Purpose |
+|---|---|
+| `.nav-item` | Sidebar row hover: `hover:bg-gray-100 rounded-lg` |
+| `.action-card` | Hover lift: `translateY(-1px)` + shadow |
+| `.report-card` | Card hover shadow transition |
+| `.overflow-btn` | Opacity 0 → 1 on parent `.report-card:hover` |
+| `.card-menu` | Context menu toggled via `.open` (opacity + pointer-events) |
+| `.filter-tab` | Pill tab transition (background, box-shadow) |
+| `.toggle-btn` | View toggle button; inactive icon `#6B7280` |
+| `.toggle-active` | Active toggle: `bg-white shadow` + icon `#5B63F6` |
+| `.type-dropdown` | Type filter dropdown; shown via `.open` (`opacity:1 pointer-events:all`) |
+| `.ws-submenu` | Project submenu; `max-height:0 overflow:hidden` → `160px` via `.open` |
+| `.list-view .report-card` | Horizontal list row layout |
+| `#ws-modal-backdrop` | WS modal backdrop; `display:none` → `flex` via `.open` |
+| `#sidebar.collapsed` | Collapses sidebar to zero width |
 
 ---
 
-*Design language version 2.3 — Aibii AI Business Intelligence SaaS · Recent View, May 2026.*
+## Design Tokens (Tailwind config)
+
+| Token | Hex | Usage |
+|---|---|---|
+| `brand.primary` | `#5B63F6` | Active nav border, focus rings, CTAs, type filter icon |
+| `brand.secondary` | `#7C6FF7` | Secondary brand accents |
+| `brand.upgrade` | `#7C3AED` | Upgrade prompts |
+| `sidebar` | `#F8F9FC` | Sidebar background |
+| `hover` | `#EEF2FF` | Active nav bg, item hover, action card icon bg |
+| `tab-container` | `#F3F4F6` | Pill tab container, view toggle bg |
