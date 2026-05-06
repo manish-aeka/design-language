@@ -133,9 +133,6 @@
     .ds-filter-scroll::-webkit-scrollbar { width: 4px; }
     .ds-filter-scroll::-webkit-scrollbar-track { background: transparent; }
     .ds-filter-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
-    #billing-year-dropdown::-webkit-scrollbar { width: 2px; }
-    #billing-year-dropdown::-webkit-scrollbar-track { background: transparent; }
-    #billing-year-dropdown::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
     /* Workspace switcher dropdown */
     .ws-switcher-dropdown { display: none; }
     /* Connector wizard step flow */
@@ -553,7 +550,7 @@
                 class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                 style="width:120px; justify-content:space-between;">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                <span id="settings-ds-type-label">Category</span>
+                <span id="settings-ds-type-label">Type</span>
                 <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
               <div id="settings-ds-type-dropdown"
@@ -715,7 +712,7 @@
                   class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                   style="width:120px; justify-content:space-between;">
                   <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                  <span id="org-ds-type-label">Category</span>
+                  <span id="org-ds-type-label">Type</span>
                   <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div id="org-ds-type-dropdown"
@@ -747,46 +744,47 @@
 
         <!-- Sub-panel: Billing -->
         <div id="orgpanel-billing" class="ws-panel">
-          <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col flex-1 min-h-0 gap-0">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card flex-1 min-h-0 overflow-hidden">
+          <div class="h-full overflow-y-auto p-5">
 
             <!-- Plan header row -->
-            <div class="flex items-start justify-between mb-1.5">
+            <div class="flex items-start justify-between mb-5 pb-5 border-b border-gray-100">
               <div>
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold mb-2" style="background:#EEF2FF;color:#5B63F6">
                   <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
                   Pro plan
                 </span>
                 <div class="flex items-baseline gap-1">
-                  <span class="text-[26px] font-extrabold text-gray-900 leading-none">$29</span>
+                  <span class="text-[26px] font-extrabold text-gray-900 leading-none">₹2,499</span>
                   <span class="text-[13px] text-gray-400">/ month</span>
                 </div>
-                <p class="text-[12px] text-gray-400 mt-0.5">Next billing: <span class="font-medium text-gray-600">June 1, 2026</span></p>
+                <p class="text-[12px] text-gray-400 mt-1">Next billing: <span class="font-medium text-gray-600">June 1, 2026</span></p>
               </div>
-              <button class="px-4 h-6 rounded-full border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors mt-1">Manage plan</button>
+              <button class="px-4 h-8 rounded-full border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors mt-1">Manage plan</button>
             </div>
 
             <!-- Usage stats -->
-            <div class="grid grid-cols-3 gap-4 pb-4 border-b border-gray-100">
+            <div class="grid grid-cols-3 gap-4 mb-5 pb-5 border-b border-gray-100">
               <div>
-                <p class="text-[11px] text-gray-400 mb-1">AI credits</p>
-                <p class="text-[13px] font-semibold text-gray-900 mb-1.5">1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span></p>
+                <p class="text-[12px] font-medium text-gray-600 mb-1">AI credits</p>
+                <p class="text-[13px] font-semibold text-gray-900 mb-2">1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span></p>
                 <div class="h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
               </div>
               <div>
-                <p class="text-[11px] text-gray-400 mb-1">Datasources</p>
-                <p class="text-[13px] font-semibold text-gray-900 mb-1.5">5 <span class="text-[11px] font-normal text-gray-400">/ 20</span></p>
+                <p class="text-[12px] font-medium text-gray-600 mb-1">Datasources</p>
+                <p class="text-[13px] font-semibold text-gray-900 mb-2">5 <span class="text-[11px] font-normal text-gray-400">/ 20</span></p>
                 <div class="h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full rounded-full" style="width:25%;background:#5B63F6"></div></div>
               </div>
               <div>
-                <p class="text-[11px] text-gray-400 mb-1">Workspaces</p>
-                <p class="text-[13px] font-semibold text-gray-900 mb-1.5">2 <span class="text-[11px] font-normal text-gray-400">/ 5</span></p>
+                <p class="text-[12px] font-medium text-gray-600 mb-1">Workspaces</p>
+                <p class="text-[13px] font-semibold text-gray-900 mb-2">2 <span class="text-[11px] font-normal text-gray-400">/ 5</span></p>
                 <div class="h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full rounded-full" style="width:40%;background:#F97316"></div></div>
               </div>
             </div>
 
             <!-- Payment method -->
-            <div class="py-1.5 border-b border-gray-100">
-              <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2.5">Payment method</p>
+            <div class="mb-5 pb-5 border-b border-gray-100">
+              <p class="text-[12px] font-medium text-gray-600 mb-3">Payment method</p>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-7 rounded-md flex items-center justify-center border border-gray-200 bg-white flex-shrink-0">
@@ -797,24 +795,25 @@
                     <p class="text-[11px] text-gray-400">Expires 08 / 2027</p>
                   </div>
                 </div>
-                <button class="px-3 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
+                <button class="px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
               </div>
             </div>
 
             <!-- Recent invoices -->
-            <div class="pt-1.5 flex flex-col flex-1 min-h-0">
-              <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
-                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Recent invoices</p>
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <p class="text-[12px] font-medium text-gray-600">Recent invoices</p>
                 <div class="relative flex-shrink-0">
                   <button onclick="toggleBillingYearDropdown()" id="billing-year-btn"
-                    class="flex items-center gap-1.5 px-2.5 h-6 rounded-md text-[12px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
-                    style="min-width:68px;justify-content:space-between;">
+                    class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                    style="width:110px; justify-content:space-between;">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
                     <span id="billing-year-label">2026</span>
-                    <svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    <svg class="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                   </button>
                   <div id="billing-year-dropdown"
-                    class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-0.5 bg-white overflow-y-auto"
-                    style="min-width:80px;max-height:120px;overflow-x:hidden;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06);scrollbar-width:thin;scrollbar-color:#D1D5DB transparent;">
+                    class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[120px] bg-white ds-filter-scroll"
+                    style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06);">
                     <button onclick="selectBillingYear(2026)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50 font-medium">2026</button>
                     <button onclick="selectBillingYear(2025)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2025</button>
                     <button onclick="selectBillingYear(2024)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2024</button>
@@ -823,9 +822,10 @@
                   </div>
                 </div>
               </div>
-              <div id="billing-invoice-list" class="overflow-y-auto overflow-x-hidden ds-filter-scroll flex-1 min-h-0 divide-y divide-gray-100"></div>
+              <div id="billing-invoice-list" class="divide-y divide-gray-100"></div>
             </div>
 
+          </div>
           </div>
         </div><!-- /billing -->
 
@@ -837,24 +837,37 @@
   <!-- ═══ ADD USER TO WORKSPACE MODAL ═══ -->
   <div id="add-user-overlay" onclick="if(event.target===this)closeAddUserModal()"
     style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[92vw] overflow-hidden">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[92vw]">
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-        <div>
-          <h2 class="text-[17px] font-bold text-gray-900">Invite to workspace</h2>
-          <p class="text-[12px] text-gray-400 mt-0.5">They'll receive an email invite link</p>
-        </div>
+        <h2 class="text-[17px] font-bold text-gray-900">Add to workspace</h2>
         <button onclick="closeAddUserModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       <!-- Body -->
       <div class="px-6 py-5 space-y-4">
-        <!-- Email -->
+        <!-- Member search -->
         <div>
-          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email address <span class="text-red-400">*</span></label>
-          <input id="au-email" type="email" placeholder="colleague@example.com"
-            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Member <span class="text-red-400">*</span></label>
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+            <input id="au-member-search" type="text" placeholder="Search by name or email…" autocomplete="off"
+              oninput="filterAuMembers(this.value)"
+              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          </div>
+          <!-- inline results list — part of flow, no absolute overflow -->
+          <div id="au-member-dropdown" class="hidden mt-1.5 rounded-xl border border-gray-200 overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+            <div id="au-member-dropdown-inner" class="bg-white py-1.5 overflow-y-auto" style="max-height:172px;scrollbar-width:thin;scrollbar-color:#D1D5DB transparent"></div>
+          </div>
+          <!-- selected chip -->
+          <div id="au-selected-chip" class="hidden mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50">
+            <div id="au-chip-avatar" class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"></div>
+            <span id="au-chip-name" class="text-[13px] font-medium text-gray-900 flex-1 truncate"></span>
+            <button type="button" onclick="clearAuMember()" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
         </div>
         <!-- Role -->
         <div>
@@ -869,19 +882,13 @@
           </div>
           <p class="text-[11px] text-gray-400 mt-1.5" id="au-role-hint">Viewer — can view dashboards only</p>
         </div>
-        <!-- Personal message -->
-        <div>
-          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Personal message <span class="text-gray-400 font-normal">(optional)</span></label>
-          <textarea id="au-message" rows="2" placeholder="Add a note to the invite email…"
-            class="w-full px-3 py-2 text-[13px] text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"></textarea>
-        </div>
       </div>
       <!-- Footer -->
       <div class="flex items-center justify-end gap-2 px-6 pb-5">
         <button onclick="closeAddUserModal()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
         <button onclick="sendWorkspaceInvite()" class="flex items-center gap-1.5 px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-          Send invite
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+          Add member
         </button>
       </div>
     </div>
@@ -1042,7 +1049,7 @@
 
     function filterSettingDsType(connector) {
       settingDsTypeFilter = connector;
-      document.getElementById('settings-ds-type-label').textContent = connector === 'All' ? 'Category' : connector;
+      document.getElementById('settings-ds-type-label').textContent = connector === 'All' ? 'Type' : connector;
       document.getElementById('settings-ds-type-dropdown').classList.remove('open');
       renderSettingDsTable();
     }
@@ -1199,14 +1206,17 @@
 
     function openAddUserModal() {
       _auSelectedRole = '';
-      document.getElementById('au-email').value   = '';
-      document.getElementById('au-message').value = '';
+      _auSelectedMember = null;
+      document.getElementById('au-member-search').value = '';
+      document.getElementById('au-member-dropdown').classList.add('hidden');
+      document.getElementById('au-selected-chip').classList.add('hidden');
       document.querySelectorAll('.au-role-btn').forEach(b => {
         b.style.background = b.style.borderColor = b.style.color = b.style.fontWeight = '';
       });
       document.getElementById('au-role-hint').textContent = 'Viewer — can view dashboards only';
+      document.getElementById('au-role-hint').style.color = '';
       document.getElementById('add-user-overlay').style.display = 'flex';
-      setTimeout(() => document.getElementById('au-email').focus(), 50);
+      setTimeout(() => document.getElementById('au-member-search').focus(), 50);
     }
 
     function closeAddUserModal() {
@@ -1215,17 +1225,69 @@
 
     const AU_AVATAR_COLORS = ['#3B5BDB','#0F9D58','#F97316','#8B5CF6','#22C55E','#DD344C','#D97706','#0EA5E9'];
 
+    const ORG_MEMBERS_LIST = [
+      { name:'Manish Kumar', email:'manish@aibii.com', initial:'M', color:'#3B5BDB' },
+      { name:'Arjun Patel',  email:'arjun@aibii.com',  initial:'A', color:'#0F9D58' },
+      { name:'Sneha Rao',    email:'sneha@aibii.com',   initial:'S', color:'#F97316' },
+      { name:'Riya Sharma',  email:'riya@aibii.com',    initial:'R', color:'#8B5CF6' },
+      { name:'Dev Verma',    email:'dev@aibii.com',     initial:'D', color:'#22C55E' },
+    ];
+    let _auSelectedMember = null;
+
+    function filterAuMembers(q) {
+      _auSelectedMember = null;
+      document.getElementById('au-selected-chip').classList.add('hidden');
+      const dd = document.getElementById('au-member-dropdown');
+      const inner = document.getElementById('au-member-dropdown-inner');
+      if (!q.trim()) { dd.classList.add('hidden'); return; }
+      const matches = ORG_MEMBERS_LIST.filter(m =>
+        m.name.toLowerCase().includes(q.toLowerCase()) ||
+        m.email.toLowerCase().includes(q.toLowerCase())
+      );
+      if (!matches.length) { inner.innerHTML = '<p class="px-4 py-3 text-[13px] text-gray-400">No members found</p>'; dd.classList.remove('hidden'); return; }
+      inner.innerHTML = matches.map((m, i) => {
+        const idx = ORG_MEMBERS_LIST.indexOf(m);
+        return `<button type="button" onclick="selectAuMember(${idx})" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:${m.color}">${m.initial}</div>
+          <div class="min-w-0">
+            <p class="text-[13px] font-medium text-gray-900 truncate">${m.name}</p>
+            <p class="text-[11px] text-gray-400 truncate">${m.email}</p>
+          </div>
+        </button>`;
+      }).join('');
+      dd.classList.remove('hidden');
+    }
+
+    function selectAuMember(idx) {
+      const m = ORG_MEMBERS_LIST[idx];
+      _auSelectedMember = m;
+      document.getElementById('au-member-search').value = '';
+      document.getElementById('au-member-dropdown').classList.add('hidden');
+      const chip = document.getElementById('au-selected-chip');
+      document.getElementById('au-chip-avatar').style.background = m.color;
+      document.getElementById('au-chip-avatar').textContent = m.initial;
+      document.getElementById('au-chip-name').textContent = m.name + ' · ' + m.email;
+      chip.classList.remove('hidden');
+    }
+
+    function clearAuMember() {
+      _auSelectedMember = null;
+      document.getElementById('au-selected-chip').classList.add('hidden');
+      document.getElementById('au-member-search').value = '';
+      document.getElementById('au-member-search').focus();
+    }
+
     function sendWorkspaceInvite() {
-      const email = document.getElementById('au-email').value.trim();
-      if (!email) { document.getElementById('au-email').focus(); return; }
+      if (!_auSelectedMember) { document.getElementById('au-member-search').focus(); return; }
       if (!_auSelectedRole) {
         document.getElementById('au-role-hint').textContent = '⚠ Please select a role';
         document.getElementById('au-role-hint').style.color = '#DC2626';
         return;
       }
-      // Optimistically add a pending row to the workspace users table
-      const initial = email[0].toUpperCase();
-      const bg = AU_AVATAR_COLORS[Math.floor(Math.random() * AU_AVATAR_COLORS.length)];
+      const { name: email, initial, color: bg } = _auSelectedMember;
+      // reuse vars named 'email' just for compat with row builder below
+      const _name = _auSelectedMember.name;
+      const _email = _auSelectedMember.email;
       const roleCell = `<select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
         <option${_auSelectedRole==='Admin'?' selected':''}>Admin</option>
         <option${_auSelectedRole==='Editor'?' selected':''}>Editor</option>
@@ -1237,10 +1299,8 @@
         <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:${bg}">${initial}</div>
           <div class="min-w-0">
-            <p class="text-[13px] font-medium text-gray-900 truncate">${email}</p>
-            <p class="text-[11px] text-gray-400 truncate flex items-center gap-1">
-              <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0"></span>Invite pending
-            </p>
+            <p class="text-[13px] font-medium text-gray-900 truncate">${_name}</p>
+            <p class="text-[11px] text-gray-400 truncate">${_email}</p>
           </div>
         </div>
         <div class="w-24 flex justify-end">${roleCell}</div>`;
@@ -1292,7 +1352,7 @@
     function filterOrgDs(q) { orgDsSearchTerm = q.toLowerCase(); renderOrgDsTable(); }
     function filterOrgDsType(connector) {
       orgDsTypeFilter = connector;
-      document.getElementById('org-ds-type-label').textContent = connector === 'All' ? 'Category' : connector;
+      document.getElementById('org-ds-type-label').textContent = connector === 'All' ? 'Type' : connector;
       document.getElementById('org-ds-type-dropdown').classList.remove('open');
       renderOrgDsTable();
     }
@@ -1313,47 +1373,47 @@
 
     const BILLING_INVOICES = {
       2026: [
-        { date:'May 1, 2026',  amount:'$29.00', status:'Paid' },
-        { date:'Apr 1, 2026',  amount:'$29.00', status:'Paid' },
-        { date:'Mar 1, 2026',  amount:'$29.00', status:'Paid' },
-        { date:'Feb 1, 2026',  amount:'$29.00', status:'Paid' },
-        { date:'Jan 1, 2026',  amount:'$29.00', status:'Paid' },
+        { date:'May 1, 2026',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Apr 1, 2026',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Mar 1, 2026',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Feb 1, 2026',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Jan 1, 2026',  amount:'₹2,499.00', status:'Paid' },
       ],
       2025: [
-        { date:'Dec 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Nov 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Oct 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Sep 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Aug 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Jul 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Jun 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'May 1, 2025',  amount:'$29.00', status:'Paid' },
-        { date:'Apr 1, 2025',  amount:'$19.00', status:'Paid' },
-        { date:'Mar 1, 2025',  amount:'$19.00', status:'Paid' },
-        { date:'Feb 1, 2025',  amount:'$19.00', status:'Paid' },
-        { date:'Jan 1, 2025',  amount:'$19.00', status:'Paid' },
+        { date:'Dec 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Nov 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Oct 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Sep 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Aug 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Jul 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Jun 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'May 1, 2025',  amount:'₹2,499.00', status:'Paid' },
+        { date:'Apr 1, 2025',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Mar 1, 2025',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Feb 1, 2025',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Jan 1, 2025',  amount:'₹1,599.00', status:'Paid' },
       ],
       2024: [
-        { date:'Dec 1, 2024',  amount:'$19.00', status:'Paid' },
-        { date:'Nov 1, 2024',  amount:'$19.00', status:'Paid' },
-        { date:'Oct 1, 2024',  amount:'$19.00', status:'Paid' },
-        { date:'Sep 1, 2024',  amount:'$19.00', status:'Paid' },
-        { date:'Aug 1, 2024',  amount:'$19.00', status:'Paid' },
-        { date:'Jul 1, 2024',  amount:'$19.00', status:'Paid' },
-        { date:'Jun 1, 2024',  amount:'$9.00',  status:'Paid' },
-        { date:'May 1, 2024',  amount:'$9.00',  status:'Paid' },
+        { date:'Dec 1, 2024',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Nov 1, 2024',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Oct 1, 2024',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Sep 1, 2024',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Aug 1, 2024',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Jul 1, 2024',  amount:'₹1,599.00', status:'Paid' },
+        { date:'Jun 1, 2024',  amount:'₹799.00',   status:'Paid' },
+        { date:'May 1, 2024',  amount:'₹799.00',   status:'Paid' },
       ],
       2023: [
-        { date:'Dec 1, 2023',  amount:'$9.00',  status:'Paid' },
-        { date:'Nov 1, 2023',  amount:'$9.00',  status:'Paid' },
-        { date:'Oct 1, 2023',  amount:'$9.00',  status:'Paid' },
-        { date:'Sep 1, 2023',  amount:'$9.00',  status:'Paid' },
-        { date:'Aug 1, 2023',  amount:'$9.00',  status:'Paid' },
+        { date:'Dec 1, 2023',  amount:'₹799.00', status:'Paid' },
+        { date:'Nov 1, 2023',  amount:'₹799.00', status:'Paid' },
+        { date:'Oct 1, 2023',  amount:'₹799.00', status:'Paid' },
+        { date:'Sep 1, 2023',  amount:'₹799.00', status:'Paid' },
+        { date:'Aug 1, 2023',  amount:'₹799.00', status:'Paid' },
       ],
       2022: [
-        { date:'Dec 1, 2022',  amount:'$9.00',  status:'Paid' },
-        { date:'Nov 1, 2022',  amount:'$9.00',  status:'Paid' },
-        { date:'Oct 1, 2022',  amount:'$9.00',  status:'Paid' },
+        { date:'Dec 1, 2022',  amount:'₹799.00', status:'Paid' },
+        { date:'Nov 1, 2022',  amount:'₹799.00', status:'Paid' },
+        { date:'Oct 1, 2022',  amount:'₹799.00', status:'Paid' },
       ],
     };
 
@@ -1422,6 +1482,9 @@
       }
       if (!e.target.closest('#billing-year-dropdown') && !e.target.closest('#billing-year-btn')) {
         document.getElementById('billing-year-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('#au-member-dropdown') && !e.target.closest('#au-member-search')) {
+        document.getElementById('au-member-dropdown')?.classList.add('hidden');
       }
       if (!e.target.closest('#cb-cat-dropdown') && !e.target.closest('[onclick="cbToggleCatDropdown()"]')) {
         document.getElementById('cb-cat-dropdown')?.classList.remove('open');
@@ -1526,7 +1589,7 @@
               class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
               style="width:130px; justify-content:space-between;">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-              <span id="cb-cat-label">Category</span>
+              <span id="cb-cat-label">Type</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div id="cb-cat-dropdown"
