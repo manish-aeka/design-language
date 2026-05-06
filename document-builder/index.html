@@ -42,22 +42,19 @@
     .nav-item:hover { background-color: #EEF2FF; }
 
     /* Sidebar collapse */
-    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow-x: hidden; overflow-y: auto; }
     #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
 
     /* Workspace submenu */
     .ws-submenu { display: none; }
     .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
+    .ws-submenu a { overflow: hidden; }
     .ws-chevron { transition: transform 150ms ease; }
     .ws-item.open .ws-chevron { transform: rotate(90deg); }
 
     /* Workspace switcher modal */
     #ws-modal-backdrop { display: none; }
     #ws-modal-backdrop.open { display: flex; }
-
-    /* Editable title */
-    #doc-title:empty:before { content: attr(data-placeholder); color: #9CA3AF; }
-    #doc-title:focus { outline: none; }
 
     /* Editor placeholder */
     #doc-body:empty:before { content: attr(data-placeholder); color: #9CA3AF; cursor: text; }
@@ -106,6 +103,16 @@
     /* Notification dropdown */
     #notif-dropdown.hidden { display: none; }
     #user-dropdown.hidden { display: none; }
+    .toolbar-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 10px; height: 30px; border-radius: 8px;
+      border: 1px solid #E5E7EB; background: #fff;
+      font-size: 12px; font-weight: 500; color: #374151;
+      cursor: pointer; transition: background-color 100ms ease;
+      white-space: nowrap;
+    }
+    .toolbar-btn:hover { background: #F9FAFB; }
+    .toolbar-btn svg { flex-shrink: 0; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -150,74 +157,80 @@
       </div>
       <div id="projects-list" class="space-y-0.5 mt-0.5">
 
-        <!-- Workspace: My Private Project — ACTIVE (document open) -->
+        <!-- Workspace: My Private Project — collapsed -->
         <div>
-          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px;">
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
             <button onclick="toggleWorkspace('ws2')" id="ws2-btn"
               class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
               <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
-            <a href="#" class="flex-1 text-sm font-medium text-gray-900 truncate">My Private Project</a>
-            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Pinned">
-              <path d="M12 17v5"/>
-              <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76z"/>
-            </svg>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
           </div>
           <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Q4 Strategy
+              <span class="truncate min-w-0 flex-1">Q4 Strategy</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Revenue Overview
+              <span class="truncate min-w-0 flex-1">Revenue Overview</span>
             </a>
-            <!-- Active document item -->
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-medium" style="background:#EEF2FF; color:#5B63F6">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Untitled
+              <span class="truncate min-w-0 flex-1">Untitled</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Investor Update
+              <span class="truncate min-w-0 flex-1">Investor Update</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Meeting Notes
+              <span class="truncate min-w-0 flex-1">Meeting Notes</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              KPI Tracker
+              <span class="truncate min-w-0 flex-1">KPI Tracker</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Roadmap 2026
+              <span class="truncate min-w-0 flex-1">Roadmap 2026</span>
             </a>
           </div>
         </div>
 
-        <!-- Workspace: Sovereign Capital Gate -->
+        <!-- Workspace: Sovereign Capital Gate — ACTIVE (expanded) -->
         <div>
-          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px;">
             <button onclick="toggleWorkspace('ws1')" id="ws1-btn"
-              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
-              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              class="ws-item open flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" style="transform:rotate(90deg)" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
-            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm text-gray-700 truncate">Sovereign Capital Gate</a>
+            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm font-semibold text-gray-900 truncate">Sovereign Capital G...</a>
           </div>
-          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+          <div id="ws1-sub" class="ws-submenu open pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <span class="truncate min-w-0 flex-1">Sales Overview</span>
+            </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Investor Briefing
+              <span class="truncate min-w-0 flex-1">Investor Briefing</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Capital Analysis
+              <span class="truncate min-w-0 flex-1">Capital Analysis</span>
             </a>
+              <!-- Active document item -->
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-medium" style="background:#EEF2FF; color:#5B63F6">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              <span class="truncate min-w-0 flex-1">Business Intelligence</span>
+            </a>
+            
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Deal Memo Q2
+              <span class="truncate min-w-0 flex-1">Deal Memo Q2</span>
             </a>
+          
           </div>
         </div>
 
@@ -233,11 +246,11 @@
           <div id="ws3-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Campaign Performance
+              <span class="truncate min-w-0 flex-1">Campaign Performance</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              SEO Strategy Chat
+              <span class="truncate min-w-0 flex-1">SEO Strategy Chat</span>
             </a>
           </div>
         </div>
@@ -254,11 +267,11 @@
           <div id="ws4-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F59E0B" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
-              Feature Backlog
+              <span class="truncate min-w-0 flex-1">Feature Backlog</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              OKR Tracker
+              <span class="truncate min-w-0 flex-1">OKR Tracker</span>
             </a>
           </div>
         </div>
@@ -275,11 +288,11 @@
           <div id="ws5-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Velocity Dashboard
+              <span class="truncate min-w-0 flex-1">Velocity Dashboard</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Tech Spec Docs
+              <span class="truncate min-w-0 flex-1">Tech Spec Docs</span>
             </a>
           </div>
         </div>
@@ -296,11 +309,11 @@
           <div id="ws6-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Churn Analysis
+              <span class="truncate min-w-0 flex-1">Churn Analysis</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
-              NPS Survey
+              <span class="truncate min-w-0 flex-1">NPS Survey</span>
             </a>
           </div>
         </div>
@@ -345,9 +358,9 @@
   <main class="flex-1 flex flex-col overflow-hidden">
 
       <!-- Topbar -->
-      <div class="flex items-center justify-between px-8 h-11 border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center justify-between px-5 h-11 border-b border-gray-100 flex-shrink-0">
         <!-- Left: sidebar toggle -->
-        <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
+        <button onclick="toggleSidebar()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
           <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
         </button>
         <!-- Right: notification bell + user avatar -->
@@ -423,53 +436,128 @@
     <!-- ─── DOCUMENT EDITOR COLUMN ─── -->
     <div class="flex-1 flex flex-col overflow-hidden">
 
+      <!-- Document title bar -->
+      <div class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0">
+        <!-- Left: icon + title + draft badge -->
+        <div class="flex items-center gap-3 ml-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-[15px] h-[15px] flex-shrink-0 self-center"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            <h1 id="doc-title-bar" class="text-[15px] font-bold text-gray-900 leading-none">Business Intelligence</h1>
+          </div>
+          <!-- <span class="px-2 h-5 rounded-md flex items-center text-[11px] font-medium" style="background:#F3F4F6; color:#6B7280;">Draft</span> -->
+        </div>
+        <!-- Right: toolbar buttons -->
+        <div class="flex items-center gap-1.5">
+          <!-- Export -->
+          <button class="toolbar-btn">
+            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            Export
+          </button>
+          <!-- Divider -->
+          <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+          <!-- Share (primary) -->
+          <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90" style="background:#5B63F6;">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+            Share
+          </button>
+        </div>
+      </div>
+
+      <!-- Formatting toolbar -->
+      <div id="format-toolbar" class="flex items-center gap-0.5 px-5 h-10 border-b border-gray-200 bg-white flex-shrink-0 overflow-x-auto">
+
+        <!-- Text style dropdown -->
+        <div class="relative mr-1">
+          <select id="text-style-select" onchange="applyTextStyle(this.value)" class="h-7 pl-2 pr-6 rounded-md text-[12px] font-medium text-gray-700 bg-transparent hover:bg-gray-100 border-0 appearance-none cursor-pointer focus:outline-none transition-colors">
+            <option value="p">Normal</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+          </select>
+          <svg class="w-3 h-3 text-gray-400 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-1 flex-shrink-0"></div>
+
+        <!-- Bold -->
+        <button onclick="execFmt('bold')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-[13px] font-bold text-gray-600" title="Bold (⌘B)">B</button>
+        <!-- Italic -->
+        <button onclick="execFmt('italic')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-[13px] italic font-semibold text-gray-600" title="Italic (⌘I)">I</button>
+        <!-- Underline -->
+        <button onclick="execFmt('underline')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-[13px] font-semibold text-gray-600 underline" title="Underline (⌘U)">U</button>
+        <!-- Strikethrough -->
+        <button onclick="execFmt('strikeThrough')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-[13px] font-semibold text-gray-600 line-through" title="Strikethrough">S</button>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-1 flex-shrink-0"></div>
+
+        <!-- Bullet list -->
+        <button onclick="execFmt('insertUnorderedList')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Bullet list">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+        </button>
+        <!-- Numbered list -->
+        <button onclick="execFmt('insertOrderedList')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Numbered list">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+        </button>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-1 flex-shrink-0"></div>
+
+        <!-- Align Left -->
+        <button onclick="execFmt('justifyLeft')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Align left">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h10.5m-10.5 5.25h16.5"/></svg>
+        </button>
+        <!-- Align Center -->
+        <button onclick="execFmt('justifyCenter')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Align center">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M6.75 12h10.5M3.75 17.25h16.5"/></svg>
+        </button>
+        <!-- Align Right -->
+        <button onclick="execFmt('justifyRight')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Align right">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-6 5.25h6M3.75 17.25h16.5"/></svg>
+        </button>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-1 flex-shrink-0"></div>
+
+        <!-- Link -->
+        <button onclick="insertLink()" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Insert link">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+        </button>
+        <!-- Quote -->
+        <button onclick="execFmt('formatBlock', 'blockquote')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Blockquote">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+        </button>
+        <!-- Code -->
+        <button onclick="execFmt('formatBlock', 'pre')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Code block">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+        </button>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-1 flex-shrink-0"></div>
+
+        <!-- Undo -->
+        <button onclick="document.execCommand('undo')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Undo (⌘Z)">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+        </button>
+        <!-- Redo -->
+        <button onclick="document.execCommand('redo')" class="fmt-btn w-7 h-7 flex items-center justify-center rounded-md text-gray-600" title="Redo (⌘⇧Z)">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"/></svg>
+        </button>
+
+      </div>
+
       <!-- Document editor area -->
-      <div class="flex-1 overflow-y-auto px-8 py-6">
+      <div class="flex-1 overflow-y-auto px-8 py-8">
         <div class="max-w-[720px]">
 
-          <!-- Editable title -->
-            <div
-              id="doc-title"
-              contenteditable="true"
-              data-placeholder="Untitled"
-              class="text-[30px] font-extrabold text-gray-900 leading-tight mb-3 focus:outline-none"
-              oninput="syncTitle()"
-            >Untitled</div>
-
-            <!-- Divider -->
-            <div id="doc-divider" class="h-px bg-gray-100 mb-6"></div>
-
-            <!-- Editable body -->
-            <div
-              id="doc-body"
-              contenteditable="true"
-              data-placeholder="Click here to start writing…"
-              class="text-[15px] text-gray-700 focus:outline-none min-h-[200px] mb-8"
-            ></div>
-
-            <!-- Action buttons — shown when doc is empty -->
-            <div id="doc-actions" class="flex flex-col gap-2.5">
-              <p class="text-[12px] text-gray-400 mb-1">Get started with</p>
-              <button onclick="draftWithAI()" class="doc-action-btn flex items-center gap-2.5 px-4 h-10 rounded-xl text-[13px] font-medium text-gray-700 bg-white border border-gray-200 w-fit transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
-                <svg class="w-4 h-4 flex-shrink-0" style="color:#7C3AED" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
-                </svg>
-                Draft with AI
-              </button>
-              <!-- <button class="doc-action-btn flex items-center gap-2.5 px-4 h-10 rounded-xl text-[13px] font-medium text-gray-700 bg-white border border-gray-200 w-fit transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
-                <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
-                </svg>
-                Use a template
-              </button> -->
-              <input type="file" id="doc-import-input" class="hidden" accept=".txt,.md,.doc,.docx,.pdf" />
-              <button onclick="document.getElementById('doc-import-input').click()" class="doc-action-btn flex items-center gap-2.5 px-4 h-10 rounded-xl text-[13px] font-medium text-gray-700 bg-white border border-gray-200 w-fit transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
-                <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                </svg>
-                Import
-              </button>
-            </div>
+          <!-- Single unified editor -->
+          <div
+            id="doc-body"
+            contenteditable="true"
+            data-placeholder="Start writing…"
+            class="text-[15px] text-gray-700 focus:outline-none min-h-[400px] mb-8"
+          ></div>
 
         </div>
       </div>
@@ -534,7 +622,7 @@
       <!-- Message input -->
       <div class="px-4 pb-4 pt-2 flex-shrink-0 border-t border-gray-100">
         <p class="text-[11px] font-medium text-gray-400 mb-2 px-0.5">Message AiBii AI</p>
-        <div class="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden" style="box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+        <div class="flex flex-col rounded-xl border border-gray-200 bg-white" style="box-shadow:0 1px 4px rgba(0,0,0,0.06)">
           <!-- Input area -->
           <div class="px-3 pt-2.5 pb-1">
             <div
@@ -547,7 +635,7 @@
               oninput="handleAiInputChange()"
             ></div>
           </div>
-          <!-- Bottom row: attachment + send -->
+          <!-- Bottom row: attachment + mode selector + send -->
           <div class="flex items-center justify-between px-2.5 pb-2 pt-1">
             <div class="flex items-center gap-1">
               <!-- Attachment -->
@@ -555,6 +643,35 @@
               <button onclick="document.getElementById('ai-file-input').click()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors" title="Attach file">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/></svg>
               </button>
+              <!-- Mode selector -->
+              <div class="relative">
+                <button id="ai-mode-btn" onclick="toggleAiModeMenu(event)" class="flex items-center gap-1 px-2 h-6 rounded-lg text-[11px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+                  <span id="ai-mode-icon" class="flex items-center">
+                    <!-- Agent icon (default) -->
+                    <svg class="w-3 h-3 mr-0.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                  </span>
+                  <span id="ai-mode-label">Agent</span>
+                  <svg class="w-2.5 h-2.5 ml-0.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <!-- Dropdown -->
+                <div id="ai-mode-menu" class="hidden absolute bottom-full left-0 mb-1 z-[200] bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-36">
+                  <button onclick="selectAiMode('Agent')" class="ai-mode-option w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left" data-mode="Agent">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                    Agent
+                    <svg id="ai-mode-check-Agent" class="w-3 h-3 ml-auto flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  </button>
+                  <button onclick="selectAiMode('Plain')" class="ai-mode-option w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left" data-mode="Plain">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                    Plain
+                    <svg id="ai-mode-check-Plain" class="w-3 h-3 ml-auto flex-shrink-0 hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  </button>
+                  <button onclick="selectAiMode('Ask')" class="ai-mode-option w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left" data-mode="Ask">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
+                    Ask
+                    <svg id="ai-mode-check-Ask" class="w-3 h-3 ml-auto flex-shrink-0 hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  </button>
+                </div>
+              </div>
             </div>
             <!-- Send -->
             <button id="ai-send-btn" onclick="sendAiMessage()" class="w-7 h-7 flex items-center justify-center rounded-lg text-white transition-all" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
@@ -666,28 +783,35 @@
       document.getElementById('ai-input').innerText = '';
     }
 
-    // ── Sync title to breadcrumb ──────────────────
-    function syncTitle() {
-      const t = document.getElementById('doc-title').innerText.trim();
-      document.getElementById('breadcrumb-title').textContent = t || 'Untitled';
-      document.title = (t || 'Untitled') + ' – AiBii';
-      // Hide actions when content typed
-      const body = document.getElementById('doc-body').innerText.trim();
-      document.getElementById('doc-actions').style.display = (t || body) ? 'none' : 'flex';
-    }
+    // ── Sync title to title bar ──────────────────
+    function syncTitle() {}
 
-    // Show/hide action buttons based on body content
+    // Update word count on body input
     document.getElementById('doc-body').addEventListener('input', function() {
-      const body = this.innerText.trim();
-      const title = document.getElementById('doc-title').innerText.trim();
-      document.getElementById('doc-actions').style.display = (body || (title && title !== 'Untitled')) ? 'none' : 'flex';
       updateWordCount();
     });
 
     // ── Format commands ───────────────────────────
-    function execFmt(cmd) {
+    function execFmt(cmd, val) {
       document.getElementById('doc-body').focus();
-      document.execCommand(cmd, false, null);
+      document.execCommand(cmd, false, val || null);
+    }
+
+    function applyTextStyle(tag) {
+      document.getElementById('doc-body').focus();
+      if (tag === 'p') {
+        document.execCommand('formatBlock', false, 'p');
+      } else {
+        document.execCommand('formatBlock', false, tag);
+      }
+    }
+
+    function insertLink() {
+      const url = prompt('Enter URL:');
+      if (url) {
+        document.getElementById('doc-body').focus();
+        document.execCommand('createLink', false, url);
+      }
     }
 
     // ── Draft with AI ─────────────────────────────
@@ -747,6 +871,77 @@
 </ol>
 <p style="color:#6B7280;font-size:13px;margin:0">Want me to apply any of these suggestions automatically?</p>`
       },
+      bi: {
+        title: 'Business Intelligence',
+        body: `<h1 style="font-size:28px;font-weight:800;color:#111827;margin:0 0 6px;line-height:1.25">Business Intelligence: Turning Data into Decisions</h1>
+<p style="color:#9CA3AF;font-size:13px;margin:0 0 28px">AiBii Document · Draft · May 2026</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111827;margin:0 0 10px">What is Business Intelligence?</h2>
+<p style="color:#374151;line-height:1.8;margin:0 0 18px">Business Intelligence (BI) refers to the technologies, processes, and practices used to collect, integrate, analyze, and present business data. The primary goal of BI is to enable better, faster, and more informed decision-making across an organization — from frontline operations to executive strategy.</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111827;margin:0 0 10px">Core Components</h2>
+<ul style="color:#374151;line-height:1.9;padding-left:20px;margin:0 0 18px">
+  <li><strong>Data Sources</strong> — CRMs, ERPs, databases, spreadsheets, APIs, and real-time event streams.</li>
+  <li><strong>ETL Pipelines</strong> — Extract, Transform, Load processes that clean and move data into a central warehouse.</li>
+  <li><strong>Data Warehouse</strong> — A centralized repository (e.g. Snowflake, BigQuery, Redshift) optimized for analytical queries.</li>
+  <li><strong>BI Layer</strong> — Semantic models, metrics definitions, and business logic built on top of the warehouse.</li>
+  <li><strong>Dashboards &amp; Reports</strong> — Visual interfaces that surface KPIs, trends, and insights to end users.</li>
+</ul>
+
+<h2 style="font-size:17px;font-weight:700;color:#111827;margin:0 0 10px">Key Benefits</h2>
+<ul style="color:#374151;line-height:1.9;padding-left:20px;margin:0 0 18px">
+  <li>Reduces time-to-insight from weeks to minutes</li>
+  <li>Enables data-driven culture across all business functions</li>
+  <li>Surfaces anomalies and opportunities that would otherwise go unnoticed</li>
+  <li>Aligns teams around a single source of truth</li>
+  <li>Supports forecasting, budgeting, and strategic planning</li>
+</ul>
+
+<h2 style="font-size:17px;font-weight:700;color:#111827;margin:0 0 10px">Modern BI Stack</h2>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin:0 0 18px">
+  <thead>
+    <tr style="background:#F9FAFB;border-bottom:2px solid #E5E7EB">
+      <th style="text-align:left;padding:8px 12px;color:#6B7280;font-weight:600">Layer</th>
+      <th style="text-align:left;padding:8px 12px;color:#6B7280;font-weight:600">Tools</th>
+      <th style="text-align:left;padding:8px 12px;color:#6B7280;font-weight:600">Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #F3F4F6">
+      <td style="padding:8px 12px;color:#374151">Ingestion</td>
+      <td style="padding:8px 12px;color:#374151">Fivetran, Airbyte, Stitch</td>
+      <td style="padding:8px 12px;color:#6B7280">Move raw data to warehouse</td>
+    </tr>
+    <tr style="border-bottom:1px solid #F3F4F6">
+      <td style="padding:8px 12px;color:#374151">Transformation</td>
+      <td style="padding:8px 12px;color:#374151">dbt, Dataform</td>
+      <td style="padding:8px 12px;color:#6B7280">Model and clean data</td>
+    </tr>
+    <tr style="border-bottom:1px solid #F3F4F6">
+      <td style="padding:8px 12px;color:#374151">Storage</td>
+      <td style="padding:8px 12px;color:#374151">Snowflake, BigQuery, Redshift</td>
+      <td style="padding:8px 12px;color:#6B7280">Centralized analytics store</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;color:#374151">Visualization</td>
+      <td style="padding:8px 12px;color:#374151">Tableau, Looker, AiBii, Power BI</td>
+      <td style="padding:8px 12px;color:#6B7280">Dashboards and reporting</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 style="font-size:17px;font-weight:700;color:#111827;margin:0 0 10px">Challenges &amp; Considerations</h2>
+<p style="color:#374151;line-height:1.8;margin:0 0 18px">Despite its benefits, BI adoption comes with challenges: data quality issues, siloed ownership, slow query performance on large datasets, and the growing gap between analyst capabilities and business user expectations. The rise of <strong>AI-powered BI</strong> is addressing many of these gaps — enabling natural language querying, automated anomaly detection, and proactive insight delivery.</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111827;margin:0 0 10px">The Future of BI</h2>
+<ul style="color:#374151;line-height:1.9;padding-left:20px;margin:0 0 24px">
+  <li><strong>Embedded analytics</strong> — BI built directly into SaaS products and workflows</li>
+  <li><strong>Natural language interfaces</strong> — Ask questions in plain English, get charts instantly</li>
+  <li><strong>Reverse ETL</strong> — Pushing insights back into operational tools like CRMs and ad platforms</li>
+  <li><strong>Composable BI</strong> — Headless semantic layers decoupled from visualization tools</li>
+</ul>
+<p style="color:#9CA3AF;font-size:12px;border-top:1px solid #F3F4F6;padding-top:16px;margin:0">Generated by AiBii AI · Edit freely in the canvas</p>`
+      },
       default: {
         title: 'AiBii AI Response',
         body: `<p style="color:#374151;line-height:1.8;margin:0 0 16px">I've processed your request and drafted the following content for your document:</p>
@@ -762,37 +957,37 @@
 
     function getDocForPrompt(text) {
       const t = text.toLowerCase();
-      if (t.includes('draft') || t.includes('outline') || t.includes('write')) return mockDocs.draft;
       if (t.includes('summar')) return mockDocs.summary;
       if (t.includes('spell') || t.includes('grammar') || t.includes('check')) return mockDocs.spell;
       if (t.includes('recommend') || t.includes('suggest') || t.includes('improve')) return mockDocs.recommend;
-      return mockDocs.default;
+      if (t.includes('draft') || t.includes('outline') || t.includes('write')) return mockDocs.draft;
+      if (t.includes('bi') || t.includes('business intelligence') || t.includes('dashboard') || t.includes('analytics') || t.includes('data')) return mockDocs.bi;
+      // Generic: use the prompt as heading
+      return {
+        title: text,
+        body: `<h1 style="font-size:26px;font-weight:800;color:#111827;margin:0 0 16px;line-height:1.3">${escapeHtml(text)}</h1>
+<p style="color:#374151;line-height:1.8;margin:0 0 14px">AiBii AI has drafted the following content based on your prompt. You can edit this directly in the canvas.</p>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 10px">Overview</h2>
+<p style="color:#374151;line-height:1.8;margin:0 0 14px">This document covers the key aspects of your request. The information below is structured to give you a clear starting point that you can refine further.</p>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 10px">Key Points</h2>
+<ul style="color:#374151;line-height:1.9;padding-left:20px;margin:0 0 14px">
+  <li>Clearly define the objective and scope of the topic</li>
+  <li>Identify the stakeholders and their expectations</li>
+  <li>Outline the key deliverables and success metrics</li>
+  <li>Establish a timeline with milestones and review checkpoints</li>
+</ul>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 10px">Next Steps</h2>
+<p style="color:#374151;line-height:1.8;margin:0 0 14px">Review the content above and use the formatting toolbar to adjust headings, add bullet points, or restructure as needed. Ask AiBii AI for further refinements at any time.</p>
+<p style="color:#9CA3AF;font-size:13px;margin:0">Generated by AiBii AI · Edit freely</p>`
+      };
     }
 
     function renderDocToCanvas(doc) {
-      // Update title
-      const titleEl = document.getElementById('doc-title');
-      const bodyEl  = document.getElementById('doc-body');
-      titleEl.classList.add('typing-cursor');
-      titleEl.innerText = '';
-      document.getElementById('doc-actions').style.display = 'none';
-      document.getElementById('doc-divider').style.display = 'block';
-      // Type title char by char
-      let i = 0;
-      const typeTitle = setInterval(() => {
-        if (i < doc.title.length) {
-          titleEl.innerText += doc.title[i++];
-          syncTitle();
-        } else {
-          clearInterval(typeTitle);
-          titleEl.classList.remove('typing-cursor');
-          // Fade in body
-          bodyEl.style.opacity = '0';
-          bodyEl.innerHTML = doc.body;
-          bodyEl.style.transition = 'opacity 500ms ease';
-          setTimeout(() => { bodyEl.style.opacity = '1'; updateWordCount(); }, 80);
-        }
-      }, 38);
+      const bodyEl = document.getElementById('doc-body');
+      bodyEl.style.opacity = '0';
+      bodyEl.innerHTML = doc.body;
+      bodyEl.style.transition = 'opacity 400ms ease';
+      setTimeout(() => { bodyEl.style.opacity = '1'; updateWordCount(); }, 60);
     }
 
     function updateWordCount() {
@@ -818,6 +1013,33 @@
         renderDocToCanvas(getDocForPrompt(text));
       }, 500);
     }
+
+    // ── AI Mode selector ──
+    var _aiMode = 'Agent';
+    var _aiModeIcons = {
+      Agent: '<svg class="w-3 h-3 mr-0.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>',
+      Plain:  '<svg class="w-3 h-3 mr-0.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>',
+      Ask:    '<svg class="w-3 h-3 mr-0.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>',
+    };
+    function toggleAiModeMenu(e) {
+      e.stopPropagation();
+      var menu = document.getElementById('ai-mode-menu');
+      menu.classList.toggle('hidden');
+    }
+    function selectAiMode(mode) {
+      _aiMode = mode;
+      document.getElementById('ai-mode-label').textContent = mode;
+      document.getElementById('ai-mode-icon').innerHTML = _aiModeIcons[mode];
+      ['Agent','Plain','Ask'].forEach(function(m) {
+        var el = document.getElementById('ai-mode-check-' + m);
+        if (el) el.classList.toggle('hidden', m !== mode);
+      });
+      document.getElementById('ai-mode-menu').classList.add('hidden');
+    }
+    document.addEventListener('click', function() {
+      var menu = document.getElementById('ai-mode-menu');
+      if (menu) menu.classList.add('hidden');
+    });
 
     function sendAiMessage() {
       const input = document.getElementById('ai-input');
@@ -886,10 +1108,7 @@
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    // ── Auto-open ws2 submenu on load ─────────────
-    window.addEventListener('DOMContentLoaded', () => {
-      toggleWorkspace('ws2');
-    });
+
   </script>
 
 </body>
