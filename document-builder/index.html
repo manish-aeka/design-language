@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AiBii - Document Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary:   '#5B63F6',
+              secondary: '#7C6FF7',
+              upgrade:   '#7C3AED',
+            },
+            sidebar: '#F8F9FC',
+            hover:   '#EEF2FF',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            card: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    /* Nav item hover */
+    .nav-item { transition: background-color 100ms ease; }
+    .nav-item:hover { background-color: #EEF2FF; }
+
+    /* Sidebar collapse */
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
+
+    /* Workspace submenu */
+    .ws-submenu { display: none; }
+    .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
+    .ws-chevron { transition: transform 150ms ease; }
+    .ws-item.open .ws-chevron { transform: rotate(90deg); }
+
+    /* Workspace switcher modal */
+    #ws-modal-backdrop { display: none; }
+    #ws-modal-backdrop.open { display: flex; }
+
+    /* Editable title */
+    #doc-title:empty:before { content: attr(data-placeholder); color: #9CA3AF; }
+    #doc-title:focus { outline: none; }
+
+    /* Editor placeholder */
+    #doc-body:empty:before { content: attr(data-placeholder); color: #9CA3AF; cursor: text; }
+    #doc-body:focus { outline: none; }
+    #doc-body { line-height: 1.75; }
+
+    /* Action buttons */
+    .doc-action-btn { transition: background-color 120ms ease, border-color 120ms ease; }
+    .doc-action-btn:hover { background-color: #F3F4F6; border-color: #D1D5DB; }
+
+    /* AI orb */
+    .ai-orb {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #67E8F9, #22D3EE 40%, #06B6D4 70%, #0891B2);
+      box-shadow: 0 8px 32px rgba(6,182,212,0.35), 0 2px 8px rgba(6,182,212,0.20);
+    }
+
+    /* Suggested action buttons */
+    .suggest-btn { transition: background-color 100ms ease; }
+    .suggest-btn:hover { background-color: #E5E7EB; }
+
+    /* Format toolbar button */
+    .fmt-btn { transition: background-color 100ms ease, color 100ms ease; }
+    .fmt-btn:hover { background-color: #F3F4F6; }
+    .fmt-btn.active { background-color: #EEF2FF; color: #5B63F6; }
+
+    /* AI panel */
+    #ai-panel { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; }
+    #ai-panel.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-left: none; overflow: hidden; }
+
+    /* Sources dropdown */
+    #sources-dropdown { display: none; }
+    #sources-dropdown.open { display: block; }
+
+    /* Typing cursor animation */
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .typing-cursor::after { content:'|'; animation: blink 0.9s infinite; color:#5B63F6; margin-left:1px; }
+
+    /* Textarea auto-grow */
+    #ai-input { resize: none; min-height: 20px; max-height: 120px; overflow-y: auto; }
+    #ai-input:focus { outline: none; }
+
+    /* Chat messages */
+    .ai-msg-user { background: #EEF2FF; border-radius: 14px 14px 4px 14px; }
+    .ai-msg-bot  { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 14px 14px 14px 4px; }
+    /* Notification dropdown */
+    #notif-dropdown.hidden { display: none; }
+    #user-dropdown.hidden { display: none; }
+  </style>
+</head>
+<body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR  220px fixed
+  ════════════════════════════════════════════ -->
+  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+
+    <!-- Workspace switcher -->
+    <div class="border-b border-gray-100" id="ws-switcher-wrapper">
+      <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-2">
+        <span id="ws-avatar" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+        <span id="ws-name" class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
+      </button>
+    </div>
+
+    <!-- Primary nav -->
+    <nav class="px-3 py-2 space-y-0.5">
+      <a href="../recent-view/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
+        Recent
+      </a>
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        New Dashboard
+      </a>
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
+        New Chat
+      </a>
+    </nav>
+
+    <!-- Divider -->
+    <div class="mx-3 my-1 border-t border-gray-100"></div>
+
+    <!-- Projects section -->
+    <div class="px-3 py-1">
+      <div class="flex items-center px-3 h-7">
+        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
+      </div>
+      <div id="projects-list" class="space-y-0.5 mt-0.5">
+
+        <!-- Workspace: My Private Project — ACTIVE (document open) -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px;">
+            <button onclick="toggleWorkspace('ws2')" id="ws2-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm font-medium text-gray-900 truncate">My Private Project</a>
+            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Pinned">
+              <path d="M12 17v5"/>
+              <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76z"/>
+            </svg>
+          </div>
+          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Q4 Strategy
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Revenue Overview
+            </a>
+            <!-- Active document item -->
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-medium" style="background:#EEF2FF; color:#5B63F6">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Untitled
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Investor Update
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Meeting Notes
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              KPI Tracker
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Roadmap 2026
+            </a>
+          </div>
+        </div>
+
+        <!-- Workspace: Sovereign Capital Gate -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws1')" id="ws1-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm text-gray-700 truncate">Sovereign Capital Gate</a>
+          </div>
+          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Investor Briefing
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Capital Analysis
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Deal Memo Q2
+            </a>
+          </div>
+        </div>
+
+        <!-- Workspace: Marketing Analytics -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws3')" id="ws3-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Marketing Analytics</a>
+          </div>
+          <div id="ws3-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Campaign Performance
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              SEO Strategy Chat
+            </a>
+          </div>
+        </div>
+
+        <!-- Workspace: Product Roadmap Q3 -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws4')" id="ws4-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Product Roadmap Q3</a>
+          </div>
+          <div id="ws4-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F59E0B" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+              Feature Backlog
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              OKR Tracker
+            </a>
+          </div>
+        </div>
+
+        <!-- Workspace: Engineering Sprint -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws5')" id="ws5-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Engineering Sprint</a>
+          </div>
+          <div id="ws5-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Velocity Dashboard
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Tech Spec Docs
+            </a>
+          </div>
+        </div>
+
+        <!-- Workspace: Customer Success -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws6')" id="ws6-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Customer Success</a>
+          </div>
+          <div id="ws6-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Churn Analysis
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+              NPS Survey
+            </a>
+          </div>
+        </div>
+
+        <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
+          <span class="text-gray-400 font-medium text-base leading-none">+</span>
+          Create a project
+        </a>
+      </div>
+    </div>
+
+    <!-- Spacer -->
+    <div class="flex-1"></div>
+
+    <!-- Divider -->
+    <div class="mx-3 border-t border-gray-100"></div>
+
+    <!-- Bottom nav -->
+    <nav class="px-3 py-2 space-y-0.5">
+      <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <!-- Explore free features banner -->
+    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
+        <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-[12px] font-semibold leading-tight" style="color:#3B4ECC">Explore free features</p>
+        <p class="text-[11px] mt-0.5" style="color:#6B7ADE">Credit left: 15</p>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT AREA
+  ════════════════════════════════════════════ -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Topbar -->
+      <div class="flex items-center justify-between px-8 h-11 border-b border-gray-100 flex-shrink-0">
+        <!-- Left: sidebar toggle -->
+        <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700">
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+        <!-- Right: notification bell + user avatar -->
+        <div class="flex items-center gap-1.5">
+
+          <!-- Notification bell -->
+          <div class="relative" id="notif-wrapper">
+            <button onclick="toggleNotifications()" id="notif-btn" class="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors" aria-label="Notifications">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+              <span id="notif-dot" class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            </button>
+            <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+              <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
+                <button onclick="markAllRead()" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Mark all as read</button>
+              </div>
+              <div class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/
+                40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#5B63F6">A</div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[13px] text-gray-900"><span class="font-semibold">AiBii AI</span> drafted a summary for <span class="font-medium">Untitled</span></p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Just now</p>
+                  </div>
+                  <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+                </div>
+                <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#16A34A">S</div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[13px] text-gray-900"><span class="font-semibold">Sara M.</span> shared <span class="font-medium">Meeting Notes</span> with you</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">5 minutes ago</p>
+                  </div>
+                  <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+                </div>
+                <div class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+                    <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[13px] text-gray-700">Your <span class="font-medium">Untitled</span> document was auto-saved</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">2 minutes ago</p>
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 py-2.5 border-t border-gray-100 text-center">
+                <button class="text-[12px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">View all notifications</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User avatar -->
+          <div class="relative" id="user-menu-wrapper">
+            <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB" aria-label="User menu">M</button>
+            <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+              <div class="px-4 py-3 border-b border-gray-100">
+                <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
+                <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
+              </div>
+              <div class="py-1">
+                <button onclick="toggleUserMenu()" class="w-full flex items-center gap-2.5 px-4 h-9 text-[13px] text-red-500 hover:bg-red-50 transition-colors">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                  Log out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- ─── CONTENT ROW (below topbar) ─── -->
+    <div class="flex-1 flex overflow-hidden">
+
+    <!-- ─── DOCUMENT EDITOR COLUMN ─── -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Document editor area -->
+      <div class="flex-1 overflow-y-auto px-8 py-6">
+        <div class="max-w-[720px]">
+
+          <!-- Editable title -->
+            <div
+              id="doc-title"
+              contenteditable="true"
+              data-placeholder="Untitled"
+              class="text-[30px] font-extrabold text-gray-900 leading-tight mb-3 focus:outline-none"
+              oninput="syncTitle()"
+            >Untitled</div>
+
+            <!-- Divider -->
+            <div id="doc-divider" class="h-px bg-gray-100 mb-6"></div>
+
+            <!-- Editable body -->
+            <div
+              id="doc-body"
+              contenteditable="true"
+              data-placeholder="Click here to start writing…"
+              class="text-[15px] text-gray-700 focus:outline-none min-h-[200px] mb-8"
+            ></div>
+
+            <!-- Action buttons — shown when doc is empty -->
+            <div id="doc-actions" class="flex flex-col gap-2.5">
+              <p class="text-[12px] text-gray-400 mb-1">Get started with</p>
+              <button onclick="draftWithAI()" class="doc-action-btn flex items-center gap-2.5 px-4 h-10 rounded-xl text-[13px] font-medium text-gray-700 bg-white border border-gray-200 w-fit transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+                <svg class="w-4 h-4 flex-shrink-0" style="color:#7C3AED" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+                </svg>
+                Draft with AI
+              </button>
+              <!-- <button class="doc-action-btn flex items-center gap-2.5 px-4 h-10 rounded-xl text-[13px] font-medium text-gray-700 bg-white border border-gray-200 w-fit transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+                <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
+                </svg>
+                Use a template
+              </button> -->
+              <input type="file" id="doc-import-input" class="hidden" accept=".txt,.md,.doc,.docx,.pdf" />
+              <button onclick="document.getElementById('doc-import-input').click()" class="doc-action-btn flex items-center gap-2.5 px-4 h-10 rounded-xl text-[13px] font-medium text-gray-700 bg-white border border-gray-200 w-fit transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+                <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                </svg>
+                Import
+              </button>
+            </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── AI PANEL (right) ─── -->
+    <div id="ai-panel" class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+
+      <!-- Panel topbar -->
+      <div class="flex items-center justify-between px-4 h-11 border-b border-gray-100 flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <!-- Sparkle icon -->
+          <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+          </div>
+          <span class="text-[13px] font-semibold text-gray-800">AiBii AI</span>
+        </div>
+      </div>
+
+      <!-- Panel body (scrollable) -->
+      <div id="ai-chat-scroll" class="flex-1 overflow-y-auto">
+
+        <!-- Empty / welcome state -->
+        <div id="ai-welcome" class="flex flex-col items-center justify-center h-full px-6 py-10 text-center">
+          <!-- AiBii AI icon -->
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+          </div>
+          <p class="text-[15px] font-bold text-gray-900 leading-snug">I'm AiBii AI.</p>
+          <p class="text-[15px] font-bold text-gray-900 leading-snug">Ask me anything.</p>
+          <p class="text-[13px] text-gray-400 mt-2">Or try the suggested actions below.</p>
+        </div>
+
+        <!-- Chat messages container (hidden until first message) -->
+        <div id="ai-messages" class="hidden px-4 py-4 space-y-3"></div>
+
+      </div>
+
+      <!-- Suggested actions -->
+      <div id="ai-suggestions" class="px-4 pb-3 flex-shrink-0">
+        <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Suggested</p>
+        <div class="space-y-1.5">
+          <button onclick="sendSuggestion('Summarize this document')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h7.5M8.25 12h7.5m-7.5 5.25H12"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z"/></svg>
+            Summarize this document
+          </button>
+          <button onclick="sendSuggestion('Spell and grammar check')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+            Spell and grammar check
+          </button>
+          <button onclick="sendSuggestion('Make recommendations')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+            Make recommendations
+          </button>
+        </div>
+      </div>
+
+      <!-- Message input -->
+      <div class="px-4 pb-4 pt-2 flex-shrink-0 border-t border-gray-100">
+        <p class="text-[11px] font-medium text-gray-400 mb-2 px-0.5">Message AiBii AI</p>
+        <div class="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden" style="box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <!-- Input area -->
+          <div class="px-3 pt-2.5 pb-1">
+            <div
+              id="ai-input"
+              contenteditable="true"
+              data-placeholder="Ask AiBii AI anything about this document…"
+              class="text-[13px] text-gray-800 focus:outline-none leading-relaxed"
+              style="min-height:22px; max-height:120px; overflow-y:auto;"
+              onkeydown="handleAiInputKey(event)"
+              oninput="handleAiInputChange()"
+            ></div>
+          </div>
+          <!-- Bottom row: attachment + send -->
+          <div class="flex items-center justify-between px-2.5 pb-2 pt-1">
+            <div class="flex items-center gap-1">
+              <!-- Attachment -->
+              <input type="file" id="ai-file-input" class="hidden" multiple />
+              <button onclick="document.getElementById('ai-file-input').click()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors" title="Attach file">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/></svg>
+              </button>
+            </div>
+            <!-- Send -->
+            <button id="ai-send-btn" onclick="sendAiMessage()" class="w-7 h-7 flex items-center justify-center rounded-lg text-white transition-all" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    </div><!-- end content row -->
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════
+       WORKSPACE SWITCHER MODAL
+  ════════════════════════════════════════════ -->
+  <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
+    <div id="ws-modal" class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden flex flex-col" style="max-height:480px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
+        <button onclick="closeWsModal(event)" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="flex-1 px-3 pb-3 pt-2 overflow-y-auto space-y-1">
+        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+          <div><p class="text-[13px] font-medium text-gray-900">My Private Project</p><p class="text-[11px] text-gray-400">Personal</p></div>
+        </button>
+        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#16A34A">S</span>
+          <div><p class="text-[13px] font-medium text-gray-900">Sovereign Capital Gate</p><p class="text-[11px] text-gray-400">Team</p></div>
+        </button>
+        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">M</span>
+          <div><p class="text-[13px] font-medium text-gray-900">Marketing Analytics</p><p class="text-[11px] text-gray-400">Team</p></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Sidebar ──────────────────────────────────
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    // ── Workspace submenu ─────────────────────────
+    function toggleWorkspace(id) {
+      const sub = document.getElementById(id + '-sub');
+      const btn = document.getElementById(id + '-btn');
+      if (!sub) return;
+      sub.classList.toggle('open');
+      btn.classList.toggle('open');
+    }
+
+    // ── WS modal ─────────────────────────────────
+    function openWsModal() {
+      document.getElementById('ws-modal-backdrop').classList.add('open');
+    }
+    function closeWsModal(e) {
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+
+    // ── Notifications ─────────────────────────────
+    function toggleNotifications() {
+      document.getElementById('notif-dropdown').classList.toggle('hidden');
+      document.getElementById('user-dropdown').classList.add('hidden');
+    }
+
+    function markAllRead() {
+      document.querySelectorAll('#notif-dropdown .bg-indigo-50\\/40, #notif-dropdown .bg-indigo-50').forEach(el => {
+        el.classList.remove('bg-indigo-50/40', 'bg-indigo-50');
+      });
+      document.querySelectorAll('#notif-dropdown .bg-indigo-500').forEach(dot => dot.remove());
+      const dot = document.getElementById('notif-dot');
+      if (dot) dot.remove();
+    }
+
+    // ── User menu ─────────────────────────────────
+    function toggleUserMenu() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+      document.getElementById('notif-dropdown').classList.add('hidden');
+    }
+
+    // ── Close dropdowns on outside click ─────────
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#notif-wrapper')) {
+        document.getElementById('notif-dropdown').classList.add('hidden');
+      }
+      if (!e.target.closest('#user-menu-wrapper')) {
+        document.getElementById('user-dropdown').classList.add('hidden');
+      }
+    });
+
+
+
+    // ── AI panel toggle ───────────────────────────
+    function toggleAiPanel() {
+      document.getElementById('ai-panel').classList.toggle('collapsed');
+    }
+
+    function resetAiPanel() {
+      document.getElementById('ai-messages').innerHTML = '';
+      document.getElementById('ai-messages').classList.add('hidden');
+      document.getElementById('ai-welcome').classList.remove('hidden');
+      document.getElementById('ai-input').innerText = '';
+    }
+
+    // ── Sync title to breadcrumb ──────────────────
+    function syncTitle() {
+      const t = document.getElementById('doc-title').innerText.trim();
+      document.getElementById('breadcrumb-title').textContent = t || 'Untitled';
+      document.title = (t || 'Untitled') + ' – AiBii';
+      // Hide actions when content typed
+      const body = document.getElementById('doc-body').innerText.trim();
+      document.getElementById('doc-actions').style.display = (t || body) ? 'none' : 'flex';
+    }
+
+    // Show/hide action buttons based on body content
+    document.getElementById('doc-body').addEventListener('input', function() {
+      const body = this.innerText.trim();
+      const title = document.getElementById('doc-title').innerText.trim();
+      document.getElementById('doc-actions').style.display = (body || (title && title !== 'Untitled')) ? 'none' : 'flex';
+      updateWordCount();
+    });
+
+    // ── Format commands ───────────────────────────
+    function execFmt(cmd) {
+      document.getElementById('doc-body').focus();
+      document.execCommand(cmd, false, null);
+    }
+
+    // ── Draft with AI ─────────────────────────────
+    function draftWithAI() {
+      sendSuggestion('Draft a document outline for me');
+    }
+
+    // ── AI chat ───────────────────────────────────
+    // Mock documents keyed by trigger phrases
+    const mockDocs = {
+      draft: {
+        title: 'Product Vision 2026',
+        body: `<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 12px">1. Introduction</h2>
+<p style="color:#374151;line-height:1.8;margin:0 0 16px">This document outlines the strategic product vision for 2026, focusing on AI-driven features that accelerate user productivity and deepen workspace collaboration.</p>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 12px">2. Background</h2>
+<p style="color:#374151;line-height:1.8;margin:0 0 16px">Over the past year, our platform has grown by 3× in active workspaces. Users increasingly rely on AI assistance for drafting, summarising, and analysing documents. This creates a clear opportunity to deepen the native AI experience.</p>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 12px">3. Core Objectives</h2>
+<ul style="color:#374151;line-height:1.8;padding-left:20px;margin:0 0 16px">
+  <li>Launch AiBii AI v2 with real-time document co-authoring</li>
+  <li>Introduce smart templates that adapt to user context</li>
+  <li>Expand datasource connectors to 20+ integrations</li>
+  <li>Achieve sub-100ms AI response latency</li>
+</ul>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 12px">4. Conclusion</h2>
+<p style="color:#374151;line-height:1.8;margin:0">By executing on these priorities, AiBii will solidify its position as the most intelligent workspace platform for modern teams.</p>`
+      },
+      summary: {
+        title: 'Document Summary',
+        body: `<p style="color:#374151;line-height:1.8;margin:0 0 16px">Here is a concise summary of the current document:</p>
+<ul style="color:#374151;line-height:1.8;padding-left:20px;margin:0 0 16px">
+  <li><strong>Topic:</strong> Product vision and strategic objectives for 2026</li>
+  <li><strong>Key themes:</strong> AI productivity, workspace collaboration, integrations</li>
+  <li><strong>Audience:</strong> Internal teams and stakeholders</li>
+  <li><strong>Tone:</strong> Professional and forward-looking</li>
+</ul>
+<p style="color:#374151;line-height:1.8;margin:0">The document is well-structured. Consider adding a timeline section to make execution milestones more visible.</p>`
+      },
+      spell: {
+        title: 'Grammar & Spell Check',
+        body: `<p style="color:#374151;line-height:1.8;margin:0 0 12px">✅ No major spelling errors found.</p>
+<p style="color:#374151;line-height:1.8;margin:0 0 16px">A few style suggestions:</p>
+<ul style="color:#374151;line-height:1.8;padding-left:20px;margin:0 0 16px">
+  <li>Line 3: Consider replacing <em>"utilise"</em> with <em>"use"</em> for clarity.</li>
+  <li>Line 7: The sentence is long — split into two for better readability.</li>
+  <li>Line 12: <em>"it's"</em> should be <em>"its"</em> (possessive).</li>
+</ul>
+<p style="color:#6B7280;font-size:13px;margin:0">Overall readability score: <strong style="color:#16A34A">Good (82/100)</strong></p>`
+      },
+      recommend: {
+        title: 'AI Recommendations',
+        body: `<p style="color:#374151;line-height:1.8;margin:0 0 16px">Based on the document content, here are my recommendations:</p>
+<ol style="color:#374151;line-height:1.8;padding-left:20px;margin:0 0 16px">
+  <li><strong>Add an executive summary</strong> — A 3-sentence overview at the top will help readers quickly grasp the key points.</li>
+  <li><strong>Include data & metrics</strong> — Back up claims with specific numbers to increase credibility.</li>
+  <li><strong>Add a timeline</strong> — Visual milestones will make the roadmap more actionable.</li>
+  <li><strong>Strengthen the conclusion</strong> — End with a clear call-to-action or next steps.</li>
+</ol>
+<p style="color:#6B7280;font-size:13px;margin:0">Want me to apply any of these suggestions automatically?</p>`
+      },
+      default: {
+        title: 'AiBii AI Response',
+        body: `<p style="color:#374151;line-height:1.8;margin:0 0 16px">I've processed your request and drafted the following content for your document:</p>
+<h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 12px">Key Points</h2>
+<ul style="color:#374151;line-height:1.8;padding-left:20px;margin:0 0 16px">
+  <li>AiBii AI can draft, summarise, and improve your documents</li>
+  <li>Use the suggested actions for common tasks</li>
+  <li>You can type any instruction in the message box below</li>
+</ul>
+<p style="color:#374151;line-height:1.8;margin:0">Feel free to edit this content directly in the canvas. Your changes are saved automatically.</p>`
+      }
+    };
+
+    function getDocForPrompt(text) {
+      const t = text.toLowerCase();
+      if (t.includes('draft') || t.includes('outline') || t.includes('write')) return mockDocs.draft;
+      if (t.includes('summar')) return mockDocs.summary;
+      if (t.includes('spell') || t.includes('grammar') || t.includes('check')) return mockDocs.spell;
+      if (t.includes('recommend') || t.includes('suggest') || t.includes('improve')) return mockDocs.recommend;
+      return mockDocs.default;
+    }
+
+    function renderDocToCanvas(doc) {
+      // Update title
+      const titleEl = document.getElementById('doc-title');
+      const bodyEl  = document.getElementById('doc-body');
+      titleEl.classList.add('typing-cursor');
+      titleEl.innerText = '';
+      document.getElementById('doc-actions').style.display = 'none';
+      document.getElementById('doc-divider').style.display = 'block';
+      // Type title char by char
+      let i = 0;
+      const typeTitle = setInterval(() => {
+        if (i < doc.title.length) {
+          titleEl.innerText += doc.title[i++];
+          syncTitle();
+        } else {
+          clearInterval(typeTitle);
+          titleEl.classList.remove('typing-cursor');
+          // Fade in body
+          bodyEl.style.opacity = '0';
+          bodyEl.innerHTML = doc.body;
+          bodyEl.style.transition = 'opacity 500ms ease';
+          setTimeout(() => { bodyEl.style.opacity = '1'; updateWordCount(); }, 80);
+        }
+      }, 38);
+    }
+
+    function updateWordCount() {
+      const el = document.getElementById('word-count');
+      if (!el) return;
+      const text = document.getElementById('doc-body').innerText || '';
+      const words = text.trim().split(/\s+/).filter(w => w).length;
+      el.textContent = words + ' word' + (words !== 1 ? 's' : '');
+    }
+
+    const aiResponses = {
+      'Summarize this document': 'Generating a summary and rendering it in the canvas…',
+      'Spell and grammar check': 'Running a spell & grammar check — see the canvas for results.',
+      'Make recommendations': 'Here are my recommendations, rendered in the canvas for you.',
+      'Draft a document outline for me': 'Drafting a full document outline in the canvas now…',
+    };
+
+    function sendSuggestion(text) {
+      addUserMessage(text);
+      const reply = aiResponses[text] || 'Working on it — check the canvas!';
+      setTimeout(() => {
+        addBotMessage(reply);
+        renderDocToCanvas(getDocForPrompt(text));
+      }, 500);
+    }
+
+    function sendAiMessage() {
+      const input = document.getElementById('ai-input');
+      const text = input.innerText.trim();
+      if (!text) return;
+      input.innerText = '';
+      addUserMessage(text);
+      setTimeout(() => {
+        addBotMessage('Got it! Rendering your document in the canvas…');
+        renderDocToCanvas(getDocForPrompt(text));
+      }, 500);
+    }
+
+    function handleAiInputKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendAiMessage();
+      }
+    }
+
+    function handleAiInputChange() {
+      const input = document.getElementById('ai-input');
+      const isEmpty = !input.innerText.trim();
+      // placeholder via CSS handled by :empty + data-placeholder pattern via JS
+    }
+
+    function addUserMessage(text) {
+      showMessages();
+      const msgs = document.getElementById('ai-messages');
+      const div = document.createElement('div');
+      div.className = 'flex justify-end';
+      div.innerHTML = `<div class="ai-msg-user px-3 py-2 text-[13px] text-gray-800 max-w-[240px]">${escapeHtml(text)}</div>`;
+      msgs.appendChild(div);
+      scrollAiChat();
+    }
+
+    function addBotMessage(text) {
+      const msgs = document.getElementById('ai-messages');
+      const div = document.createElement('div');
+      div.className = 'flex justify-start';
+      const formatted = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+      div.innerHTML = `
+        <div class="flex items-start gap-2">
+          <div class="w-5 h-5 rounded-lg flex-shrink-0 mt-0.5 flex items-center justify-center" style="background:#EEF2FF">
+            <svg class="w-3 h-3" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <div class="ai-msg-bot px-3 py-2 text-[13px] text-gray-700 max-w-[240px]">${formatted}</div>
+        </div>`;
+      msgs.appendChild(div);
+      scrollAiChat();
+    }
+
+    function showMessages() {
+      document.getElementById('ai-welcome').classList.add('hidden');
+      document.getElementById('ai-messages').classList.remove('hidden');
+    }
+
+    function scrollAiChat() {
+      const scroll = document.getElementById('ai-chat-scroll');
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── Auto-open ws2 submenu on load ─────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      toggleWorkspace('ws2');
+    });
+  </script>
+
+</body>
+</html>
