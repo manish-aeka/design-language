@@ -133,6 +133,27 @@
     .ds-filter-scroll::-webkit-scrollbar { width: 4px; }
     .ds-filter-scroll::-webkit-scrollbar-track { background: transparent; }
     .ds-filter-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+    /* View tables modal */
+    #view-tables-backdrop { display: none; }
+    #view-tables-backdrop.open { display: flex; }
+    .vt-tab { cursor: pointer; padding: 0 4px; height: 36px; font-size: 13px; color: #6B7280; background: transparent; border: none; border-bottom: 2px solid transparent; transition: color 120ms, border-color 120ms; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+    .vt-tab:hover { color: #374151; }
+    .vt-tab.active { color: #5B63F6; font-weight: 600; border-bottom-color: #5B63F6; }
+    .vt-tab svg { color: inherit; }
+    .vt-col-row { transition: background-color 80ms ease; }
+    .vt-col-row:hover { background: #F9FAFB; }
+    /* Link datasource modal */
+    #link-ds-modal-backdrop { display: none; }
+    #link-ds-modal-backdrop.open { display: flex; }
+    .link-ds-row { transition: background-color 100ms ease, border-color 100ms ease; cursor: pointer; border: 1.5px solid transparent; border-radius: 10px; }
+    .link-ds-row:hover { background: #F9FAFB; }
+    .link-ds-row.selected { background: #EEF2FF; border-color: #C7D2FE; }
+    .link-table-row { transition: background-color 100ms ease; border-radius: 8px; }
+    .link-table-row:hover { background: #F9FAFB; }
+    .link-modal-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #D1D5DB transparent; }
+    .link-modal-scroll::-webkit-scrollbar { width: 4px; }
+    .link-modal-scroll::-webkit-scrollbar-track { background: transparent; }
+    .link-modal-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
     /* Workspace switcher dropdown */
     .ws-switcher-dropdown { display: none; }
     /* Connector wizard step flow */
@@ -566,7 +587,7 @@
                 class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                 style="width:120px; justify-content:space-between;">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                <span id="settings-ds-type-label">Type</span>
+                <span id="settings-ds-type-label">Category</span>
                 <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
               <div id="settings-ds-type-dropdown"
@@ -574,9 +595,15 @@
                 style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               </div>
             </div>
+<<<<<<< HEAD
             <button onclick="window.open('../datasource/index.html', '_blank')" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               Add datasource
+=======
+            <button onclick="openLinkDsModal()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+              Link datasource
+>>>>>>> 1c756ea4ab87cfe673da8e98134a5fb095f5965e
             </button>
           </div>
 
@@ -585,10 +612,10 @@
             <table class="w-full text-[13px] table-fixed">
               <thead class="sticky top-0 z-10">
                 <tr class="bg-gray-50 border-b border-gray-200">
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Type</th>
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
-                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
+                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:46%">Name</th>
+                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:30%">Category</th>
+                  <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:12%">Tables</th>
+                  <th style="width:12%"></th>
                 </tr>
               </thead>
               <tbody id="settings-ds-tbody"></tbody>
@@ -728,7 +755,7 @@
                   class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                   style="width:120px; justify-content:space-between;">
                   <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                  <span id="org-ds-type-label">Type</span>
+                  <span id="org-ds-type-label">Category</span>
                   <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div id="org-ds-type-dropdown"
@@ -745,11 +772,18 @@
               <table class="w-full text-[13px] table-fixed">
                 <thead class="sticky top-0 z-10">
                   <tr class="bg-gray-50 border-b border-gray-200">
+<<<<<<< HEAD
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:35%">Name</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:18%">Type</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Status</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:12%">Tables</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%"></th>
+=======
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Category</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
+>>>>>>> 1c756ea4ab87cfe673da8e98134a5fb095f5965e
                   </tr>
                 </thead>
                 <tbody id="org-ds-tbody"></tbody>
@@ -1062,8 +1096,17 @@
         return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors" style="${i === rows.length-1 ? 'border-bottom:none' : ''}">
           <td class="px-4 py-3"><span class="font-medium text-gray-900">${d.name}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
+<<<<<<< HEAD
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
           <td class="px-4 py-3 text-gray-500 text-[13px]">${(ORG_DS_MOCK[d.name]?.tables.length ?? d.tables)}</td>
+=======
+          <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
+          <td class="px-4 py-3 text-right">
+            <button onclick="openViewTablesModal('${d.name.replace(/'/g, "\\'")}')"
+              class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[11px] font-medium transition-colors" style="color:#5B63F6;border:1px solid #C7D2FE;background:#EEF2FF" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              View Tables
+>>>>>>> 1c756ea4ab87cfe673da8e98134a5fb095f5965e
         </tr>`;
       }).join('');
     }
@@ -1075,7 +1118,7 @@
 
     function filterSettingDsType(connector) {
       settingDsTypeFilter = connector;
-      document.getElementById('settings-ds-type-label').textContent = connector === 'All' ? 'Type' : connector;
+      document.getElementById('settings-ds-type-label').textContent = connector === 'All' ? 'Category' : connector;
       document.getElementById('settings-ds-type-dropdown').classList.remove('open');
       renderSettingDsTable();
     }
@@ -1391,7 +1434,7 @@
     function filterOrgDs(q) { orgDsSearchTerm = q.toLowerCase(); renderOrgDsTable(); }
     function filterOrgDsType(connector) {
       orgDsTypeFilter = connector;
-      document.getElementById('org-ds-type-label').textContent = connector === 'All' ? 'Type' : connector;
+      document.getElementById('org-ds-type-label').textContent = connector === 'All' ? 'Category' : connector;
       document.getElementById('org-ds-type-dropdown').classList.remove('open');
       renderOrgDsTable();
     }
@@ -2657,6 +2700,628 @@
     function cbFinishConnector() {
       closeConnectorBrowser();
     }
+
+    /* ── View Tables Modal ──────────────────────────────────────── */
+    const VIEW_DS_SCHEMAS = {
+      'Q4 Revenue Sheet': {
+        type: 'File', connector: 'Google Sheets',
+        tables: [
+          { name: 'revenue_data', description: 'Monthly revenue entries broken down by product line and region.', columns: [
+            { name: 'month',      desc: 'Calendar month in YYYY-MM format.' },
+            { name: 'product',    desc: 'Product line identifier (e.g. Pro, Enterprise).' },
+            { name: 'region',     desc: 'Geographic region for the revenue entry.' },
+            { name: 'revenue',    desc: 'Total revenue in USD for the period.' },
+            { name: 'currency',   desc: 'ISO 4217 currency code of the original entry.' },
+          ]},
+          { name: 'targets', description: 'Quarterly revenue targets set by the finance team per region.', columns: [
+            { name: 'quarter',    desc: 'Quarter label in Q1–Q4 YYYY format.' },
+            { name: 'region',     desc: 'Target region or global.' },
+            { name: 'target_usd', desc: 'Revenue target amount in USD.' },
+            { name: 'owner',      desc: 'Name of the finance team owner for this target.' },
+          ]},
+          { name: 'adjustments', description: 'Manual revenue adjustments and one-off corrections.', columns: [
+            { name: 'date',       desc: 'Date the adjustment was recorded.' },
+            { name: 'amount',     desc: 'Adjustment delta in USD (positive or negative).' },
+            { name: 'reason',     desc: 'Human-readable reason for the adjustment.' },
+            { name: 'approved_by',desc: 'Name of the approver who signed off the change.' },
+          ]},
+        ],
+      },
+      'Analytics DB': {
+        type: 'Database', connector: 'PostgreSQL',
+        tables: [
+          { name: 'events', description: 'Raw event stream captured from all product surfaces.', columns: [
+            { name: 'event_id',   desc: 'UUID primary key for each event record.' },
+            { name: 'user_id',    desc: 'Foreign key referencing the users table.' },
+            { name: 'event_name', desc: 'Canonical name of the event (e.g. page_view, click).' },
+            { name: 'properties', desc: 'JSONB blob of arbitrary event properties.' },
+            { name: 'occurred_at',desc: 'UTC timestamp when the event was fired.' },
+            { name: 'session_id', desc: 'Session grouping identifier for sequential events.' },
+          ]},
+          { name: 'sessions', description: 'Aggregated session records derived from the event stream.', columns: [
+            { name: 'session_id', desc: 'UUID primary key for the session.' },
+            { name: 'user_id',    desc: 'User who initiated the session.' },
+            { name: 'started_at', desc: 'UTC timestamp of the first event in the session.' },
+            { name: 'ended_at',   desc: 'UTC timestamp of the last event in the session.' },
+            { name: 'duration_s', desc: 'Session duration in seconds.' },
+            { name: 'channel',    desc: 'Acquisition channel (organic, paid, referral).' },
+          ]},
+          { name: 'page_views', description: 'Dedicated table for page-view events with URL metadata.', columns: [
+            { name: 'id',         desc: 'Auto-increment primary key.' },
+            { name: 'session_id', desc: 'Session that contained this page view.' },
+            { name: 'path',       desc: 'URL path of the viewed page.' },
+            { name: 'referrer',   desc: 'HTTP referrer URL, if present.' },
+            { name: 'viewed_at',  desc: 'UTC timestamp of the page view.' },
+          ]},
+          { name: 'funnels', description: 'Conversion funnel definitions and step completions.', columns: [
+            { name: 'funnel_id',  desc: 'UUID identifier for the funnel.' },
+            { name: 'name',       desc: 'Human-readable funnel name.' },
+            { name: 'steps',      desc: 'Ordered JSON array of event names comprising the funnel.' },
+            { name: 'created_at', desc: 'When the funnel was defined.' },
+          ]},
+          { name: 'cohorts', description: 'User cohorts grouped by signup week for retention analysis.', columns: [
+            { name: 'cohort_week',desc: 'ISO week string (YYYY-WNN) of user signup.' },
+            { name: 'user_id',    desc: 'Member user in this cohort.' },
+            { name: 'size',       desc: 'Total cohort size at signup week.' },
+          ]},
+        ],
+      },
+      'Sales API': {
+        type: 'API', connector: 'REST API',
+        tables: [
+          { name: 'leads', description: 'Inbound leads captured from marketing and product channels.', columns: [
+            { name: 'id',         desc: 'UUID primary key for the lead.' },
+            { name: 'email',      desc: 'Contact email of the lead.' },
+            { name: 'company',    desc: 'Company name associated with the lead.' },
+            { name: 'source',     desc: 'Acquisition source (e.g. website, referral, event).' },
+            { name: 'created_at', desc: 'UTC timestamp when the lead was captured.' },
+          ]},
+          { name: 'deals', description: 'Active and closed sales deals tracked by the revenue team.', columns: [
+            { name: 'deal_id',    desc: 'UUID primary key.' },
+            { name: 'account',    desc: 'Account name the deal belongs to.' },
+            { name: 'stage',      desc: 'Current pipeline stage (Prospect, Qualified, Closed Won/Lost).' },
+            { name: 'value_usd',  desc: 'Estimated deal value in USD.' },
+            { name: 'close_date', desc: 'Expected or actual close date.' },
+            { name: 'owner',      desc: 'Sales rep responsible for the deal.' },
+          ]},
+          { name: 'activities', description: 'All logged sales activities including calls, emails and meetings.', columns: [
+            { name: 'activity_id',desc: 'UUID primary key.' },
+            { name: 'deal_id',    desc: 'Associated deal, if any.' },
+            { name: 'type',       desc: 'Activity type: call, email, meeting, note.' },
+            { name: 'summary',    desc: 'Short summary of the activity outcome.' },
+            { name: 'logged_at',  desc: 'UTC timestamp the activity was logged.' },
+          ]},
+          { name: 'accounts', description: 'Company-level account records.', columns: [
+            { name: 'account_id', desc: 'UUID primary key.' },
+            { name: 'name',       desc: 'Legal company name.' },
+            { name: 'industry',   desc: 'Industry vertical.' },
+            { name: 'arr',        desc: 'Current annual recurring revenue from this account.' },
+          ]},
+          { name: 'contacts', description: 'Individual contacts within accounts.', columns: [
+            { name: 'contact_id', desc: 'UUID primary key.' },
+            { name: 'account_id', desc: 'Parent account.' },
+            { name: 'name',       desc: 'Full name of the contact.' },
+            { name: 'email',      desc: 'Business email address.' },
+            { name: 'role',       desc: 'Job title or decision-making role.' },
+          ]},
+        ],
+      },
+      'CRM Export': {
+        type: 'File', connector: 'CSV',
+        tables: [
+          { name: 'customers', description: 'All registered customers with plan and account details.', columns: [
+            { name: 'id',         desc: 'Auto-incremented integer that uniquely identifies each customer record. Used as the primary key across all CRM relations.' },
+            { name: 'name',       desc: 'Full legal name of the customer as entered during registration. May include company name for B2B accounts.' },
+            { name: 'email',      desc: 'Primary email address associated with the account. Used for login, billing notifications, and marketing communications.' },
+            { name: 'country',    desc: 'ISO 3166-1 country resolved from the billing address. Determines tax jurisdiction and regional pricing tiers.' },
+            { name: 'plan',       desc: 'Subscription tier the customer is currently on — Free, Pro, or Enterprise. Drives feature gating and usage limits.' },
+            { name: 'created_at', desc: 'UTC timestamp of when the customer record was first created. Sourced from the auth-service signup event stream.' },
+          ]},
+          { name: 'deals', description: 'Open and closed deals linked to CRM customer accounts.', columns: [
+            { name: 'deal_id',    desc: 'UUID primary key for the deal record.' },
+            { name: 'customer_id',desc: 'Foreign key referencing the customers table.' },
+            { name: 'stage',      desc: 'Current or final pipeline stage.' },
+            { name: 'value_usd',  desc: 'Deal value in USD.' },
+            { name: 'closed_at',  desc: 'UTC timestamp when the deal was closed, if applicable.' },
+          ]},
+          { name: 'activities', description: 'Customer-facing activities logged by the customer success team.', columns: [
+            { name: 'activity_id',desc: 'UUID primary key.' },
+            { name: 'customer_id',desc: 'Related customer.' },
+            { name: 'type',       desc: 'Activity category: onboarding, check-in, support, renewal.' },
+            { name: 'notes',      desc: 'Free-text notes from the activity.' },
+            { name: 'created_at', desc: 'When the activity was recorded.' },
+          ]},
+          { name: 'support_tickets', description: 'Customer support tickets with priority and resolution status.', columns: [
+            { name: 'ticket_id',  desc: 'Auto-increment primary key.' },
+            { name: 'customer_id',desc: 'Customer who raised the ticket.' },
+            { name: 'subject',    desc: 'Short description of the issue.' },
+            { name: 'priority',   desc: 'Priority level: low, medium, high, critical.' },
+            { name: 'status',     desc: 'Current status: open, in_progress, resolved, closed.' },
+            { name: 'resolved_at',desc: 'UTC timestamp of resolution, null if still open.' },
+          ]},
+          { name: 'invoices', description: 'Billing invoices issued to customers.', columns: [
+            { name: 'invoice_id', desc: 'UUID primary key.' },
+            { name: 'customer_id',desc: 'Billed customer.' },
+            { name: 'amount_usd', desc: 'Invoice total in USD.' },
+            { name: 'status',     desc: 'Payment status: draft, sent, paid, overdue.' },
+            { name: 'due_date',   desc: 'Payment due date.' },
+            { name: 'paid_at',    desc: 'UTC timestamp of payment receipt, null if unpaid.' },
+          ]},
+          { name: 'tags', description: 'Flexible tagging system for customers and deals.', columns: [
+            { name: 'tag_id',     desc: 'Auto-increment primary key.' },
+            { name: 'name',       desc: 'Tag label text.' },
+            { name: 'color',      desc: 'Hex color used in the UI for this tag.' },
+          ]},
+          { name: 'segments', description: 'Marketing and CS segments with rule-based membership.', columns: [
+            { name: 'segment_id', desc: 'UUID primary key.' },
+            { name: 'name',       desc: 'Human-readable segment name.' },
+            { name: 'rules',      desc: 'JSON array of filter rules that define membership.' },
+            { name: 'size',       desc: 'Cached count of customers currently in the segment.' },
+            { name: 'updated_at', desc: 'When the segment membership was last recalculated.' },
+          ]},
+          { name: 'notes', description: 'Freeform notes attached to customer records.', columns: [
+            { name: 'note_id',    desc: 'UUID primary key.' },
+            { name: 'customer_id',desc: 'Customer the note belongs to.' },
+            { name: 'body',       desc: 'Markdown-formatted note content.' },
+            { name: 'author',     desc: 'Email of the team member who wrote the note.' },
+            { name: 'created_at', desc: 'Creation timestamp.' },
+          ]},
+        ],
+      },
+      'User Events DB': {
+        type: 'Database', connector: 'MySQL',
+        tables: [
+          { name: 'events', description: 'High-volume raw event stream from all client surfaces.', columns: [
+            { name: 'id',          desc: 'BIGINT auto-increment primary key.' },
+            { name: 'user_id',     desc: 'Identifier of the user who triggered the event.' },
+            { name: 'event_name',  desc: 'Canonical snake_case event name.' },
+            { name: 'properties',  desc: 'JSON blob of event-specific properties.' },
+            { name: 'occurred_at', desc: 'UTC timestamp of event occurrence.' },
+          ]},
+          { name: 'users', description: 'User profile records joined from the auth service.', columns: [
+            { name: 'user_id',    desc: 'UUID matching the auth-service user record.' },
+            { name: 'email',      desc: 'User email at time of first event.' },
+            { name: 'plan',       desc: 'Subscription plan at time of last sync.' },
+            { name: 'signed_up_at',desc: 'UTC timestamp of account creation.' },
+          ]},
+          { name: 'sessions', description: 'Session boundaries computed from event gaps.', columns: [
+            { name: 'session_id', desc: 'UUID primary key for the session.' },
+            { name: 'user_id',    desc: 'Session owner.' },
+            { name: 'started_at', desc: 'Timestamp of the first event in the session.' },
+            { name: 'ended_at',   desc: 'Timestamp of the last event in the session.' },
+            { name: 'duration_s', desc: 'Total session duration in seconds.' },
+          ]},
+        ],
+      },
+    };
+
+    let _vtActiveTable = 0;
+    let _vtDsName = '';
+
+    function openViewTablesModal(dsName) {
+      const schema = VIEW_DS_SCHEMAS[dsName];
+      if (!schema) return;
+      _vtDsName = dsName;
+      _vtActiveTable = 0;
+      document.getElementById('vt-title').textContent = dsName + ' \u2014 Tables';
+      document.getElementById('vt-meta').textContent =
+        schema.tables.length + ' table' + (schema.tables.length !== 1 ? 's' : '') + ' \u00b7 ' + schema.type;
+      // Build tabs
+      const tabBar = document.getElementById('vt-tab-bar');
+      tabBar.innerHTML = schema.tables.map((t, i) =>
+        `<button class="vt-tab${i === 0 ? ' active' : ''}" onclick="_vtSetTable(${i})" id="vt-tab-${i}">
+          <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="1.5"/><path stroke-linecap="round" d="M3 9h18"/><path stroke-linecap="round" d="M9 5v14"/></svg>
+          ${t.name}
+        </button>`
+      ).join('');
+      _vtRenderTable(0);
+      document.getElementById('view-tables-backdrop').classList.add('open');
+    }
+
+    function _vtSetTable(idx) {
+      const schema = VIEW_DS_SCHEMAS[_vtDsName];
+      document.querySelectorAll('.vt-tab').forEach((b, i) => b.classList.toggle('active', i === idx));
+      _vtActiveTable = idx;
+      _vtRenderTable(idx);
+    }
+
+    function _vtRenderTable(idx) {
+      const schema = VIEW_DS_SCHEMAS[_vtDsName];
+      const table = schema.tables[idx];
+      document.getElementById('vt-table-desc').textContent = table.description;
+      document.getElementById('vt-col-count').textContent = table.columns.length + ' column' + (table.columns.length !== 1 ? 's' : '');
+      document.getElementById('vt-col-tbody').innerHTML = table.columns.map((c, i) => {
+        return `<tr class="vt-col-row border-b border-gray-100 last:border-0">
+          <td class="px-4 py-3 align-top" style="width:32%">
+            <span class="inline-flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:#5B63F6;margin-top:2px"></span>
+              <code class="text-[12px] font-semibold" style="color:#5B63F6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">${c.name}</code>
+            </span>
+          </td>
+          <td class="px-4 py-3 text-[13px] text-gray-500 leading-relaxed align-top">${c.desc}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function closeViewTablesModal() {
+      document.getElementById('view-tables-backdrop').classList.remove('open');
+    }
+
+    /* ── Link Datasource Modal ───────────────────────────────────── */
+    const LINK_DS_TABLES = {
+      'Company CRM':       ['accounts','contacts','deals','activities','pipeline_stages','products','quotes','invoices','tickets','notes','attachments','tags','custom_fields','audit_log','users','settings','webhooks','integrations'],
+      'Marketing Sheet':   ['campaigns','leads','utm_tracking','channel_spend'],
+      'Billing API':       ['subscriptions','invoices','payments','refunds','coupons','plans'],
+      'Prod Analytics DB': ['events','sessions','page_views','funnels','cohorts','retention','ab_tests','experiments','revenue','churn','ltv','nps','feature_flags','audiences','segments','exports','jobs','error_logs','perf_metrics','api_keys','users','orgs','workspaces','projects','dashboards','reports','queries','data_sources','tags','comments','notifications','roles'],
+      'Customer Exports':  ['customers','orders','returns','shipments','products','reviews','support_tickets','inventory','categories'],
+    };
+
+    let _linkSelectedDsId = null;
+    let _linkDsSearchTerm = '';
+    let _linkTableNames = [];
+    let _linkCheckedTables = new Set();
+    let _linkTableSearchTerm = '';
+
+    function openLinkDsModal() {
+      _linkSelectedDsId = null;
+      _linkDsSearchTerm = '';
+      _linkTableSearchTerm = '';
+      _linkCheckedTables = new Set();
+      _linkTableNames = [];
+      document.getElementById('link-ds-search').value = '';
+      document.getElementById('link-ds-select-all').checked = false;
+      _setLinkStep(1);
+      _renderLinkDsList('');
+      const nextBtn = document.getElementById('link-ds-next-btn');
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.4';
+      nextBtn.style.cursor = 'not-allowed';
+      document.getElementById('link-ds-modal-backdrop').classList.add('open');
+      setTimeout(() => document.getElementById('link-ds-search').focus(), 60);
+    }
+
+    function closeLinkDsModal() {
+      document.getElementById('link-ds-modal-backdrop').classList.remove('open');
+    }
+
+    function _setLinkStep(step) {
+      const s1 = document.getElementById('link-ds-step1');
+      const s2 = document.getElementById('link-ds-step2');
+      const backBtn = document.getElementById('link-ds-back-btn');
+      const backSpacer = document.getElementById('link-ds-back-spacer');
+      const nextBtn = document.getElementById('link-ds-next-btn');
+      const confirmBtn = document.getElementById('link-ds-confirm-btn');
+      const stepLabel = document.getElementById('link-ds-step-label');
+      const title = document.getElementById('link-ds-title');
+      const subtitle = document.getElementById('link-ds-subtitle');
+      if (step === 1) {
+        s1.classList.remove('hidden'); s1.style.display = 'flex';
+        s2.classList.add('hidden');   s2.style.display = '';
+        backBtn.classList.add('hidden'); backBtn.classList.remove('flex');
+        backSpacer.style.display = '';
+        nextBtn.classList.remove('hidden'); nextBtn.style.display = '';
+        confirmBtn.classList.add('hidden'); confirmBtn.style.display = '';
+        stepLabel.textContent = 'Step 1 of 2';
+        title.textContent = 'Choose a datasource';
+        subtitle.textContent = 'Select an org-level datasource to link to this workspace.';
+      } else {
+        s1.classList.add('hidden');   s1.style.display = '';
+        s2.classList.remove('hidden'); s2.style.display = 'flex';
+        backBtn.classList.remove('hidden'); backBtn.classList.add('flex');
+        backSpacer.style.display = 'none';
+        nextBtn.classList.add('hidden'); nextBtn.style.display = '';
+        confirmBtn.classList.remove('hidden'); confirmBtn.style.display = '';
+        stepLabel.textContent = 'Step 2 of 2';
+        title.textContent = 'Select tables';
+        subtitle.textContent = 'Choose which tables to include in this workspace.';
+      }
+    }
+
+    function _renderLinkDsList(q) {
+      const list = document.getElementById('link-ds-list');
+      const empty = document.getElementById('link-ds-empty');
+      const term = q.toLowerCase();
+      const rows = ORG_DS_DATA.filter(d => {
+        const matchSearch = d.name.toLowerCase().includes(term) || d.connector.toLowerCase().includes(term);
+        return matchSearch && d.status === 'Connected';
+      });
+      if (!rows.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const TYPE_BADGE = { Database: { bg:'#EEF2FF',color:'#5B63F6' }, File: { bg:'#FFF7ED',color:'#F97316' }, API: { bg:'#F0FDF4',color:'#22C55E' } };
+      const STATUS_STYLE = { Connected: { bg:'#F0FDF4',color:'#16A34A' }, Error: { bg:'#FEF2F2',color:'#DC2626' }, Syncing: { bg:'#EFF6FF',color:'#2563EB' } };
+      const CONNECTOR_COLOR = { PostgreSQL:'#336791', 'Google Sheets':'#0F9D58', 'REST API':'#22C55E', Snowflake:'#29B5E8', CSV:'#F97316', MySQL:'#5B63F6' };
+      list.innerHTML = rows.map((d, i) => {
+        const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280' };
+        const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
+        const dotColor = CONNECTOR_COLOR[d.connector] || '#5B63F6';
+        const isSelected = _linkSelectedDsId === i;
+        return `<div class="link-ds-row flex items-center gap-3 px-3 py-3 mb-1${isSelected ? ' selected' : ''}" onclick="selectLinkDs(${i})">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:${dotColor}18">
+            <div class="w-3 h-3 rounded-full" style="background:${dotColor}"></div>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-[13px] font-semibold text-gray-900 truncate">${d.name}</p>
+            <p class="text-[11px] text-gray-500 mt-0.5">${d.connector} · ${d.tables} tables</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}">
+              <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}
+            </span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function filterLinkDsList(q) {
+      _linkDsSearchTerm = q;
+      _renderLinkDsList(q);
+    }
+
+    function selectLinkDs(idx) {
+      _linkSelectedDsId = idx;
+      _renderLinkDsList(_linkDsSearchTerm);
+      const nextBtn = document.getElementById('link-ds-next-btn');
+      nextBtn.disabled = false;
+      nextBtn.style.opacity = '1';
+      nextBtn.style.cursor = 'pointer';
+    }
+
+    function goToLinkStep2() {
+      if (_linkSelectedDsId === null) return;
+      const ds = ORG_DS_DATA[_linkSelectedDsId];
+      const CONNECTOR_COLOR = { PostgreSQL:'#336791', 'Google Sheets':'#0F9D58', 'REST API':'#22C55E', Snowflake:'#29B5E8', CSV:'#F97316', MySQL:'#5B63F6' };
+      const dotColor = CONNECTOR_COLOR[ds.connector] || '#5B63F6';
+      document.getElementById('link-ds-banner-dot').style.background = dotColor;
+      document.getElementById('link-ds-banner-name').textContent = ds.name;
+      document.getElementById('link-ds-banner-meta').textContent = ds.connector + ' · ' + ds.tables + ' tables available';
+      _linkTableSearchTerm = '';
+      _linkCheckedTables = new Set();
+      document.getElementById('link-ds-table-search').value = '';
+      document.getElementById('link-ds-select-all').checked = false;
+      _setLinkStep(2);
+      _renderLinkTables(ds);
+      _updateLinkConfirmBtn();
+    }
+
+    function _renderLinkTables(ds) {
+      _linkTableNames = LINK_DS_TABLES[ds.name] || Array.from({ length: ds.tables }, (_, i) => 'table_' + (i + 1));
+      _renderFilteredLinkTables();
+    }
+
+    function _renderFilteredLinkTables() {
+      const list = document.getElementById('link-ds-tables-list');
+      const term = _linkTableSearchTerm.toLowerCase();
+      const filtered = term ? _linkTableNames.filter(t => t.toLowerCase().includes(term)) : _linkTableNames;
+      if (!filtered.length) {
+        list.innerHTML = '<p class="text-[13px] text-gray-400 text-center py-4">No tables match your search.</p>';
+        _syncSelectAllState(filtered);
+        return;
+      }
+      list.innerHTML = filtered.map(t => {
+        const checked = _linkCheckedTables.has(t) ? ' checked' : '';
+        return `<label class="link-table-row flex items-center gap-3 px-3 py-2.5 cursor-pointer">
+          <input type="checkbox" data-table="${t}"${checked} onchange="_onLinkTableCheck(this)"
+            class="w-4 h-4 rounded border-gray-300 flex-shrink-0 cursor-pointer" style="accent-color:#5B63F6">
+          <span class="text-[13px] text-gray-800 font-medium">${t}</span>
+        </label>`;
+      }).join('');
+      _syncSelectAllState(filtered);
+    }
+
+    function _onLinkTableCheck(cb) {
+      if (cb.checked) _linkCheckedTables.add(cb.dataset.table);
+      else _linkCheckedTables.delete(cb.dataset.table);
+      const term = _linkTableSearchTerm.toLowerCase();
+      const filtered = term ? _linkTableNames.filter(t => t.toLowerCase().includes(term)) : _linkTableNames;
+      _syncSelectAllState(filtered);
+      _updateLinkConfirmBtn();
+    }
+
+    function _syncSelectAllState(filteredNames) {
+      const allCb = document.getElementById('link-ds-select-all');
+      const filteredChecked = filteredNames.filter(t => _linkCheckedTables.has(t)).length;
+      allCb.indeterminate = filteredChecked > 0 && filteredChecked < filteredNames.length;
+      allCb.checked = filteredNames.length > 0 && filteredChecked === filteredNames.length;
+    }
+
+    function filterLinkTables(q) {
+      _linkTableSearchTerm = q;
+      _renderFilteredLinkTables();
+    }
+
+    function goBackToLinkStep1() {
+      _linkTableSearchTerm = '';
+      _linkCheckedTables = new Set();
+      _linkTableNames = [];
+      _setLinkStep(1);
+      document.getElementById('link-ds-table-search').value = '';
+      _renderLinkDsList(_linkDsSearchTerm);
+      const nextBtn = document.getElementById('link-ds-next-btn');
+      nextBtn.disabled = _linkSelectedDsId === null;
+      nextBtn.style.opacity = _linkSelectedDsId === null ? '0.4' : '1';
+      nextBtn.style.cursor = _linkSelectedDsId === null ? 'not-allowed' : 'pointer';
+    }
+
+    function toggleAllLinkTables(cb) {
+      const term = _linkTableSearchTerm.toLowerCase();
+      const filtered = term ? _linkTableNames.filter(t => t.toLowerCase().includes(term)) : _linkTableNames;
+      filtered.forEach(t => { if (cb.checked) _linkCheckedTables.add(t); else _linkCheckedTables.delete(t); });
+      // sync checkboxes currently in DOM
+      document.querySelectorAll('#link-ds-tables-list input[type=checkbox]').forEach(c => c.checked = cb.checked);
+      _updateLinkConfirmBtn();
+    }
+
+    function _updateLinkConfirmBtn() {
+      const total = _linkCheckedTables.size;
+      const btn = document.getElementById('link-ds-confirm-btn');
+      btn.disabled = total === 0;
+      btn.style.opacity = total === 0 ? '0.4' : '1';
+      btn.style.cursor = total === 0 ? 'not-allowed' : 'pointer';
+      btn.textContent = total > 0 ? 'Link ' + total + ' table' + (total === 1 ? '' : 's') : 'Link to workspace';
+    }
+
+    function confirmLinkDs() {
+      if (_linkSelectedDsId === null) return;
+      if (!_linkCheckedTables.size) return;
+      const ds = ORG_DS_DATA[_linkSelectedDsId];
+      const tableCount = _linkCheckedTables.size;
+      const TYPE_BADGE = { Database: { bg:'#EEF2FF',color:'#5B63F6' }, File: { bg:'#FFF7ED',color:'#F97316' }, API: { bg:'#F0FDF4',color:'#22C55E' } };
+      const tb = TYPE_BADGE[ds.type] || { bg:'#F3F4F6', color:'#6B7280' };
+      const tbody = document.getElementById('settings-ds-tbody');
+      const empty = document.getElementById('settings-ds-empty');
+      if (empty) empty.classList.add('hidden');
+      const row = document.createElement('tr');
+      row.className = 'border-b border-gray-100 hover:bg-gray-50 transition-colors';
+      row.innerHTML = `
+        <td class="px-4 py-3"><span class="font-medium text-gray-900">${ds.name}</span></td>
+        <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${ds.connector}</span></td>
+        <td class="px-4 py-3 text-gray-500 text-[13px]">${tableCount}</td>
+        <td class="px-4 py-3 text-right">
+          <button onclick="openViewTablesModal('${ds.name.replace(/'/g, "\\'")}')"
+            class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[11px] font-medium transition-colors" style="color:#5B63F6;border:1px solid #C7D2FE;background:#EEF2FF" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            View Tables
+          </button>
+        </td>`;
+      if (tbody) tbody.appendChild(row);
+      closeLinkDsModal();
+    }
   </script>
+
+  <!-- ── View Tables Modal ────────────────────────────────────── -->
+  <div id="view-tables-backdrop"
+       class="fixed inset-0 z-50 items-center justify-center"
+       style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
+    <div class="bg-white rounded-2xl w-full mx-4 flex flex-col overflow-hidden" style="max-width:560px;max-height:600px;box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+
+      <!-- Header -->
+      <div class="px-6 pt-5 pb-4 flex-shrink-0">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 id="vt-title" class="text-[15px] font-bold text-gray-900 leading-snug"></h3>
+            <p id="vt-meta" class="text-[12px] text-gray-400 mt-0.5"></p>
+          </div>
+          <button onclick="closeViewTablesModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors flex-shrink-0 mt-0.5" title="Close">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div id="vt-tab-bar" class="flex items-center gap-5 px-6 border-b border-gray-200 flex-shrink-0 overflow-x-auto" style="scrollbar-width:none"></div>
+
+      <!-- Table description -->
+      <p id="vt-table-desc" class="px-6 pt-3 pb-3 text-[13px] text-gray-500 flex-shrink-0 leading-relaxed"></p>
+
+      <!-- Column table -->
+      <div class="flex-1 min-h-0 overflow-y-auto mx-5 mb-5 rounded-xl border border-gray-200">
+        <table class="w-full text-[13px]">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="text-left px-4 py-2.5 text-[11px] font-semibold text-gray-400 uppercase tracking-widest" style="width:30%">Column</th>
+              <th class="text-left px-4 py-2.5 text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Description</th>
+            </tr>
+          </thead>
+          <tbody id="vt-col-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 pb-4 flex-shrink-0">
+        <span id="vt-col-count" class="text-[12px] text-gray-400"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Link Datasource Modal ─────────────────────────────────── -->
+  <div id="link-ds-modal-backdrop"
+       class="fixed inset-0 z-50 items-center justify-center"
+       style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
+    <div class="bg-white rounded-2xl w-full mx-4 overflow-hidden flex flex-col" style="max-width:520px;max-height:580px;box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+
+      <!-- Header -->
+      <div class="px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p id="link-ds-step-label" class="text-[11px] font-medium text-gray-400 mb-1">Step 1 of 2</p>
+            <h3 id="link-ds-title" class="text-[15px] font-semibold text-gray-900">Choose a datasource</h3>
+            <p id="link-ds-subtitle" class="text-[12px] text-gray-500 mt-0.5">Select an org-level datasource to link to this workspace.</p>
+          </div>
+          <button onclick="closeLinkDsModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 1: Pick datasource -->
+      <div id="link-ds-step1" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+        <!-- Search + Status filter -->
+        <div class="px-5 pt-4 pb-2 flex-shrink-0">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+            <input id="link-ds-search" type="text" placeholder="Search datasources…" oninput="filterLinkDsList(this.value)"
+              class="w-full h-9 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors" />
+          </div>
+        </div>
+        <!-- List -->
+        <div id="link-ds-list" class="px-5 pb-3 flex-1 min-h-0 link-modal-scroll" style="max-height:290px">
+          <!-- Populated by JS -->
+        </div>
+        <p id="link-ds-empty" class="hidden px-5 pb-4 text-[13px] text-gray-400 text-center">No datasources found.</p>
+      </div>
+
+      <!-- Step 2: Pick tables -->
+      <div id="link-ds-step2" class="hidden flex-col flex-1 min-h-0 overflow-hidden">
+        <!-- Selected DS banner -->
+        <div id="link-ds-banner" class="mx-5 mt-4 mb-2 flex items-center gap-3 px-4 py-3 rounded-xl flex-shrink-0" style="background:#EEF2FF">
+          <div id="link-ds-banner-dot" class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#5B63F6"></div>
+          <div class="min-w-0 flex-1">
+            <p id="link-ds-banner-name" class="text-[13px] font-semibold text-gray-900 truncate"></p>
+            <p id="link-ds-banner-meta" class="text-[11px] text-gray-500 mt-0.5"></p>
+          </div>
+        </div>
+        <!-- Table search + Select all -->
+        <div class="px-5 pt-3 pb-2 flex-shrink-0 flex items-center gap-2">
+          <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+            <input id="link-ds-table-search" type="text" placeholder="Search tables…" oninput="filterLinkTables(this.value)"
+              class="w-full h-9 pl-9 pr-4 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors" />
+          </div>
+          <label class="flex items-center gap-2 flex-shrink-0 cursor-pointer px-3 h-9 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+            <input id="link-ds-select-all" type="checkbox" oninput="toggleAllLinkTables(this)"
+              class="w-4 h-4 rounded border-gray-300 cursor-pointer" style="accent-color:#5B63F6">
+            <span class="text-[13px] font-medium text-gray-700 whitespace-nowrap">Select all</span>
+          </label>
+        </div>
+        <div class="mx-5 mb-1 border-t border-gray-100 flex-shrink-0"></div>
+        <!-- Table list -->
+        <div id="link-ds-tables-list" class="px-5 pb-3 flex flex-col gap-0.5 flex-1 min-h-0 link-modal-scroll" style="max-height:220px">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
+        <button id="link-ds-back-btn" onclick="goBackToLinkStep1()" class="hidden items-center gap-1.5 text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <div id="link-ds-back-spacer"></div>
+        <div class="flex items-center gap-2">
+          <button onclick="closeLinkDsModal()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button id="link-ds-next-btn" onclick="goToLinkStep2()" disabled
+            class="px-4 h-9 rounded-lg text-[13px] font-medium text-white transition-opacity"
+            style="background:#5B63F6;opacity:0.4;cursor:not-allowed">
+            Next
+          </button>
+          <button id="link-ds-confirm-btn" onclick="confirmLinkDs()" disabled class="hidden px-4 h-9 rounded-lg text-[13px] font-medium text-white transition-opacity"
+            style="background:#5B63F6;opacity:0.4;cursor:not-allowed">
+            Link to workspace
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
