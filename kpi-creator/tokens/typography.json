@@ -1,0 +1,47 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Same as all Aibii screens — loaded from Google Fonts at weights 400/500/600/700/800"
+      }
+    },
+    "size": {
+      "chartCardTitle":     { "value": "18px",   "weight": "700", "color": "#111827", "comment": "Generated chart card heading" },
+      "emptyStateHeading":  { "value": "19px",   "weight": "700", "color": "#111827", "comment": "Empty state \"What would you like to measure?\"" },
+      "emptyStateSubtitle": { "value": "13px",   "weight": "400", "color": "#9CA3AF", "comment": "Empty state supporting text" },
+      "tryExampleLabel":    { "value": "11px",   "weight": "600", "color": "#C4C9D4", "comment": "\"TRY AN EXAMPLE\" uppercase section label" },
+      "bubbleText":         { "value": "12.5px", "weight": "400", "color": "varies",  "comment": "AI (#374151) and user (#FFFFFF) message text" },
+      "messageTimestamp":   { "value": "10px",   "weight": "400", "color": "#D1D5DB", "comment": "Time label below each message bubble" },
+      "chipLabel":          { "value": "11.5px", "weight": "500", "color": "#4B5563", "comment": "Suggestion chip button text" },
+      "chatInput":          { "value": "12.5px", "weight": "400", "color": "#374151", "comment": "User text inside textarea" },
+      "chatPlaceholder":    { "value": "12.5px", "weight": "400", "color": "#D1D5DB", "comment": "Textarea placeholder" },
+      "sendHint":           { "value": "10px",   "weight": "400", "color": "#D1D5DB", "comment": "↵ send · ⇧↵ newline keyboard hint" },
+      "sendButton":         { "value": "11px",   "weight": "600", "color": "#FFFFFF", "comment": "Send button label" },
+      "navCounter":         { "value": "12px",   "weight": "600", "color": "#6B7280", "comment": "Chart nav counter \"n / total\" — tabular-nums" },
+      "addToDashboard":     { "value": "11px",   "weight": "600", "color": "#FFFFFF", "comment": "Add to Dashboard button label" },
+      "sourceBadge":        { "value": "11px",   "weight": "500", "color": "varies",  "comment": "Source badge label — colour from source type token" },
+      "chartPlaceholder":   { "value": "12px",   "weight": "500", "color": "#9CA3AF", "comment": "\"Chart renders here in production\"" },
+      "chartCaption":       { "value": "11px",   "weight": "400", "color": "#D1D5DB", "comment": "\"Connect a real datasource to populate\"" },
+      "generatingLabel":    { "value": "13px",   "weight": "500", "color": "#6B7280", "comment": "\"Generating your chart…\" overlay label" },
+      "topbarUser":         { "value": "13px",   "weight": "500", "color": "#374151", "comment": "User name chip in topbar" },
+      "navPrimary":         { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Sidebar primary nav labels" },
+      "navSub":             { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sidebar sub-items (project children)" }
+    },
+    "weight": {
+      "regular":            { "value": "400" },
+      "medium":             { "value": "500" },
+      "semiBold":           { "value": "600" },
+      "bold":               { "value": "700" },
+      "extraBold":          { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":              { "value": "1.2",  "comment": "Chart card title, empty state heading" },
+      "relaxed":            { "value": "1.65", "comment": "Message bubble body text" },
+      "normal":             { "value": "1.4",  "comment": "Labels, hints, badge text" }
+    },
+    "letterSpacing": {
+      "wide":               { "value": "0.08em", "comment": "TRY AN EXAMPLE section label" }
+    }
+  }
+}

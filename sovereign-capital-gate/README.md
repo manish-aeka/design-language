@@ -1,755 +1,299 @@
-﻿# Sovereign Capital Gate — Design Language
-
-> Design system documentation for the **Sovereign Capital Gate** project view within the **Aibii** AI Business Intelligence SaaS platform.  
-> Place the reference screenshot at `assets/screenshot.png`.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Screen Anatomy](#screen-anatomy)
-3. [Color System](#color-system)
-4. [Typography](#typography)
-5. [Spacing & Grid](#spacing--grid)
-6. [Border Radius & Elevation](#border-radius--elevation)
-7. [Iconography](#iconography)
-8. [Components](#components)
-   - [Sidebar Navigation](#sidebar-navigation)
-   - [Breadcrumb Bar](#breadcrumb-bar)
-   - [Workspace Header](#workspace-header)
-   - [Action Cards Row](#action-cards-row)
-   - [Section Header & Controls](#section-header--controls)
-   - [Search Bar](#search-bar)
-   - [View Toggle](#view-toggle)
-   - [Type Filter Dropdown](#type-filter-dropdown)
-   - [Item Grid](#item-grid)
-   - [Item Card](#item-card)
-   - [Card Type Badge](#card-type-badge)
-   - [Scrollbar](#scrollbar)
-9. [Modals](#modals)
-   - [Create Item Modal](#create-item-modal)
-   - [Create Project Modal](#create-project-modal)
-10. [States & Interactions](#states--interactions)
-11. [Motion & Animation](#motion--animation)
-12. [Design Principles](#design-principles)
-13. [File Structure](#file-structure)
-
----
+﻿# Sovereign Capital Gate
 
 ## Overview
 
-The Sovereign Capital Gate view is a **project detail page** within Aibii. It shows all items (Chats, Dashboards, Documents) belonging to the project, provides action shortcuts for creating new content, and connects to a shared sidebar for cross-project navigation.
+The **Sovereign Capital Gate** page is a project detail view within Aibii. It displays all items belonging to this capital markets project — dashboards, documents, chats, presentations, and forms — with quick-create action cards and filtering controls.
 
-Key interactions:
-- **6 action-card shortcuts** (Create Dashboard, Create Document, Create Presentation, Create Form, AI Chat, Add Datasource)
-- **Create Item modal** — shared modal for Dashboard, Document, Presentation, Form, and AI Chat creation
-- **Create Project modal** — creates a new project and injects it into the sidebar dynamically
-- **Active project state** — Sovereign Capital Gate row is highlighted in the sidebar with its submenu expanded
-
-![Reference Screenshot](assets/screenshot.png)
+**File:** `sovereign-capital-gate/index.html`
+**Stack:** Plain HTML · Tailwind CSS CDN · Heroicons SVG inline · Inter font (Google Fonts)
 
 ---
 
-## Screen Anatomy
+## Page Layout
 
 ```
-+---------------------------------------------------------------------------------+
-| SIDEBAR (220px)                | MAIN CONTENT AREA                              |
-|                                |                                                |
-| [M] Manish kumar's Work... [v] | ☰  <  >  Projects > Sovereign Capital Gate    | <- Breadcrumb bar
-| ------------------------------ |                                                |
-| 🕐 Recent                     |                                                |
-| ⊞  Create Dashboard           | [🏢] Sovereign Capital Gate                    | <- Workspace header
-| 💬 AI Chat                    |      11 items · Last updated about 1 hour ago  |
-| ------------------------------ |                                                |
-| PROJECTS                [👁]  | [⊞ Create Dash][📄 Create Doc][🖥 Create Pres] |
-| ▶ My Private Project    [📌]  | [📋 Create Form][✨ AI Chat][🗄 Add Source]   | <- 6 Action Cards (4-col)
-| ▼ Sovereign Capital Gate <- ■ |                                                |
-|   ├ 💬 Chat                   | All items        [ Search... ] [ Type▾][≡⊞]   | <- Section header
-|   ├ ⊞  Dashboard              |                                                |
-|   └ 📄 Document               | +------+ +------+ +------+ +------+           | <- Item grid
-| + Create a project            | | Chat | |Dash  | | Doc  | |Cap.  |           |
-| ------------------------------ | +------+ +------+ +------+ +------+           |
-| 👤 Shared with me             | +------+ +------+ +------+ +------+           |
-| ⚙  Settings                   | |Deal  | |Invest| |Risk  | |Portf.|           |
-| ------------------------------ | +------+ +------+ +------+ +------+           |
-| ✨ Explore free features       | +------+ +------+ +------+                   |
-|    Credit left: 15            | |Valu. | |Exit  | |Market|                   |
-+-------------------------------- +------+ +------+ +------+ -----------------+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  SIDEBAR (220px)            │  TOPBAR (44px h-11)                           │
+│  ──────────────────────────  │  ☰                            🔔  [M]         │
+│  [M] Manish kumar's Work… ▾  │                                               │
+│  ──────────────────────────  │  CONTENT (scrollable px-8 py-5)              │
+│  🕐 Recent                   │                                               │
+│  ⊞  New Dashboard            │  Sovereign Capital Gate (h1 28px 800)        │
+│  💬 New Chat                 │  Capital markets intelligence…               │
+│  ──────────────────────────  │                                               │
+│  PROJECTS                    │  [⊞ Dashboard][📄 Doc][🖥 Pres][📋 Form][💬 Chat] │
+│  ▶ My Private Project 📌     │                                               │
+│  ▼ Sovereign Capital Gate ◀■ │  All items        [Search…]  [Type▾][ ≡ ⊞ ] │
+│    ├ 💬 Investor Briefing    │                                               │
+│    └ …(9 sub-items)          │  Item grid (4 cols, 9 cards)                 │
+│  + Create a project          │                                               │
+│  ──────────────────────────  │                                               │
+│  ⚙  Settings                 │                                               │
+│  ──────────────────────────  │                                               │
+│  🔵 Explore free features    │                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Color System
+## Sidebar
 
-| Token | Hex | Usage |
+### Workspace Switcher
+
+Full-width button at the top. Clicking opens the Workspace Switcher modal.
+
+| Property | Value |
+|---|---|
+| Avatar id | `ws-avatar` |
+| Name label id | `ws-name` |
+| Avatar size | `28×28px` (`w-7 h-7`), `rounded-full` |
+| Avatar background | `#3B5BDB` |
+| Avatar letter | `M` |
+| Display name | `"Manish kumar's Work..."` (truncated) |
+| Chevron | ChevronUpDown, 16px, `#9CA3AF` |
+| Click handler | `openWsModal()` |
+
+### Primary Nav
+
+Three links. Row height `36px` (`h-9`), text `14px`. All inactive on this page.
+
+| Item | Icon | Link |
 |---|---|---|
-| `color-brand-primary` | `#5B63F6` | CTA icons, active nav border, focus rings, brand accent |
-| `color-brand-secondary` | `#7C6FF7` | Gradient secondary, AI highlights |
-| `color-bg-base` | `#FFFFFF` | Page background, card surfaces |
-| `color-bg-sidebar` | `#F8F9FC` | Left sidebar background |
-| `color-bg-hover` | `#EEF2FF` | Nav item hover, active nav item, active project row |
-| `color-bg-toggle` | `#F1F3F4` | View toggle container, Type filter trigger |
-| `color-bg-tab-container` | `#F3F4F6` | Filter pill container |
-| `color-text-primary` | `#111827` | Headings, card titles, active nav labels |
-| `color-text-secondary` | `#374151` | Nav item labels (inactive) |
-| `color-text-tertiary` | `#6B7280` | Subtitles, timestamps, descriptions |
-| `color-text-muted` | `#9CA3AF` | Inactive toggle icons, placeholder labels |
-| `color-border-default` | `#E5E7EB` | Card borders, section dividers |
-| `color-border-subtle` | `#F3F4F6` | Sidebar section dividers |
-| `color-border-active-nav` | `#5B63F6` | `2px` left border on active project row |
-| `color-icon-brand` | `#5B63F6` | Action card icons, active toggle icon |
-| `color-icon-chat` | `#5B63F6` | Chat type icons (sidebar, badges, cards) |
-| `color-icon-dashboard` | `#16A34A` | Dashboard type icons |
-| `color-icon-document` | `#F97316` | Document type icons |
-| `color-preview-chat` | `#EEF2FF` | Chat card preview background |
-| `color-preview-chat-icon` | `#93A8F4` | Chat card preview icon |
-| `color-preview-dashboard` | `#F0FDF4` | Dashboard card preview background |
-| `color-preview-dashboard-icon` | `#6EE7A6` | Dashboard card preview icon |
-| `color-preview-document` | `#FFF7ED` | Document card preview background |
-| `color-preview-document-icon` | `#FCA96A` | Document card preview icon |
-| `color-scrollbar-thumb` | `#CBD5E1` | Custom scrollbar thumb |
-| `color-explore-bg` | `#E8EEFF` | Explore features banner background |
-| `color-explore-icon-bg` | `#C7D2FE` | Explore features icon circle |
-| `color-explore-icon` | `#4F6EF7` | Explore features sparkle icon |
-| `color-explore-title` | `#3B4ECC` | Explore features title text |
-| `color-explore-subtitle` | `#6B7ADE` | Explore features subtitle text |
-| `color-avatar-brand` | `#3B5BDB` | Workspace switcher avatar background |
+| Recent | Clock 16px | `../recent-view/index.html` |
+| New Dashboard | SquaresGrid 16px | `#` |
+| New Chat | ChatBubble 16px | `#` |
 
----
+### Projects Section
 
-## Typography
+Label: `"PROJECTS"` — 11px uppercase `#9CA3AF`.
 
-### Type Scale
+**ws2 — My Private Project** (pinned, collapsed): Pin icon `color:#5B63F6`. 11 sub-items identical to the recent-view sidebar.
 
-| Token | Size | Weight | Usage |
+**ws1 — Sovereign Capital Gate** (**ACTIVE** — `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px`):
+
+9 sub-items (`h-8`, `13px`, `text-gray-600`):
+
+| # | Name | Type | Icon color |
 |---|---|---|---|
-| `type-display` | 28px | 800 | Workspace title |
-| `type-section` | 15px | 600 | "All items" section heading |
-| `type-body-md` | 14px | 400/500 | Nav labels, card titles, action card titles |
-| `type-body-sm` | 13px | 400/500 | Action card descriptions, type filter, submenu items, breadcrumb |
-| `type-label` | 12px | 600 | Workspace switcher name |
-| `type-caption` | 11px | 400 | Card timestamps, explore banner subtitle |
-| `type-overline` | 11px | 500 | Projects section label (uppercase, tracked) |
-| `type-badge` | 10px | 500 | Card type badges |
+| 1 | Investor Briefing | Chat | `#5B63F6` |
+| 2 | Capital Flow Analysis | Dashboard | `#16A34A` |
+| 3 | Deal Memo Q2 | Document | `#F97316` |
+| 4 | Pitch Deck 2026 | Presentation | `#8B5CF6` |
+| 5 | Portfolio Overview | Dashboard | `#16A34A` |
+| 6 | Risk Register | Document | `#F97316` |
+| 7 | Market Signals | Chat | `#5B63F6` |
+| 8 | LP Survey | Form | `#EC4899` |
+| 9 | Valuation Model | Dashboard | `#16A34A` |
 
-### Font Family
-```css
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-```
+`+ Create a project` → `onclick="event.preventDefault();openNewProjectModal()"`
 
----
+### Bottom Nav
 
-## Spacing & Grid
+Settings only — `href="../settings-profile/index.html"`. Shared with me is commented out.
 
-### Base Unit: 4px
+### Explore Banner
 
-| Token | Value | Usage |
-|---|---|---|
-| `space-1` | 4px | Micro gaps, badge padding |
-| `space-2` | 8px | Icon-to-label gap, submenu item padding |
-| `space-3` | 12px | Card info padding, type filter trigger padding |
-| `space-4` | 16px | Action card padding, grid gap |
-| `space-6` | 24px | Content area padding top/bottom |
-| `space-7` | 28px | Section spacing before action cards / item grid |
-| `space-8` | 32px | Content area horizontal padding |
-
-### Layout Grid
-
-| Zone | Width | Notes |
-|---|---|---|
-| Sidebar | 220px fixed | `min-w-[220px]`, never collapses |
-| Content area | `flex-1` | `px-8 py-8` |
-| Breadcrumb bar | Full width | `h-11`, `px-8` |
-| Action cards | 4 columns | `grid-cols-4 gap-4`, 6 cards wrap to 2 rows |
-| Item grid | 4 columns | `grid-cols-4 gap-4` |
+`background:#E8EEFF`, sparkle icon `#4F6EF7` on `#C7D2FE` bg circle.
+- Label: `"Explore free features"` — 12px 600 `#3B4ECC`
+- Sub-label: `"Credit left: 15"` — 11px `#6B7ADE`
 
 ---
 
-## Border Radius & Elevation
+## Topbar
 
-| Token | Value | Used on |
-|---|---|---|
-| `radius-sm` | 4px | Card type badges |
-| `radius-md` | 6–8px | Nav items, toggle buttons, breadcrumb buttons, dropdown items |
-| `radius-lg` | 12px | Cards, action cards, dropdown panel |
-| `radius-xl` | 16px | Modals |
-| `radius-full` | 9999px | Workspace switcher avatar, scrollbar thumb, type filter trigger |
+Fixed `44px` (`h-11`) bar with `border-b border-gray-100`. Layout: `flex items-center justify-between px-8`.
 
-### Shadows
+| Zone | Content |
+|---|---|
+| Left | Hamburger button → `toggleSidebar()` |
+| Right | Notification bell (`#notif-wrapper`) + user avatar (`#user-menu-wrapper`) |
 
-| Token | Value | Used on |
-|---|---|---|
-| `shadow-card` | `0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)` | Item cards, action cards at rest |
-| `shadow-card-hover` | `0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)` | Cards on hover |
-| `shadow-toggle-active` | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` | Active view toggle button |
-| `shadow-dropdown` | `0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)` | Type filter dropdown |
-| `shadow-modal` | `0 20px 60px rgba(0,0,0,0.18)` | Modals |
-
----
-
-## Iconography
-
-### Style Rules
-- **Line icons**, uniform stroke weight **1.5px**
-- Sizes: `16px` inline, `20px` action areas
-- Monochromatic per context — `color-icon-brand` on card surfaces
-
-### Icon Inventory
-
-| Context | Icon | Size | Color |
-|---|---|---|---|
-| Page title icon | `Building` (landmark) | 20px | `#5B63F6` in `#EEF2FF` wrapper |
-| Workspace switcher chevron | `ChevronDown` | 16px | `#9CA3AF` |
-| Nav: Recent | `Clock` (circle + hands) | 16px | `#6B7280` |
-| Nav: Create Dashboard | `SquaresGrid` (4 squares) | 16px | `#6B7280` |
-| Nav: AI Chat | `ChatBubble` (speech bubble with dots) | 16px | `#6B7280` |
-| Projects header | `EyeOff` | 14px | `#D1D5DB` |
-| Project chevron | `ChevronRight` | 12px | `#9CA3AF` → rotates 90° when open |
-| Pin icon (My Private Project) | filled pin SVG | 12px | `#5B63F6` |
-| Submenu: Chat | `ChatBubble` | 14px | `#5B63F6` |
-| Submenu: Dashboard | `SquaresGrid` | 14px | `#16A34A` |
-| Submenu: Document | `Document` | 14px | `#F97316` |
-| Bottom nav: Shared with me | `UserGroup` | 16px | `#9CA3AF` |
-| Bottom nav: Settings | `Cog` (gear) | 16px | `#9CA3AF` |
-| Explore banner | `Sparkles` | 16px | `#4F6EF7` |
-| Breadcrumb: Hamburger | `Bars3` | 18px | `#6B7280` |
-| Breadcrumb: Back / Forward | `ChevronLeft` / `ChevronRight` | 16px | `#9CA3AF` |
-| Breadcrumb: Divider | `ChevronRight` | 14px | `#D1D5DB` |
-| Action card: Create Dashboard | `SquaresGrid` | 20px | `#5B63F6` |
-| Action card: Create Document | `Document` | 20px | `#5B63F6` |
-| Action card: Create Presentation | `PresentationChartBar` (screen + legs) | 20px | `#5B63F6` |
-| Action card: Create Form | `ClipboardDocumentList` | 20px | `#5B63F6` |
-| Action card: AI Chat | `Sparkles` | 20px | `#5B63F6` |
-| Action card: Add Datasource | `Database` (cylinder) | 20px | `#5B63F6` |
-| Search bar magnifier | `MagnifyingGlass` | 14px | `#9CA3AF` |
-| Type filter: funnel | `Funnel` | 14px | `#5B63F6` |
-| Type filter: chevron | `ChevronDown` | 12px | `#9CA3AF` |
-| Type option: Chat | `ChatBubble` | 14px | `#5B63F6` |
-| Type option: Dashboard | `SquaresGrid` | 14px | `#16A34A` |
-| Type option: Document | `Document` | 14px | `#F97316` |
-| Type option: Other | `EllipsisHorizontal` | 14px | `#6B7280` |
-| View toggle: List | `Bars3` | 15px | `#5B63F6` (active) / `#9CA3AF` |
-| View toggle: Grid | `SquaresGrid` (filled) | 15px | `#5B63F6` (active) / `#9CA3AF` |
-| Card preview: Chat | `ChatBubble` | 40px | `#93A8F4` |
-| Card preview: Dashboard | `SquaresGrid` | 40px | `#6EE7A6` |
-| Card preview: Document | `Document` | 40px | `#FCA96A` |
-| Card overflow `...` | `EllipsisHorizontal` | 16px | `#9CA3AF` |
-| Card type badge: Chat | `ChatBubble` | 10px | `#5B63F6` |
-| Card type badge: Dashboard | `SquaresGrid` | 10px | `#16A34A` |
-| Card type badge: Document | `Document` | 10px | `#F97316` |
-
----
-
-## Components
-
-### Sidebar Navigation
-
-Fixed 220px left panel. **Sovereign Capital Gate** is the active project row (highlighted, submenu expanded). **My Private Project** is pinned first.
-
-```
-+-------------------------+
-| [M] Manish kumar's Work…|  <- Workspace switcher (#3B5BDB avatar)
-+-------------------------+
-| 🕐 Recent               |
-| ⊞  Create Dashboard     |
-| 💬 AI Chat              |
-+-------------------------+
-| PROJECTS          [👁]  |
-| ▶ My Private Project 📌 |  <- Pinned, always first; pin icon #5B63F6
-| ▼ Sovereign Capital Gate|  <- Active: #EEF2FF bg, 2px #5B63F6 left border
-|   ├ 💬 Chat             |
-|   ├ ⊞  Dashboard        |
-|   └ 📄 Document         |
-| + Create a project      |  <- opens Create Project Modal
-+-------------------------+
-| 👤 Shared with me       |
-| ⚙  Settings             |
-+-------------------------+
-| ✨ Explore free features|  <- #E8EEFF banner
-|    Credit left: 15      |
-+-------------------------+
-```
-
-**Section container:** `id="projects-list"` — used by JS to inject dynamically created projects.
-
-**Project row tokens:**
+### Notification Bell
 
 | Property | Value |
 |---|---|
-| Sidebar background | `#FFFFFF` |
-| Active project row bg | `#EEF2FF` |
-| Active project left border | `2px solid #5B63F6` |
-| Active project name | `14px`, `font-weight: 500`, `#111827` |
-| Inactive project name | `14px`, `#374151` |
-| Nav item height | `36px` |
-| Nav item border-radius | `8px` |
-| Nav item hover bg | `#EEF2FF` |
-| Chevron button | `20×20px`, `border-radius: 4px` |
-| Chevron icon | `12px`, `#9CA3AF`, `stroke-width: 2.5` |
-| Chevron open state | rotates `90deg`, `150ms ease` |
-| Pin icon | `12×12px`, `color: #5B63F6`, filled SVG, right-aligned |
-| Submenu indent | `padding-left: 16px` |
-| Submenu item height | `32px` |
-| Submenu item font | `13px`, `#4B5563` |
-| Projects label | `11px`, uppercase, tracked, `#9CA3AF` |
-| Workspace switcher avatar | `28×28px`, `border-radius: 9999px`, `background: #3B5BDB` |
+| Button id | `notif-btn` |
+| Click | `toggleNotifications()` |
+| Unread dot | `id="notif-dot"`, `w-1.5 h-1.5`, `bg-red-500` |
+| Dropdown id | `notif-dropdown` |
+| Width | `320px` (`w-80`) |
+| Radius | `rounded-2xl` |
+| Shadow | `0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)` |
 
-**Static project contents:**
+**5 notification items (project-contextual):**
 
-| Project | Order | Sub-items |
+| State | Sender | Content |
 |---|---|---|
-| My Private Project | 1st (pinned) | Q4 Strategy (chat), Revenue Overview (dashboard), Project Brief (doc), Investor Update (chat), Meeting Notes (doc), KPI Tracker (dashboard), Product Feedback (chat), User Analytics (dashboard), Sprint Planning (chat), Roadmap 2026 (doc), API Docs (doc) |
-| Sovereign Capital Gate | 2nd (active) | Chat, Dashboard, Document |
-| *(dynamically added)* | 3rd+ | Empty submenu initially |
+| Unread | Sara M. (green `#16A34A`) | Shared "Capital Flow Analysis" with you |
+| Unread | Riya K. (orange `#F97316`) | Commented on "Investor Briefing" |
+| Unread | Aibii AI (purple `#8B5CF6`) | Finished processing "Valuation Model" |
+| Read | Priya N. (pink `#EC4899`) | Invited you to "Sovereign Capital Gate" |
+| Read | Aibii AI (indigo) | "Portfolio Overview" report is ready |
 
----
+**Footer:** "View all notifications" — 12px `#5B63F6`.
 
-### Breadcrumb Bar
+`markAllRead()` removes unread row highlights and `#notif-dot`.
 
-Full-width bar (`h-11`) at the top of the content area.
-
-```
-☰  <  >  Projects  >  Sovereign Capital Gate
-```
+### User Menu
 
 | Property | Value |
 |---|---|
-| Height | `44px` |
-| Border bottom | `1px solid #E5E7EB` |
-| Hamburger icon | `18px`, `#6B7280` |
-| Back/forward icons | `16px`, `#9CA3AF` |
-| Breadcrumb text | `13px`, `#9CA3AF` (parent) / `#374151` font-medium (current) |
-| Divider chevron | `14px`, `#D1D5DB` |
-| "Projects" link | links to `../recent-view/index.html` |
+| Wrapper id | `user-menu-wrapper` |
+| Avatar | `w-7 h-7 rounded-full`, `background:#3B5BDB`, letter `M` |
+| Click | `toggleUserMenu()` |
+| Dropdown id | `user-dropdown` |
+| Width | `224px` (`w-56`) |
+
+Dropdown:
+- Name: `"Manish Kumar"` — 13px 600 `#111827`
+- Email: `"manish@aibii.com"` — 12px `#9CA3AF`
+- Log out button: `text-red-500 hover:bg-red-50`
+
+`toggleNotifications()` closes `#user-dropdown`; `toggleUserMenu()` closes `#notif-dropdown`. Shared outside-click listener.
 
 ---
 
-### Workspace Header
+## Content Area
 
-Top of the scrollable content area, before the action cards.
+Scrollable: `flex-1 overflow-y-auto px-8 py-5`.
 
-```
-[🏢]  Sovereign Capital Gate
-      11 items · Last updated about 1 hour ago
-```
+### Page Header
 
-| Property | Value |
+- Title: `"Sovereign Capital Gate"` — `text-[28px] font-extrabold text-gray-900`
+- Subtitle: `"Capital markets intelligence — dashboards, memos, and research in one place."` — `text-sm text-gray-500 mt-2`
+
+### Action Cards
+
+5 active cards, `grid grid-cols-4 gap-4 mb-7`. Each: `bg-white border border-gray-200 rounded-xl`, icon wrapper `40×40px` `rgba(91,99,246,0.08)`, icon `20px #5B63F6`. Hover: `translateY(-1px)` + shadow.
+
+| Label | onclick |
 |---|---|
-| Icon wrapper | `40×40px`, `border-radius: 12px`, `background: #EEF2FF` |
-| Icon | `Building`, `20px`, `color: #5B63F6` |
-| Title | `28px`, `font-weight: 800`, `#111827` |
-| Subtitle | `14px`, `#6B7280`, `margin-top: 2px` |
-| Icon–text gap | `12px` |
-| Header bottom margin | `28px` before action cards |
+| New Dashboard | `openCreateModal('New Dashboard')` |
+| New Document | `openCreateModal('Create Document')` |
+| New Presentation | `openCreateModal('Create Presentation')` |
+| New Form | `openCreateModal('Create Form')` |
+| New Chat | `openCreateModal('New Chat')` |
 
----
-
-### Action Cards Row
-
-Six shortcut cards in a `grid-cols-4` grid (wraps to 2 rows).
-
-```
-Row 1:
-+--------------+ +--------------+ +--------------+ +--------------+
-|[⊞] Create   | |[📄] Create  | |[🖥] Create  | |[📋] Create  |
-|    Dashboard | |    Document | |    Pres.    | |    Form     |
-+--------------+ +--------------+ +--------------+ +--------------+
-Row 2:
-+--------------+ +--------------+
-|[✨] AI Chat  | |[🗄] Add     |
-|              | |    Datasource|
-+--------------+ +--------------+
-```
-
-**Card inventory:**
-
-| # | Title | Description | Icon | Opens Modal |
-|---|---|---|---|---|
-| 1 | Create Dashboard | Build charts & visual reports | `SquaresGrid` | Create Item Modal |
-| 2 | Create Document | Write, edit & share docs | `Document` | Create Item Modal |
-| 3 | Create Presentation | Create slides & decks | `PresentationChartBar` | Create Item Modal |
-| 4 | Create Form | Collect data with forms | `ClipboardDocumentList` | Create Item Modal |
-| 5 | AI Chat | Generate insights from a prompt | `Sparkles` | Create Item Modal |
-| 6 | Add Datasource | Link databases, APIs & more | `Database` | — |
-
-**Card tokens:**
-
-| Property | Value |
-|---|---|
-| Layout | `grid-cols-4`, `gap: 16px` |
-| Background | `#FFFFFF` |
-| Border | `1px solid #E5E7EB` |
-| Border-radius | `12px` |
-| Padding | `16px` |
-| Icon wrapper | `40×40px`, `border-radius: 8px`, `background: rgba(91,99,246,0.08)` |
-| Icon | `20px`, `#5B63F6` |
-| Title | `14px`, `font-weight: 500`, `#111827` |
-| Description | `13px`, `#6B7280` |
-| Hover | `shadow-card-hover` + `translateY(-1px)` |
-| Transition | `all 150ms ease-out` |
-
----
+> "Add Datasource" is commented out in the HTML.
 
 ### Section Header & Controls
 
-Between action cards and the item grid.
+Layout: `flex items-center justify-between mb-4`.
 
-```
-All items                                     [ Search... ]  [ Type▾ ]  [ ≡ ⊞ ]
-```
+Left: `"All items"` — 15px 600 `#111827`.  
+Right: search bar + type filter dropdown + view toggle.
 
-| Property | Value |
-|---|---|
-| Title | "All items", `15px`, `font-weight: 600`, `#111827` |
-| Bottom margin | `16px` before item grid |
-| Controls | Search bar + Type filter + View toggle, right-aligned |
+**Search bar:** `id="search-input"`, `w-64` (focus: `w-80`), `h-9`, `oninput="filterItems()"` → `applyFilters()`.
 
----
+**Type filter:** Pill button (`background:#F1F3F4 border:1px solid #E5E7EB`) with funnel icon + `id="type-filter-label"`. Dropdown `id="type-dropdown"`, `rounded-xl`, `min-w-[180px]`. Types: Chat (default highlighted `#EEF2FF`/`#5B63F6`), Dashboard, Document, Presentation, Form, Project.
 
-### Search Bar
+`setTypeFilter(type, el)` — toggle; clicking active type clears. `applyFilters()` combines search + type.
 
-| Property | Value |
-|---|---|
-| Height | `36px` |
-| Default width | `256px` |
-| Focus width | `320px` |
-| Background | `#FFFFFF` |
-| Border | `1px solid #E5E7EB` |
-| Border-radius | `8px` |
-| Padding | `0 12px 0 32px` |
-| Placeholder | "Search…", `#9CA3AF` |
-| Text | `13px`, `#374151` |
-| Focus ring | `2px solid #5B63F6`, border transparent |
-| Magnifier icon | `14px`, `#9CA3AF`, absolute left `10px` |
-| Width transition | `all 150ms ease` |
-| Behaviour | Filters `.report-card` items live on `oninput`; empty query restores all |
+**View toggle:** `background:#F1F3F4 rounded-lg p-0.5`. Grid active by default (`id="view-grid"` has `.toggle-active`). JS: `setView(active)`.
 
----
+### Items Grid
 
-### View Toggle
+`id="report-grid"`. Default: `grid grid-cols-4 gap-4`. List view: `.list-view` class.
 
-| Property | Value |
-|---|---|
-| Container background | `#F1F3F4` |
-| Container border | `1px solid rgba(0,0,0,0.06)` |
-| Container border-radius | `8px` |
-| Container padding | `2px` |
-| Button size | `32×32px` |
-| Button border-radius | `6px` |
-| **Active** bg | `#EEF2FF` |
-| **Active** shadow | `0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)` |
-| **Active** icon color | `#5B63F6` |
-| **Inactive** bg | `transparent` |
-| **Inactive** icon color | `#9CA3AF` |
-| Icon size | `15px` |
-| Default active | List |
+9 sample cards:
 
----
-
-### Type Filter Dropdown
-
-**Trigger:**
-
-| Property | Value |
-|---|---|
-| Background | `#F1F3F4` |
-| Border | `1px solid #E5E7EB` |
-| Border-radius | `9999px` |
-| Height | `36px` |
-| Padding | `0 12px` |
-| Text | "Type", `13px`, `font-weight: 500`, `#374151` |
-| Funnel icon | `14px`, `#5B63F6` |
-| Chevron | `ChevronDown`, `12px`, `#9CA3AF` |
-
-**Dropdown panel:**
-
-| Property | Value |
-|---|---|
-| Background | `#FFFFFF` |
-| Border | `1px solid #E5E7EB` |
-| Border-radius | `12px` |
-| Padding | `6px 0` |
-| Shadow | `0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)` |
-| Min-width | `180px` |
-| Position | `absolute right-0`, below trigger |
-
-**Type options:**
-
-| Type | Icon color | Active bg | Active text |
-|---|---|---|---|
-| Chat | `#5B63F6` | `#EEF2FF` | `#5B63F6` |
-| Dashboard | `#16A34A` | — | `#374151` |
-| Document | `#F97316` | — | `#374151` |
-| Other | `#6B7280` | — | `#374151` |
-
----
-
-### Item Grid
-
-4-column grid of workspace item cards.
-
-| Property | Value |
-|---|---|
-| Columns | `repeat(4, 1fr)` |
-| Gap | `16px` |
-| Top margin | `16px` from section header |
-
-**Current items (11 total):**
-
-| Name | Type |
-|---|---|
-| Chat | Chat |
-| Dashboard | Dashboard |
-| Document | Document |
-| Capital Flow Analysis | Dashboard |
-| Deal Memo Q2 | Document |
-| Investor Briefing | Chat |
-| Risk Register | Document |
-| Portfolio Overview | Dashboard |
-| Valuation Model | Chat |
-| Exit Strategy | Document |
-| Market Signals | Chat |
-
----
-
-### Item Card
-
-```
-+------------------------------+
-|                              |
-|          [  icon  ]          |  <- Coloured preview zone (160px)
-|                              |
-+------------------------------+
-|  Capital Flow Analysis   ... |  <- Title + overflow
-|  [⊞ Dashboard]               |  <- Type badge
-|  Updated 2 hours ago         |  <- Timestamp
-+------------------------------+
-```
-
-| Property | Value |
-|---|---|
-| Preview height | `160px` |
-| Preview border-radius | top corners only (`12px 12px 0 0`) |
-| Preview icon | `40px` |
-| Card border | `1px solid #E5E7EB` |
-| Card border-radius | `12px` |
-| Card background | `#FFFFFF` |
-| Info area padding | `10px 12px 12px` |
-| Title | `14px`, `font-weight: 500`, `#111827` |
-| Timestamp | `11px`, `#9CA3AF`, `margin-top: 4px` |
-| Overflow `...` | hidden by default → `opacity: 1` on card hover |
-| Hover border | `rgba(91,99,246,0.4)` |
-| Hover shadow | `shadow-card-hover` |
-| Hover lift | `translateY(-1px)` |
-| Transition | `all 150ms ease-out` |
-
-**Card type colour map:**
-
-| Type | Preview bg | Preview icon | Badge bg | Badge text |
+| # | Name | `data-type` | Preview bg | Icon color |
 |---|---|---|---|---|
-| Chat | `#EEF2FF` | `#93A8F4` | `#EEF2FF` | `#5B63F6` |
-| Dashboard | `#F0FDF4` | `#6EE7A6` | `#F0FDF4` | `#16A34A` |
-| Document | `#FFF7ED` | `#FCA96A` | `#FFF7ED` | `#F97316` |
+| 1 | Capital Flow Analysis | `dashboard` | `#F0FDF4` | `#6EE7A6` |
+| 2 | Deal Memo Q2 | `document` | `#FFF7ED` | `#FCA96A` |
+| 3 | Investor Briefing | `chat` | `#EEF2FF` | `#93A8F4` |
+| 4 | Dashboard | `dashboard` | `#F0FDF4` | `#6EE7A6` |
+| 5 | Document | `document` | `#FFF7ED` | `#FCA96A` |
+| 6 | Risk Register | `document` | `#FFF7ED` | `#FCA96A` |
+| 7 | Portfolio Overview | `dashboard` | `#F0FDF4` | `#6EE7A6` |
+| 8 | Valuation Model | `chat` | `#EEF2FF` | `#93A8F4` |
+| 9 | Exit Strategy | `document` | `#FFF7ED` | `#FCA96A` |
+| 10 | Market Signals | `chat` | `#EEF2FF` | `#93A8F4` |
 
----
+**Card anatomy:**
 
-### Card Type Badge
-
-| Property | Value |
-|---|---|
-| Display | `inline-flex`, `align-items: center`, `gap: 4px` |
-| Padding | `2px 6px` |
-| Border-radius | `4px` |
-| Font | `10px`, `font-weight: 500` |
-| Icon size | `10px` |
-| Margin-top | `4px` from title |
-
----
-
-### Scrollbar
-
-| Property | Value |
-|---|---|
-| Width | `6px` |
-| Thumb | `#CBD5E1`, `border-radius: 9999px` |
-| Track | `transparent` |
-
-```css
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-::-webkit-scrollbar-track { background: transparent; }
+```
+┌─────────────────────────────┐
+│  Preview area h-40          │  ← type-colored bg + 40px icon
+├─────────────────────────────┤
+│  Title  (14px 500)          │
+│  [type icon  Badge]         │  ← 10px badge
+│  Updated X ago (11px)       │
+│                       [···] │  ← overflow-btn (opacity 0 → 1 on hover)
+└─────────────────────────────┘
 ```
 
 ---
 
-## Modals
+## Create Item Modal (`#create-modal`)
 
-### Create Item Modal
+Opened by `openCreateModal(type)`. Backdrop: `rgba(17,24,39,0.45) blur(2px)`. Max-width `448px`, `rounded-2xl`.
 
-Triggered by clicking Create Dashboard, Create Document, Create Presentation, Create Form, or AI Chat action cards.
+Fields:
+- **Name** (required) — validation: red ring if empty
+- **Description** (optional) — 3-row textarea
 
-```
-+---------------------------------+
-|  Create Dashboard           [x] |
-+---------------------------------+
-|  Name                           |
-|  [                            ] |
-|                                 |
-|  Select project                 |
-|  [ Choose a project...       v] |
-+---------------------------------+
-|                  [Close][Create]|
-+---------------------------------+
-```
+`createItem()` — validates name, builds a new card matching the type from `typeMap`, prepends to `#report-grid`, closes modal.
 
-| Property | Value |
-|---|---|
-| Backdrop | `rgba(17,24,39,0.45)`, `backdrop-filter: blur(2px)` |
-| Modal background | `#FFFFFF` |
-| Border-radius | `16px` |
-| Max-width | `448px` |
-| Header padding | `24px 24px 16px` |
-| Body padding | `20px 24px` |
-| Footer padding | `0 24px 24px` |
-| Title | dynamic via `id="modal-title"`, `16px`, `font-weight: 600`, `#111827` |
-| Close button | `32×32px`, `border-radius: 8px`, hover bg `#F3F4F6` |
-| Name input | `id="modal-name"`, `h-9`, `border: 1px solid #E5E7EB`, focus ring `2px #5B63F6` |
-| Project select | dropdown: Sovereign Capital Gate + My Private Project |
-| Close button | text `#6B7280`, `border: 1px solid #E5E7EB`, hover bg `#F9FAFB` |
-| Create button | bg `#5B63F6` → hover `#4850e4`, `color: #FFFFFF` |
-| JS functions | `openCreateModal(type)`, `closeCreateModal()` |
-| Backdrop click | closes modal |
+`typeMap` keys: `dashboard`, `document`, `presentation`, `form`, `chat`.
 
 ---
 
-### Create Project Modal
+## JavaScript Functions Reference
 
-Triggered by "Create a project" sidebar link (`onclick="openNewProjectModal()"`).
-
-```
-+---------------------------------+
-|  Create Project             [x] |
-+---------------------------------+
-|  Name *                         |
-|  [                            ] |
-|                                 |
-|  Description (optional)         |
-|  [                            ] |
-|  [                            ] |
-|  [                            ] |
-+---------------------------------+
-|                [Cancel][Create] |
-+---------------------------------+
-```
-
-| Property | Value |
+| Function | Description |
 |---|---|
-| Title | "Create Project", `16px`, `font-weight: 600`, `#111827` |
-| Name input | `id="proj-name"`, required; empty → focuses without submit |
-| Description textarea | `id="proj-desc"`, `rows: 3`, optional |
-| On Create | reads `proj-name`, generates `id="ws-dyn-{timestamp}"`, injects new project row into `#projects-list` after pinned entry, closes modal |
-| JS functions | `openNewProjectModal()`, `closeNewProjectModal()`, `createNewProject()` |
-| Backdrop click | closes modal |
+| `toggleSidebar()` | Toggles `.collapsed` on `#sidebar` |
+| `toggleWorkspace(id)` | Toggles `.open` on project submenu `#wsN-sub` + chevron |
+| `toggleTypeFilter()` | Opens / closes `#type-dropdown` |
+| `setTypeFilter(type, el)` | Sets active type; clicking same type clears |
+| `applyFilters()` | Hides / shows `.report-card` by search + type |
+| `filterItems(query)` | Calls `applyFilters()` |
+| `setView(active)` | Switches grid / list layout on `#report-grid` |
+| `openCreateModal(type)` / `closeCreateModal()` | Create Item modal lifecycle |
+| `createItem()` | Validates, builds new card, closes modal |
+| `openNewProjectModal()` / `closeNewProjectModal()` | New Project modal lifecycle |
+| `createNewProject()` | Adds sidebar row + grid card for new project |
+| `toggleNotifications()` | Toggles `#notif-dropdown`, closes `#user-dropdown` |
+| `markAllRead()` | Clears unread highlights, hides `#notif-dot` |
+| `toggleUserMenu()` | Toggles `#user-dropdown`, closes `#notif-dropdown` |
+| `openWsModal()` / `closeWsModal(e)` | Workspace Switcher modal lifecycle |
+| `renderWsModalList(filter)` | Renders filtered workspace rows in `#ws-modal-list` |
+| `filterWsList()` | Calls `renderWsModalList` from `#ws-search` |
+| `selectWorkspace(id)` | Switches active workspace, updates sidebar header |
+| `openNewWsModal()` / `closeNewWsModal()` | New Workspace full-screen lifecycle |
+| `cycleWsColor()` | Cycles avatar color through 7 presets |
+| `onWsNameInput(val)` | Live preview for workspace name + avatar letter |
+| `createNewWs()` | Pushes new workspace to `wsData`, selects it |
 
 ---
 
-## States & Interactions
+## CSS Custom Classes
 
-### Item Card States
-
-| State | Visual change |
+| Class | Purpose |
 |---|---|
-| Default | `border: 1px solid #E5E7EB`, `shadow-card`, overflow `...` hidden |
-| Hover | Border `rgba(91,99,246,0.4)`, `shadow-card-hover`, `translateY(-1px)`, `...` visible |
-| Active | `translateY(0)`, `shadow-card` |
-
-### View Toggle States
-
-| State | Visual change |
-|---|---|
-| Active | `#EEF2FF` bg, brand shadow, `#5B63F6` icon |
-| Inactive | `transparent` bg, `#9CA3AF` icon |
-| Inactive hover | `rgba(0,0,0,0.05)` bg, `#6B7280` icon |
-
-### Action Card States
-
-| State | Visual change |
-|---|---|
-| Default | Flat `shadow-card`, `#E5E7EB` border |
-| Hover | `shadow-card-hover`, `translateY(-1px)` |
-| Active | `translateY(0)` |
-
-### Project Chevron States
-
-| State | Visual change |
-|---|---|
-| Collapsed | Chevron at `0deg`, submenu hidden |
-| Expanded | Chevron at `90deg`, submenu visible |
-
-### Nav Item States
-
-| State | Visual change |
-|---|---|
-| Default | Transparent bg |
-| Hover | `#EEF2FF` bg |
-| Active (project row) | `#EEF2FF` bg, `2px solid #5B63F6` left border |
+| `.nav-item` | Sidebar row hover: `hover:bg-gray-100 rounded-lg` |
+| `.action-card` | Hover lift: `translateY(-1px)` + shadow |
+| `.report-card` | Card hover: shadow + `border-color rgba(91,99,246,0.4)` + lift |
+| `.overflow-btn` | Opacity 0 → 1 on parent `.report-card:hover` |
+| `.filter-tab` | Pill tab transition |
+| `.toggle-btn` | View toggle; inactive icon `#9CA3AF` |
+| `.toggle-active` | Active toggle: `bg:#EEF2FF shadow` + icon `#5B63F6` |
+| `.type-dropdown` | `display:none` → `block` via `.open` |
+| `.ws-submenu` | Project submenu; `display:none` → `block max-height:160px` via `.open` |
+| `#report-grid.list-view` | Horizontal list row layout with border + dividers |
+| `#sidebar.collapsed` | Collapses sidebar to zero width |
+| `#ws-modal-backdrop` | WS modal backdrop; `display:none` → `flex` via `.open` |
 
 ---
 
-## Motion & Animation
+## Design Tokens (Tailwind config)
 
-| Interaction | Duration | Easing | Properties |
-|---|---|---|---|
-| Card hover | `150ms` | `ease-out` | `box-shadow`, `transform`, `border-color` |
-| Action card hover | `150ms` | `ease-out` | `box-shadow`, `transform` |
-| `...` appear | `100ms` | `ease` | `opacity` |
-| View toggle | `150ms` | `ease` | `background-color`, `box-shadow`, `color` |
-| Nav item hover | `100ms` | `ease` | `background-color` |
-| Project chevron | `150ms` | `ease` | `transform` (0→90deg) |
-| Type dropdown item | `80ms` | `ease` | `background-color` |
-| Search bar expand | `150ms` | `ease` | `width` |
-| Modal open | instant | — | `display` toggle via `.hidden` class |
-
----
-
-## Design Principles
-
-### 1. Project as Container
-The page focuses on the items inside the project. The header is compact; the grid takes precedence over chrome.
-
-### 2. Type-Coded Visual Language
-Chat = `#5B63F6`, Dashboard = `#16A34A`, Document = `#F97316`. Applied consistently across sidebar submenu icons, card previews, card type badges, and type filter options.
-
-### 3. Contextual Active State
-The sidebar reflects which project is open — the active row is highlighted and its submenu is expanded. The pinned project (My Private Project) always stays first regardless of context.
-
-### 4. Flat Hierarchy, Depth on Interaction
-Cards start flat. Elevation appears only on hover — communicating affordance, not decoration.
-
-### 5. Progressive Disclosure
-Card `...` menus, type dropdowns, and project submenus are hidden by default and appear only when triggered.
-
-### 6. Consistent Action Vocabulary
-All creation shortcuts use the **"Create X"** prefix for predictable language across all views.
-
-### 7. Accessible Contrast
-- Title text `#111827` on `#FFFFFF` → 16.1:1 (AAA)
-- Brand icon `#5B63F6` on `#EEF2FF` → sufficient for icon context
-
----
-
-## File Structure
-
-```
-sovereign-capital-gate/
-├── assets/
-│   └── screenshot.png
-├── index.html          <- Main view
-└── README.md           <- This file
-```
-
----
-
-*Design language version 1.2 — Aibii AI Business Intelligence SaaS · Sovereign Capital Gate project view, May 2026.*
+| Token | Hex | Usage |
+|---|---|---|
+| `brand.primary` | `#5B63F6` | Active nav border, focus rings, CTAs |
+| `brand.secondary` | `#7C6FF7` | Secondary brand accents |
+| `brand.upgrade` | `#7C3AED` | Upgrade prompts |
+| `sidebar` | `#F8F9FC` | Sidebar background |
+| `hover` | `#EEF2FF` | Active nav bg, item hover |
+| `tab-container` | `#F3F4F6` | View toggle bg |

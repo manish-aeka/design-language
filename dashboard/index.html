@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -10,17 +10,27 @@
       theme: {
         extend: {
           colors: {
-            brand: { primary: '#5B63F6', secondary: '#7C6FF7' },
+            brand: {
+              primary:   '#5B63F6',
+              secondary: '#7C6FF7',
+              upgrade:   '#7C3AED',
+            },
             sidebar: '#F8F9FC',
             hover:   '#EEF2FF',
+            placeholder: '#F0F1F4',
             'tab-container': '#F3F4F6',
+            'toggle-bg':  '#12131F',
+            'toggle-active': '#1C3A6E',
+            'filter-bg':  '#1A1A2A',
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
           },
           boxShadow: {
-            card:        '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            card:       '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
             'card-hover':'0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)',
+            'tab-active':'0 1px 4px rgba(0,0,0,0.10)',
+            'filter':   '0 8px 24px rgba(0,0,0,0.40)',
           },
         },
       },
@@ -31,17 +41,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
     ::-webkit-scrollbar-track { background: transparent; }
 
     .nav-item { transition: background-color 100ms ease; }
     .nav-item:hover { background-color: #EEF2FF; }
 
+    /* Workspace submenu */
     .ws-submenu { display: none; }
-    .ws-submenu.open { display: block; }
+    .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
     .ws-chevron { transition: transform 150ms ease; }
     .ws-item.open .ws-chevron { transform: rotate(90deg); }
+    /* Workspace switcher modal */
+    #ws-modal-backdrop { display: none; }
+    #ws-modal-backdrop.open { display: flex; }
+
+    /* Sidebar collapse */
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
 
     .toolbar-btn {
       display: flex; align-items: center; gap: 6px;
@@ -81,14 +99,14 @@
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
 
   <!-- ═══════════════════ SIDEBAR 220px ═══════════════════ -->
-  <aside class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
-    <div class="px-4 py-3 border-b border-gray-100">
-      <button class="flex items-center gap-2 w-full text-left">
-        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
-        <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
-        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+    <div class="border-b border-gray-100" id="ws-switcher-wrapper">
+      <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-2">
+        <span id="ws-avatar" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+        <span id="ws-name" class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
       </button>
     </div>
 
@@ -98,57 +116,59 @@
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
         Recent
       </a>
-      <!-- New dashboard — ACTIVE -->
-      <a href="#" class="flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-gray-900" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px;">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-        New dashboard
+      <!-- New Dashboard -->
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        New Dashboard
       </a>
       <a href="../chat/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-700">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-        New chat
+        New Chat
       </a>
     </nav>
 
     <div class="mx-3 my-1 border-t border-gray-100"></div>
 
-    <!-- Workspaces -->
+    <!-- Projects -->
     <div class="px-3 py-1">
-      <div class="flex items-center justify-between px-3 h-7">
-        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Workspaces</span>
+      <div class="flex items-center px-3 h-7">
+        <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
       </div>
-      <div class="space-y-0.5 mt-0.5">
+      <div id="projects-list" class="space-y-0.5 mt-0.5">
 
-        <div>
-          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
-            <button onclick="toggleWorkspace('ws1')" id="ws1-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
-              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm text-gray-700 truncate">Sovereign Capital Gate</a>
-          </div>
-          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
-            <a href="../chat/index.html" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Chat
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Dashboard
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Document
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+        <!-- My Private Project — PINNED (always first) -->
+        <div class="relative">
+          <div class="nav-item group flex items-center gap-1 px-2 h-9 rounded-lg">
             <button onclick="toggleWorkspace('ws2')" id="ws2-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
               <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
-            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My private workspace</a>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
+            <!-- Pin icon -->
+            <svg class="w-3 h-3 flex-shrink-0 group-hover:hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Pinned">
+              <path d="M12 17v5"/>
+              <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76z"/>
+            </svg>
+            <button onclick="toggleProjectMenu('ws2-menu', event)" class="hidden group-hover:flex w-5 h-5 items-center justify-center rounded hover:bg-gray-200 flex-shrink-0 text-gray-400">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            </button>
           </div>
-          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+          <!-- Dropdown menu -->
+          <div id="ws2-menu" class="hidden fixed z-[200] bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-44">
+            <button onclick="closeProjectMenu('ws2-menu')" class="w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 text-left">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+              Share
+            </button>
+            <button onclick="closeProjectMenu('ws2-menu')" class="w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 text-left">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"/></svg>
+              Rename
+            </button>
+            <div class="mx-2 my-1 border-t border-gray-100"></div>
+            <button onclick="closeProjectMenu('ws2-menu')" class="w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-red-500 hover:bg-red-50 text-left">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+              Delete
+            </button>
+          </div>
+          <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-1.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
               Q4 Strategy
@@ -157,12 +177,120 @@
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
               Revenue Overview
             </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Project Brief
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Investor Update
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Meeting Notes
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              KPI Tracker
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Product Feedback
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              User Analytics
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Sprint Planning
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Roadmap 2026
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              API Docs
+            </a>
           </div>
         </div>
 
-        <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
+        <!-- Sovereign Capital Gate — ACTIVE -->
+        <div class="relative">
+          <div class="nav-item group flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#F3F4F6; border-left:3px solid #5B63F6;">
+            <button onclick="toggleWorkspace('ws1')" id="ws1-btn" class="ws-item open flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm font-semibold text-gray-900 truncate">Sovereign Capital Gate</a>
+            <button onclick="toggleProjectMenu('ws1-menu', event)" class="hidden group-hover:flex w-5 h-5 items-center justify-center rounded hover:bg-gray-200 flex-shrink-0 text-gray-400">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            </button>
+          </div>
+          <!-- Dropdown menu -->
+          <div id="ws1-menu" class="hidden fixed z-[200] bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-44">
+            <button onclick="closeProjectMenu('ws1-menu')" class="w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 text-left">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+              Share
+            </button>
+            <button onclick="closeProjectMenu('ws1-menu')" class="w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 text-left">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"/></svg>
+              Rename
+            </button>
+            <div class="mx-2 my-1 border-t border-gray-100"></div>
+            <button onclick="closeProjectMenu('ws1-menu')" class="w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-red-500 hover:bg-red-50 text-left">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+              Delete
+            </button>
+          </div>
+          <div id="ws1-sub" class="ws-submenu open pl-4 mt-2 space-y-1.5">
+            <!-- Sales Overview Dashboard — ACTIVE -->
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-semibold" style="background:#DBEAFE; color:#1D4ED8;">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#1D4ED8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Sales Overview
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Investor Briefing
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Capital Analysis
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Deal Memo Q2
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#8B5CF6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+              Pitch Deck 2026
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Portfolio Overview
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              Risk Register
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              Market Signals
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+              LP Survey
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              Valuation Model
+            </a>
+          </div>
+        </div>
+
+        <a href="#" onclick="event.preventDefault()" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
           <span class="text-gray-400 font-medium text-base leading-none">+</span>
-          Create a workspace
+          Create a project
         </a>
       </div>
     </div>
@@ -171,10 +299,6 @@
     <div class="mx-3 border-t border-gray-100"></div>
 
     <nav class="px-3 py-2 space-y-0.5">
-      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-        Shared with me
-      </a>
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
@@ -196,27 +320,87 @@
   <!-- ═══════════════════ MAIN ═══════════════════ -->
   <main class="flex-1 flex flex-col overflow-hidden bg-[#F9FAFB]">
 
-    <!-- Top bar -->
-    <div class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0">
-      <!-- Left: title + badge -->
-      <div class="flex items-center gap-3">
-        <div id="topbar-nav-btns" class="flex items-center gap-1">
-        <button class="text-gray-500 hover:text-gray-700 mr-1">
-          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
-        </button>
-        <button class="text-gray-400 hover:text-gray-600">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-        </button>
-        <button class="text-gray-400 hover:text-gray-600">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-        </button>
+    <!-- Nav bar (sidebar toggle + notification + user) -->
+    <div id="nav-bar" class="flex items-center justify-between px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
+      <!-- Left: sidebar toggle -->
+      <button onclick="toggleSidebar()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      </button>
+      <!-- Right: notification bell + user -->
+      <div class="flex items-center gap-1">
+        <!-- Notification bell -->
+        <div class="relative" id="notif-wrapper">
+          <button onclick="toggleNotifications()" id="notif-btn" class="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors" aria-label="Notifications">
+            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500"></span>
+          </button>
+          <!-- Notification dropdown -->
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+              <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
+              <button onclick="markAllRead()" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Mark all as read</button>
+            </div>
+            <div class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#16A34A">S</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Sara M.</span> shared <span class="font-medium">Revenue Overview</span> with you</p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">2 minutes ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+              <div class="flex items-start gap-3 px-4 py-3 bg-indigo-50/40 hover:bg-indigo-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#8B5CF6">A</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-900"><span class="font-semibold">Aibii AI</span> finished processing <span class="font-medium">Investor Pitch Deck</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">1 hour ago</p>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5"></span>
+              </div>
+              <div class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold" style="background:#EC4899">P</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] text-gray-700"><span class="font-semibold">Priya N.</span> invited you to <span class="font-medium">Sovereign Capital Gate</span></p>
+                  <p class="text-[11px] text-gray-400 mt-0.5">Yesterday</p>
+                </div>
+              </div>
+            </div>
+            <div class="px-4 py-2.5 border-t border-gray-100 text-center">
+              <button class="text-[12px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">View all notifications</button>
+            </div>
+          </div>
         </div>
-        <div id="topbar-divider" class="w-px h-4 bg-gray-200 mx-1"></div>
-        <h1 class="text-[15px] font-bold text-gray-900">Sales Overview</h1>
+        <!-- User avatar -->
+        <div class="relative" id="user-menu-wrapper">
+          <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB" aria-label="User menu">M</button>
+          <!-- User dropdown -->
+          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+            <div class="px-4 py-3 border-b border-gray-100">
+              <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
+              <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
+            </div>
+            <div class="py-1">
+              <button onclick="toggleUserMenu()" class="w-full flex items-center gap-2.5 px-4 h-9 text-[13px] text-red-500 hover:bg-red-50 transition-colors">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard toolbar -->
+    <div class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0">
+      <!-- Left: title + draft badge -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+          <h1 class="text-[15px] font-bold text-gray-900">Sales Overview</h1>
+        </div>
         <span class="px-2 h-5 rounded-md flex items-center text-[11px] font-medium" style="background:#F3F4F6; color:#6B7280;">Draft</span>
       </div>
-
-      <!-- Right: toolbar -->
+      <!-- Right: toolbar buttons -->
       <div id="toolbar-btns" class="flex items-center gap-1.5">
         <!-- Publish -->
         <button class="toolbar-btn">
@@ -229,20 +413,20 @@
           Toggle Axis
         </button>
         <!-- Comment -->
-        <button class="toolbar-btn">
+        <button id="btn-comment" onclick="toggleCommentPanel()" class="toolbar-btn">
           <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
           Comment
         </button>
         <!-- Color Palette -->
-        <button class="toolbar-btn">
+        <button id="btn-color-palette" onclick="toggleColorPanel()" class="toolbar-btn">
           <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
           Color Palette
         </button>
         <!-- Add KPI -->
-        <button class="toolbar-btn">
+        <a href="../kpi-creator/index.html" class="toolbar-btn">
           <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
           Add KPI
-        </button>
+        </a>
         <!-- Fullscreen -->
         <button id="btn-fullscreen" onclick="toggleFullscreen()" class="toolbar-btn px-2" title="Fullscreen">
           <svg id="icon-expand" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
@@ -256,8 +440,11 @@
       </div>
     </div>
 
-    <!-- Dashboard canvas -->
-    <div class="flex-1 overflow-y-auto bg-white" style="padding:12px 14px;">
+    <!-- Dashboard canvas + color panel -->
+    <div class="flex flex-1 overflow-hidden">
+
+    <!-- Canvas -->
+    <div id="dashboard-canvas" class="flex-1 overflow-y-auto bg-white" style="padding:12px 14px;">
 
       <!-- Row 2: Monthly Revenue (wide) + Sales by Region -->
       <div class="grid grid-cols-4 gap-2.5 mb-2.5">
@@ -372,6 +559,183 @@
 
     </div>
 
+    <!-- Color Palette Panel -->
+    <div id="color-panel" class="hidden flex-col w-[280px] min-w-[280px] bg-white border-l border-gray-100">
+      <!-- Header (sticky) -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0 sticky top-0 bg-white z-10">
+        <span class="text-[13px] font-semibold text-gray-800">Color Palette</span>
+        <button onclick="toggleColorPanel()" class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
+      <div class="px-4 py-3 flex flex-col gap-2">
+
+            <!-- Tableau 10 -->
+            <button onclick="selectPalette('tableau10')" id="palette-tableau10" title="Tableau 10" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#4E79A7"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F28E2B"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#E15759"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#76B7B2"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#59A14F"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#EDC948"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#B07AA1"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Tableau 10</span>
+            </button>
+            <!-- Color Blind -->
+            <button onclick="selectPalette('colorblind')" id="palette-colorblind" title="Color Blind" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#1170AA"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FC7D0B"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#A3ACB9"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#57606C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#5FA2CE"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#C85200"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#7B848F"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Color Blind</span>
+            </button>
+            <!-- Traffic Light -->
+            <button onclick="selectPalette('trafficlight')" id="palette-trafficlight" title="Traffic Light" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#D01C2A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#E8573C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F7A54A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F5D466"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#A6D175"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#4DB96A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#1A7D38"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Traffic Light</span>
+            </button>
+            <!-- Red–Blue Diverging -->
+            <button onclick="selectPalette('redblue')" id="palette-redblue" title="Red–Blue Diverging" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#CC2529"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DB6917"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DAA767"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#D5D5D5"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#90BAD3"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#4576B4"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#1D3E72"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Red–Blue Diverging</span>
+            </button>
+            <!-- Jewel Bright -->
+            <button onclick="selectPalette('jewelbright')" id="palette-jewelbright" title="Jewel Bright" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#EB1E2C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FD6F30"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F9A729"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F9D23C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#5CBD5A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#006F9B"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#4F36A6"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Jewel Bright</span>
+            </button>
+            <!-- Indigo -->
+            <button onclick="selectPalette('indigo')" id="palette-indigo" title="Indigo" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-indigo-400 bg-indigo-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#5B63F6"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#7C6FF7"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#818CF8"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#A5B4FC"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#C7D2FE"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#E0E7FF"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#EEF2FF"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Indigo</span>
+            </button>
+            <!-- Ocean Blue -->
+            <button onclick="selectPalette('ocean')" id="palette-ocean" title="Ocean Blue" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#0284C7"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#0EA5E9"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#38BDF8"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#7DD3FC"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#BAE6FD"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#E0F2FE"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F0F9FF"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Ocean Blue</span>
+            </button>
+            <!-- Teal -->
+            <button onclick="selectPalette('teal')" id="palette-teal" title="Teal" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#0F766E"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#0D9488"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#14B8A6"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#2DD4BF"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#5EEAD4"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#99F6E4"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#CCFBF1"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Teal</span>
+            </button>
+            <!-- Forest -->
+            <button onclick="selectPalette('forest')" id="palette-forest" title="Forest" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#15803D"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#16A34A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#22C55E"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#4ADE80"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#86EFAC"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#BBF7D0"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DCFCE7"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Forest</span>
+            </button>
+            <!-- Sunset -->
+            <button onclick="selectPalette('sunset')" id="palette-sunset" title="Sunset" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#EA580C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F97316"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FB923C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FDBA74"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FCA96A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FED7AA"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FFEDD5"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Sunset</span>
+            </button>
+            <!-- Amber -->
+            <button onclick="selectPalette('amber')" id="palette-amber" title="Amber" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#D97706"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F59E0B"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FBBF24"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FCD34D"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FDE68A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FEF3C7"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FFFBEB"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Amber</span>
+            </button>
+            <!-- Violet -->
+            <button onclick="selectPalette('violet')" id="palette-violet" title="Violet" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#7C3AED"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#8B5CF6"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#A78BFA"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#C4B5FD"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DDD6FE"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#EDE9FE"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F5F3FF"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Violet</span>
+            </button>
+            <!-- Steel Blue -->
+            <button onclick="selectPalette('steel')" id="palette-steel" title="Steel Blue" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#1E40AF"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#1D4ED8"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#2563EB"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#3B82F6"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#93C5FD"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#BFDBFE"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DBEAFE"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Steel Blue</span>
+            </button>
+            <!-- Rose -->
+            <button onclick="selectPalette('rose')" id="palette-rose" title="Rose" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#DB2777"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#EC4899"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F472B6"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F9A8D4"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FBCFE8"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FCE7F3"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#FDF2F8"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Rose</span>
+            </button>
+            <!-- Midnight -->
+            <button onclick="selectPalette('midnight')" id="palette-midnight" title="Midnight" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+              <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#0F172A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#1E293B"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#334155"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#475569"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#64748B"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#94A3B8"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#CBD5E1"></span></div>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Midnight</span>
+            </button>
+
+        <!-- Custom Palette Section -->
+        <div class="mt-2 pt-3 border-t border-gray-100">
+          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-1 mb-2">Custom Palette</p>
+          <!-- Custom color slots -->
+          <div id="custom-palette-slots" class="flex items-center gap-1.5 flex-wrap mb-3">
+            <button onclick="triggerCustomColorPick(0)" id="custom-slot-0" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#5B63F6;border-style:solid;border-color:#5B63F6" title="Color 1"></button>
+            <button onclick="triggerCustomColorPick(1)" id="custom-slot-1" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#7C6FF7;border-style:solid;border-color:#7C6FF7" title="Color 2"></button>
+            <button onclick="triggerCustomColorPick(2)" id="custom-slot-2" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#EC4899;border-style:solid;border-color:#EC4899" title="Color 3"></button>
+            <button onclick="triggerCustomColorPick(3)" id="custom-slot-3" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#F97316;border-style:solid;border-color:#F97316" title="Color 4"></button>
+            <button onclick="triggerCustomColorPick(4)" id="custom-slot-4" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#10B981;border-style:solid;border-color:#10B981" title="Color 5"></button>
+            <button onclick="triggerCustomColorPick(5)" id="custom-slot-5" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#F59E0B;border-style:solid;border-color:#F59E0B" title="Color 6"></button>
+            <button onclick="triggerCustomColorPick(6)" id="custom-slot-6" class="custom-slot w-7 h-7 rounded-full border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center" style="background:#8B5CF6;border-style:solid;border-color:#8B5CF6" title="Color 7"></button>
+            <!-- Color input positioned at viewport center so the picker opens there -->
+            <input type="color" id="custom-color-input" onchange="onCustomColorChange(this.value)" style="position:fixed;top:40%;left:75%;transform:translate(-50%,-50%);opacity:0;width:1px;height:1px;pointer-events:none;">
+          </div>
+          <p class="text-[10px] text-gray-400 mb-2">Click a swatch to change its color</p>
+          <!-- Use custom button -->
+          <button onclick="selectCustomPalette()" id="palette-custom" class="palette-option w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all">
+            <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
+            <span class="text-[12px] font-medium text-gray-700">Use Custom Palette</span>
+          </button>
+        </div>
+
+      </div>
+      </div><!-- end scrollable list -->
+
+      <!-- Footer (sticky) -->
+      <div class="flex-shrink-0 px-4 py-3 border-t border-gray-100 sticky bottom-0 bg-white">
+        <button onclick="applyPalette()" class="w-full h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;">Apply</button>
+      </div>
+    </div>
+
+    <!-- Comment Panel -->
+    <div id="comment-panel" class="hidden flex-col w-[280px] min-w-[280px] bg-white border-l border-gray-100">
+      <!-- Header (sticky) -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0 sticky top-0 bg-white z-10">
+        <span class="text-[13px] font-semibold text-gray-800">Comments</span>
+        <button onclick="toggleCommentPanel()" class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Comments list (scrollable) -->
+      <div id="comment-list" class="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3">
+        <!-- Existing comments -->
+        <div class="flex items-start gap-2.5">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#16A34A">S</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-1.5 mb-0.5">
+              <span class="text-[12px] font-semibold text-gray-800">Sara M.</span>
+              <span class="text-[10px] text-gray-400">2m ago</span>
+            </div>
+            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Revenue looks great this quarter! Can we highlight the Q3 spike?</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2.5">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#8B5CF6">A</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-1.5 mb-0.5">
+              <span class="text-[12px] font-semibold text-gray-800">AiBii AI</span>
+              <span class="text-[10px] text-gray-400">1h ago</span>
+            </div>
+            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Customer retention is at 91% — 4% above industry average.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2.5">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#EC4899">P</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-1.5 mb-0.5">
+              <span class="text-[12px] font-semibold text-gray-800">Priya N.</span>
+              <span class="text-[10px] text-gray-400">Yesterday</span>
+            </div>
+            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Top Products chart — can we add Product F to the list?</p>
+          </div>
+        </div>
+      </div>
+      <!-- Footer input (sticky) -->
+      <div class="flex-shrink-0 px-4 py-3 border-t border-gray-100 sticky bottom-0 bg-white">
+        <div class="relative">
+            <textarea id="comment-input" onkeydown="handleCommentKey(event)" placeholder="Add a comment…" rows="2" class="w-full resize-none text-[12px] text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:border-transparent" style="--tw-ring-color:#5B63F6;"></textarea>
+            <button onclick="postComment()" class="absolute right-2 bottom-2 w-6 h-6 flex items-center justify-center rounded-lg transition-colors hover:bg-indigo-100" style="color:#5B63F6;">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+            </button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- end canvas+panel flex row -->
+
   </main>
 
   <script>
@@ -386,6 +750,7 @@
         expand.classList.add('hidden');
         compress.classList.remove('hidden');
         sidebar.classList.add('hidden');
+        document.getElementById('nav-bar').classList.add('hidden');
         // hide all toolbar children except the fullscreen button itself
         Array.from(toolbar.children).forEach(el => {
           if (el.id !== 'btn-fullscreen') el.classList.add('hidden');
@@ -397,9 +762,10 @@
         expand.classList.remove('hidden');
         compress.classList.add('hidden');
         sidebar.classList.remove('hidden');
+        document.getElementById('nav-bar').classList.remove('hidden');
         Array.from(toolbar.children).forEach(el => el.classList.remove('hidden'));
-        document.getElementById('topbar-nav-btns').classList.remove('hidden');
-        document.getElementById('topbar-divider').classList.remove('hidden');
+        document.getElementById('topbar-nav-btns') && document.getElementById('topbar-nav-btns').classList.remove('hidden');
+        document.getElementById('topbar-divider') && document.getElementById('topbar-divider').classList.remove('hidden');
       }
     }
     document.addEventListener('fullscreenchange', () => {
@@ -407,12 +773,179 @@
         document.getElementById('icon-expand').classList.remove('hidden');
         document.getElementById('icon-compress').classList.add('hidden');
         document.querySelector('aside').classList.remove('hidden');
+        document.getElementById('nav-bar').classList.remove('hidden');
         const toolbar = document.getElementById('toolbar-btns');
         Array.from(toolbar.children).forEach(el => el.classList.remove('hidden'));
-        document.getElementById('topbar-nav-btns').classList.remove('hidden');
-        document.getElementById('topbar-divider').classList.remove('hidden');
       }
     });
+
+    // ── Comment Panel ──
+    function toggleCommentPanel() {
+      var panel = document.getElementById('comment-panel');
+      var btn = document.getElementById('btn-comment');
+      var colorPanel = document.getElementById('color-panel');
+      var colorBtn = document.getElementById('btn-color-palette');
+      var isOpen = !panel.classList.contains('hidden');
+      if (isOpen) {
+        panel.classList.add('hidden'); panel.classList.remove('flex');
+        btn.classList.remove('bg-indigo-50', 'text-indigo-600');
+      } else {
+        // close color panel if open
+        colorPanel.classList.add('hidden'); colorPanel.classList.remove('flex');
+        colorBtn.classList.remove('bg-indigo-50', 'text-indigo-600');
+        panel.classList.remove('hidden'); panel.classList.add('flex');
+        btn.classList.add('bg-indigo-50', 'text-indigo-600');
+        setTimeout(function() { document.getElementById('comment-list').scrollTop = 99999; }, 50);
+      }
+    }
+    function postComment() {
+      var input = document.getElementById('comment-input');
+      var text = input.value.trim();
+      if (!text) return;
+      var list = document.getElementById('comment-list');
+      var div = document.createElement('div');
+      div.className = 'flex items-start gap-2.5';
+      div.innerHTML = '<span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style="background:#3B5BDB">M</span>'
+        + '<div class="flex-1 min-w-0">'
+        + '<div class="flex items-baseline gap-1.5 mb-0.5"><span class="text-[12px] font-semibold text-gray-800">Manish Kumar</span><span class="text-[10px] text-gray-400">Just now</span></div>'
+        + '<p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>'
+        + '</div>';
+      list.appendChild(div);
+      input.value = '';
+      list.scrollTop = list.scrollHeight;
+    }
+    function handleCommentKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postComment(); }
+    }
+
+    // ── Color Palette Panel ──
+    var _activePalette = 'indigo';
+    function toggleColorPanel() {
+      var panel = document.getElementById('color-panel');
+      var btn = document.getElementById('btn-color-palette');
+      var commentPanel = document.getElementById('comment-panel');
+      var commentBtn = document.getElementById('btn-comment');
+      var isOpen = !panel.classList.contains('hidden');
+      if (isOpen) {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex');
+        btn.classList.remove('bg-indigo-50', 'text-indigo-600');
+      } else {
+        // close comment panel if open
+        commentPanel.classList.add('hidden'); commentPanel.classList.remove('flex');
+        commentBtn.classList.remove('bg-indigo-50', 'text-indigo-600');
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        btn.classList.add('bg-indigo-50', 'text-indigo-600');
+      }
+    }
+    function selectPalette(name) {
+      document.querySelectorAll('.palette-option').forEach(function(el) {
+        el.classList.remove('border-indigo-400', 'bg-indigo-50');
+        el.classList.add('border-transparent', 'bg-gray-50');
+      });
+      var el = document.getElementById('palette-' + name);
+      if (el) { el.classList.add('border-indigo-400', 'bg-indigo-50'); el.classList.remove('border-transparent', 'bg-gray-50'); }
+      _activePalette = name;
+    }
+    var _paletteColors = {
+      indigo:   ['#5B63F6','#7C6FF7','#818CF8','#A5B4FC','#C7D2FE','#E0E7FF','#EEF2FF'],
+      ocean:    ['#0284C7','#0EA5E9','#38BDF8','#7DD3FC','#BAE6FD','#E0F2FE','#F0F9FF'],
+      forest:   ['#15803D','#16A34A','#22C55E','#4ADE80','#86EFAC','#BBF7D0','#DCFCE7'],
+      sunset:   ['#EA580C','#F97316','#FB923C','#FDBA74','#FCA96A','#FED7AA','#FFEDD5'],
+      rose:     ['#DB2777','#EC4899','#F472B6','#F9A8D4','#FBCFE8','#FCE7F3','#FDF2F8'],
+      violet:   ['#7C3AED','#8B5CF6','#A78BFA','#C4B5FD','#DDD6FE','#EDE9FE','#F5F3FF'],
+      amber:    ['#D97706','#F59E0B','#FBBF24','#FCD34D','#FDE68A','#FEF3C7','#FFFBEB'],
+      teal:     ['#0F766E','#0D9488','#14B8A6','#2DD4BF','#5EEAD4','#99F6E4','#CCFBF1'],
+      ruby:     ['#B91C1C','#DC2626','#EF4444','#F87171','#FCA5A5','#FECACA','#FEE2E2'],
+      slate:    ['#1E293B','#334155','#475569','#64748B','#94A3B8','#CBD5E1','#E2E8F0'],
+      coral:    ['#E85555','#FF6B6B','#FF8E8E','#FFA5A5','#FFB3B3','#FFD9D9','#FFF0F0'],
+      mint:     ['#059669','#10B981','#34D399','#6EE7B7','#A7F3D0','#D1FAE5','#ECFDF5'],
+      lavender: ['#6D28D9','#7C3AED','#8B5CF6','#A855F7','#D8B4FE','#EDE9FE','#F5F3FF'],
+      steel:    ['#1E40AF','#1D4ED8','#2563EB','#3B82F6','#93C5FD','#BFDBFE','#DBEAFE'],
+      peach:    ['#E11D48','#F43F5E','#FB7185','#FDA4AF','#FECDD3','#FFE4E6','#FFF1F2'],
+      olive:    ['#4D7C0F','#65A30D','#84CC16','#A3E635','#BEF264','#D9F99D','#ECFCCB'],
+      midnight: ['#0F172A','#1E293B','#334155','#475569','#64748B','#94A3B8','#CBD5E1'],
+      crimson:  ['#881337','#9F1239','#BE123C','#E11D48','#FB7185','#FECDD3','#FFF1F2'],
+      aqua:     ['#0E7490','#0891B2','#06B6D4','#22D3EE','#67E8F9','#A5F3FC','#CFFAFE'],
+      custom:   ['#5B63F6','#7C6FF7','#EC4899','#F97316','#10B981','#F59E0B','#8B5CF6'],
+      tableau10:    ['#4E79A7','#F28E2B','#E15759','#76B7B2','#59A14F','#EDC948','#B07AA1'],
+      colorblind:   ['#1170AA','#FC7D0B','#A3ACB9','#57606C','#5FA2CE','#C85200','#7B848F'],
+      trafficlight: ['#D01C2A','#E8573C','#F7A54A','#F5D466','#A6D175','#4DB96A','#1A7D38'],
+      redblue:      ['#CC2529','#DB6917','#DAA767','#D5D5D5','#90BAD3','#4576B4','#1D3E72'],
+      jewelbright:  ['#EB1E2C','#FD6F30','#F9A729','#F9D23C','#5CBD5A','#006F9B','#4F36A6'],
+    };
+    var _customSlotIndex = 0;
+    function triggerCustomColorPick(index) {
+      _customSlotIndex = index;
+      var input = document.getElementById('custom-color-input');
+      input.value = _paletteColors.custom[index];
+      input.click();
+    }
+    function onCustomColorChange(value) {
+      _paletteColors.custom[_customSlotIndex] = value;
+      var slot = document.getElementById('custom-slot-' + _customSlotIndex);
+      if (slot) { slot.style.background = value; slot.style.borderColor = value; }
+      // if custom is active, re-select to keep it current
+      if (_activePalette === 'custom') selectCustomPalette();
+    }
+    function selectCustomPalette() {
+      document.querySelectorAll('.palette-option').forEach(function(el) {
+        el.classList.remove('border-indigo-400', 'bg-indigo-50');
+        el.classList.add('border-transparent', 'bg-gray-50');
+      });
+      var el = document.getElementById('palette-custom');
+      if (el) { el.classList.add('border-indigo-400', 'bg-indigo-50'); el.classList.remove('border-transparent', 'bg-gray-50'); }
+      _activePalette = 'custom';
+    }
+    function applyPalette() {
+      var colors = _paletteColors[_activePalette];
+      if (!colors) return;
+      Chart.helpers.each(Chart.instances, function(chart) {
+        chart.data.datasets.forEach(function(ds, i) {
+          if (ds.type === 'line' || chart.config.type === 'line' || chart.config.type === 'area') {
+            ds.borderColor = colors[i % colors.length];
+            ds.backgroundColor = colors[i % colors.length] + '33';
+            ds.pointBackgroundColor = colors[i % colors.length];
+          } else {
+            if (Array.isArray(ds.backgroundColor)) {
+              ds.backgroundColor = ds.backgroundColor.map(function(_, j) { return colors[j % colors.length]; });
+            } else {
+              ds.backgroundColor = colors[i % colors.length];
+              ds.borderColor = colors[i % colors.length];
+            }
+          }
+        });
+        chart.update();
+      });
+    }
+
+    // ── Project context menu ──
+    function toggleProjectMenu(id, e) {
+      e.stopPropagation();
+      var menu = document.getElementById(id);
+      var isOpen = !menu.classList.contains('hidden');
+      // close all menus first
+      document.querySelectorAll('#ws1-menu, #ws2-menu').forEach(function(m) { m.classList.add('hidden'); });
+      if (!isOpen) {
+        var rect = e.currentTarget.getBoundingClientRect();
+        menu.style.top = rect.top + 'px';
+        menu.style.left = (rect.right + 4) + 'px';
+        menu.classList.remove('hidden');
+      }
+    }
+    function closeProjectMenu(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+    // close menus on outside click
+    document.addEventListener('click', function() {
+      document.querySelectorAll('#ws1-menu, #ws2-menu').forEach(function(m) { m.classList.add('hidden'); });
+    });
+
+    // ── Sidebar toggle ──
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
 
     // ── Sidebar workspace toggle ──
     function toggleWorkspace(id) {
@@ -420,6 +953,115 @@
       const btn = document.getElementById(id + '-btn');
       sub.classList.toggle('open');
       btn.classList.toggle('open');
+    }
+
+    // ── Notification dropdown ──
+    function toggleNotifications() {
+      document.getElementById('notif-dropdown').classList.toggle('hidden');
+      document.getElementById('user-dropdown').classList.add('hidden');
+    }
+    function markAllRead() {
+      document.querySelectorAll('#notif-dropdown .bg-indigo-50\\/40').forEach(function(el) { el.classList.remove('bg-indigo-50/40'); });
+      document.querySelectorAll('#notif-dropdown .w-2.h-2.rounded-full.bg-indigo-500').forEach(function(el) { el.remove(); });
+      document.getElementById('notif-dot').classList.add('hidden');
+    }
+    function toggleUserMenu() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+      document.getElementById('notif-dropdown').classList.add('hidden');
+    }
+    document.addEventListener('click', function(e) {
+      var wrapper = document.getElementById('notif-wrapper');
+      var dd = document.getElementById('notif-dropdown');
+      if (dd && !dd.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) dd.classList.add('hidden');
+      var userWrapper = document.getElementById('user-menu-wrapper');
+      var userDd = document.getElementById('user-dropdown');
+      if (userDd && !userDd.classList.contains('hidden') && userWrapper && !userWrapper.contains(e.target)) userDd.classList.add('hidden');
+    });
+
+    // ── Workspace switcher modal ──────────────────────────────────────────
+    var wsData = [
+      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
+      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
+      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
+      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
+      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
+      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
+    ];
+    try {
+      var _saved = JSON.parse(localStorage.getItem('aibii_workspaces') || '[]');
+      _saved.forEach(function(ws) {
+        if (!wsData.find(function(w) { return w.id === ws.id; })) {
+          wsData.push({ id: ws.id, name: ws.name, initial: ws.initial, color: ws.color, current: false });
+        }
+      });
+    } catch(e) {}
+    function renderWsModalList(filter) {
+      var list = document.getElementById('ws-modal-list');
+      if (!list) return;
+      var q = (filter || '').toLowerCase();
+      var items = wsData.filter(function(ws) { return !q || ws.name.toLowerCase().includes(q); });
+      if (!items.length) { list.innerHTML = '<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>'; return; }
+      list.innerHTML = items.map(function(ws) {
+        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors ' + (ws.current ? 'bg-indigo-50' : 'hover:bg-gray-50') + '">'
+          + '<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
+          + '<span class="flex-1 text-[13px] ' + (ws.current ? 'font-semibold text-gray-900' : 'font-medium text-gray-700') + ' truncate">' + ws.name + '</span>'
+          + (ws.current ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
+          + '</button>';
+      }).join('');
+    }
+    function filterWsList() { renderWsModalList(document.getElementById('ws-search').value); }
+    function openWsModal() {
+      var input = document.getElementById('ws-search');
+      if (input) input.value = '';
+      renderWsModalList('');
+      document.getElementById('ws-modal-backdrop').classList.add('open');
+    }
+    function closeWsModal(e) {
+      if (!e || e.target === document.getElementById('ws-modal-backdrop')) {
+        document.getElementById('ws-modal-backdrop').classList.remove('open');
+      }
+    }
+    function selectWorkspace(id) {
+      wsData.forEach(function(ws) { ws.current = ws.id === id; });
+      var ws = wsData.find(function(ws) { return ws.id === id; });
+      if (ws) {
+        var nameEl = document.getElementById('ws-name');
+        var avatarEl = document.getElementById('ws-avatar');
+        if (nameEl) nameEl.textContent = ws.name.length > 24 ? ws.name.slice(0,24) + '...' : ws.name;
+        if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
+      }
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+    function openNewWsModal() {
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+      document.getElementById('new-ws-modal').classList.remove('hidden');
+      document.getElementById('new-ws-name').value = '';
+      wsNewColor = '#5B63F6'; wsColorIndex = 0;
+      onWsNameInput('');
+      setTimeout(function() { document.getElementById('new-ws-name').focus(); }, 80);
+    }
+    function closeNewWsModal() { document.getElementById('new-ws-modal').classList.add('hidden'); }
+    var wsColors = ['#5B63F6','#16A34A','#F97316','#8B5CF6','#EC4899','#0EA5E9','#EAB308'];
+    var wsNewColor = '#5B63F6', wsColorIndex = 0;
+    function cycleWsColor() {
+      wsColorIndex = (wsColorIndex + 1) % wsColors.length;
+      wsNewColor = wsColors[wsColorIndex];
+      var el = document.getElementById('ws-preview-avatar');
+      if (el) { el.style.background = wsNewColor; }
+    }
+    function onWsNameInput(val) {
+      var preview = document.getElementById('ws-preview-name');
+      var avatarEl = document.getElementById('ws-preview-avatar');
+      if (preview) preview.textContent = val.trim() || 'Your workspace';
+      if (avatarEl) avatarEl.textContent = val.trim() ? val.trim()[0].toUpperCase() : 'A';
+    }
+    function createNewWs() {
+      var name = document.getElementById('new-ws-name').value.trim();
+      if (!name) { document.getElementById('new-ws-name').focus(); return; }
+      var newWs = { id: 'ws-dyn-' + Date.now(), name: name, initial: name[0].toUpperCase(), color: wsNewColor, current: false };
+      wsData.push(newWs);
+      closeNewWsModal();
+      selectWorkspace(newWs.id);
     }
 
     // ── Shared Chart.js defaults ──
@@ -652,7 +1294,64 @@
         }
       }
     });
+
   </script>
+
+  <!-- ── Workspace switcher modal ── -->
+  <div id="ws-modal-backdrop" onclick="closeWsModal(event)" class="fixed inset-0 z-50 items-start justify-start" style="background:rgba(0,0,0,0.18);padding-top:64px;padding-left:16px;">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl shadow-2xl w-[300px] flex flex-col overflow-hidden" style="max-height:420px;">
+      <div class="flex items-center justify-between px-4 pt-4 pb-2 flex-shrink-0">
+        <span class="text-[13px] font-semibold text-gray-800">Switch Workspace</span>
+        <button onclick="closeWsModal()" class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-3 pb-2 flex-shrink-0">
+        <div class="relative">
+          <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.804 7.5 7.5 0 0015.803 15.803z"/></svg>
+          <input id="ws-search" oninput="filterWsList()" type="text" placeholder="Search workspaces…" class="w-full pl-7 pr-3 h-8 text-[12px] rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:border-transparent" style="--tw-ring-color:#5B63F6;">
+        </div>
+      </div>
+      <div id="ws-modal-list" class="flex-1 overflow-y-auto px-3 pb-2 flex flex-col gap-0.5"></div>
+      <div class="px-3 pb-3 pt-1 flex-shrink-0 border-t border-gray-100">
+        <button onclick="openNewWsModal()" class="w-full flex items-center gap-2 px-3 h-9 rounded-xl hover:bg-indigo-50 transition-colors text-left group">
+          <span class="w-7 h-7 rounded-full border-2 border-dashed border-gray-300 group-hover:border-indigo-400 flex items-center justify-center transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          </span>
+          <span class="text-[12px] font-medium text-gray-500 group-hover:text-indigo-600 transition-colors">New workspace</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── New workspace modal ── -->
+  <div id="new-ws-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="background:rgba(0,0,0,0.25);">
+    <div class="bg-white rounded-2xl shadow-2xl w-[380px] flex flex-col p-6 gap-5">
+      <div class="flex items-center justify-between">
+        <span class="text-[15px] font-semibold text-gray-900">New Workspace</span>
+        <button onclick="closeNewWsModal()" class="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Preview -->
+      <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+        <button onclick="cycleWsColor()" id="ws-preview-avatar" class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0 cursor-pointer transition-transform hover:scale-105" style="background:#5B63F6;">A</button>
+        <div class="flex flex-col gap-0.5 min-w-0">
+          <span id="ws-preview-name" class="text-[13px] font-semibold text-gray-800 truncate">Your workspace</span>
+          <span class="text-[11px] text-gray-400">Click avatar to change color</span>
+        </div>
+      </div>
+      <!-- Name input -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[12px] font-medium text-gray-600">Workspace name</label>
+        <input id="new-ws-name" oninput="onWsNameInput(this.value)" onkeydown="if(event.key==='Enter')createNewWs()" type="text" placeholder="e.g. Product Research" class="w-full px-3 h-9 text-[13px] rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:border-transparent" style="--tw-ring-color:#5B63F6;">
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-xl border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="createNewWs()" class="flex-1 h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;">Create</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
