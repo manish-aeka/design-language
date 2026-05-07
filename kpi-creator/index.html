@@ -172,6 +172,17 @@
     }
     /* Clear button hover via JS to keep it clean */
     #clear-btn { transition: color 120ms, background 120ms; }
+
+    /* ── Sources drawer ── */
+    #sources-drawer { transform: translateX(100%); transition: transform 280ms cubic-bezier(0.4,0,0.2,1); }
+    #sources-drawer.open { transform: translateX(0); }
+    #sources-drawer-backdrop { display: none; }
+    #sources-drawer-backdrop.open { display: block; }
+    .src-accordion-body { max-height: 0; overflow: hidden; transition: max-height 260ms cubic-bezier(0.4,0,0.2,1); }
+    .src-accordion-body.open { max-height: 500px; }
+    .src-chevron { transition: transform 200ms ease; }
+    .src-chevron.open { transform: rotate(90deg); }
+    .sources-btn.active { background:#EEF2FF !important; color:#5B63F6 !important; border-color:#C7D2FE !important; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -655,11 +666,11 @@
             <!-- Header: title + source inline -->
             <div class="flex items-center gap-3 px-7 pt-6 pb-0">
               <h3 class="text-[18px] font-bold text-gray-900 leading-snug flex-1 min-w-0">${escHtml(prompt)}</h3>
-              <!-- Source badge: icon + "Sources" label -->
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 text-[12px] font-semibold" style="background:${source.bg};color:${source.color};">
-                <span style="display:flex;align-items:center;flex-shrink:0;">${sourceIconSVG(source.icon)}</span>
+              <!-- Source badge: book icon + "Sources" label -->
+              <button onclick="toggleSourcesDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 border text-[12px] font-semibold" style=";cursor:pointer;">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                 Sources
-              </span>
+              </button>
             </div>
 
             <div class="mx-7 my-5 rounded-xl flex flex-col items-center justify-center gap-2.5"
@@ -813,6 +824,192 @@
         el.style.display = 'none';
       });
     }
+
+    /* ── Sources drawer ── */
+    var _sourcesOpen = false;
+    function toggleSourcesDrawer() { _sourcesOpen ? closeSourcesDrawer() : openSourcesDrawer(); }
+    function openSourcesDrawer() {
+      _sourcesOpen = true;
+      var chart = charts[currentChartIndex];
+      if (chart) renderSourcesDrawer(chart);
+      document.getElementById('sources-drawer').classList.add('open');
+      document.getElementById('sources-drawer-backdrop').classList.add('open');
+    }
+    function closeSourcesDrawer() {
+      _sourcesOpen = false;
+      document.getElementById('sources-drawer').classList.remove('open');
+      document.getElementById('sources-drawer-backdrop').classList.remove('open');
+    }
+
+    function renderSourcesDrawer(chart) {
+      var s = chart.source;
+      var p = chart.prompt.toLowerCase();
+
+      // Per-source accordion content
+      var configs = {
+        'Q4 Revenue Sheet': {
+          subtitle: '1 spreadsheet · uploaded',
+          typeLabel: 'Sheet', typeBg: '#FFF7ED', typeColor: '#F97316',
+          itemBg: '#FFF7ED', itemBorder: '#FED7AA', labelColor: '#F97316',
+          meta: [['File', 'q4_revenue.xlsx'], ['Rows', '12,840']],
+          sectionLabel: 'Columns used',
+          rows: [
+            ['revenue', 'Total revenue per region and SKU used for growth rate KPI.'],
+            ['q4_target', 'Quarterly target figures for attainment percentage calculation.'],
+            ['region', 'Geographic segmentation applied to regional breakdown charts.']
+          ],
+          footer: ['Uploaded Mar 2025']
+        },
+        'CRM Export': {
+          subtitle: '1 database · live connection',
+          typeLabel: 'DB', typeBg: '#EEF2FF', typeColor: '#5B63F6',
+          itemBg: '#EEF2FF', itemBorder: '#C7D2FE', labelColor: '#5B63F6',
+          meta: [['Database', 'crm-prod'], ['Status', '● Connected']],
+          sectionLabel: 'Tables used',
+          rows: [
+            ['customers', 'Full customer list with acquisition date and plan tier fields.'],
+            ['churn_events', 'Cancellation timestamps used for retention and churn rate KPIs.'],
+            ['cohorts', 'Monthly cohort groupings for retention curve calculation.']
+          ],
+          footer: ['Last synced 4 min ago', 'View schema']
+        },
+        'Marketing Sheet': {
+          subtitle: '1 spreadsheet · uploaded',
+          typeLabel: 'Sheet', typeBg: '#FFF7ED', typeColor: '#F97316',
+          itemBg: '#FFF7ED', itemBorder: '#FED7AA', labelColor: '#F97316',
+          meta: [['File', 'marketing_spend_2025.xlsx'], ['Rows', '5,230']],
+          sectionLabel: 'Columns used',
+          rows: [
+            ['channel_spend', 'Ad spend per channel (paid, social, email) used for ROI KPI.'],
+            ['impressions', 'Total impressions mapped to CPM and CPC calculations.'],
+            ['conversions', 'Campaign conversion count driving the ROAS metric.']
+          ],
+          footer: ['Uploaded Apr 2025', 'Preview data']
+        },
+        'Sales API': {
+          subtitle: '1 API · refreshed hourly',
+          typeLabel: 'API', typeBg: '#F0FDF4', typeColor: '#16A34A',
+          itemBg: '#ECFDF5', itemBorder: '#A7F3D0', labelColor: '#16A34A',
+          meta: [['Endpoint', '/api/v2/products'], ['Status', '● Active']],
+          sectionLabel: 'Fields used',
+          rows: [
+            ['units_sold', 'Per-SKU unit sales volume driving top product rank KPI.'],
+            ['revenue_per_sku', 'SKU-level revenue contribution to total inventory KPI.'],
+            ['stock_level', 'Current inventory count for stock availability metric.']
+          ],
+          footer: ['Refreshes every 1h', 'Open API docs']
+        },
+        'User Events DB': {
+          subtitle: '1 database · live connection',
+          typeLabel: 'DB', typeBg: '#EEF2FF', typeColor: '#5B63F6',
+          itemBg: '#EEF2FF', itemBorder: '#C7D2FE', labelColor: '#5B63F6',
+          meta: [['Database', 'events-prod'], ['Status', '● Connected']],
+          sectionLabel: 'Tables used',
+          rows: [
+            ['page_views', 'Session-level page view events aggregated for DAU/MAU KPIs.'],
+            ['feature_events', 'Feature interaction events used for engagement score metric.'],
+            ['sessions', 'Session start/end timestamps for average session duration KPI.']
+          ],
+          footer: ['Last synced 1 min ago', 'View schema']
+        },
+        'Analytics DB': {
+          subtitle: '1 database · live connection',
+          typeLabel: 'DB', typeBg: '#EEF2FF', typeColor: '#5B63F6',
+          itemBg: '#EEF2FF', itemBorder: '#C7D2FE', labelColor: '#5B63F6',
+          meta: [['Database', 'analytics-prod'], ['Status', '● Connected']],
+          sectionLabel: 'Tables used',
+          rows: [
+            ['kpi_snapshots', 'Daily KPI snapshots used for trend and delta calculations.'],
+            ['dimension_map', 'Dimension-to-label mappings for axis labels in charts.'],
+            ['aggregates', 'Pre-aggregated weekly/monthly rollups for performance KPIs.']
+          ],
+          footer: ['Last synced 3 min ago', 'View schema']
+        }
+      };
+
+      var cfg = configs[s.name] || configs['Analytics DB'];
+      document.getElementById('src-drawer-subtitle').textContent = cfg.subtitle;
+
+      var rows = cfg.rows.map(function(r, i) {
+        return '<div class="flex items-start gap-2.5 p-2.5 rounded-lg" style="background:' + cfg.itemBg + ';border:1px solid ' + cfg.itemBorder + '">'
+          + '<span class="text-[11px] font-semibold flex-shrink-0 mt-0.5" style="color:' + cfg.labelColor + '">' + r[0] + '</span>'
+          + '<p class="text-[12px] text-gray-700 leading-snug">' + r[1] + '</p>'
+          + '</div>';
+      }).join('');
+
+      var metaCells = cfg.meta.map(function(m) {
+        return '<div class="bg-gray-50 rounded-lg px-3 py-2">'
+          + '<p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">' + m[0] + '</p>'
+          + '<p class="text-[12px] text-gray-800 font-medium">' + m[1] + '</p>'
+          + '</div>';
+      }).join('');
+
+      var accordionIcon = sourceIconSVG(s.icon);
+      // make it slightly bigger for accordion header
+      accordionIcon = accordionIcon.replace('w-3 h-3', 'w-3.5 h-3.5');
+
+      document.getElementById('src-drawer-list').innerHTML =
+        '<div class="rounded-xl border border-gray-200 overflow-hidden">'
+        + '<button onclick="toggleSourceAccordion(\'src-main\')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">'
+        + '<div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:' + s.bg + ';color:' + s.color + '">'
+        + accordionIcon
+        + '</div>'
+        + '<div class="flex-1 min-w-0">'
+        + '<p class="text-[13px] font-semibold text-gray-900 truncate">' + s.name + '</p>'
+        + '<p class="text-[11px] text-gray-400">' + cfg.subtitle + '</p>'
+        + '</div>'
+        + '<span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:' + cfg.typeBg + ';color:' + cfg.typeColor + '">' + cfg.typeLabel + '</span>'
+        + '<svg id="src-main-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>'
+        + '</button>'
+        + '<div id="src-main" class="src-accordion-body open">'
+        + '<div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">'
+        + '<div class="grid grid-cols-2 gap-2">' + metaCells + '</div>'
+        + '<div><p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">' + cfg.sectionLabel + '</p>'
+        + '<div class="space-y-1.5">' + rows + '</div></div>'
+        + '</div></div>'
+        + '</div>';
+
+      // open chevron since accordion starts open
+      var chev = document.getElementById('src-main-chevron');
+      if (chev) chev.classList.add('open');
+    }
+    function toggleSourceAccordion(id) {
+      var body = document.getElementById(id);
+      var chevron = document.getElementById(id + '-chevron');
+      if (!body) return;
+      var isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      if (chevron) chevron.classList.toggle('open', !isOpen);
+    }
   </script>
+
+  <!-- Sources drawer backdrop -->
+  <div id="sources-drawer-backdrop" onclick="closeSourcesDrawer()" class="fixed inset-0 z-[60]" style="background:transparent"></div>
+
+  <!-- ═══════════════════════════════════════════
+       SOURCES DRAWER
+  ════════════════════════════════════════════ -->
+  <div id="sources-drawer" class="fixed right-0 z-[70] w-[320px] bg-white border-l border-gray-200 flex flex-col" style="top:44px;height:calc(100% - 44px);box-shadow:-4px 0 16px rgba(0,0,0,0.08)">
+
+    <!-- Drawer header -->
+    <div class="flex items-center justify-between px-5 h-14 border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+          <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        </div>
+        <div>
+          <p class="text-[14px] font-semibold text-gray-900 leading-tight">Sources</p>
+          <p id="src-drawer-subtitle" class="text-[11px] text-gray-400">1 data source</p>
+        </div>
+      </div>
+      <button onclick="closeSourcesDrawer()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Accordion list (rendered dynamically by renderSourcesDrawer) -->
+    <div id="src-drawer-list" class="flex-1 overflow-y-auto px-4 space-y-2" style="padding-top:12px;padding-bottom:32px"></div>
+  </div><!-- end sources-drawer -->
+
 </body>
 </html>

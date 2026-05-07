@@ -197,6 +197,17 @@
 
     /* ── Slide card content (editor state) ── */
     .slide-card { background: #fff; border-radius: 14px; border: 1px solid #E5E7EB; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+
+    /* ── Sources drawer ── */
+    #sources-drawer { transform: translateX(100%); transition: transform 280ms cubic-bezier(0.4,0,0.2,1); }
+    #sources-drawer.open { transform: translateX(0); }
+    #sources-drawer-backdrop { display: none; }
+    #sources-drawer-backdrop.open { display: block; }
+    .src-accordion-body { max-height: 0; overflow: hidden; transition: max-height 260ms cubic-bezier(0.4,0,0.2,1); }
+    .src-accordion-body.open { max-height: 500px; }
+    .src-chevron { transition: transform 200ms ease; }
+    .src-chevron.open { transform: rotate(90deg); }
+    .sources-btn.active { background:#EEF2FF !important; color:#5B63F6 !important; border-color:#C7D2FE !important; }
   </style>
 </head>
 
@@ -417,8 +428,8 @@
         <!-- Outline state: (Generate slides button removed) -->
         <!-- Editor state: simplified toolbar -->
         <div id="sb-actions-editor" style="display:none;" class="flex items-center gap-1.5">
-          <button class="toolbar-btn">
-            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          <button onclick="toggleSourcesDrawer()" id="sources-topbar-btn" class="toolbar-btn sources-btn" title="Sources">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
             Sources
           </button>
           <button class="toolbar-btn">
@@ -427,7 +438,7 @@
           </button>
           <button class="toolbar-btn">
             <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-            Download
+            Export
           </button>
           <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
@@ -1143,7 +1154,245 @@
     // Hide both generating overlay and slide-display initially
     document.getElementById('generating-overlay').style.display = 'none';
     document.getElementById('slide-display').classList.add('hidden');
+
+    /* ── Sources drawer ── */
+    var _sourcesOpen = false;
+    function toggleSourcesDrawer() { _sourcesOpen ? closeSourcesDrawer() : openSourcesDrawer(); }
+    function openSourcesDrawer() {
+      _sourcesOpen = true;
+      document.getElementById('sources-drawer').classList.add('open');
+      document.getElementById('sources-drawer-backdrop').classList.add('open');
+      var btn = document.getElementById('sources-topbar-btn');
+      if (btn) btn.classList.add('active');
+    }
+    function closeSourcesDrawer() {
+      _sourcesOpen = false;
+      document.getElementById('sources-drawer').classList.remove('open');
+      document.getElementById('sources-drawer-backdrop').classList.remove('open');
+      var btn = document.getElementById('sources-topbar-btn');
+      if (btn) btn.classList.remove('active');
+    }
+    function toggleSourceAccordion(id) {
+      var body = document.getElementById(id);
+      var chevron = document.getElementById(id + '-chevron');
+      if (!body) return;
+      var isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      if (chevron) chevron.classList.toggle('open', !isOpen);
+    }
   </script>
+
+  <!-- Sources drawer backdrop -->
+  <div id="sources-drawer-backdrop" onclick="closeSourcesDrawer()" class="fixed inset-0 z-[60]" style="background:transparent"></div>
+
+  <!-- ═══════════════════════════════════════════
+       SOURCES DRAWER
+  ════════════════════════════════════════════ -->
+  <div id="sources-drawer" class="fixed right-0 z-[70] w-[320px] bg-white border-l border-gray-200 flex flex-col" style="top:44px;height:calc(100% - 44px);box-shadow:-4px 0 16px rgba(0,0,0,0.08)">
+
+    <!-- Drawer header -->
+    <div class="flex items-center justify-between px-5 h-14 border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+          <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        </div>
+        <div>
+          <p class="text-[14px] font-semibold text-gray-900 leading-tight">Sources</p>
+          <p class="text-[11px] text-gray-400">4 references</p>
+        </div>
+      </div>
+      <button onclick="closeSourcesDrawer()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Accordion list -->
+    <div class="flex-1 overflow-y-auto px-4 space-y-2" style="padding-top:12px;padding-bottom:32px">
+
+      <!-- Source 1: Annual Report PDF -->
+      <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <button onclick="toggleSourceAccordion('src-pdf1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#FFF1F0">
+            <svg class="w-3.5 h-3.5" style="color:#EF4444" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold text-gray-900 truncate">Annual Report 2024</p>
+            <p class="text-[11px] text-gray-400">PDF · Internal · 68 pages</p>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#FFF1F0;color:#EF4444">PDF</span>
+          <svg id="src-pdf1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div id="src-pdf1" class="src-accordion-body">
+          <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Publisher</p>
+                <p class="text-[12px] text-gray-800 font-medium">Finance Dept.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Year</p>
+                <p class="text-[12px] text-gray-800 font-medium">2024</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Pages referenced</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg" style="background:#FFF5F5;border:1px solid #FED7D7">
+                  <span class="text-[11px] font-semibold flex-shrink-0 mt-0.5" style="color:#EF4444">p.4–6</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">Revenue grew 34% YoY to $28.4M, driven by enterprise tier expansion.</p>
+                </div>
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg" style="background:#FFF5F5;border:1px solid #FED7D7">
+                  <span class="text-[11px] font-semibold flex-shrink-0 mt-0.5" style="color:#EF4444">p.22</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">Gross margin improved to 71% with improved infrastructure cost leverage.</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-end pt-1">
+              <button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Source 2: Market Analysis Paper -->
+      <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <button onclick="toggleSourceAccordion('src-paper1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#FEF3C7">
+            <svg class="w-3.5 h-3.5" style="color:#D97706" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold text-gray-900 truncate">SaaS Market Analysis Q1 2025</p>
+            <p class="text-[11px] text-gray-400">Paper · Gartner Research · 2025</p>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#FEF3C7;color:#B45309">Paper</span>
+          <svg id="src-paper1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div id="src-paper1" class="src-accordion-body">
+          <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Authors</p>
+                <p class="text-[12px] text-gray-800 font-medium">Gartner Analysts</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Published</p>
+                <p class="text-[12px] text-gray-800 font-medium">Feb 2025</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Sections referenced</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-50 border border-amber-100">
+                  <span class="text-[11px] font-semibold text-amber-600 flex-shrink-0 mt-0.5">§2.1</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">Global SaaS market projected to reach $374B by 2026, growing at 18% CAGR.</p>
+                </div>
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-50 border border-amber-100">
+                  <span class="text-[11px] font-semibold text-amber-600 flex-shrink-0 mt-0.5">§4.3</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">AI-powered analytics is the #1 feature driving enterprise SaaS purchasing decisions.</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[11px] text-gray-400">Gartner ID: G00812345</span>
+              <button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open paper</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Source 3: Customer Insights Report -->
+      <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <button onclick="toggleSourceAccordion('src-book1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold text-gray-900 truncate">Customer Insights Report 2024</p>
+            <p class="text-[11px] text-gray-400">Report · Product Team · 520 responses</p>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#EEF2FF;color:#5B63F6">Report</span>
+          <svg id="src-book1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div id="src-book1" class="src-accordion-body">
+          <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Sample size</p>
+                <p class="text-[12px] text-gray-800 font-medium">520 customers</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Period</p>
+                <p class="text-[12px] text-gray-800 font-medium">Q3–Q4 2024</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Key findings used</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100">
+                  <span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">§NPS</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">Net Promoter Score of 72, up 14 points from the prior survey period.</p>
+                </div>
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100">
+                  <span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">§Pain</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">Top pain point: manual reporting taking 6+ hours/week for 68% of users.</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[11px] text-gray-400">Conducted via Typeform</span>
+              <button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">View all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Source 4: Tech Article -->
+      <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <button onclick="toggleSourceAccordion('src-web1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#ECFDF5">
+            <svg class="w-3.5 h-3.5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold text-gray-900 truncate">AI Presentations Are Reshaping Work</p>
+            <p class="text-[11px] text-gray-400">Article · TechCrunch · Mar 2025</p>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#ECFDF5;color:#15803D">Web</span>
+          <svg id="src-web1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div id="src-web1" class="src-accordion-body">
+          <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+            <div class="bg-gray-50 rounded-lg px-3 py-2">
+              <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">URL</p>
+              <p class="text-[11px] text-indigo-500 truncate">techcrunch.com/2025/03/ai-presentations-reshaping-work</p>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Accessed</p>
+                <p class="text-[12px] text-gray-800 font-medium">May 10, 2025</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Author</p>
+                <p class="text-[12px] text-gray-800 font-medium">Jordan Lee</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Passages referenced</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-green-50 border border-green-100">
+                  <span class="text-[11px] font-semibold text-green-600 flex-shrink-0 mt-0.5">¶3</span>
+                  <p class="text-[12px] text-gray-700 leading-snug">Teams using AI presentation tools report 60% faster slide creation compared to traditional tools.</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-end pt-1">
+              <button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open article</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end accordion list -->
+  </div><!-- end sources-drawer -->
 
 </body>
 </html>
