@@ -105,19 +105,6 @@
       width: 18px; height: 18px; accent-color: #1a73e8; flex-shrink: 0; cursor: pointer;
     }
 
-    /* ── Floating add button ── */
-    #fab-add {
-      position: fixed; bottom: 28px; right: 28px; z-index: 40;
-      height: 44px; padding: 0 20px; border-radius: 9999px;
-      background: linear-gradient(135deg, #5B63F6 0%, #7C6FF7 100%);
-      color: #fff; font-size: 13px; font-weight: 600;
-      box-shadow: 0 6px 22px rgba(91,99,246,0.42);
-      display: none; align-items: center; gap: 8px;
-      cursor: pointer; border: none;
-      transition: transform 150ms ease, box-shadow 150ms ease;
-    }
-    #fab-add:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(91,99,246,0.55); }
-
     /* ── Submit row ── */
     #submit-row { display: none; }
 
@@ -148,7 +135,7 @@
     .m-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 32px; }
 
     /* Sidebar collapse */
-    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow: hidden; }
+    #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow-x: hidden; overflow-y: auto; }
     #sidebar.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-right: none; }
     /* Workspace switcher modal */
     #ws-modal-backdrop { display: none; }
@@ -167,6 +154,12 @@
     .ai-dot { width:7px; height:7px; border-radius:50%; background:#5B63F6; animation: ai-pulse 1.2s infinite; }
     .ai-dot:nth-child(2){animation-delay:.2s}
     .ai-dot:nth-child(3){animation-delay:.4s}
+    /* Suggestion buttons */
+    .suggest-btn { transition: background-color 100ms ease; }
+    .suggest-btn:hover { background-color: #E5E7EB; }
+    /* Checkbox follow-up cards */
+    @keyframes followupIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+    .followup-card { animation: followupIn 180ms ease; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -174,7 +167,7 @@
   <!-- ════════════════════════════════════════
        SIDEBAR 220px
   ════════════════════════════════════════ -->
-  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
+  <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-x-hidden overflow-y-auto">
 
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
@@ -201,147 +194,197 @@
       </a>
     </nav>
 
+    <!-- Divider -->
     <div class="mx-3 my-1 border-t border-gray-100"></div>
 
-    <!-- Projects -->
+    <!-- Projects section -->
     <div class="px-3 py-1">
       <div class="flex items-center px-3 h-7">
         <span class="text-[11px] font-medium text-gray-400 uppercase tracking-widest">Projects</span>
       </div>
       <div id="projects-list" class="space-y-0.5 mt-0.5">
+
         <!-- My Private Project -->
         <div>
           <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
-            <button onclick="toggleWorkspace('ws2')" id="ws2-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+            <button onclick="toggleWorkspace('ws2')" id="ws2-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
               <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
             <a href="#" class="flex-1 text-sm text-gray-700 truncate">My Private Project</a>
-            <svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Pinned">
-              <path d="M12 17v5"/>
-              <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76z"/>
-            </svg>
           </div>
           <div id="ws2-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Q4 Strategy
+              <span class="truncate min-w-0 flex-1">Q4 Strategy</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Revenue Overview
+              <span class="truncate min-w-0 flex-1">Revenue Overview</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Project Brief
+              <span class="truncate min-w-0 flex-1">Untitled</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Investor Update
+              <span class="truncate min-w-0 flex-1">Investor Update</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Meeting Notes
+              <span class="truncate min-w-0 flex-1">Meeting Notes</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              KPI Tracker
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Product Feedback
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              User Analytics
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Sprint Planning
+              <span class="truncate min-w-0 flex-1">KPI Tracker</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Roadmap 2026
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              API Docs
+              <span class="truncate min-w-0 flex-1">Roadmap 2026</span>
             </a>
           </div>
         </div>
-        <!-- Sovereign Capital Gate -->
+
+        <!-- Sovereign Capital Gate — ACTIVE (expanded) -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:6px;">
+            <button onclick="toggleWorkspace('ws1')" id="ws1-btn"
+              class="ws-item open flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" style="transform:rotate(90deg)" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm font-semibold text-gray-900 truncate">Sovereign Capital G...</a>
+          </div>
+          <div id="ws1-sub" class="ws-submenu open pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <span class="truncate min-w-0 flex-1">Sales Overview</span>
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+              <span class="truncate min-w-0 flex-1">Investor Briefing</span>
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <span class="truncate min-w-0 flex-1">Capital Analysis</span>
+            </a>
+            <!-- Active form item -->
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-medium" style="background:#EEF2FF; color:#5B63F6">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+              <span class="truncate min-w-0 flex-1">Contact Us</span>
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              <span class="truncate min-w-0 flex-1">Deal Memo Q2</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Marketing Analytics -->
         <div>
           <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
-            <button onclick="toggleWorkspace('ws1')" id="ws1-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+            <button onclick="toggleWorkspace('ws3')" id="ws3-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
               <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
-            <a href="../sovereign-capital-gate/index.html" class="flex-1 text-sm text-gray-700 truncate">Sovereign Capital Gate</a>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Marketing Analytics</a>
           </div>
-          <div id="ws1-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Investor Briefing
-            </a>
+          <div id="ws3-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Capital Analysis
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Deal Memo Q2
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#8B5CF6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
-              Pitch Deck 2026
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Portfolio Overview
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              Risk Register
+              <span class="truncate min-w-0 flex-1">Campaign Performance</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
-              Market Signals
+              <span class="truncate min-w-0 flex-1">SEO Strategy Chat</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Product Roadmap Q3 -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws4')" id="ws4-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Product Roadmap Q3</a>
+          </div>
+          <div id="ws4-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F59E0B" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 12v-.75"/></svg>
+              <span class="truncate min-w-0 flex-1">Feature Backlog</span>
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <span class="truncate min-w-0 flex-1">OKR Tracker</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Engineering Sprint -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws5')" id="ws5-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Engineering Sprint</a>
+          </div>
+          <div id="ws5-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <span class="truncate min-w-0 flex-1">Velocity Dashboard</span>
+            </a>
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              <span class="truncate min-w-0 flex-1">Tech Spec Docs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Customer Success -->
+        <div>
+          <div class="nav-item flex items-center gap-1 px-2 h-9 rounded-lg">
+            <button onclick="toggleWorkspace('ws6')" id="ws6-btn"
+              class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
+              <svg class="ws-chevron w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#" class="flex-1 text-sm text-gray-700 truncate">Customer Success</a>
+          </div>
+          <div id="ws6-sub" class="ws-submenu pl-4 mt-0.5 space-y-0.5">
+            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+              <span class="truncate min-w-0 flex-1">Churn Analysis</span>
             </a>
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EC4899" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
-              LP Survey
-            </a>
-            <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] text-gray-600">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-              Valuation Model
+              <span class="truncate min-w-0 flex-1">NPS Survey</span>
             </a>
           </div>
         </div>
-        <a href="#" onclick="event.preventDefault();openNewProjectModal()" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
+
+        <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
           <span class="text-gray-400 font-medium text-base leading-none">+</span>
           Create a project
         </a>
       </div>
     </div>
 
+    <!-- Spacer -->
     <div class="flex-1"></div>
+
+    <!-- Divider -->
     <div class="mx-3 border-t border-gray-100"></div>
+
+    <!-- Bottom nav -->
     <nav class="px-3 py-2 space-y-0.5">
-      <!-- <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/>
-          <path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/>
-          <path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/>
-        </svg>
-        Connect Datasource
-      </a>
-      <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-        Shared with me
-      </a> -->
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
       </a>
     </nav>
+
+    <!-- Explore free features banner -->
     <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
       <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
         <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
@@ -443,12 +486,6 @@
       </button>
       <!-- Right: AI panel toggle + notification bell + user avatar -->
       <div class="flex items-center gap-1.5">
-        <!-- AI panel toggle -->
-        <button onclick="document.getElementById('ai-panel').classList.toggle('collapsed')" class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors mr-1">
-          <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-          AI Builder
-        </button>
-
         <!-- Notification bell -->
         <div class="relative" id="notif-wrapper">
           <button onclick="toggleNotifications()" id="notif-btn" class="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors" aria-label="Notifications">
@@ -529,60 +566,90 @@
       </div>
     </div>
 
+    <!-- Content row (below topbar 1): left col + AI panel -->
+    <div class="flex-1 flex overflow-hidden">
+
+    <!-- Left col: second topbar + canvas -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
     <!-- Second topbar: form title + Edit button -->
     <div class="flex items-center justify-between px-8 h-11 border-b border-gray-100 flex-shrink-0 bg-white">
       <!-- Left: form title -->
       <div class="flex items-center gap-2 min-w-0">
-        <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-        <span id="second-topbar-title" class="text-[13px] font-semibold text-gray-800 truncate">Untitled Form</span>
+        <svg class="w-4 h-4 flex-shrink-0 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+        <span id="second-topbar-title"
+          class="text-[14px] font-bold text-gray-900 truncate outline-none cursor-text rounded px-1 -mx-1 hover:bg-gray-100 transition-colors"
+          contenteditable="false"
+          onclick="startTitleEdit()"
+          onblur="endTitleEdit(this)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+          spellcheck="false">Contact Us</span>
       </div>
-      <!-- Right: Edit button -->
-      <button class="flex items-center gap-1.5 px-3 h-[28px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90 flex-shrink-0" style="background:#5B63F6;">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
-        Edit
-      </button>
+
     </div>
 
-    <!-- Canvas + AI Panel row -->
-    <div class="flex-1 flex overflow-hidden">
+    <!-- Canvas column -->
+    <div class="flex-1 flex flex-col relative overflow-hidden">
 
-    <!-- Canvas -->
-    <div class="flex-1 overflow-y-auto py-6 px-8" id="canvas-scroll">
+      <!-- Scrollable canvas area -->
+      <div class="flex-1 overflow-y-auto py-6 px-8" id="canvas-scroll">
+
       <div class="w-full" id="form-canvas">
 
-        <!-- Section heading -->
-        <div class="mb-5">
-          <div class="flex items-center justify-between">
-            <h1 class="text-[22px] font-bold text-gray-900 leading-snug">Untitled Form</h1>
-            <div class="flex items-center gap-2">
-              <span id="mode-badge" class="hidden text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background:#EEF2FF;color:#5B63F6">
-                <i class="fa-solid fa-pen-to-square mr-1"></i>Editing
-              </span>
-              <button id="toggle-mode-btn" onclick="toggleMode()"
-                class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg border text-[13px] font-medium transition-all"
-                style="border-color:#E5E7EB;color:#374151;background:#fff">
-                <i id="mode-icon" class="fa-solid fa-pen text-xs"></i>
-                <span id="mode-btn-label">Edit Form</span>
-              </button>
-            </div>
+        <!-- Empty state -->
+        <div id="canvas-empty" class="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-6">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style="background:#F3F4F6">
+            <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
           </div>
-          <p class="text-[13px] text-gray-500 mt-1">Fill in the fields below. Required fields are marked with <span class="text-red-500">*</span></p>
+          <p class="text-[15px] font-semibold text-gray-400">Your form is empty</p>
+          <p class="text-[13px] text-gray-400 mt-1">Use the AI builder on the right or click <strong>Edit Form</strong> to add fields.</p>
+        </div>
+
+        <!-- Section heading (hidden until fields exist) -->
+        <div id="canvas-header" class="hidden items-center justify-between mb-4">
+          <p class="text-[13px] text-gray-400"><span class="text-red-400 font-semibold">Note:</span> Required fields are marked with <span class="text-red-400">*</span></p>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span id="mode-badge" class="hidden items-center gap-1.5 text-[11px] font-semibold h-7 px-2.5 rounded-lg" style="background:#EEF2FF;color:#5B63F6">
+              <i class="fa-solid fa-pen-to-square text-[10px]"></i>Editing
+            </span>
+            <button id="toggle-mode-btn" onclick="toggleMode()"
+              class="flex items-center gap-1.5 px-3.5 h-7 rounded-lg border text-[12px] font-medium transition-all"
+              style="border-color:#E5E7EB;color:#374151;background:#fff">
+              <i id="mode-icon" class="fa-solid fa-pen text-[10px]"></i>
+              <span id="mode-btn-label">Edit Form</span>
+            </button>
+          </div>
         </div>
 
         <!-- Fields container (rendered by JS) -->
         <div id="fields-container"></div>
 
-      </div>
+      </div><!-- end form-canvas -->
 
-      <!-- Submit row (view mode) -->
-      <div id="submit-row" class="w-full mt-6 flex items-center justify-end gap-3">
+      <!-- Submit row (view mode, hidden until fields exist) -->
+      <div id="submit-row" class="w-full px-8 py-4 hidden items-center justify-end gap-3 border-t border-gray-100 flex-shrink-0">
         <button class="text-[13px] text-gray-400 hover:text-gray-600 font-medium transition-colors">Clear form</button>
         <button class="px-6 h-10 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity"
-          style="background:blue;box-shadow:0 4px 14px rgba(91,99,246,0.35)">
+          style="background:#3B5BDB;box-shadow:0 4px 14px rgba(59,91,219,0.35)">
           Submit
         </button>
       </div>
-    </div>
+
+    </div><!-- end canvas-scroll -->
+
+    <!-- Floating Add Field button (bottom-right of canvas column) -->
+    <button id="fab-add" onclick="openAddModal()"
+      class="absolute bottom-6 right-6 z-20 hidden items-center gap-2 px-5 h-10 rounded-full text-[13px] font-semibold text-white"
+      style="background:#3B5BDB;box-shadow:0 6px 22px rgba(59,91,219,0.45);transition:box-shadow 150ms,transform 150ms"
+      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(59,91,219,0.55)'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 6px 22px rgba(59,91,219,0.45)'">
+      <i class="fa-solid fa-plus text-[11px]"></i>
+      Add field
+    </button>
+
+    </div><!-- end canvas column -->
+
+    </div><!-- end left col -->
 
     <!-- ════ AI PROMPT PANEL (right) ════ -->
     <div id="ai-panel" class="flex flex-col bg-white border-l border-gray-100 overflow-hidden">
@@ -592,51 +659,73 @@
           <div class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#5B63F6,#7C6FF7)">
             <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
           </div>
-          <span class="text-[13px] font-semibold text-gray-900">AI Form Builder</span>
+          <span class="text-[13px] font-semibold text-gray-900">AiBii Form Builder</span>
         </div>
-        <button onclick="document.getElementById('ai-panel').classList.toggle('collapsed')" class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
       </div>
 
-      <!-- Panel body -->
-      <div class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-4">
+      <!-- Panel body (scrollable) -->
+      <div id="ai-chat-scroll" class="flex-1 overflow-y-auto">
 
-        <!-- Intro text -->
-        <div class="rounded-xl p-3" style="background:#F5F3FF">
-          <p class="text-[12px] text-indigo-700 leading-relaxed">Describe the form you need and AI will generate all the fields for you.</p>
+        <!-- Welcome state (hidden once chat starts) -->
+        <div id="ai-welcome" class="flex flex-col items-center justify-center h-full px-6 py-10 text-center">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+          </div>
+          <p class="text-[15px] font-bold text-gray-900 leading-snug">I'm AiBii Form Builder.</p>
+          <p class="text-[15px] font-bold text-gray-900 leading-snug">Describe your form.</p>
+          <p class="text-[13px] text-gray-400 mt-2">Or pick a template below to get started.</p>
         </div>
 
-        <!-- Suggestion chips -->
-        <div>
-          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Try a prompt</p>
-          <div class="flex flex-wrap gap-1.5">
-            <button onclick="setPrompt('Create a customer feedback form')" class="ai-suggestion-chip text-[11px] font-medium text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 bg-white">Customer feedback</button>
-            <button onclick="setPrompt('Create a job application form')" class="ai-suggestion-chip text-[11px] font-medium text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 bg-white">Job application</button>
-            <button onclick="setPrompt('Create an event registration form')" class="ai-suggestion-chip text-[11px] font-medium text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 bg-white">Event registration</button>
-            <button onclick="setPrompt('Create a product survey form')" class="ai-suggestion-chip text-[11px] font-medium text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 bg-white">Product survey</button>
-            <button onclick="setPrompt('Create a contact us form')" class="ai-suggestion-chip text-[11px] font-medium text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 bg-white">Contact us</button>
-            <button onclick="setPrompt('Create an employee onboarding form')" class="ai-suggestion-chip text-[11px] font-medium text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 bg-white">Employee onboarding</button>
+        <!-- Chat messages (hidden until first message) -->
+        <div id="ai-chat-history" class="hidden px-4 py-4 flex flex-col gap-3">
+          <!-- Generating indicator -->
+          <div id="ai-generating" class="ai-generating items-center gap-2 px-3 py-2 rounded-xl" style="background:#F5F3FF">
+            <div class="flex items-center gap-1">
+              <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
+            </div>
+            <span class="text-[12px] text-indigo-600 font-medium">Generating form…</span>
           </div>
         </div>
 
-        <!-- Chat history -->
-        <div id="ai-chat-history" class="flex flex-col gap-3"></div>
+      </div>
 
-        <!-- Generating indicator -->
-        <div id="ai-generating" class="ai-generating items-center gap-2 px-3 py-2 rounded-xl" style="background:#F5F3FF">
-          <div class="flex items-center gap-1">
-            <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
-          </div>
-          <span class="text-[12px] text-indigo-600 font-medium">Generating form…</span>
+      <!-- Suggestion buttons (fixed above input) -->
+      <div id="ai-suggestions" class="px-4 pb-3 flex-shrink-0">
+        <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Templates</p>
+        <div class="space-y-1.5">
+          <button onclick="setPrompt('Create a customer feedback form')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
+            Customer feedback
+          </button>
+          <button onclick="setPrompt('Create a job application form')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            Job application
+          </button>
+          <button onclick="setPrompt('Create an event registration form')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+            Event registration
+          </button>
+          <button onclick="setPrompt('Create a product survey form')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+            Product survey
+          </button>
+          <button onclick="setPrompt('Create a contact us form')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+            Contact us
+          </button>
+          <button onclick="setPrompt('Create an employee onboarding form')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+            Employee onboarding
+          </button>
         </div>
-
       </div>
 
       <!-- Input area -->
       <div class="border-t border-gray-100 px-4 py-3 flex-shrink-0">
         <div class="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-50 transition-all">
-          <textarea id="ai-prompt-input" class="text-[13px] text-gray-800 bg-transparent w-full placeholder-gray-400" placeholder="e.g. Create a feedback form for a SaaS product with rating and text fields…" onkeydown="handleAiKey(event)"></textarea>
+          <textarea id="ai-prompt-input" class="text-[13px] text-gray-800 bg-transparent w-full placeholder-gray-400" placeholder="Describe the form you need and I'll build it for you…" onkeydown="handleAiKey(event)"></textarea>
           <div class="flex items-center justify-between">
             <span class="text-[11px] text-gray-400">Enter to send &middot; Shift+Enter new line</span>
             <button onclick="submitAiPrompt()" class="flex items-center justify-center w-7 h-7 rounded-lg text-white flex-shrink-0 hover:opacity-90 transition-opacity" style="background:linear-gradient(135deg,#5B63F6,#7C6FF7)">
@@ -647,14 +736,8 @@
       </div>
     </div>
 
-    </div><!-- end canvas+panel row -->
+    </div><!-- end content row -->
   </main>
-
-  <!-- Floating Add Field button (edit mode only) -->
-  <button id="fab-add" onclick="openAddModal()">
-    <i class="fa-solid fa-plus text-sm"></i>
-    <span>Add field</span>
-  </button>
 
   <!-- ════════════════ ADD FIELD MODAL ════════════════ -->
   <div id="add-modal" class="modal-bg hidden" onclick="handleBgClick(event,'add-modal')">
@@ -724,11 +807,17 @@
        STATE
     ═══════════════════════════════════════════ */
     let fields = [
-      { id: 'f1', type: 'text',     label: 'Full name',                 required: true,  options: [] },
-      { id: 'f2', type: 'email',    label: 'Email address',             required: true,  options: [] },
-      { id: 'f3', type: 'dropdown', label: 'How did you hear about us?', required: false, options: ['Search engine', 'Social media', 'Friend / referral', 'Advertisement'] },
-      { id: 'f4', type: 'checkbox', label: 'What topics interest you?', required: false, options: ['Data analytics', 'AI / ML', 'Business intelligence', 'Dashboards'] },
-      { id: 'f5', type: 'textarea', label: 'Additional comments',       required: false, options: [] },
+      { id: 'f1', type: 'text',     label: 'Full name',        required: true,  row: 'r1' },
+      { id: 'f2', type: 'email',    label: 'Email address',    required: true,  row: 'r1' },
+      { id: 'f3', type: 'text',     label: 'Phone number',     required: false, row: 'r2' },
+      { id: 'f4', type: 'text',     label: 'Company / Organisation', required: false, row: 'r2' },
+      { id: 'f5', type: 'dropdown', label: 'Department',       required: false,
+        options: ['Engineering', 'Product', 'Marketing', 'Sales', 'Finance', 'HR', 'Other'] },
+      { id: 'f6', type: 'textarea', label: 'How can we help you?', required: true },
+      { id: 'f7', type: 'radio',    label: 'Preferred contact method', required: false,
+        options: ['Email', 'Phone', 'WhatsApp'] },
+      { id: 'f8', type: 'checkbox', label: 'Areas of interest', required: false,
+        options: ['Product demo', 'Pricing info', 'Technical support', 'Partnership'] },
     ];
 
     let isEditMode  = false;
@@ -765,31 +854,31 @@
     function toggleMode() {
       isEditMode = !isEditMode;
 
-      const btn       = document.getElementById('toggle-mode-btn');
-      const icon      = document.getElementById('mode-icon');
-      const label     = document.getElementById('mode-btn-label');
-      const badge     = document.getElementById('mode-badge');
-      const fab       = document.getElementById('fab-add');
-      const submitRow = document.getElementById('submit-row');
+      const btn        = document.getElementById('toggle-mode-btn');
+      const icon       = document.getElementById('mode-icon');
+      const label      = document.getElementById('mode-btn-label');
+      const badge      = document.getElementById('mode-badge');
+      const fab        = document.getElementById('fab-add');
+      const submitRow  = document.getElementById('submit-row');
 
       if (isEditMode) {
         btn.style.background  = '#EEF2FF';
         btn.style.borderColor = '#C7D2FE';
         btn.style.color       = '#5B63F6';
-        icon.className        = 'fa-solid fa-eye text-xs';
+        icon.className        = 'fa-solid fa-eye text-[10px]';
         label.textContent     = 'Preview';
-        badge.classList.remove('hidden');
-        fab.style.display     = 'flex';
+        badge.style.display   = 'inline-flex';
+        if (fab) fab.style.display = 'inline-flex';
         submitRow.style.display = 'none';
       } else {
         btn.style.background  = '#fff';
         btn.style.borderColor = '#E5E7EB';
         btn.style.color       = '#374151';
-        icon.className        = 'fa-solid fa-pen text-xs';
+        icon.className        = 'fa-solid fa-pen text-[10px]';
         label.textContent     = 'Edit Form';
-        badge.classList.add('hidden');
-        fab.style.display     = 'none';
-        submitRow.style.display = 'flex';
+        badge.style.display   = 'none';
+        if (fab) fab.style.display = 'none';
+        submitRow.style.display = fields.length > 0 ? 'flex' : 'none';
       }
 
       document.getElementById('form-canvas').classList.toggle('edit-mode', isEditMode);
@@ -802,12 +891,40 @@
     function renderFields() {
       const container = document.getElementById('fields-container');
       container.innerHTML = '';
-      fields.forEach((field, idx) => container.appendChild(buildCard(field, idx)));
+      const isEmpty = fields.length === 0;
+
+      document.getElementById('canvas-empty').classList.toggle('hidden', !isEmpty);
+      const header = document.getElementById('canvas-header');
+      header.style.display = isEmpty ? 'none' : 'flex';
+      const submitRow = document.getElementById('submit-row');
+      if (isEmpty) {
+        submitRow.style.display = 'none';
+      } else if (!isEditMode) {
+        submitRow.style.display = 'flex';
+      }
+
+      let i = 0;
+      while (i < fields.length) {
+        const field = fields[i];
+        if (field.row) {
+          const rowId = field.row;
+          const rowFields = [];
+          while (i < fields.length && fields[i].row === rowId) { rowFields.push(fields[i]); i++; }
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'grid gap-3 mb-3';
+          rowDiv.style.gridTemplateColumns = `repeat(${rowFields.length}, 1fr)`;
+          rowFields.forEach((rf, ri) => rowDiv.appendChild(buildCard(rf, ri, true)));
+          container.appendChild(rowDiv);
+        } else {
+          container.appendChild(buildCard(field, i));
+          i++;
+        }
+      }
     }
 
-    function buildCard(field, idx) {
+    function buildCard(field, idx, inRow = false) {
       const card = document.createElement('div');
-      card.className = 'q-card bg-white rounded-xl px-6 py-5 mb-3';
+      card.className = `q-card bg-white rounded-xl px-6 py-5${inRow ? '' : ' mb-3'}`;  
       card.style.cssText = 'box-shadow:0 1px 2px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.08)';
       card.dataset.id = field.id;
       card.draggable  = isEditMode;
@@ -876,9 +993,12 @@
             ${field.options.map(o => `<option>${esc(o)}</option>`).join('')}
           </select>`;
         case 'checkbox':
-          return field.options.length
-            ? field.options.map(o => `<label class="opt-row"><input type="checkbox" class="w-4 h-4 accent-[#5B63F6]" ${dis}> ${esc(o)}</label>`).join('')
-            : `<p class="text-[12px] text-gray-400 italic">No options yet — add in edit mode</p>`;
+          if (!field.options.length) return `<p class="text-[12px] text-gray-400 italic">No options yet — add in edit mode</p>`;
+          return field.options.map((o, oi) => {
+            const fid = `${field.id}-opt-${oi}`;
+            const onchg = dis ? '' : `onchange="toggleFollowup(this, '${field.id}', ${oi}, \`${esc(o)}\`)"` ;
+            return `<label class="opt-row"><input type="checkbox" id="${fid}" class="w-4 h-4 accent-[#5B63F6]" ${dis} ${onchg}> ${esc(o)}</label>`;
+          }).join('');
         case 'radio':
           return field.options.length
             ? field.options.map(o => `<label class="opt-row"><input type="radio" name="${field.id}" class="w-4 h-4 accent-[#5B63F6]" ${dis}> ${esc(o)}</label>`).join('')
@@ -1026,11 +1146,67 @@
         .replace(/'/g, '&#39;');
     }
 
+    function toggleFollowup(checkbox, fieldId, optIdx, optLabel) {
+      const groupId = `followup-group-${fieldId}-${optIdx}`;
+      // Find the parent q-card that contains this checkbox
+      const parentCard = checkbox.closest('.q-card');
+      if (!parentCard) return;
+
+      if (checkbox.checked) {
+        // Build two follow-up cards and insert after the parent card
+        const frag = document.createDocumentFragment();
+        const questions = [
+          `Tell us more about your interest in "${optLabel}"`,
+          `What specific goals do you have related to "${optLabel}"?`
+        ];
+        questions.forEach((q, qi) => {
+          const card = document.createElement('div');
+          card.className = 'q-card bg-white rounded-xl px-6 py-5 mb-3 followup-card';
+          card.style.cssText = 'box-shadow:0 1px 2px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.08);animation:followupIn 180ms ease;border-left:3px solid #5B63F6';
+          card.dataset.followupGroup = groupId;
+          card.innerHTML = `
+            <div class="flex items-center gap-1.5 mb-2">
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#EEF2FF;color:#5B63F6">Follow-up</span>
+            </div>
+            <div class="mb-3">
+              <span class="q-label" style="font-size:15px;font-weight:600;color:#202124">${esc(q)}</span>
+            </div>
+            <input class="f-input" type="text" placeholder="Your answer…">
+          `;
+          frag.appendChild(card);
+        });
+        // Insert right after the parent card
+        parentCard.after(frag);
+      } else {
+        // Remove all follow-up cards for this option
+        document.querySelectorAll(`[data-followup-group="${groupId}"]`).forEach(el => el.remove());
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       FORM TITLE INLINE EDIT
+    ═══════════════════════════════════════════ */
+    function startTitleEdit() {
+      var el = document.getElementById('second-topbar-title');
+      el.contentEditable = 'true';
+      el.focus();
+      // place cursor at end
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    function endTitleEdit(el) {
+      el.contentEditable = 'false';
+      if (!el.textContent.trim()) el.textContent = 'Untitled Form';
+    }
+
     /* ═══════════════════════════════════════════
        INIT — start in preview mode (clean form view)
     ═══════════════════════════════════════════ */
     renderFields();
-    document.getElementById('submit-row').style.display = 'flex';
 
     // ── Sidebar toggle ──────────────────────────────────────────────
     function toggleSidebar() {
@@ -1119,12 +1295,19 @@
       var prompt = input.value.trim();
       if (!prompt) return;
 
-      // Add user message to history
+      // Hide welcome state + suggestions, show chat container
+      var welcome = document.getElementById('ai-welcome');
+      if (welcome) welcome.classList.add('hidden');
+      var suggestions = document.getElementById('ai-suggestions');
+      if (suggestions) suggestions.classList.add('hidden');
       var history = document.getElementById('ai-chat-history');
+      history.classList.remove('hidden');
+
+      // Add user message to history
       var userMsg = document.createElement('div');
       userMsg.className = 'flex justify-end';
       userMsg.innerHTML = '<div class="max-w-[85%] text-[12px] text-gray-700 bg-gray-100 rounded-xl rounded-br-sm px-3 py-2">' + escapeHtml(prompt) + '</div>';
-      history.appendChild(userMsg);
+      history.insertBefore(userMsg, document.getElementById('ai-generating'));
 
       input.value = '';
 
@@ -1164,7 +1347,7 @@
         var aiMsg = document.createElement('div');
         aiMsg.className = 'flex gap-2 items-start';
         aiMsg.innerHTML = '<div class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5" style="background:linear-gradient(135deg,#5B63F6,#7C6FF7)"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg></div><div class="max-w-[85%] text-[12px] text-gray-700 bg-white border border-gray-100 rounded-xl rounded-tl-sm px-3 py-2">Generated <strong>' + tplFields.length + ' fields</strong> for <em>' + escapeHtml(title) + '</em>. You can edit or reorder them in the canvas.</div>';
-        history.appendChild(aiMsg);
+        history.insertBefore(aiMsg, document.getElementById('ai-generating'));
         aiMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 1400);
     }
