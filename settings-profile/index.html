@@ -595,15 +595,9 @@
                 style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               </div>
             </div>
-<<<<<<< HEAD
-            <button onclick="window.open('../datasource/index.html', '_blank')" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Add datasource
-=======
             <button onclick="openLinkDsModal()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
               Link datasource
->>>>>>> 1c756ea4ab87cfe673da8e98134a5fb095f5965e
             </button>
           </div>
 
@@ -772,18 +766,11 @@
               <table class="w-full text-[13px] table-fixed">
                 <thead class="sticky top-0 z-10">
                   <tr class="bg-gray-50 border-b border-gray-200">
-<<<<<<< HEAD
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:35%">Name</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:18%">Type</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Status</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:12%">Tables</th>
                     <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%"></th>
-=======
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Category</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
->>>>>>> 1c756ea4ab87cfe673da8e98134a5fb095f5965e
                   </tr>
                 </thead>
                 <tbody id="org-ds-tbody"></tbody>
@@ -1091,22 +1078,18 @@
       if (!rows.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
       tbody.innerHTML = rows.map((d, i) => {
-        const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
         const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280' };
         return `<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors" style="${i === rows.length-1 ? 'border-bottom:none' : ''}">
           <td class="px-4 py-3"><span class="font-medium text-gray-900">${d.name}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
-<<<<<<< HEAD
-          <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
-          <td class="px-4 py-3 text-gray-500 text-[13px]">${(ORG_DS_MOCK[d.name]?.tables.length ?? d.tables)}</td>
-=======
           <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
           <td class="px-4 py-3 text-right">
             <button onclick="openViewTablesModal('${d.name.replace(/'/g, "\\'")}')"
               class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[11px] font-medium transition-colors" style="color:#5B63F6;border:1px solid #C7D2FE;background:#EEF2FF" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
               View Tables
->>>>>>> 1c756ea4ab87cfe673da8e98134a5fb095f5965e
+            </button>
+          </td>
         </tr>`;
       }).join('');
     }
