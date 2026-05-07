@@ -474,7 +474,7 @@
           <!-- Divider -->
           <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
           <!-- Share (primary) -->
-          <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90" style="background:#5B63F6;">
+          <button onclick="openShareModal()" class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90" style="background:#3B5BDB;">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
             Share
           </button>
@@ -732,7 +732,7 @@
     </div>
 
     <!-- Accordion list -->
-    <div class="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
+    <div class="flex-1 overflow-y-auto px-4 space-y-2" style="padding-top:12px;padding-bottom:32px">
 
       <!-- Source 1: Book -->
       <div class="rounded-xl border border-gray-200 overflow-hidden">
@@ -1471,8 +1471,57 @@
       if (chevron) chevron.classList.toggle('open', !isOpen);
     }
 
+    function openShareModal() {
+      document.getElementById('share-modal').classList.remove('hidden');
+      document.getElementById('share-email').focus();
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.add('hidden');
+      document.getElementById('share-email').value = '';
+      document.getElementById('share-comment').value = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeShareModal();
+    });
 
   </script>
+
+  <!-- Share Modal -->
+  <div id="share-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center" style="background:rgba(0,0,0,0.35)" onclick="if(event.target===this)closeShareModal()">
+    <div class="bg-white rounded-2xl w-full max-w-md mx-4" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:#EEF2FF">
+            <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-semibold text-gray-900">Share</p>
+            <p class="text-[11px] text-gray-400">Invite someone to this document</p>
+          </div>
+        </div>
+        <button onclick="closeShareModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">Email address <span style="color:#EF4444">*</span></label>
+          <input id="share-email" type="email" placeholder="colleague@company.com" class="w-full h-10 px-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder-gray-400 outline-none transition-all" onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.12)'" onblur="this.style.borderColor='';this.style.boxShadow=''" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">Comment <span class="text-gray-400 font-normal">(optional)</span></label>
+          <textarea id="share-comment" rows="3" placeholder="Add a message..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder-gray-400 outline-none resize-none transition-all" onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.12)'" onblur="this.style.borderColor='';this.style.boxShadow=''"></textarea>
+        </div>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center justify-end gap-2.5 px-6 pb-5">
+        <button onclick="closeShareModal()" class="px-4 h-9 rounded-xl border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="closeShareModal()" class="px-5 h-9 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-colors" style="background:#5B63F6">Send invite</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

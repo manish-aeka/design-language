@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aibii - Chat</title>
+  <title>AiBii - Chat</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -91,6 +91,14 @@
     #model-dropdown.open { display: block; }
     .model-option:hover { background: #F3F4F6; }
     .model-option.selected { background: #EEF2FF; color: #5B63F6; }
+
+    /* Sources drawer */
+    #chat-sources-drawer { width:0; min-width:0; transition: width 280ms cubic-bezier(0.4,0,0.2,1); overflow:hidden; flex-shrink:0; }
+    #chat-sources-drawer.open { width:320px; min-width:320px; }
+    .src-accordion-body { max-height: 0; overflow: hidden; transition: max-height 260ms cubic-bezier(0.4,0,0.2,1); }
+    .src-accordion-body.open { max-height: 500px; }
+    .src-chevron { transition: transform 200ms ease; }
+    .src-chevron.open { transform: rotate(90deg); }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -346,18 +354,8 @@
         <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
         <h2 class="text-[14px] font-semibold text-gray-900 truncate">New Chat</h2>
       </div>
-      <!-- Right: Sources, Share, Model picker -->
+      <!-- Right: Model picker, Share -->
       <div class="flex items-center gap-2">
-        <!-- Sources -->
-        <button class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0">
-          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-          Sources
-        </button>
-        <!-- Share -->
-        <button class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0">
-          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
-          Share
-        </button>
         <!-- Model picker -->
         <div class="relative" id="model-picker-wrapper">
           <button onclick="toggleModelDropdown()" class="flex items-center gap-1.5 px-3 h-7 rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition-colors flex-shrink-0">
@@ -401,9 +399,17 @@
             </button>
           </div>
         </div>
+        <!-- Share -->
+        <button onclick="openShareModal()" class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90 flex-shrink-0" style="background:#3B5BDB">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          Share
+        </button>
       </div>
     </div>
 
+    <!-- ── Chat body row (messages + inline sources panel) ── -->
+    <div class="flex-1 flex overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-hidden">
     <!-- ── Chat messages area ── -->
     <div id="messages-area" class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
 
@@ -448,18 +454,6 @@
             </div>
             <p class="text-[13px] text-gray-700">Q4 showed a strong <span class="font-semibold text-gray-900">18.4% quarter-over-quarter growth</span>, driven primarily by enterprise contract renewals and a surge in November signups.</p>
           </div>
-          <!-- Source pills -->
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-[11px] text-gray-400">Sources:</span>
-            <button class="source-pill flex items-center gap-1.5 px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50 text-[11px] text-gray-600 font-medium">
-              <div class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#0F9D58"></div>
-              Q4 Revenue Sheet
-            </button>
-            <button class="source-pill flex items-center gap-1.5 px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50 text-[11px] text-gray-600 font-medium">
-              <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#336791"></div>
-              Analytics DB
-            </button>
-          </div>
           <!-- Action buttons -->
           <div class="flex items-center gap-1">
             <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
@@ -470,9 +464,9 @@
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
               Export
             </button>
-            <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-              Regenerate
+            <button onclick="openChatSourcesDrawer()" class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium border border-gray-200">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+              Sources
             </button>
           </div>
         </div>
@@ -537,13 +531,6 @@
             </div>
             <p class="text-[13px] text-gray-700">The Enterprise SaaS growth was largely influenced by 3 new Fortune 500 contract closings in October and November.</p>
           </div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-[11px] text-gray-400">Sources:</span>
-            <button class="source-pill flex items-center gap-1.5 px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50 text-[11px] text-gray-600 font-medium">
-              <div class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#0F9D58"></div>
-              Q4 Revenue Sheet
-            </button>
-          </div>
           <div class="flex items-center gap-1">
             <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z"/></svg>
@@ -553,9 +540,13 @@
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
               Export
             </button>
-            <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
+            <button class="regen-btn ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
               Regenerate
+            </button>
+            <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium border border-gray-200" onclick="openChatSourcesDrawer()">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+              Sources
             </button>
           </div>
         </div>
@@ -597,6 +588,224 @@
 
       </div>
     </div>
+    </div><!-- /chat-column -->
+
+    <!-- ── Inline sources panel ── -->
+    <div id="chat-sources-drawer" class="bg-white border-l border-gray-200 flex flex-col" style="box-shadow:-4px 0 16px rgba(0,0,0,0.06)">
+
+      <!-- Drawer header -->
+      <div class="flex items-center justify-between px-5 h-14 border-b border-gray-100 flex-shrink-0" style="min-width:320px">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          </div>
+          <div>
+            <p class="text-[14px] font-semibold text-gray-900 leading-tight">Sources</p>
+            <p class="text-[11px] text-gray-400">6 references</p>
+          </div>
+        </div>
+        <button onclick="closeChatSourcesDrawer()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Accordion list -->
+      <div class="flex-1 overflow-y-auto px-4 space-y-2" style="min-width:320px;padding-top:12px;padding-bottom:32px">
+
+        <!-- Source 1: Book -->
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <button onclick="toggleChatSourceAccordion('chat-src-book1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">The Intelligent Investor</p>
+              <p class="text-[11px] text-gray-400">Book · Benjamin Graham · 1949</p>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#EEF2FF;color:#5B63F6">Book</span>
+            <svg id="chat-src-book1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="chat-src-book1" class="src-accordion-body">
+            <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Author</p><p class="text-[12px] text-gray-800 font-medium">Benjamin Graham</p></div>
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Published</p><p class="text-[12px] text-gray-800 font-medium">1949</p></div>
+              </div>
+              <div>
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Pages referenced</p>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100"><span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">p.34–36</span><p class="text-[12px] text-gray-700 leading-snug">“The market is a voting machine in the short run, but a weighing machine in the long run.”</p></div>
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100"><span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">p.108</span><p class="text-[12px] text-gray-700 leading-snug">Margin of safety concept — buying assets below intrinsic value.</p></div>
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100"><span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">p.203</span><p class="text-[12px] text-gray-700 leading-snug">Defensive vs. enterprising investor strategies and portfolio allocation.</p></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1"><span class="text-[11px] text-gray-400">Chapter 8, 14, 20 cited</span><button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">View all</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source 2: Research Paper -->
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <button onclick="toggleChatSourceAccordion('chat-src-paper1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#FEF3C7">
+              <svg class="w-3.5 h-3.5" style="color:#D97706" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">BI Adoption in Enterprise Firms</p>
+              <p class="text-[11px] text-gray-400">Paper · Harvard Business Review · 2023</p>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#FEF3C7;color:#B45309">Paper</span>
+            <svg id="chat-src-paper1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="chat-src-paper1" class="src-accordion-body">
+            <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Authors</p><p class="text-[12px] text-gray-800 font-medium">Chen, Liu et al.</p></div>
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Published</p><p class="text-[12px] text-gray-800 font-medium">Mar 2023</p></div>
+              </div>
+              <div>
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Sections referenced</p>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-50 border border-amber-100"><span class="text-[11px] font-semibold text-amber-600 flex-shrink-0 mt-0.5">§3.2</span><p class="text-[12px] text-gray-700 leading-snug">Data-driven decision making increases revenue by 23% on average across surveyed enterprises.</p></div>
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-50 border border-amber-100"><span class="text-[11px] font-semibold text-amber-600 flex-shrink-0 mt-0.5">§5.1</span><p class="text-[12px] text-gray-700 leading-snug">Barriers to BI adoption: data silos, lack of analyst talent, and tool fragmentation.</p></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1"><span class="text-[11px] text-gray-400">DOI: 10.xxxx/hbr.2023.bi</span><button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open paper</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source 3: Web Article -->
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <button onclick="toggleChatSourceAccordion('chat-src-web1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#ECFDF5">
+              <svg class="w-3.5 h-3.5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">What is Business Intelligence?</p>
+              <p class="text-[11px] text-gray-400">Article · Gartner.com · 2024</p>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#ECFDF5;color:#15803D">Web</span>
+            <svg id="chat-src-web1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="chat-src-web1" class="src-accordion-body">
+            <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+              <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">URL</p><p class="text-[11px] text-indigo-500 truncate">gartner.com/en/information-technology/glossary/business-intelligence-bi</p></div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Accessed</p><p class="text-[12px] text-gray-800 font-medium">Apr 22, 2026</p></div>
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Publisher</p><p class="text-[12px] text-gray-800 font-medium">Gartner</p></div>
+              </div>
+              <div>
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Passages referenced</p>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-green-50 border border-green-100"><span class="text-[11px] font-semibold text-green-600 flex-shrink-0 mt-0.5">¶1</span><p class="text-[12px] text-gray-700 leading-snug">BI comprises strategies and technologies used to analyze business data and deliver actionable information.</p></div>
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-green-50 border border-green-100"><span class="text-[11px] font-semibold text-green-600 flex-shrink-0 mt-0.5">¶4</span><p class="text-[12px] text-gray-700 leading-snug">Modern BI platforms include self-service dashboards, NLP querying, and predictive analytics.</p></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-end pt-1"><button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open article</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source 4: Book -->
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <button onclick="toggleChatSourceAccordion('chat-src-book2')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">Data Science for Business</p>
+              <p class="text-[11px] text-gray-400">Book · Provost &amp; Fawcett · 2013</p>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#EEF2FF;color:#5B63F6">Book</span>
+            <svg id="chat-src-book2-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="chat-src-book2" class="src-accordion-body">
+            <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Authors</p><p class="text-[12px] text-gray-800 font-medium">Provost, Fawcett</p></div>
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Edition</p><p class="text-[12px] text-gray-800 font-medium">1st Ed. 2013</p></div>
+              </div>
+              <div>
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Pages referenced</p>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100"><span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">p.18–22</span><p class="text-[12px] text-gray-700 leading-snug">Data-analytic thinking — framing business problems as data problems.</p></div>
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-indigo-50 border border-indigo-100"><span class="text-[11px] font-semibold text-indigo-500 flex-shrink-0 mt-0.5">p.67</span><p class="text-[12px] text-gray-700 leading-snug">The role of supervised vs. unsupervised models in business contexts.</p></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1"><span class="text-[11px] text-gray-400">ISBN: 978-1-4493-6132-7</span><button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">View all</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source 5: PDF / Report -->
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <button onclick="toggleChatSourceAccordion('chat-src-pdf1')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#FFF1F0">
+              <svg class="w-3.5 h-3.5" style="color:#EF4444" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">Global BI Market Report 2025</p>
+              <p class="text-[11px] text-gray-400">PDF · McKinsey &amp; Company · 2025</p>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#FFF1F0;color:#EF4444">PDF</span>
+            <svg id="chat-src-pdf1-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="chat-src-pdf1" class="src-accordion-body">
+            <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Publisher</p><p class="text-[12px] text-gray-800 font-medium">McKinsey &amp; Co.</p></div>
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Year</p><p class="text-[12px] text-gray-800 font-medium">2025</p></div>
+              </div>
+              <div>
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Pages referenced</p>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg" style="background:#FFF5F5;border:1px solid #FED7D7"><span class="text-[11px] font-semibold flex-shrink-0 mt-0.5" style="color:#EF4444">p.12</span><p class="text-[12px] text-gray-700 leading-snug">Global BI market projected to reach $43B by 2028, growing at 9.1% CAGR.</p></div>
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg" style="background:#FFF5F5;border:1px solid #FED7D7"><span class="text-[11px] font-semibold flex-shrink-0 mt-0.5" style="color:#EF4444">p.29</span><p class="text-[12px] text-gray-700 leading-snug">AI-augmented analytics is the single biggest investment priority for CDOs in 2025.</p></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-end pt-1"><button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open PDF</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source 6: Web Article -->
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <button onclick="toggleChatSourceAccordion('chat-src-web2')" class="flex items-center gap-3 w-full px-4 h-[52px] text-left hover:bg-gray-50 transition-colors">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#ECFDF5">
+              <svg class="w-3.5 h-3.5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">The Rise of Self-Service Analytics</p>
+              <p class="text-[11px] text-gray-400">Article · Forbes · Jan 2026</p>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style="background:#ECFDF5;color:#15803D">Web</span>
+            <svg id="chat-src-web2-chevron" class="src-chevron w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="chat-src-web2" class="src-accordion-body">
+            <div class="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3">
+              <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">URL</p><p class="text-[11px] text-indigo-500 truncate">forbes.com/sites/tech/2026/01/self-service-analytics</p></div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Accessed</p><p class="text-[12px] text-gray-800 font-medium">May 1, 2026</p></div>
+                <div class="bg-gray-50 rounded-lg px-3 py-2"><p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">Author</p><p class="text-[12px] text-gray-800 font-medium">Sarah Kim</p></div>
+              </div>
+              <div>
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1.5">Passages referenced</p>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-green-50 border border-green-100"><span class="text-[11px] font-semibold text-green-600 flex-shrink-0 mt-0.5">¶2</span><p class="text-[12px] text-gray-700 leading-snug">74% of business users prefer building their own reports without IT involvement.</p></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-end pt-1"><button class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Open article</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="h-6 flex-shrink-0"></div>
+      </div><!-- end accordion list -->
+
+    </div><!-- /chat-sources-drawer -->
+
+    </div><!-- /chat-body-row -->
 
   </main>
 
@@ -729,15 +938,6 @@
               ${resp.extra}
               <p class="text-[13px] text-gray-600">${resp.note}</p>
             </div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[11px] text-gray-400">Sources:</span>
-              <button class="source-pill flex items-center gap-1.5 px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50 text-[11px] text-gray-600 font-medium">
-                <div class="w-2 h-2 rounded-sm flex-shrink-0" style="background:#0F9D58"></div>Q4 Revenue Sheet
-              </button>
-              <button class="source-pill flex items-center gap-1.5 px-2.5 h-6 rounded-full border border-gray-200 bg-gray-50 text-[11px] text-gray-600 font-medium">
-                <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#336791"></div>Analytics DB
-              </button>
-            </div>
             <div class="flex items-center gap-1">
               <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z"/></svg>
@@ -747,13 +947,19 @@
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                 Export
               </button>
-              <button class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
+              <button class="regen-btn ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
                 Regenerate
+              </button>
+              <button onclick="openChatSourcesDrawer()" class="ai-action flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] text-gray-500 font-medium border border-gray-200">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                Sources
               </button>
             </div>
           </div>`;
         area.appendChild(aiMsg);
+        // Strip Regenerate from all previous AI messages
+        document.querySelectorAll('#messages-area .msg-ai .regen-btn').forEach(function(btn) { btn.remove(); });
         area.scrollTop = area.scrollHeight;
       }, 1600);
     }
@@ -931,7 +1137,73 @@
         userDd.classList.add('hidden');
       }
     });
+
+    // ── Sources drawer ──────────────────────────────────────────────
+    function openChatSourcesDrawer() {
+      document.getElementById('chat-sources-drawer').classList.add('open');
+    }
+    function closeChatSourcesDrawer() {
+      document.getElementById('chat-sources-drawer').classList.remove('open');
+    }
+    function toggleChatSourceAccordion(id) {
+      var body    = document.getElementById(id);
+      var chevron = document.getElementById(id + '-chevron');
+      var isOpen  = body.classList.contains('open');
+      document.querySelectorAll('#chat-sources-drawer .src-accordion-body').forEach(function(b) { b.classList.remove('open'); });
+      document.querySelectorAll('#chat-sources-drawer .src-chevron').forEach(function(c) { c.classList.remove('open'); });
+      if (!isOpen) { body.classList.add('open'); chevron.classList.add('open'); }
+    }
+
+    function openShareModal() {
+      document.getElementById('share-modal').classList.remove('hidden');
+      document.getElementById('share-email').focus();
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.add('hidden');
+      document.getElementById('share-email').value = '';
+      document.getElementById('share-comment').value = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeShareModal();
+    });
   </script>
+
+  <!-- Share Modal -->
+  <div id="share-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center" style="background:rgba(0,0,0,0.35)" onclick="if(event.target===this)closeShareModal()">
+    <div class="bg-white rounded-2xl w-full max-w-md mx-4" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:#EEF2FF">
+            <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-semibold text-gray-900">Share</p>
+            <p class="text-[11px] text-gray-400">Invite someone to this conversation</p>
+          </div>
+        </div>
+        <button onclick="closeShareModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">Email address <span style="color:#EF4444">*</span></label>
+          <input id="share-email" type="email" placeholder="colleague@company.com" class="w-full h-10 px-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder-gray-400 outline-none transition-all" style="" onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.12)'" onblur="this.style.borderColor='';this.style.boxShadow=''" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">Comment <span class="text-gray-400 font-normal">(optional)</span></label>
+          <textarea id="share-comment" rows="3" placeholder="Add a message..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder-gray-400 outline-none resize-none transition-all" onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.12)'" onblur="this.style.borderColor='';this.style.boxShadow=''"></textarea>
+        </div>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center justify-end gap-2.5 px-6 pb-5">
+        <button onclick="closeShareModal()" class="px-4 h-9 rounded-xl border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="closeShareModal()" class="px-5 h-9 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-colors" style="background:#5B63F6">Send invite</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
