@@ -398,6 +398,260 @@ Rules:
 </div>
 ```
 
+---
+
+## Billing Panel
+
+The Billing sub-panel lives under **Organisation → Billing**. It is a single card that fills the available vertical space via the flex-chain scroll containment pattern (see [Scroll Containment](#scroll-containment)). All sections except the invoice list are `flex-shrink-0`; the invoice list grows to fill remaining height and scrolls internally.
+
+### Plan Header
+
+```html
+<div class="flex items-start justify-between mb-3">
+  <div>
+    <!-- Pro badge -->
+    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold mb-2"
+          style="background:#EEF2FF; color:#5B63F6;">
+      <!-- sparkle SVG 10×10 -->  Pro plan
+    </span>
+    <!-- Price -->
+    <div class="flex items-baseline gap-1">
+      <span class="text-[26px] font-extrabold text-gray-900 leading-none">$29</span>
+      <span class="text-[13px] text-gray-400">/ month</span>
+    </div>
+    <p class="text-[12px] text-gray-400 mt-0.5">
+      Next billing: <span class="font-medium text-gray-600">June 1, 2026</span>
+    </p>
+  </div>
+  <button class="px-4 h-8 rounded-full border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 mt-1">
+    Manage plan
+  </button>
+</div>
+```
+
+- Plan badge: `rounded-full px-2 py-0.5 text-[11px] font-semibold` — same tokens as Owner badge but with a sparkle icon
+- Price: `text-[26px] font-extrabold` — largest text in the panel
+- "Manage plan": `h-8 rounded-full` pill button, ghost style
+
+### Usage Stats
+
+```html
+<div class="grid grid-cols-3 gap-4 pb-4 border-b border-gray-100 flex-shrink-0">
+  <!-- one stat cell -->
+  <div>
+    <p class="text-[11px] text-gray-400 mb-1">AI credits</p>
+    <p class="text-[13px] font-semibold text-gray-900 mb-1.5">
+      1,240 <span class="text-[11px] font-normal text-gray-400">/ 5,000</span>
+    </p>
+    <!-- progress bar -->
+    <div class="h-1 rounded-full bg-gray-100 overflow-hidden">
+      <div class="h-full rounded-full" style="width:25%; background:#5B63F6;"></div>
+    </div>
+  </div>
+  <!-- repeat for Datasources, Workspaces -->
+</div>
+```
+
+- Three columns: AI credits, Datasources, Workspaces
+- Progress bar: `h-1 rounded-full bg-gray-100` track; fill uses `#5B63F6` (brand) or `#F97316` (orange) when nearing limit
+- Used / total: `text-[13px] font-semibold` + `text-[11px] font-normal text-gray-400` inline
+
+### Payment Method
+
+```html
+<div class="py-3 border-b border-gray-100 flex-shrink-0">
+  <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2.5">
+    Payment method
+  </p>
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <!-- card icon 28×20 rounded-md bg-[#1A1F71] (Visa blue) -->
+      <div>
+        <p class="text-[13px] font-medium text-gray-900">Visa ···· 4242</p>
+        <p class="text-[11px] text-gray-400">Expires 08/28</p>
+      </div>
+    </div>
+    <button class="px-3 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50">
+      Update
+    </button>
+  </div>
+</div>
+```
+
+- Section label style: `text-[10px] font-semibold text-gray-400 uppercase tracking-widest` — reused across all sub-section labels in the billing card
+- Card logo container: `w-[28px] h-[20px] rounded-md` with brand-coloured background
+
+### Recent Invoices
+
+```html
+<div class="pt-3 flex flex-col flex-1 min-h-0">
+  <!-- header: label + year filter -->
+  <div class="flex items-center justify-between mb-3 flex-shrink-0">
+    <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Recent invoices</p>
+    <!-- Year dropdown button -->
+    <div class="relative flex-shrink-0">
+      <button onclick="toggleBillingYearDropdown()" id="billing-year-btn"
+        class="flex items-center gap-1.5 px-2.5 h-6 rounded-md text-[12px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50"
+        style="min-width:68px; justify-content:space-between;">
+        <span id="billing-year-label">2026</span>
+        <!-- chevron-down SVG 10×10 stroke 2.5 -->
+      </button>
+      <div id="billing-year-dropdown"
+        class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-0.5 bg-white overflow-y-auto"
+        style="min-width:80px; max-height:160px; overflow-x:hidden; border:1px solid #E5E7EB;
+               box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+               scrollbar-width:thin; scrollbar-color:#D1D5DB transparent;">
+        <!-- year buttons -->
+      </div>
+    </div>
+  </div>
+  <!-- scrollable invoice list -->
+  <div id="billing-invoice-list"
+    class="overflow-y-auto overflow-x-hidden ds-filter-scroll flex-1 min-h-0 divide-y divide-gray-100">
+  </div>
+</div>
+```
+
+#### Year dropdown sizing
+- Fixed `max-height: 160px` — shows ~4 years before scrolling
+- `scrollbar-width: thin; scrollbar-color: #D1D5DB transparent` (Firefox)
+- `-webkit-scrollbar { width: 4px }` (Chromium), same as `.ds-filter-scroll`
+
+#### Invoice row (rendered by `renderBillingInvoices(year)`)
+
+```html
+<div class="flex items-center justify-between py-2.5 group hover:bg-gray-50 rounded-lg px-1 transition-colors">
+  <div>
+    <p class="text-[13px] font-semibold text-gray-900">{date}</p>
+    <p class="text-[11px] text-gray-400 mt-0.5">Pro plan — monthly</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <span class="text-[13px] font-semibold text-gray-900">{amount}</span>
+    <span class="text-[12px] font-medium" style="color:#16A34A;">paid</span>
+    <!-- download icon — opacity-0 group-hover:opacity-100 -->
+    <button class="w-6 h-6 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 opacity-0 group-hover:opacity-100 transition-all" title="Download PDF">
+      <!-- download SVG 14×14 stroke 2 -->
+    </button>
+  </div>
+</div>
+```
+
+- Date: `text-[13px] font-semibold text-gray-900`
+- Sub-label "Pro plan — monthly": `text-[11px] text-gray-400`
+- Amount: `text-[13px] font-semibold text-gray-900`
+- Status: `text-[12px] font-medium color:#16A34A` (paid) or `#DC2626` (unpaid)
+- Download button: hidden until row hover (`group-hover:opacity-100`)
+- Row uses `px-1` (not `-mx-2`) to avoid horizontal overflow
+
+---
+
+## Scroll Containment
+
+The Settings page uses a strict flex-chain to prevent any global page scroll. All scrollable areas are self-contained within their flex region.
+
+### Flex chain (outer → inner)
+
+```
+body (h-screen overflow-hidden flex)
+ └─ main (flex-1 flex flex-col overflow-hidden)
+     └─ content div (flex-1 overflow-hidden flex flex-col px-8 py-6)
+         ├─ page heading (flex-shrink-0)
+         ├─ pill tab bar (flex-shrink-0)
+         └─ .settings-panel.active (flex:1 min-height:0 display:flex flex-direction:column)
+             └─ [for Workspace / Organisation: underline tab bar (flex-shrink-0)]
+             └─ .ws-panel.active (flex:1 min-height:0 display:flex flex-direction:column)
+                 └─ card (flex-1 min-h-0 flex flex-col — only on scroll-needing panels)
+                     └─ [static sections: flex-shrink-0]
+                     └─ scrollable section (flex-1 min-h-0 overflow-y-auto)
+```
+
+### CSS rules
+
+```css
+.settings-panel        { display: none; }
+.settings-panel.active { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.ws-panel              { display: none; }
+.ws-panel.active       { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+```
+
+`min-height: 0` is **required** on every flex child that participates in the chain — without it, the browser uses the natural content height as the minimum, causing overflow.
+
+### Which panels use internal scroll
+
+| Panel | Scrolling element | What scrolls |
+|---|---|---|
+| Workspace Members | `.divide-y > div` container | Member rows |
+| Workspace Datasources | table wrapper `div` | Table rows |
+| Organisation Members | `#org-members-list` | Member rows |
+| Organisation Datasources | table wrapper `div` | Table rows |
+| Organisation Billing | `#billing-invoice-list` | Invoice rows |
+
+### Preventing horizontal scroll
+
+- `html { overflow-x: hidden; }` — prevents the HTML root from scrolling horizontally if any absolutely positioned element escapes bounds
+- All tables use `table-fixed` + percentage-based column widths — no unconstrained table column expansion
+- Invoice rows use `px-1` hover padding (not negative margins) to stay within their container
+- Datasource table wrappers have `overflow-x: hidden` inline
+
+---
+
+## Filter Dropdowns
+
+All filter dropdowns share the same `.type-dropdown` pattern. They open downward, sit at `z-50`, and are dismissed by a shared click-outside listener.
+
+```css
+.type-dropdown       { display: none; }
+.type-dropdown.open  { display: block; }
+```
+
+```html
+<div class="relative">
+  <button onclick="toggleXxxDropdown()"
+    class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50"
+    style="width:120px; justify-content:space-between;">
+    <!-- filter icon (brand colour) -->
+    <span id="xxx-label">Category</span>
+    <!-- chevron-down SVG -->
+  </button>
+  <div id="xxx-dropdown"
+    class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white ds-filter-scroll"
+    style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
+    <button onclick="filterXxx('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">All</button>
+    <!-- connector items with colour dot -->
+  </div>
+</div>
+```
+
+### Scrollable dropdown (`.ds-filter-scroll`)
+
+Used on all connector-category and member-role dropdowns:
+
+```css
+.ds-filter-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #D1D5DB transparent;
+}
+.ds-filter-scroll::-webkit-scrollbar       { width: 4px; }
+.ds-filter-scroll::-webkit-scrollbar-track { background: transparent; }
+.ds-filter-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+```
+
+The year dropdown in Billing uses `max-height: 160px` (shorter) but the same scrollbar styling.
+
+### Connector dropdown population
+
+Both Workspace and Organisation datasource filter dropdowns are dynamically populated from `DS_CONNECTORS` on `DOMContentLoaded`:
+
+```js
+buildDsConnectorDropdown('settings-ds-type-dropdown', 'filterSettingDsType');
+buildDsConnectorDropdown('org-ds-type-dropdown',      'filterOrgDsType');
+```
+
+`buildDsConnectorDropdown` reads `Object.values(DS_CONNECTORS).flat()`, sorts alphabetically, and renders one button per connector with a colour dot matching the connector's category colour.
+
+
 ### File Upload Drop Zone
 
 ```html

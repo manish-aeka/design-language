@@ -1,0 +1,86 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
+  },
+  "layout": {
+    "sidebarWidth":          { "value": "220px",   "comment": "Fixed sidebar width — same as all Aibii screens" },
+    "chatPanelWidth":        { "value": "300px",   "comment": "Fixed chat panel width (right side)" },
+    "chatPanelMargin":       { "value": "8px",     "comment": "Gap around the chat panel (top, right, bottom) — creates detached card look" },
+    "topbarHeight":          { "value": "44px",    "comment": "h-11 topbar" },
+    "canvasPadding":         { "value": "32px",    "comment": "p-8 — padding wrapping the chart card inside the canvas" }
+  },
+  "chatPanel": {
+    "paddingX":              { "value": "12px",    "comment": "px-3 — horizontal padding inside message list and input area" },
+    "paddingYMessages":      { "value": "16px",    "comment": "py-4 — vertical padding on message list" },
+    "messageGap":            { "value": "12px",    "comment": "space-y-3 — gap between consecutive messages" },
+    "inputPaddingBottom":    { "value": "12px",    "comment": "pb-3 on input area" },
+    "inputPaddingTop":       { "value": "10px",    "comment": "pt-2.5 on input area" }
+  },
+  "bubbles": {
+    "padding":               { "value": "9px 12px", "comment": "padding on ai and user bubbles" },
+    "maxWidth":              { "value": "208px",   "comment": "max-width on both bubble types" },
+    "avatarSize":            { "value": "26px",    "comment": "w-6.5 — AI and user avatar size" },
+    "avatarMarginTop":       { "value": "2px",     "comment": "mt-0.5 — aligns avatar top with first text line" },
+    "avatarGap":             { "value": "8px",     "comment": "gap-2 between avatar and bubble" },
+    "timestampMarginTop":    { "value": "3px",     "comment": "margin-top on .msg-time" },
+    "thinkingDotSize":       { "value": "5px",     "comment": "w/h of .chat-dot" },
+    "thinkingDotGap":        { "value": "5px",     "comment": "gap between .chat-dot elements" }
+  },
+  "chips": {
+    "padding":               { "value": "7px 10px", "comment": "padding inside suggestion chips" },
+    "gap":                   { "value": "8px",     "comment": "gap-2 between chip icon and label" },
+    "gridColumns":           { "value": "2",        "comment": "grid-cols-2 for chip grid" },
+    "gridGap":               { "value": "8px",     "comment": "gap-2 between chip cells" },
+    "maxWidth":              { "value": "520px",   "comment": "max-w-[520px] chip grid container" },
+    "iconSize":              { "value": "14px",    "comment": "w/h of SVG icon inside each chip" }
+  },
+  "input": {
+    "textareaRows":          { "value": "3",       "comment": "rows='3' on textarea" },
+    "wrapperBorderWidth":    { "value": "1.5px",   "comment": "border on .input-wrapper (slightly heavier than card borders)" },
+    "toolbarPaddingX":       { "value": "10px",    "comment": "px-2.5 on toolbar row" },
+    "toolbarPaddingY":       { "value": "8px",     "comment": "py-2 on toolbar row" },
+    "sendButtonHeight":      { "value": "22px",    "comment": "h-[22px] Send button" },
+    "sendButtonPaddingX":    { "value": "10px",    "comment": "px-2.5 Send button" }
+  },
+  "chartCard": {
+    "maxWidth":              { "value": "860px",   "comment": "max-w-[860px] chart card wrapper" },
+    "headerPadding":         { "value": "24px 24px 0 24px", "comment": "px-6 pt-5 pb-0 on card header" },
+    "bodyMargin":            { "value": "20px 24px", "comment": "mx-6 my-5 on chart body" },
+    "bodyHeight":            { "value": "380px",   "comment": "h-[380px] chart placeholder area" },
+    "footerPadding":         { "value": "24px",    "comment": "px-6 pb-5 pt-4 on footer" },
+    "iconContainerSize":     { "value": "40px",    "comment": "w-10 h-10 icon holder inside placeholder" }
+  },
+  "chartNav": {
+    "buttonSize":            { "value": "28px",    "comment": "w-7 h-7 back/forward nav buttons" },
+    "buttonGap":             { "value": "6px",     "comment": "gap-1.5 between back btn, counter, forward btn" },
+    "counterPaddingX":       { "value": "4px",     "comment": "px-1 on the n / total counter span" }
+  },
+  "sourceBadge": {
+    "padding":               { "value": "0 8px",   "comment": "px-2 py-0.5 on source badge" },
+    "gap":                   { "value": "4px",     "comment": "gap-1 between icon and text in badge" },
+    "iconSize":              { "value": "12px",    "comment": "w-3 h-3 source icon inside badge" },
+    "marginTop":             { "value": "4px",     "comment": "mt-1 to align badge top with card title baseline" }
+  },
+  "emptyState": {
+    "containerPadding":      { "value": "32px 40px", "comment": "px-8 py-10 empty state card" },
+    "iconContainerSize":     { "value": "72px",    "comment": "w-[72px] h-[72px] icon circle" },
+    "iconContainerMarginB":  { "value": "20px",    "comment": "mb-5 below icon" },
+    "headingMarginB":        { "value": "8px",     "comment": "mb-2 below h2" },
+    "chipSectionMarginT":    { "value": "12px",    "comment": "mt-3 above chip grid" },
+    "chipLabelMarginB":      { "value": "12px",    "comment": "mb-3 below TRY AN EXAMPLE label" }
+  },
+  "borderRadius": {
+    "sm":                    { "value": "4px",     "comment": "Tight badges, tiny icon chips" },
+    "md":                    { "value": "8px",     "comment": "Toolbar send button, chart nav buttons, AI avatar" },
+    "chip":                  { "value": "10px",    "comment": "Suggestion chips" },
+    "inputWrapper":          { "value": "12px",    "comment": "Chat input wrapper (.input-wrapper)" },
+    "chatPanel":             { "value": "12px",    "comment": "Chat panel outer container (rounded-xl)" },
+    "card":                  { "value": "12px",    "comment": "Generated chart card (rounded-xl)" },
+    "emptyState":            { "value": "12px",    "comment": "Empty-state white card" },
+    "emptyStateIcon":        { "value": "16px",    "comment": "Icon container inside empty state (rounded-2xl)" },
+    "userAvatar":            { "value": "50%",     "comment": "User avatar circle" },
+    "aiAvatar":              { "value": "8px",     "comment": "AI avatar — square with rounded corners" },
+    "bubbleAI":              { "value": "16px 16px 16px 4px", "comment": "AI bubble — flat bottom-left corner" },
+    "bubbleUser":            { "value": "16px 16px 4px 16px", "comment": "User bubble — flat bottom-right corner" }
+  }
+}
