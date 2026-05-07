@@ -1630,9 +1630,17 @@
       document.getElementById('org-ds-modal-sub').textContent = data.tables.length + ' table' + (data.tables.length !== 1 ? 's' : '') + ' · ' + dsType;
       _orgDsActiveTab = 0;
       renderOrgDsModalTabs(data, 0);
-      // Reset attach button
+      // Reset attach button — hide when already Connected
       const btn = document.getElementById('attach-ws-btn');
-      if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg> Attach to Workspace`; }
+      if (btn) {
+        if (_orgDsStatus === 'Connected') {
+          btn.style.display = 'none';
+        } else {
+          btn.style.display = '';
+          btn.disabled = false; btn.style.opacity = '1';
+          btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg> Attach to Workspace`;
+        }
+      }
       const bd = document.getElementById('org-ds-modal-backdrop');
       bd.style.display = 'flex';
     }
@@ -1649,6 +1657,7 @@
         if (ds) ds.status = 'Connected';
         renderOrgDsTable();
         showAttachToast(_orgDsCurrentName);
+        if (btn) btn.style.display = 'none';
         // Close modal after a brief moment so user sees the toast
         setTimeout(() => {
           document.getElementById('org-ds-modal-backdrop').style.display = 'none';
