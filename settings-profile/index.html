@@ -573,7 +573,7 @@
                 style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               </div>
             </div>
-            <button onclick="showAddDataSource()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
+            <button onclick="window.open('../datasource/index.html', '_blank')" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               Add datasource
             </button>
@@ -735,7 +735,7 @@
                   style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
                 </div>
               </div>
-              <button onclick="showAddDataSource()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
+              <button onclick="window.open('../datasource/index.html', '_blank')" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-white flex-shrink-0" style="background:#5B63F6">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Add datasource
               </button>
@@ -744,10 +744,11 @@
               <table class="w-full text-[13px] table-fixed">
                 <thead class="sticky top-0 z-10">
                   <tr class="bg-gray-50 border-b border-gray-200">
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Type</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
-                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:35%">Name</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:18%">Type</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Status</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:12%">Tables</th>
+                    <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%"></th>
                   </tr>
                 </thead>
                 <tbody id="org-ds-tbody"></tbody>
@@ -1368,6 +1369,12 @@
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
           <td class="px-4 py-3 text-gray-500 text-[13px]">${d.tables}</td>
+          <td class="px-4 py-3 text-right">
+            <button onclick="openOrgDsTables('${d.name}', '${d.type}')" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-indigo-600 border border-indigo-100 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              View Tables
+            </button>
+          </td>
         </tr>`;
       }).join('');
     }
@@ -1380,6 +1387,233 @@
     }
     function toggleOrgDsTypeDropdown() {
       document.getElementById('org-ds-type-dropdown').classList.toggle('open');
+    }
+
+    // ─── Org DS Tables Modal ───────────────────────────────────
+    const ORG_DS_MOCK = {
+      'Company CRM': {
+        tables: [
+          { name: 'customers',  desc: 'All registered customers with plan and account details.',
+            cols: ['id','name','email','country','plan','created_at'],
+            colDescs: ['Auto-incremented integer that uniquely identifies each customer record. Used as the primary key across all CRM relations.','Full legal name of the customer as entered during registration. May include company name for B2B accounts.','Primary email address associated with the account. Used for login, billing notifications, and marketing communications.','ISO 3166-1 country resolved from the billing address. Determines tax jurisdiction and regional pricing tiers.','Subscription tier the customer is currently on — Free, Pro, or Enterprise. Drives feature gating and usage limits.','UTC timestamp of when the customer record was first created. Sourced from the auth-service signup event stream.'],
+            rows: [] },
+          { name: 'deals',      desc: 'Sales pipeline deals with stage, value, and assigned rep.',
+            cols: ['id','customer','value','stage','rep','close_date'],
+            colDescs: ['Sequential deal identifier auto-generated by the CRM at deal creation. Referenced in activities and invoices tables.','Name of the customer linked to this deal, denormalised from the customers table for quick pipeline reporting.','Estimated or confirmed contract value in INR. Updated by the assigned rep as negotiations progress through each stage.','Current stage in the sales pipeline: Discovery → Proposal → Negotiation → Won / Lost. Drives revenue forecasting.','Full name of the sales rep responsible for advancing this deal. Mapped to the internal HR user directory.','Target date by which the deal is expected to close. Used for quarterly revenue forecasting and rep performance reviews.'],
+            rows: [] },
+          { name: 'activities', desc: 'Logged calls, emails, and meetings linked to contacts.',
+            cols: ['id','type','subject','contact','date','status'],
+            colDescs: ['Unique identifier for each logged CRM activity. Auto-incremented and immutable once written.','Category of interaction: Call, Email, Meeting, or Task. Determines which sub-fields are required at creation.','Short headline summarising the purpose — e.g. "Onboarding call" or "Q3 proposal sent". Surfaces in timeline views.','Customer or prospect this activity is tied to. Foreign key to the customers table; required for all activity types.','Date the activity took place or is scheduled, stored in the account timezone with no time component.','Completion flag: Done means the activity is closed; Pending triggers follow-up reminders in the rep dashboard.'],
+            rows: [] },
+          { name: 'contacts',   desc: 'All individual contacts linked to customer accounts, including role and communication preferences.',
+            cols: ['id','customer_id','first_name','last_name','role','phone','email','opted_in'],
+            colDescs: ['Auto-incremented contact record ID. Independent of the customer ID; a single customer account may have multiple contacts.','Foreign key to the customers table. Links this contact to its parent account for account-level rollups.','First (given) name of the contact as provided during account setup or CRM import.','Last (family) name of the contact. Combined with first_name for display in email clients and reports.','Job title or role of this contact within their organisation — e.g. CFO, IT Manager, End User.','Primary phone number in E.164 format. Used for call logging and SMS notifications.','Direct email address of the contact. May differ from the account email if the contact is a non-primary stakeholder.','Boolean flag indicating whether this contact has opted into marketing communications. Must be false before sending campaigns.'],
+            rows: [] },
+          { name: 'products',   desc: 'Product and SKU catalogue used to line-item deals and invoices.',
+            cols: ['id','name','category','unit_price','currency','active'],
+            colDescs: ['Auto-incremented product ID. Referenced in deal line items and invoices as a foreign key.','Human-readable product name shown in proposals, quotes, and customer-facing documents.','Product classification bucket: Software, Hardware, Service, or Add-on. Drives revenue recognition rules.','List price per unit in the specified currency. Discounts applied at the deal level do not modify this value.','ISO 4217 currency code for the list price. Defaults to the account base currency set in org settings.','Boolean flag. Inactive products are hidden from the product picker but their historical deal references are preserved.'],
+            rows: [] },
+          { name: 'pipelines',  desc: 'Named sales pipeline configurations with stage definitions and win probability settings.',
+            cols: ['id','name','stages','default_prob','owner','created_at'],
+            colDescs: ['Auto-incremented pipeline ID. Each deal belongs to exactly one pipeline.','Display name of the pipeline — e.g. "Enterprise", "SMB", "Renewal". Set by the sales ops team.','JSON array of ordered stage names. Changing stage order here retroactively reorders existing deals in the UI.','Default win probability percentage assigned to deals when they enter this pipeline, before manual override.','User ID of the pipeline owner; usually the RevOps or Sales Ops manager responsible for maintaining it.','UTC timestamp of pipeline creation. Pipelines cannot be deleted once any deal has been associated with them.'],
+            rows: [] },
+          { name: 'tags',       desc: 'User-defined labels that can be attached to customers, deals, or contacts for segmentation.',
+            cols: ['id','label','color','entity_type','created_by','uses'],
+            colDescs: ['Auto-incremented tag ID. Immutable once created; deleting a tag removes it from all associated records.','Short text label displayed as a pill badge in the UI. Maximum 32 characters; must be unique per entity_type.','Hex colour code for the pill badge background. Defaults to a random accessible colour if not specified at creation.','The record type this tag applies to: customer, deal, or contact. A tag cannot span multiple entity types.','User ID of the team member who created the tag. Used for tag ownership and audit trail purposes.','Count of records this tag is currently applied to. Recalculated nightly; use for identifying stale or unused tags.'],
+            rows: [] },
+        ]
+      },
+      'Marketing Sheet': {
+        tables: [
+          { name: 'campaigns', desc: 'Active and completed marketing campaigns with spend and ROAS.',
+            cols: ['id','name','channel','budget','spend','leads','roas'],
+            colDescs: ['Auto-incremented campaign identifier. Used as a foreign key in the leads table to attribute lead source to a campaign.','Human-readable name following the convention: Quarter + Goal + tag (e.g. "Q1 Launch"). Set at campaign creation.','Paid or owned channel the campaign runs on: Google Ads, Meta, Display, Email, or Instagram. Determines attribution model.','Total approved campaign budget in INR, set before launch. Compared against spend to calculate utilisation percentage.','Actual amount spent by end of reporting period, pulled from the ad platform API and refreshed every 6 hours.','Total leads attributed via UTM tracking or email click-through. Excludes duplicate or flagged junk submissions.','Return on Ad Spend: total attributed revenue divided by spend, expressed as a multiplier. Calculated post-deal-close.'],
+            rows: [] },
+          { name: 'leads',     desc: 'Inbound leads captured from marketing channels with lead scores.',
+            cols: ['id','name','source','score','status','assigned_to'],
+            colDescs: ['Auto-incremented lead ID created when a form submission or ad click is captured by the marketing automation platform.','Full name of the prospect as submitted on the lead capture form. Not deduplicated against CRM customers until qualified.','The channel that sourced this lead: Google Ads, Meta, Email, Instagram, or Display. Tied to the UTM source parameter.','ML-generated quality score 0–100 based on firmographic fit, intent signals, and behavioural engagement. Refreshed daily.','Current nurture stage: Hot (pass to sales immediately), Warm (active nurturing), Cold (low intent, deprioritised).','Sales Development Representative assigned to this lead, routed by region and product-line ownership rules.'],
+            rows: [] },
+          { name: 'utm_params', desc: 'Raw UTM parameter log captured on every marketing link click for attribution analysis.',
+            cols: ['id','session_id','utm_source','utm_medium','utm_campaign','utm_content','captured_at'],
+            colDescs: ['Auto-incremented row ID for the UTM capture event. Used for deduplication before attribution joins.','Session identifier from the analytics SDK that linked this click to a user session and eventual lead or conversion.','UTM source value extracted from the URL — identifies the traffic origin, e.g. google, meta, newsletter.','UTM medium value — classifies the channel type: cpc, email, organic, social, display, etc.','UTM campaign slug — maps to the campaign name in the campaigns table via a case-insensitive slug match.','UTM content tag used for A/B test variant identification within a single campaign and channel combination.','UTC timestamp of when the tagged link was clicked and the UTM parameters were captured by the tracking script.'],
+            rows: [] },
+          { name: 'ab_tests',  desc: 'A/B test configurations and aggregated variant results for conversion experiments.',
+            cols: ['id','name','hypothesis','variant_a','variant_b','winner','started_at','ended_at'],
+            colDescs: ['Auto-incremented test ID. Referenced in analytics dashboards and experiment audit logs.','Descriptive name for the experiment — e.g. "CTA Button Colour Q2". Shown in the experimentation dashboard.','The hypothesis being tested, written in plain English. Stored for documentation and post-mortem review purposes.','Label for the control variant. Traffic is split 50/50 between A and B unless a custom split ratio is configured.','Label for the challenger variant. The variant that beats the control on the primary metric becomes the winner.','Winning variant label after statistical significance is reached. Null while the test is still running.','UTC timestamp of when the test was activated and traffic splitting began.','UTC timestamp of when the test was stopped. Null for tests still in progress.'],
+            rows: [] },
+          { name: 'email_sends', desc: 'Individual email send events with delivery, open, and click tracking per recipient.',
+            cols: ['id','campaign_id','recipient','sent_at','delivered','opened','clicked'],
+            colDescs: ['Auto-incremented send event ID. Each row represents one email sent to one recipient.','Foreign key to the campaigns table. Links this send event to the campaign it was triggered from.','Hashed email address of the recipient. Hashed at rest to comply with GDPR data minimisation requirements.','UTC timestamp of when the email was handed off to the sending infrastructure (not when it was delivered).','Boolean indicating whether the receiving mail server accepted the message. False indicates a hard or soft bounce.','Boolean set to true when a tracking pixel fires, indicating the email was opened. May be false due to image blocking.','Boolean set to true when any tracked link in the email body is clicked. The strongest engagement signal available.'],
+            rows: [] },
+        ]
+      },
+      'Billing API': {
+        tables: [
+          { name: '/invoices',  desc: 'Generated invoices for all customers across billing cycles.',
+            cols: ['id','customer','amount','currency','status','issued_at'],
+            colDescs: ['Globally unique invoice ID prefixed with "inv_". Immutable once created; referenced in payment records and audit logs.','Display name of the billed customer, denormalised from the customers table at invoice generation time.','Total amount due including applicable taxes, stored as a decimal. Shown in the customer self-serve billing portal.','ISO 4217 three-letter currency code matching the customer region — INR, USD, EUR. Routes to the correct payment gateway.','Current payment state: Paid (captured), Pending (awaiting), or Overdue (past due date with no payment received).','ISO 8601 date the invoice was issued and the payment due clock started. Aligns with the customer billing cycle date.'],
+            rows: [] },
+          { name: '/payments',  desc: 'Payment transactions against invoices including method and status.',
+            cols: ['id','invoice_id','method','amount','status','paid_at'],
+            colDescs: ['Globally unique payment transaction ID prefixed with "pay_". Written to audit log and returned in webhook payloads.','The invoice this payment is applied against. Foreign key to invoices; one invoice may carry multiple partial payment rows.','Payment instrument used: card (last 4 digits masked post-tokenisation), UPI handle, or bank method name.','Exact amount charged in this transaction. May differ from the invoice total in partial or split payment scenarios.','Gateway transaction outcome: Success (funds captured), Pending (awaiting confirmation), or Failed (declined/timeout).','UTC timestamp of payment confirmation by the gateway. Null for Pending or Failed transactions.'],
+            rows: [] },
+          { name: '/subscriptions', desc: 'Active and past-due subscription records with plan and seat counts.',
+            cols: ['id','customer','plan','status','renewal_date','seats'],
+            colDescs: ['Globally unique subscription ID prefixed with "sub_". References the billing plan and drives entitlement checks at login.','Display name of the account owner, denormalised from customers for fast billing dashboard and invoice generation queries.','Plan tier: Free, Starter, Pro, or Enterprise. Controls feature flags, API rate limits, and the customer support SLA level.','Lifecycle state: Active (auto-renewing), Past Due (payment failed, in grace period), or Cancelled (access revoked).','Date of the next scheduled renewal charge. Null for Free tier and Cancelled subscriptions.','Number of named user seats included in the plan. Seats above the plan limit trigger prorated overage billing automatically.'],
+            rows: [] },
+          { name: '/coupons',   desc: 'Discount coupon codes and their redemption limits, validity windows, and applied discounts.',
+            cols: ['id','code','discount_type','value','max_uses','used','expires_at'],
+            colDescs: ['Auto-incremented coupon ID returned by the billing API on coupon creation.','Alphanumeric coupon code entered by the customer at checkout. Case-insensitive; stored in uppercase.','Type of discount: percentage (e.g. 20% off) or fixed (e.g. ₹500 off the invoice total).','Numeric value of the discount. Interpreted as a percentage if discount_type is percentage, or as a currency amount if fixed.','Maximum number of times this coupon can be redeemed across all customers. Null means unlimited redemptions.','Running count of how many times this coupon has been successfully redeemed. Incremented atomically on each successful checkout.','UTC expiry datetime after which the coupon is no longer accepted. Null means the coupon never expires.'],
+            rows: [] },
+          { name: '/refunds',   desc: 'Refund requests and their processing status against original payment transactions.',
+            cols: ['id','payment_id','amount','reason','status','requested_at','processed_at'],
+            colDescs: ['Globally unique refund ID prefixed with "ref_". Immutable; referenced in support tickets and finance reconciliation.','Foreign key to the payments table. Identifies the original successful payment being partially or fully refunded.','Amount to be refunded, in the same currency as the original payment. Cannot exceed the original payment amount.','Free-text reason for the refund as submitted by the support agent or via the self-serve cancellation flow.','Current processing state: Pending (queued), Processing (submitted to gateway), Completed, or Failed.','UTC timestamp of when the refund was requested — either by the customer or initiated by a support agent.','UTC timestamp of when the gateway confirmed the refund. Null until the status transitions to Completed.'],
+            rows: [] },
+          { name: '/webhooks',  desc: 'Outbound webhook event log for billing lifecycle events dispatched to customer endpoints.',
+            cols: ['id','event_type','endpoint','payload_size','status','retries','sent_at'],
+            colDescs: ['Auto-incremented webhook delivery ID. A single billing event may produce multiple rows if retries occur.','Billing event type that triggered this webhook — e.g. invoice.paid, subscription.cancelled, payment.failed.','Customer-configured HTTPS endpoint URL where the webhook payload was delivered. Stored post-registration only.','Size of the JSON payload body in bytes. Payloads over 512 KB are automatically chunked across multiple events.','HTTP response status class returned by the endpoint: 2xx (success), 4xx (client error), 5xx (server error), or Timeout.','Number of delivery attempts made including the initial try. Webhooks are retried up to 5 times with exponential backoff.','UTC timestamp of the most recent delivery attempt, successful or otherwise.'],
+            rows: [] },
+        ]
+      },
+      'Prod Analytics DB': {
+        tables: [
+          { name: 'events',    desc: 'Raw product events stream — page views, clicks, signups, purchases.',
+            cols: ['id','event','user_id','session','platform','ts'],
+            colDescs: ['Auto-incremented integer primary key for each raw event row. Monotonically increasing; used for pagination and deduplication.','Structured snake_case event name describing the user action — e.g. page_view, button_click, purchase. Defined in the event taxonomy.','Anonymised hashed UUID of the account that fired the event. Null for unauthenticated or pre-signup sessions.','Session-scoped identifier grouping all events in a single continuous visit. Resets after 30 minutes of user inactivity.','Client platform that emitted the event: Web (browser SDK) or Mobile (iOS / Android SDK). Affects platform attribution splits.','ISO 8601 UTC timestamp with millisecond precision of when the event fired on the client, not the server ingestion time.'],
+            rows: [] },
+          { name: 'sessions',  desc: 'Aggregated user sessions with duration, page depth, and device.',
+            cols: ['id','user_id','duration_s','pages','device','date'],
+            colDescs: ['Short-lived session token assigned at visit start. Shared across all events in the session; used for path and funnel analysis.','Hashed UUID of the authenticated user. Joined to the users table to enrich with demographic and plan data for segmentation.','Total session duration in seconds from the first to the last event timestamp within the 30-minute inactivity boundary.','Count of distinct page URLs visited during the session. Higher depth correlates with engagement and lower 30-day churn risk.','Device category inferred from the user-agent string: Desktop, iPhone, Android, or iPad. Drives platform-split UX reports.','Calendar date (UTC) on which the session occurred. Aggregated for daily active users and rolling 7 / 30-day engagement metrics.'],
+            rows: [] },
+          { name: 'funnels',   desc: 'Conversion funnel steps showing user drop-off at each stage.',
+            cols: ['step','name','users_in','users_out','conv_rate'],
+            colDescs: ['Sequential integer ordering this step in the funnel. Step 1 is the top of the funnel with the highest raw user volume.','Human-readable label for this conversion stage as configured in the product analytics event taxonomy.','Unique users who reached this step — either as funnel entry or from the preceding step. Denominator for conv_rate.','Users who exited the funnel at this step without reaching step N+1. Calculated as users_in minus next-step users_in.','Step-level conversion rate: (users_in − users_out) / users_in × 100. The primary metric for identifying drop-off bottlenecks.'],
+            rows: [] },
+          { name: 'cohorts',   desc: 'Weekly retention cohorts tracking user activity over time.',
+            cols: ['cohort','size','w1','w2','w3','w4','w8'],
+            colDescs: ['Calendar month in which cohort users first activated — i.e. completed their first meaningful in-product action.','Total distinct users who activated during this cohort month. The fixed denominator for all retention percentages in this row.','Users still active in Week 1 (days 7–13 post-activation). Early indicator of onboarding effectiveness.','Users still active in Week 2 (days 14–20). A steep drop here typically signals friction in the core product loop.','Users still active in Week 3 (days 21–27). Stabilisation at this point suggests early habit formation is occurring.','Users still active in Week 4 (days 28–34). The primary month-1 retention KPI tracked in executive reporting.','Users still active at Week 8 (days 56–62). Longest-horizon metric; proxy for power-user conversion and product stickiness.'],
+            rows: [] },
+          { name: 'page_views', desc: 'Granular page view log with URL, referrer, and time-on-page measurements.',
+            cols: ['id','user_id','session_id','url','referrer','time_on_page_s','ts'],
+            colDescs: ['Auto-incremented page view ID. Distinct from the events.id because page views are pre-aggregated before event ingestion.','Hashed UUID of the authenticated user. Null for anonymous visitors browsing before signup.','Session identifier linking this page view to its parent session record for path reconstruction.','Canonical URL of the page viewed, normalised to remove query-string tracking parameters before storage.','Full URL of the referring page, or direct / (none) if the user navigated directly or referrer was blocked.','Number of seconds the user spent on this page before navigating away, calculated from focus/blur events.','UTC timestamp of when the page_view event was emitted by the browser SDK.'],
+            rows: [] },
+          { name: 'feature_flags', desc: 'Feature flag configuration and per-user overrides driving progressive rollouts.',
+            cols: ['id','flag_key','enabled','rollout_pct','user_override','updated_at'],
+            colDescs: ['Auto-incremented flag ID. Internal identifier; the flag_key is the string used in SDK calls.','Unique string key used in SDK calls to evaluate this flag — e.g. "new_dashboard", "ai_chat_beta".','Global enabled/disabled master switch. When false, the flag evaluates to off for 100% of users regardless of rollout_pct.','Percentage of users (0–100) who receive the enabled experience in a gradual rollout. Ignored if enabled is false.','JSON object mapping specific user_ids to a forced boolean value, overriding the rollout percentage for those users.','UTC timestamp of the last modification to this flag record, including rollout changes and override additions.'],
+            rows: [] },
+          { name: 'alerts',    desc: 'Metric threshold alerts with their trigger conditions and notification routing.',
+            cols: ['id','name','metric','operator','threshold','channel','last_fired'],
+            colDescs: ['Auto-incremented alert ID referenced in the notification and incident log tables.','Human-readable name for the alert — e.g. "Daily Active Users Drop". Shown in the monitoring dashboard.','The analytics metric this alert monitors — must correspond to a named metric in the metrics registry.','Comparison operator for the threshold check: gt (greater than), lt (less than), eq (equal), or anomaly.','Numeric threshold value. An alert fires when the metric crosses this value in the direction defined by the operator.','Notification channel for this alert: Slack (webhook), Email (distribution list), or PagerDuty (service key).','UTC timestamp of the most recent time this alert was triggered and notifications were dispatched. Null if never fired.'],
+            rows: [] },
+        ]
+      },
+      'Customer Exports': {
+        tables: [
+          { name: 'Sheet1',    desc: 'Raw customer export with segment classification and lifetime value.',
+            cols: ['row','customer_id','name','email','segment','ltv'],
+            colDescs: ['Sequential row index from the original spreadsheet export. Not a stable key — do not use for joins across export refreshes.','Internal CRM customer identifier. Maps to the id column in the customers table for cross-system reconciliation.','Full name as stored in the CRM at export time. May differ from the billing name if updated by the customer post-purchase.','Email address at time of export. May be stale if the customer changed their email address after the last data refresh.','Manually assigned or ML-predicted segment: Premium, Standard, Basic, or Enterprise. Drives pricing and support tier routing.','Total revenue generated by this customer across their full relationship history, in INR, net of refunds to date.'],
+            rows: [] },
+          { name: 'Summary',   desc: 'Aggregated segment-level KPIs — count, average LTV, revenue, and churn.',
+            cols: ['segment','count','avg_ltv','total_revenue','churn_rate'],
+            colDescs: ['Customer tier grouping: Premium, Standard, Basic, Enterprise, or Total (the aggregate summary row at the bottom).','Active customer count in this segment at export time. Excludes churned, trial, and suspended accounts.','Mean lifetime value across the segment in INR — sum(ltv) / count. Statistical outliers are not removed from this figure.','Aggregate revenue across all time from customers in this segment, in INR Crore. Sum of all paid invoices less refunds.','Percentage of customers in this segment who cancelled or did not renew in the trailing 12-month window.'],
+            rows: [] },
+          { name: 'Renewals',  desc: 'Subscription renewal forecast sheet with predicted renewal dates and at-risk flags.',
+            cols: ['customer_id','name','plan','renewal_date','arr','health_score','at_risk'],
+            colDescs: ['Internal CRM customer ID. Primary join key for cross-referencing with the customers and billing tables.','Customer display name at time of export. May differ from the CRM record if the customer has since updated their account name.','Current subscription plan at the time of export: Starter, Pro, or Enterprise.','Predicted or confirmed renewal date extracted from the subscriptions table. Used for renewal outreach scheduling.','Annual Recurring Revenue for this customer in INR. Calculated as the monthly plan price × 12, excluding one-time fees.','Customer health score (0–100) generated by the CSM platform from product usage, NPS, and support ticket signals.','Boolean flag set to true when health_score is below 40 or the customer has an open escalation ticket. Triggers CSM intervention.'],
+            rows: [] },
+          { name: 'Churned',   desc: 'Historical list of customers who have cancelled or not renewed, with churn reason and lost ARR.',
+            cols: ['customer_id','name','churned_on','plan','arr_lost','churn_reason','csm_owner'],
+            colDescs: ['Internal CRM customer ID of the churned account. Retained for historical attribution and win-back campaign targeting.','Customer name at time of churn. Historical record; the CRM account may have been anonymised under GDPR erasure requests.','Date on which the subscription was officially cancelled or the renewal window passed without renewal.','Subscription plan the customer was on at the time of churn. Used for cohort-level churn analysis by plan tier.','ARR lost due to this churn event in INR. Summed across the period to compute gross churn rate in finance reports.','Primary reason for churn as tagged by the CSM: Price, Competitor, Lack of Features, No Longer Needed, or Unknown.','Full name of the Customer Success Manager who owned this account at the time of churn. Used for CSM performance attribution.'],
+            rows: [] },
+          { name: 'NPS',       desc: 'Net Promoter Score survey responses with verbatim feedback and segment classification.',
+            cols: ['id','customer_id','score','category','verbatim','survey_date'],
+            colDescs: ['Auto-incremented NPS response ID. One row per unique survey submission; repeat submissions within 90 days are deduplicated.','Foreign key to the customers table. Links the NPS response to the customer account for segment-level NPS analysis.','Raw NPS score from 0–10 as entered by the respondent in the survey.','Derived category: Promoter (9–10), Passive (7–8), or Detractor (0–6). Used for NPS calculation: % Promoters − % Detractors.','Verbatim open-text feedback submitted alongside the score. Stored as-is; PII is redacted by the survey platform before export.','Date on which the NPS survey was completed. Used to calculate rolling 90-day and trailing 12-month NPS trends.'],
+            rows: [] },
+        ]
+      },
+    };
+
+    let _orgDsActiveTab = 0;
+
+    function openOrgDsTables(dsName, dsType) {
+      const data = ORG_DS_MOCK[dsName];
+      if (!data) return;
+      document.getElementById('org-ds-modal-title').textContent = dsName + ' — Tables';
+      document.getElementById('org-ds-modal-sub').textContent = data.tables.length + ' table' + (data.tables.length !== 1 ? 's' : '') + ' · ' + dsType;
+      _orgDsActiveTab = 0;
+      renderOrgDsModalTabs(data, 0);
+      const bd = document.getElementById('org-ds-modal-backdrop');
+      bd.style.display = 'flex';
+    }
+
+    function renderOrgDsModalTabs(data, activeIdx) {
+      const bar = document.getElementById('org-ds-tab-bar');
+      const content = document.getElementById('org-ds-tab-content');
+      bar.innerHTML = data.tables.map((t, i) =>
+        `<button onclick="selectOrgDsTab(${i})"
+          class="flex items-center gap-1.5 px-4 py-3 text-[13px] font-medium whitespace-nowrap border-b-2 transition-colors ${i === activeIdx ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}"
+          id="org-ds-tab-btn-${i}">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125v.375a1.125 1.125 0 001.125 1.125m0 0h1.5M3.375 7.5h1.5m12 0h1.5m-15.75 0A2.625 2.625 0 013 4.875M20.625 7.5A2.625 2.625 0 0121 4.875m0 0A2.625 2.625 0 0018.375 2.25H5.625A2.625 2.625 0 003 4.875m0 0h18"/></svg>
+          ${t.name}
+        </button>`
+      ).join('');
+      renderOrgDsTabContent(data.tables[activeIdx]);
+    }
+
+    function selectOrgDsTab(idx) {
+      const data = ORG_DS_MOCK[document.getElementById('org-ds-modal-title').textContent.replace(' \u2014 Tables', '')];
+      if (!data) return;
+      _orgDsActiveTab = idx;
+      document.querySelectorAll('[id^="org-ds-tab-btn-"]').forEach((btn, i) => {
+        btn.className = btn.className.replace(/border-indigo-500 text-indigo-600|border-transparent text-gray-500 hover:text-gray-700/g, '');
+        if (i === idx) btn.classList.add('border-indigo-500', 'text-indigo-600');
+        else btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700');
+      });
+      renderOrgDsTabContent(data.tables[idx]);
+    }
+
+    function showColTip(e, text) {
+      const tip = document.getElementById('col-tip-float');
+      tip.textContent = text;
+      tip.style.display = 'block';
+      const r = e.target.getBoundingClientRect();
+      tip.style.left = (r.left + r.width / 2) + 'px';
+      tip.style.top = (r.top - 8) + 'px';
+      tip.style.transform = 'translate(-50%, -100%)';
+    }
+    function hideColTip() {
+      document.getElementById('col-tip-float').style.display = 'none';
+    }
+
+    function renderOrgDsTabContent(table) {
+      const content = document.getElementById('org-ds-tab-content');
+      const rows = table.cols.map((col, i) => {
+        const desc = (table.colDescs && table.colDescs[i]) || '—';
+        return `
+          <div class="flex items-start gap-4 px-5 py-3.5 border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors">
+            <div class="w-[200px] flex-shrink-0 flex items-center gap-2 pt-0.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0 mt-0.5"></span>
+              <span class="text-[12px] font-semibold text-gray-800 font-mono tracking-wide">${col}</span>
+            </div>
+            <p class="text-[13px] text-gray-500 leading-relaxed flex-1">${desc}</p>
+          </div>`;
+      }).join('');
+
+      content.innerHTML = `
+        <p class="text-[13px] text-gray-500 mb-4 px-1">${table.desc}</p>
+        <div class="rounded-xl border border-gray-200 overflow-hidden bg-white">
+          <div class="flex items-center gap-4 px-5 py-2.5 bg-gray-50 border-b border-gray-200">
+            <span class="w-[200px] flex-shrink-0 text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Column</span>
+            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Description</span>
+          </div>
+          ${rows}
+        </div>
+        <p class="mt-3 text-[11px] text-gray-400 px-1">${table.cols.length} columns</p>`;
+    }
+
+    function closeOrgDsTables(e) {
+      if (e && e.target !== document.getElementById('org-ds-modal-backdrop')) return;
+      document.getElementById('org-ds-modal-backdrop').style.display = 'none';
     }
 
     function buildDsConnectorDropdown(dropdownId, filterFn) {
@@ -1654,6 +1888,33 @@
     </div>
 
   </div><!-- /connector-browser -->
+
+  <!-- ═══════════════════ ORG DS TABLES MODAL ═══════════════════ -->
+  <!-- Floating column description tooltip -->
+  <div id="col-tip-float" style="display:none;position:fixed;z-index:9999;background:#1E293B;color:#fff;font-size:11px;font-weight:500;line-height:1.45;padding:6px 10px;border-radius:8px;max-width:240px;white-space:normal;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);"></div>
+
+  <div id="org-ds-modal-backdrop"
+    style="display:none;position:fixed;inset:0;z-index:70;background:rgba(15,23,42,0.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;"
+    onclick="closeOrgDsTables(event)">
+    <div onclick="event.stopPropagation()"
+      class="bg-white rounded-2xl w-full mx-4 flex flex-col"
+      style="max-width:820px;max-height:82vh;box-shadow:0 24px 80px rgba(0,0,0,0.22)">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h3 id="org-ds-modal-title" class="text-[15px] font-semibold text-gray-900">Tables</h3>
+          <p id="org-ds-modal-sub" class="text-[12px] text-gray-400 mt-0.5"></p>
+        </div>
+        <button onclick="closeOrgDsTables()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Table tabs -->
+      <div id="org-ds-tab-bar" class="flex gap-0 border-b border-gray-100 px-6 flex-shrink-0" style="overflow-x:auto;scrollbar-width:thin;scrollbar-color:#E5E7EB transparent;"></div>
+      <!-- Tab content -->
+      <div id="org-ds-tab-content" class="flex-1 overflow-auto p-5"></div>
+    </div>
+  </div>
 
   <script>
     /* ── DS Connectors data ─────────────────────────────── */
