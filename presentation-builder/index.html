@@ -407,277 +407,51 @@
 
     
 
-    <!-- ── Sub-bar: title + step stepper + actions (always visible, matches document-builder) ── -->
-    <div id="ppt-name-bar" class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0 relative">
-      <!-- Left: icon + title + draft badge — identical to document builder title bar -->
+    <!-- ─── CONTENT ROW ─── -->
+    <div class="flex-1 flex overflow-hidden">
+
+    <!-- ─── EDITOR COLUMN ─── -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Title bar -->
+      <div id="ppt-name-bar" class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0">
+      <!-- Left: icon + title -->
       <div class="flex items-center gap-3 ml-2">
         <div class="flex items-center gap-2">
-          
           <svg class="w-[15px] h-[15px] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
           <h1 id="subbar-title" class="text-[15px] font-bold text-gray-900 leading-none">Investor Pitch</h1>
         </div>
-        
       </div>
-      <!-- Center: step stepper (absolutely centered; hidden when editor state) -->
-      <div id="ppt-steps" class="absolute flex items-center gap-2.5" style="left:50%;transform:translateX(-50%);">
-        <div class="flex items-center gap-1.5">
-          <div id="step1-dot" class="step-dot act">1</div>
-          <span id="step1-lbl" class="text-[11px] font-semibold" style="color:#5B63F6;">Prompt</span>
-        </div>
-        <div class="w-5 h-px bg-gray-200 flex-shrink-0"></div>
-        <div class="flex items-center gap-1.5">
-          <div id="step2-dot" class="step-dot todo">2</div>
-          <span id="step2-lbl" class="text-[11px] font-medium" style="color:#D1D5DB;">Outline</span>
-        </div>
-        <div class="w-5 h-px bg-gray-200 flex-shrink-0"></div>
-        <div class="flex items-center gap-1.5">
-          <div id="step3-dot" class="step-dot todo">3</div>
-          <span id="step3-lbl" class="text-[11px] font-medium" style="color:#D1D5DB;">Slides</span>
-        </div>
-      </div>
-      <!-- Right: state-specific actions -->
-      <div class="flex items-center gap-1.5">
-        <!-- Outline state: (Generate slides button removed) -->
-        <!-- Editor state: simplified toolbar -->
-        <div id="sb-actions-editor" style="display:none;" class="flex items-center gap-1.5">
-          <button onclick="toggleSourcesDrawer()" id="sources-topbar-btn" class="toolbar-btn sources-btn" title="Sources">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-            Sources
-          </button>
-          <button class="toolbar-btn">
-            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
-            Present
-          </button>
-          <button class="toolbar-btn">
-            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-            Export
-          </button>
-          <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
-            Share
-          </button>
-        </div>
+      <!-- Right: toolbar buttons (pr-[340px] keeps these aligned with doc-builder's content-column right edge) -->
+      <div id="sb-actions-editor" class="flex items-center gap-1.5">
+        <button onclick="toggleSourcesDrawer()" id="sources-topbar-btn" class="toolbar-btn sources-btn" title="Sources">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          Sources
+        </button>
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+          Present
+        </button>
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          Export
+        </button>
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+        <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90" style="background:#3B5BDB;">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          Share
+        </button>
       </div>
     </div>
 
-    <!-- ════════════════════════════════════
-         STATE 1 — CREATE
-    ═════════════════════════════════════ -->
-    <div id="state-create" class="ppt-state active flex-1 overflow-y-auto items-center justify-center">
-      <div class="w-full max-w-[560px] px-6 py-12 flex flex-col gap-5">
-
-        <!-- Heading -->
-        <div class="text-center">
-          <div class="w-[72px] h-[72px] rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:#EEF2FF; border:1.5px solid #C7D2FE; box-shadow:0 1px 3px rgba(91,99,246,0.10);">
-            <svg class="w-8 h-8" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
-          </div>
-          <h1 class="text-[22px] font-bold text-gray-900 leading-snug">What are you presenting?</h1>
-          <p class="text-[13px] text-gray-500 mt-1">Describe your topic — AI will build the outline and slides for you.</p>
-        </div>
-
-        <!-- Prompt box -->
-        <div class="input-wrapper">
-          <textarea id="prompt-input" rows="3" placeholder="e.g. A 6-slide investor pitch for a B2B SaaS startup in HR tech…" class="w-full px-4 pt-3.5 pb-2 text-[13px] text-gray-800 border-none outline-none resize-none bg-transparent leading-relaxed placeholder-gray-400 font-sans"></textarea>
-          <div class="flex items-center justify-between px-3 py-2 border-t border-gray-100" style="background:#FAFAFA;">
-            <div class="flex items-center gap-2">
-              <button id="type-slides" onclick="selectType('slides')" class="flex items-center gap-1.5 h-[26px] px-2.5 rounded-full border text-[11px] font-500 transition-all" style="background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; font-weight:600;">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5"/><line x1="5" y1="7" x2="11" y2="7"/><line x1="5" y1="9.5" x2="9" y2="9.5"/></svg>
-                Slides
-              </button>
-              <button id="type-import" onclick="selectType('import')" class="flex items-center gap-1.5 h-[26px] px-2.5 rounded-full border border-gray-200 text-[11px] text-gray-600 font-medium hover:bg-gray-50 transition-all">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-                Import
-              </button>
-            </div>
-            <button onclick="goToOutline()" class="flex items-center gap-1.5 h-8 px-4 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              Generate outline
-            </button>
-          </div>
-        </div>
-
-        <!-- Tone + Slides count row -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Tone</p>
-            <div class="flex gap-2 flex-wrap">
-              <button class="tone-pill active" onclick="selectTone(this)">Professional</button>
-              <button class="tone-pill" onclick="selectTone(this)">Casual</button>
-              <button class="tone-pill" onclick="selectTone(this)">Bold</button>
-            </div>
-          </div>
-          <div>
-            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Slides</p>
-            <div class="flex gap-1.5">
-              <div class="count-box" onclick="selectCount(this)">5</div>
-              <div class="count-box active" onclick="selectCount(this)">8</div>
-              <div class="count-box" onclick="selectCount(this)">10</div>
-              <div class="count-box" onclick="selectCount(this)">12</div>
-              <div class="count-box" onclick="selectCount(this)" style="font-size:10px;color:#9CA3AF;width:42px;">Auto</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Example chip -->
-        <div>
-          <p class="text-[11px] font-semibold uppercase tracking-widest mb-2.5" style="color:#C4C9D4; letter-spacing:0.08em;">Try an example</p>
-          <button class="sugg-chip w-full" onclick="fillPrompt('Investor pitch deck for a B2B SaaS startup in HR tech, 8 slides')">
-            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
-            Investor pitch deck
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- ════════════════════════════════════
-         STATE 2 — OUTLINE
-    ═════════════════════════════════════ -->
-    <div id="state-outline" class="ppt-state flex-1 min-h-0 overflow-hidden flex-col">
-
-      <!-- Body -->
-      <div class="flex flex-1 min-h-0 overflow-hidden">
-
-        <!-- LEFT: outline list -->
-        <div class="flex-1 flex flex-col min-h-0 px-8 py-6">
-          <div class="max-w-[600px] w-full mx-auto flex flex-col gap-4 h-full min-h-0">
-
-            <div class="flex-shrink-0">
-              <h2 class="text-[18px] font-bold text-gray-900 leading-snug">Review your outline</h2>
-              <p class="text-[13px] text-gray-500 mt-1">Edit slide titles and descriptions before generating. Drag to reorder.</p>
-            </div>
-
-            <!-- Scrollable outline container -->
-            <div class="flex-1 min-h-0 rounded-xl border border-gray-200 bg-white" style="box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04); overflow:hidden">
-              <div id="outline-list" class="flex flex-col gap-2 p-3 overflow-y-auto h-full">
-                <!-- Will be populated by JS based on totalSlides -->
-              </div>
-            </div>
-
-            <!-- Generate button — always visible outside the scroll area -->
-            <div class="flex-shrink-0 pt-1">
-              <button onclick="goToEditor()" id="generate-slides-btn" class="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                <span id="generate-slides-text">Generate 8 slides</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- RIGHT: AiBii AI panel -->
-        <div class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
-
-          <!-- Panel topbar -->
-          <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
-                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              </div>
-              <span class="text-[13px] font-semibold text-gray-800">AiBii AI</span>
-            </div>
-          </div>
-
-          <!-- Scroll body -->
-          <div id="outline-ai-scroll" class="flex-1 overflow-y-auto">
-
-            <!-- Welcome state -->
-            <div id="outline-ai-welcome" class="flex flex-col items-center justify-center px-6 py-10 text-center h-full">
-              <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0" style="background:#EEF2FF">
-                <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              </div>
-              <p class="text-[15px] font-bold text-gray-900 leading-snug">Add or edit slides.</p>
-              <p class="text-[13px] text-gray-500 mt-2 leading-relaxed">Ask me to add new slides, reorder your outline, or improve the flow of your deck.</p>
-            </div>
-
-            <!-- Chat messages -->
-            <div id="outline-ai-messages" class="hidden px-4 py-4 space-y-3"></div>
-
-          </div>
-
-          <!-- Suggested actions -->
-          <div class="px-4 pb-3 flex-shrink-0">
-            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Suggested</p>
-            <div class="space-y-1.5">
-              <button onclick="sendOutlineSuggestion('Add a problem and solution slide')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                Add a problem slide
-              </button>
-              <button onclick="sendOutlineSuggestion('Add a team and advisors slide')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                Add a team slide
-              </button>
-              <button onclick="sendOutlineSuggestion('Reorder slides for a better narrative flow')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
-                Reorder for narrative
-              </button>
-            </div>
-          </div>
-
-          <!-- Input area -->
-          <div class="px-4 pb-4 pt-2 flex-shrink-0 border-t border-gray-100">
-            <input type="file" id="outline-ai-file" class="hidden" multiple />
-            <div class="flex flex-col rounded-xl border border-gray-200 bg-white" style="box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-              <div class="px-3 pt-2.5 pb-1">
-                <div
-                  id="outline-ai-input"
-                  contenteditable="true"
-                  data-placeholder="Ask AiBii AI to add or edit slides…"
-                  class="ppt-ai-input text-[13px] text-gray-800 focus:outline-none leading-relaxed"
-                  style="min-height:22px; max-height:120px; overflow-y:auto;"
-                  onkeydown="handleOutlineAiKey(event)"
-                ></div>
-              </div>
-              <div class="flex items-center justify-between px-2.5 pb-2 pt-1">
-                <div class="flex items-center gap-1">
-                  <button onclick="document.getElementById('outline-ai-file').click()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors" title="Attach file">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/></svg>
-                  </button>
-                  <div class="relative">
-                    <button onclick="toggleOutlineModeMenu(event)" class="flex items-center gap-1 px-2 h-6 rounded-lg text-[11px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
-                      <span id="outline-mode-icon" class="flex items-center">
-                        <svg class="w-3 h-3 mr-0.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                      </span>
-                      <span id="outline-mode-label">Agent</span>
-                      <svg class="w-2.5 h-2.5 ml-0.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div id="outline-mode-menu" class="hidden absolute bottom-full left-0 mb-1 z-[200] bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-36">
-                      <button onclick="selectOutlineMode('Agent')" class="w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left">
-                        <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                        Agent
-                        <svg id="outline-mode-check-Agent" class="w-3 h-3 ml-auto flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                      </button>
-                      <button onclick="selectOutlineMode('Ask')" class="w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left">
-                        <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
-                        Ask
-                        <svg id="outline-mode-check-Ask" class="w-3 h-3 ml-auto flex-shrink-0 hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <button onclick="sendOutlineAi()" class="w-7 h-7 flex items-center justify-center rounded-lg text-white transition-all" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ════════════════════════════════════
-         STATE 3 — EDITOR
-    ═════════════════════════════════════ -->
-    <div id="state-editor" class="ppt-state flex-col flex-1 min-h-0 overflow-hidden">
-
-      <!-- Editor body: slides strip + canvas + right panel -->
-      <div class="flex flex-1 min-h-0 overflow-hidden">
+      <!-- ═══ Editor: slides strip + canvas ═══ -->
+      <div id="state-editor" class="flex flex-1 min-h-0 overflow-hidden">
 
         <!-- Slide strip 136px -->
-        <div id="slides-strip" class="w-[136px] min-w-[136px] flex flex-col  border-r border-gray-100 py-3 px-2 gap-2 overflow-y-auto transition-all">
+        <div id="slides-strip" class="w-[136px] min-w-[136px] flex flex-col  border-r border-gray-100 py-3 px-2 gap-2 overflow-y-auto transition-all" style="display:none;">
           <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-1 pb-1">Slides</p>
           <!-- Thumb 1 -->
           <div class="sthumb" onclick="selectSlide(this,1)">
@@ -721,6 +495,17 @@
 
         <!-- Canvas -->
         <div id="canvas-area" class="flex-1 canvas-grid flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden relative">
+
+          <!-- Empty state (shown initially) -->
+          <div id="canvas-empty-state" class="flex flex-col items-center justify-center gap-5 text-center px-8 w-full">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:#F3F4F6;">
+              <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
+            </div>
+            <div>
+              <p class="text-[15px] font-semibold text-gray-400">Your presentation will appear here</p>
+              <p class="text-[13px] text-gray-400 mt-1.5">Describe what you want to create in the chat →</p>
+            </div>
+          </div>
 
           <!-- Generating overlay -->
           <div id="generating-overlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10" style="background:rgba(244,245,248,0.75); backdrop-filter:blur(1px);">
@@ -776,11 +561,14 @@
 
         </div>
 
-        <!-- Right panel: AiBii AI -->
-        <div class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+      </div><!-- end state-editor -->
+    </div><!-- end editor column -->
+
+    <!-- ─── AI PANEL (right) ─── -->
+    <div class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
 
           <!-- Panel topbar -->
-          <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
+          <div class="flex items-center justify-between px-4 h-11 border-b border-gray-100 flex-shrink-0">
             <div class="flex items-center gap-2">
               <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
                 <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
@@ -797,9 +585,8 @@
               <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0" style="background:#EEF2FF">
                 <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
               </div>
-              <p class="text-[15px] font-bold text-gray-900 leading-snug">I'm AiBii AI.</p>
-              <p class="text-[15px] font-bold text-gray-900 leading-snug">Ask me anything.</p>
-              <p class="text-[13px] text-gray-400 mt-2">Or try the suggested actions below.</p>
+              <p class="text-[15px] font-bold text-gray-900 leading-snug">Describe your presentation.</p>
+              <p class="text-[13px] text-gray-400 mt-2 leading-relaxed">Tell me what to create and I'll generate your slides instantly.</p>
             </div>
 
             <!-- Chat messages -->
@@ -811,17 +598,17 @@
           <div class="px-4 pb-3 flex-shrink-0">
             <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Suggested</p>
             <div class="space-y-1.5">
-              <button onclick="sendRpSuggestion('Make this slide more concise')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
-                Make this concise
+              <button onclick="sendRpSuggestion('Investor pitch deck for a B2B SaaS startup, 8 slides')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
+                Investor pitch deck
               </button>
-              <button onclick="sendRpSuggestion('Rewrite the title to be more impactful')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                Rewrite the title
+              <button onclick="sendRpSuggestion('Product launch presentation for a new mobile app, 6 slides')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
+                Product launch deck
               </button>
-              <button onclick="sendRpSuggestion('Add a key statistic or data point')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-                Add a statistic
+              <button onclick="sendRpSuggestion('Quarterly business review presentation, 10 slides')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
+                Quarterly review
               </button>
             </div>
           </div>
@@ -834,7 +621,7 @@
                 <div
                   id="rp-ai-input"
                   contenteditable="true"
-                  data-placeholder="Ask AiBii AI about this slide…"
+                  data-placeholder="Describe your presentation… or ask me to edit a slide"
                   class="ppt-ai-input text-[13px] text-gray-800 focus:outline-none leading-relaxed"
                   style="min-height:22px; max-height:120px; overflow-y:auto;"
                   onkeydown="handleRpAiKey(event)"
@@ -879,10 +666,9 @@
             </div>
           </div>
 
-        </div>
+    </div><!-- end AI panel -->
 
-      </div>
-    </div>
+    </div><!-- end content row -->
 
   </main>
 
@@ -953,209 +739,33 @@
 
 
     // ════════════════════════════════════════
-    //  STATE MACHINE: create → outline → editor
+    //  SLIDE GENERATION
     // ════════════════════════════════════════
-    var currentState = 'create';
     var slideIndex = 2;
     var totalSlides = 8;
+    var _slidesGenerated = false;
 
-    function setState(s) {
-      currentState = s;
-      ['create','outline','editor'].forEach(function(id) {
-        document.getElementById('state-' + id).classList.remove('active');
-      });
-      document.getElementById('state-' + s).classList.add('active');
-      // Step indicators: always visible
-      document.getElementById('ppt-steps').style.display = 'flex';
-      // Update step dots based on state
-      if (s === 'create') {
-        setStepDot('step1', 'act', '1');
-        setStepDot('step2', 'todo', '2');
-        setStepDot('step3', 'todo', '3');
-        // Step 1 is not clickable in create state
-        document.getElementById('step1-dot').onclick = null;
-        document.getElementById('step1-dot').style.cursor = 'default';
-        document.getElementById('step2-dot').onclick = null;
-        document.getElementById('step2-dot').style.cursor = 'default';
-      } else if (s === 'outline') {
-        setStepDot('step1', 'done', '');
-        setStepDot('step2', 'act', '2');
-        setStepDot('step3', 'todo', '3');
-        // Step 1 is clickable in outline state
-        document.getElementById('step1-dot').onclick = function() { setState('create'); };
-        document.getElementById('step1-dot').style.cursor = 'pointer';
-        document.getElementById('step2-dot').onclick = null;
-        document.getElementById('step2-dot').style.cursor = 'default';
-      } else {
-        setStepDot('step1', 'done', '');
-        setStepDot('step2', 'done', '');
-        setStepDot('step3', 'act', '3');
-        // Both step 1 and 2 are clickable in editor state
-        document.getElementById('step1-dot').onclick = function() { setState('create'); };
-        document.getElementById('step1-dot').style.cursor = 'pointer';
-        document.getElementById('step2-dot').onclick = function() { setState('outline'); };
-        document.getElementById('step2-dot').style.cursor = 'pointer';
-      }
-      // Show editor toolbar only in editor state
-      var editorActions = document.getElementById('sb-actions-editor');
-      if (editorActions) {
-        editorActions.style.display = s === 'editor' ? 'flex' : 'none';
-      }
-      // Keep title static
-      document.getElementById('subbar-title').textContent = 'Investor Pitch';
-    }
-
-    function setStepDot(step, state, num) {
-      var dot = document.getElementById(step + '-dot');
-      var lbl = document.getElementById(step + '-lbl');
-      dot.className = 'step-dot ' + state;
-      if (state === 'done') {
-        dot.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>';
-        lbl.style.color = '#22C55E'; lbl.style.fontWeight = '500';
-      } else if (state === 'act') {
-        dot.textContent = num;
-        lbl.style.color = '#5B63F6'; lbl.style.fontWeight = '600';
-      } else {
-        dot.textContent = num;
-        lbl.style.color = '#D1D5DB'; lbl.style.fontWeight = '500';
-      }
-    }
-
-    function truncateTitle(str) {
-      return str.length > 36 ? str.slice(0, 34) + '…' : str;
-    }
-
-    function goToOutline() {
-      setState('outline');
-      generateOutlineItems();
-      updateGenerateButtonText();
-    }
-
-    function goToEditor() {
-      setState('editor');
-      var slideEl = document.getElementById('slide-display');
+    function generateSlides() {
+      if (_slidesGenerated) return;
+      _slidesGenerated = true;
+      var slideEl  = document.getElementById('slide-display');
       var overlayEl = document.getElementById('generating-overlay');
-      // Reset animation and hide slide
+      var emptyEl  = document.getElementById('canvas-empty-state');
+      var stripEl  = document.getElementById('slides-strip');
+      if (emptyEl) emptyEl.style.display = 'none';
       slideEl.classList.remove('fade-up');
       slideEl.classList.add('hidden');
-      // Show generating overlay
       overlayEl.style.display = 'flex';
-      // After 2s: hide overlay and show slide with animation
+      stripEl.style.display = 'flex';
       setTimeout(function() {
         overlayEl.style.display = 'none';
         slideEl.classList.remove('hidden');
-        // Trigger reflow to ensure animation plays
         void slideEl.offsetWidth;
         slideEl.classList.add('fade-up');
       }, 2000);
     }
 
 
-    // ════════════════════════════════════════
-    //  CREATE STATE helpers
-    // ════════════════════════════════════════
-    function fillPrompt(text) {
-      document.getElementById('prompt-input').value = text;
-      document.getElementById('prompt-input').focus();
-    }
-
-    function selectTone(btn) {
-      document.querySelectorAll('.tone-pill').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-    }
-
-    function selectCount(el) {
-      document.querySelectorAll('.count-box').forEach(function(b) { b.classList.remove('active'); });
-      el.classList.add('active');
-      // update button label in outline
-      var count = el.textContent.trim() === 'Auto' ? 8 : parseInt(el.textContent);
-      totalSlides = count || 8;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
-      updateGenerateButtonText();
-    }
-
-    var _selectedType = 'slides';
-    function selectType(type) {
-      _selectedType = type;
-      var slidesBtn  = document.getElementById('type-slides');
-      var importBtn  = document.getElementById('type-import');
-      if (type === 'slides') {
-        slidesBtn.style.cssText = 'background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; font-weight:600;';
-        importBtn.style.cssText = 'background:#fff; border-color:#E5E7EB; color:#374151; font-weight:500;';
-      } else {
-        importBtn.style.cssText = 'background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; font-weight:600;';
-        slidesBtn.style.cssText = 'background:#fff; border-color:#E5E7EB; color:#374151; font-weight:500;';
-      }
-    }
-
-
-    // ════════════════════════════════════════
-    //  OUTLINE STATE helpers
-    // ════════════════════════════════════════
-    var outlineData = [
-      { title: 'The Problem We Solve', desc: 'HR teams spend 70% of time on admin. We cut that to 20%.' },
-      { title: 'Our Solution', desc: 'AI-native HR platform — automates onboarding, payroll, and compliance.' },
-      { title: 'Market Size', desc: '$42B global HR tech market, growing at 11% CAGR.' },
-      { title: 'Traction & Metrics', desc: '120 customers, $1.2M ARR, 94% retention rate.' },
-      { title: 'Business Model', desc: 'SaaS subscription, $299–$999/mo per seat. 14-day free trial.' },
-      { title: 'Competitive Advantage', desc: 'Only AI-native solution with 95% automation rate.' },
-      { title: 'Go-to-Market Strategy', desc: 'Product-led growth with enterprise sales team.' },
-      { title: 'Financial Projections', desc: '$10M ARR by 2027, 40% net margin.' },
-      { title: 'Team & Advisors', desc: '3 repeat founders, backed by top-tier VCs.' },
-      { title: 'The Ask', desc: 'Raising $5M Series A to scale sales and product.' },
-      { title: 'Vision & Roadmap', desc: 'Building the future of work, one automation at a time.' },
-      { title: 'Closing Slide', desc: 'Thank you. Questions?' }
-    ];
-
-    function generateOutlineItems() {
-      var container = document.getElementById('outline-list');
-      if (!container) return;
-      container.innerHTML = '';
-      for (var i = 0; i < totalSlides && i < outlineData.length; i++) {
-        var item = document.createElement('div');
-        item.className = 'outline-item' + (i === 2 ? ' active' : '');
-        item.innerHTML = 
-          '<div class="w-[22px] h-[22px] rounded-[6px] flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5" style="background:#EEF2FF; color:#5B63F6;">' + (i + 1) + '</div>' +
-          '<div class="flex-1 min-w-0">' +
-            '<p class="text-[13px] font-semibold text-gray-900">' + outlineData[i].title + '</p>' +
-            '<p class="text-[11px] text-gray-500 mt-0.5 leading-snug">' + outlineData[i].desc + '</p>' +
-          '</div>' +
-          '<button class="w-6 h-6 rounded-md flex items-center justify-center text-gray-300 hover:bg-gray-100 hover:text-gray-500 transition-colors flex-shrink-0 border-none bg-transparent">' +
-            '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
-          '</button>';
-        container.appendChild(item);
-      }
-    }
-
-    function updateGenerateButtonText() {
-      var btn = document.getElementById('generate-slides-text');
-      if (btn) {
-        btn.textContent = 'Generate ' + totalSlides + ' slides';
-      }
-    }
-
-    function addSlideFromPrompt() {
-      var input = document.getElementById('add-slide-input');
-      var text = input.value.trim();
-      if (!text) return;
-      // Add new slide to outline
-      if (totalSlides < 12) {
-        totalSlides++;
-        generateOutlineItems();
-        updateGenerateButtonText();
-        input.value = '';
-      }
-    }
-
-    function selectLayout(opt) {
-      document.querySelectorAll('.layout-opt').forEach(function(o) { o.classList.remove('active'); });
-      opt.classList.add('active');
-    }
-
-
-    // ════════════════════════════════════════
-    //  EDITOR STATE helpers
-    // ════════════════════════════════════════
     function selectSlide(thumb, num) {
       document.querySelectorAll('.sthumb').forEach(function(t) { t.classList.remove('active'); });
       thumb.classList.add('active');
@@ -1207,68 +817,15 @@
         + '</div>';
     }
 
-    // ── Outline AI panel (step 2) ──
-    var _outlineMode = 'Agent';
+    // ── Outline AI panel stubs (kept for safety) ──
+    function toggleOutlineModeMenu(e) { e.stopPropagation(); }
+    function selectOutlineMode(mode) {}
+    function handleOutlineAiKey(e) {}
+    function sendOutlineSuggestion(text) {}
+    function sendOutlineAi() {}
+    function _sendOutlineMessage(text) {}
 
-    function toggleOutlineModeMenu(e) {
-      e.stopPropagation();
-      document.getElementById('outline-mode-menu').classList.toggle('hidden');
-    }
-
-    function selectOutlineMode(mode) {
-      _outlineMode = mode;
-      document.getElementById('outline-mode-label').textContent = mode;
-      ['Agent','Ask'].forEach(function(m) {
-        var el = document.getElementById('outline-mode-check-' + m);
-        if (el) el.classList.toggle('hidden', m !== mode);
-      });
-      document.getElementById('outline-mode-menu').classList.add('hidden');
-    }
-
-    function handleOutlineAiKey(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendOutlineAi(); }
-    }
-
-    function sendOutlineSuggestion(text) {
-      _sendOutlineMessage(text);
-    }
-
-    function sendOutlineAi() {
-      var input = document.getElementById('outline-ai-input');
-      var text = (input.innerText || '').trim();
-      if (!text) return;
-      input.innerText = '';
-      _sendOutlineMessage(text);
-    }
-
-    function _sendOutlineMessage(text) {
-      var welcome = document.getElementById('outline-ai-welcome');
-      var msgs    = document.getElementById('outline-ai-messages');
-      var scroll  = document.getElementById('outline-ai-scroll');
-      welcome.classList.add('hidden');
-      msgs.classList.remove('hidden');
-
-      var userDiv = document.createElement('div');
-      userDiv.innerHTML = _pptUserBubble(text);
-      msgs.appendChild(userDiv);
-      scroll.scrollTop = scroll.scrollHeight;
-
-      var replies = {
-        'Add a problem and solution slide': 'Added a "Problem & Solution" slide to your outline — feel free to edit the description above.',
-        'Add a team and advisors slide': 'Added a "Team & Advisors" slide to your outline — you can edit it above.',
-        'Reorder slides for a better narrative flow': 'Slides reordered: Problem → Solution → Market → Traction → Team → Ask — classic narrative arc.',
-      };
-      var reply = replies[text] || 'Got it! Updating your outline now…';
-
-      setTimeout(function() {
-        var botDiv = document.createElement('div');
-        botDiv.innerHTML = _pptBotBubble(reply);
-        msgs.appendChild(botDiv);
-        scroll.scrollTop = scroll.scrollHeight;
-      }, 500);
-    }
-
-    // ── Right-panel AI (step 3) ──
+    // ── Right-panel AI ──
     var _rpMode = 'Agent';
 
     function toggleRpModeMenu(e) {
@@ -1303,6 +860,8 @@
     }
 
     function _sendRpMessage(text) {
+      var wasGenerated = _slidesGenerated;
+      generateSlides();
       var welcome = document.getElementById('rp-ai-welcome');
       var msgs    = document.getElementById('rp-ai-messages');
       var scroll  = document.getElementById('rp-ai-scroll');
@@ -1315,18 +874,22 @@
       scroll.scrollTop = scroll.scrollHeight;
 
       var replies = {
+        'Investor pitch deck for a B2B SaaS startup, 8 slides': 'Building your investor pitch deck with 8 slides — traction, market size, team & more.',
+        'Product launch presentation for a new mobile app, 6 slides': 'Creating a 6-slide product launch deck — highlights, features, roadmap & CTA.',
+        'Quarterly business review presentation, 10 slides': 'Generating your 10-slide QBR — metrics, wins, challenges, and next quarter plan.',
         'Make this slide more concise':           'Done! I\'ve shortened the content while keeping the key message clear.',
         'Rewrite the title to be more impactful': 'Title updated: "We\'re Accelerating Fast" — more dynamic and engaging.',
         'Add a key statistic or data point':      'Added: "3.2× YoY growth" — this statistic strengthens your message.',
       };
-      var reply = replies[text] || 'Got it! Applying your instruction to this slide now…';
+      var reply = replies[text] || (wasGenerated ? 'Got it! Applying your instruction to this slide now…' : 'On it! Generating your slides now…');
+      var delay = wasGenerated ? 500 : 2300;
 
       setTimeout(function() {
         var botDiv = document.createElement('div');
         botDiv.innerHTML = _pptBotBubble(reply);
         msgs.appendChild(botDiv);
         scroll.scrollTop = scroll.scrollHeight;
-      }, 500);
+      }, delay);
     }
 
     // close mode menus on outside click
@@ -1342,9 +905,6 @@
     //  INIT
     // ════════════════════════════════════════
     updateNavButtons();
-    setState('create');
-
-    // Hide both generating overlay and slide-display initially
     document.getElementById('generating-overlay').style.display = 'none';
     document.getElementById('slide-display').classList.add('hidden');
 
