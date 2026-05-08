@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -219,6 +219,23 @@
 
     /* ── contenteditable placeholder ── */
     .ppt-ai-input:empty::before { content: attr(data-placeholder); color: #9CA3AF; pointer-events: none; }
+
+    /* ── Google-Slides thumbnail panel ── */
+    .thumb-outer { cursor: pointer; user-select: none; }
+    .thumb-label { font-size: 9px; font-weight: 600; color: #80868B; text-align: center; margin-bottom: 3px; letter-spacing: 0.01em; }
+    .thumb-preview { width: 144px; height: 81px; border-radius: 3px; border: 1.5px solid transparent; overflow: hidden; position: relative; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.22), 0 0 0 0.5px rgba(0,0,0,0.08); transition: border-color 80ms ease; }
+    .thumb-preview.active { border-color: #1A73E8 !important; box-shadow: 0 0 0 1.5px #1A73E8, 0 1px 4px rgba(0,0,0,0.22) !important; }
+    .thumb-preview:hover:not(.active) { border-color: #AECBFA; }
+    .thumb-inner { position: absolute; top: 0; left: 0; width: 480px; height: 270px; transform: scale(0.3); transform-origin: top left; }
+
+    /* ── Slide pages inside main frame ── */
+    .slide-page { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+    .slide-page.active { display: block; }
+
+    /* ── Canvas nav arrows ── */
+    .canvas-nav { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.07); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; transition: background 100ms ease; flex-shrink: 0; }
+    .canvas-nav:hover { background: rgba(0,0,0,0.13); }
+    .canvas-nav:disabled { opacity: 0.25; cursor: not-allowed; }
   </style>
 </head>
 
@@ -447,119 +464,412 @@
       </div>
     </div>
 
-      <!-- ═══ Editor: slides strip + canvas ═══ -->
+      <!-- Google-Slides-style editor -->
       <div id="state-editor" class="flex flex-1 min-h-0 overflow-hidden">
 
-        <!-- Slide strip 136px -->
-        <div id="slides-strip" class="w-[136px] min-w-[136px] flex flex-col  border-r border-gray-100 py-3 px-2 gap-2 overflow-y-auto transition-all" style="display:none;">
-          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-1 pb-1">Slides</p>
-          <!-- Thumb 1 -->
-          <div class="sthumb" onclick="selectSlide(this,1)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-4/5 bg-gray-100"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">01</span>
-          </div>
-          <!-- Thumb 2 — active -->
-          <div class="sthumb active" onclick="selectSlide(this,2)">
-            <div class="h-[3px] rounded-sm w-3/4" style="background:#C7D2FE;"></div>
-            <div class="h-[2px] rounded-sm w-full mt-1" style="background:#EEF2FF;"></div>
-            <div class="h-[2px] rounded-sm w-4/5" style="background:#EEF2FF;"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold" style="color:#5B63F6;">02</span>
-          </div>
-          <!-- Thumb 3 -->
-          <div class="sthumb" onclick="selectSlide(this,3)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-3/5 bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">03</span>
-          </div>
-          <!-- Thumb 4 -->
-          <div class="sthumb" onclick="selectSlide(this,4)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-4/5 bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">04</span>
-          </div>
-          <!-- Thumb 5 -->
-          <div class="sthumb" onclick="selectSlide(this,5)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">05</span>
-          </div>
-          <!-- Add -->
-          <button class="border-[1.5px] border-dashed border-gray-200 rounded-lg h-7 flex items-center justify-center text-gray-400 hover:border-brand-primary hover:text-brand-primary transition-colors text-sm">+</button>
-        </div>
+        <!-- Slides filmstrip (Google Slides left panel) -->
+        <div id="slides-panel" class="hidden flex-col overflow-y-auto flex-shrink-0 py-3" style="width:168px;background:#E8EAED;border-right:1px solid #DADCE0;">
+          <p class="text-[9.5px] font-semibold uppercase tracking-widest px-4 mb-2" style="color:#80868B;">Slides</p>
+          <div class="flex flex-col gap-3 px-3" id="thumb-list">
 
-        <!-- Canvas -->
-        <div id="canvas-area" class="flex-1 canvas-grid flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden relative">
+            <!-- Thumb 1: Title (dark) -->
+            <div class="thumb-outer" onclick="selectSlide(1)">
+              <p class="thumb-label">1</p>
+              <div class="thumb-preview active" id="tp-1">
+                <div class="thumb-inner" style="background:#0F172A;">
+                  <div style="padding:40px 44px;display:flex;flex-direction:column;justify-content:center;height:100%;box-sizing:border-box;">
+                    <div style="font-size:10px;color:#818CF8;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;">INVESTOR PITCH</div>
+                    <div style="font-size:34px;font-weight:900;color:white;line-height:1.1;margin-bottom:12px;">Sovereign<br>Capital Gate</div>
+                    <div style="font-size:13px;color:#94A3B8;line-height:1.5;">AI-powered investment intelligence</div>
+                    <div style="width:48px;height:5px;background:#5B63F6;border-radius:3px;margin-top:20px;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          <!-- Empty state (shown initially) -->
-          <div id="canvas-empty-state" class="flex flex-col items-center justify-center gap-5 text-center px-8 w-full">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:#F3F4F6;">
+            <!-- Thumb 2: Problem -->
+            <div class="thumb-outer" onclick="selectSlide(2)">
+              <p class="thumb-label">2</p>
+              <div class="thumb-preview" id="tp-2">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;">
+                      <div style="width:5px;height:30px;background:#EF4444;border-radius:3px;"></div>
+                      <div style="font-size:22px;font-weight:800;color:#0F172A;">The Problem</div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:14px;">
+                      <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">&#10060;</div><div><div style="font-size:14px;font-weight:700;color:#111827;">Fragmented data sources</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Analysts waste hours consolidating reports.</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">&#9200;</div><div><div style="font-size:14px;font-weight:700;color:#111827;">Slow investment decisions</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Manual analysis delays critical calls.</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">&#128202;</div><div><div style="font-size:14px;font-weight:700;color:#111827;">No unified intelligence</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Insights scattered across tools.</div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumb 3: Solution -->
+            <div class="thumb-outer" onclick="selectSlide(3)">
+              <p class="thumb-label">3</p>
+              <div class="thumb-preview" id="tp-3">
+                <div class="thumb-inner" style="background:#F0F4FF;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;">
+                      <div style="width:5px;height:30px;background:#5B63F6;border-radius:3px;"></div>
+                      <div style="font-size:22px;font-weight:800;color:#0F172A;">Our Solution</div>
+                    </div>
+                    <div style="display:flex;gap:12px;">
+                      <div style="flex:1;background:white;border-radius:10px;padding:14px;"><div style="font-size:16px;margin-bottom:6px;">&#9889;</div><div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">Unified AI</div><div style="font-size:10px;color:#6B7280;">All data in one place</div></div>
+                      <div style="flex:1;background:white;border-radius:10px;padding:14px;"><div style="font-size:16px;margin-bottom:6px;">&#128269;</div><div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">Instant Insights</div><div style="font-size:10px;color:#6B7280;">Any source, seconds</div></div>
+                      <div style="flex:1;background:white;border-radius:10px;padding:14px;"><div style="font-size:16px;margin-bottom:6px;">&#128200;</div><div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">10x Faster</div><div style="font-size:10px;color:#6B7280;">Days to minutes</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumb 4: Market -->
+            <div class="thumb-outer" onclick="selectSlide(4)">
+              <p class="thumb-label">4</p>
+              <div class="thumb-preview" id="tp-4">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:18px;">Market Opportunity</div>
+                    <div style="display:flex;align-items:center;justify-content:space-around;flex:1;gap:8px;">
+                      <div style="text-align:center;"><div style="width:120px;height:120px;border-radius:50%;background:#EEF2FF;border:3px solid #5B63F6;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:22px;font-weight:900;color:#5B63F6;">$47B</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">TAM</div></div></div>
+                      <div style="text-align:center;"><div style="width:90px;height:90px;border-radius:50%;background:#E0E7FF;border:3px solid #818CF8;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:18px;font-weight:900;color:#5B63F6;">$8B</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">SAM</div></div></div>
+                      <div style="text-align:center;"><div style="width:65px;height:65px;border-radius:50%;background:#C7D2FE;border:3px solid #4338CA;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:13px;font-weight:900;color:#3730A3;">$800M</div><div style="font-size:9px;color:#3730A3;margin-top:2px;">SOM</div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumb 5: Product -->
+            <div class="thumb-outer" onclick="selectSlide(5)">
+              <p class="thumb-label">5</p>
+              <div class="thumb-preview" id="tp-5">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:18px;">The Product</div>
+                    <div style="display:flex;gap:18px;flex:1;">
+                      <div style="flex:1.2;background:#F8F9FC;border-radius:10px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:32px;margin-bottom:6px;">&#128187;</div><div style="font-size:10px;color:#9CA3AF;">Dashboard Preview</div></div></div>
+                      <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">AI-driven insights</div></div>
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">Real-time data sync</div></div>
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">Portfolio monitoring</div></div>
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">Auto-generated reports</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumb 6: Traction -->
+            <div class="thumb-outer" onclick="selectSlide(6)">
+              <p class="thumb-label">6</p>
+              <div class="thumb-preview" id="tp-6">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:6px;">We're Growing Fast</div>
+                    <div style="font-size:11px;color:#6B7280;margin-bottom:16px;">Key metrics Q4 2024</div>
+                    <div style="display:flex;gap:12px;flex:1;">
+                      <div style="flex:1;background:#F8F9FC;border-radius:10px;padding:14px;"><div style="font-size:24px;font-weight:900;color:#111827;">$1.2M</div><div style="font-size:10px;color:#6B7280;margin-top:3px;">ARR</div><div style="font-size:10px;color:#16A34A;font-weight:700;margin-top:5px;">&#8593; 3.2x YoY</div></div>
+                      <div style="flex:1;background:#F8F9FC;border-radius:10px;padding:14px;"><div style="font-size:24px;font-weight:900;color:#111827;">120</div><div style="font-size:10px;color:#6B7280;margin-top:3px;">Customers</div><div style="font-size:10px;color:#16A34A;font-weight:700;margin-top:5px;">&#8593; 2.8x YoY</div></div>
+                      <div style="flex:1;background:#F8F9FC;border-radius:10px;padding:14px;"><div style="font-size:24px;font-weight:900;color:#111827;">94%</div><div style="font-size:10px;color:#6B7280;margin-top:3px;">NRR</div><div style="font-size:10px;color:#16A34A;font-weight:700;margin-top:5px;">&#8593; from 88%</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumb 7: Team -->
+            <div class="thumb-outer" onclick="selectSlide(7)">
+              <p class="thumb-label">7</p>
+              <div class="thumb-preview" id="tp-7">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:24px;">The Team</div>
+                    <div style="display:flex;gap:16px;justify-content:center;flex:1;">
+                      <div style="text-align:center;flex:1;"><div style="width:52px;height:52px;border-radius:50%;background:#EEF2FF;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#5B63F6;">A</div><div style="font-size:13px;font-weight:700;color:#111827;">Aryan Shah</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">CEO &amp; Founder</div></div>
+                      <div style="text-align:center;flex:1;"><div style="width:52px;height:52px;border-radius:50%;background:#F0FDF4;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#16A34A;">P</div><div style="font-size:13px;font-weight:700;color:#111827;">Priya Mehta</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">CTO</div></div>
+                      <div style="text-align:center;flex:1;"><div style="width:52px;height:52px;border-radius:50%;background:#FFF7ED;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#F97316;">R</div><div style="font-size:13px;font-weight:700;color:#111827;">Rahul Verma</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">Head of Sales</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumb 8: Ask (brand purple) -->
+            <div class="thumb-outer" onclick="selectSlide(8)">
+              <p class="thumb-label">8</p>
+              <div class="thumb-preview" id="tp-8">
+                <div class="thumb-inner" style="background:#5B63F6;">
+                  <div style="padding:38px 44px;display:flex;flex-direction:column;justify-content:center;height:100%;box-sizing:border-box;">
+                    <div style="font-size:10px;color:#C7D2FE;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">THE ASK</div>
+                    <div style="font-size:34px;font-weight:900;color:white;line-height:1.1;margin-bottom:12px;">Raising<br>$3M Seed</div>
+                    <div style="font-size:12px;color:#E0E7FF;line-height:1.5;margin-bottom:18px;">Join us in redefining investment intelligence.</div>
+                    <div style="display:flex;gap:10px;">
+                      <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;"><div style="font-size:13px;font-weight:700;color:white;">$1.5M</div><div style="font-size:9px;color:#C7D2FE;margin-top:2px;">Product dev</div></div>
+                      <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;"><div style="font-size:13px;font-weight:700;color:white;">$900K</div><div style="font-size:9px;color:#C7D2FE;margin-top:2px;">Sales &amp; mktg</div></div>
+                      <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;"><div style="font-size:13px;font-weight:700;color:white;">$600K</div><div style="font-size:9px;color:#C7D2FE;margin-top:2px;">Operations</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end thumb-list -->
+        </div><!-- end slides-panel -->
+
+        <!-- Canvas (dark background like Google Slides) -->
+        <div class="flex-1 flex flex-col overflow-hidden relative" style="">
+
+          <!-- Generating overlay -->
+          <div id="generating-overlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10" style="display:none;background:rgba(241,243,244,0.88);backdrop-filter:blur(2px);">
+            <div class="flex gap-2">
+              <span class="gen-dot" style="animation:dotBounce 1s ease-in-out infinite;animation-delay:0s;"></span>
+              <span class="gen-dot" style="animation:dotBounce 1s ease-in-out infinite;animation-delay:0.15s;"></span>
+              <span class="gen-dot" style="animation:dotBounce 1s ease-in-out infinite;animation-delay:0.30s;"></span>
+            </div>
+            <p class="text-[13px] font-medium text-gray-500">Generating your slides...</p>
+          </div>
+
+          <!-- Empty state -->
+          <div id="canvas-empty-state" class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:#E5E7EB;">
               <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
             </div>
             <div>
               <p class="text-[15px] font-semibold text-gray-400">Your presentation will appear here</p>
-              <p class="text-[13px] text-gray-400 mt-1.5">Describe what you want to create in the chat →</p>
+              <p class="text-[13px] mt-1.5 text-gray-300">Describe what you want in the chat</p>
             </div>
           </div>
 
-          <!-- Generating overlay -->
-          <div id="generating-overlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10" style="background:rgba(244,245,248,0.75); backdrop-filter:blur(1px);">
-            <div class="flex gap-2">
-              <span class="gen-dot" style="animation: dotBounce 1s ease-in-out infinite; animation-delay:0s;"></span>
-              <span class="gen-dot" style="animation: dotBounce 1s ease-in-out infinite; animation-delay:0.15s;"></span>
-              <span class="gen-dot" style="animation: dotBounce 1s ease-in-out infinite; animation-delay:0.30s;"></span>
-            </div>
-            <p class="text-[13px] font-medium text-gray-500">Generating your slides…</p>
-          </div>
-
-          <!-- Slide card (shown after generate) -->
-          <div id="slide-display" class="hidden w-full max-w-[820px] mx-8">
-            <div class="slide-card" style="aspect-ratio:16/9; display:flex; flex-direction:column; overflow:hidden;">
-              <div class="px-10 pt-9 pb-0">
-                <div class="inline-flex items-center gap-1.5 h-6 px-2.5 rounded text-[11px] font-semibold mb-4" style="background:#EEF2FF; color:#5B63F6;">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                  Traction
-                </div>
-                <h2 class="text-[28px] font-extrabold text-gray-900 leading-tight tracking-tight">We're growing fast</h2>
-                <p class="text-[14px] text-gray-400 mt-2">Key metrics as of Q4 2024</p>
-              </div>
-              <div class="flex-1 grid grid-cols-3 gap-4 px-10 py-6 items-start">
-                <div class="bg-[#F8F9FC] rounded-xl p-5">
-                  <p class="text-[24px] font-extrabold text-gray-900">$1.2M</p>
-                  <p class="text-[11px] font-medium text-gray-400 mt-1 leading-tight">Annual Recurring Revenue</p>
-                  <p class="text-[11px] font-semibold mt-2" style="color:#16A34A;">↑ 3.2× YoY</p>
-                </div>
-                <div class="bg-[#F8F9FC] rounded-xl p-5">
-                  <p class="text-[24px] font-extrabold text-gray-900">120</p>
-                  <p class="text-[11px] font-medium text-gray-400 mt-1 leading-tight">Paying customers</p>
-                  <p class="text-[11px] font-semibold mt-2" style="color:#16A34A;">↑ 2.8× YoY</p>
-                </div>
-                <div class="bg-[#F8F9FC] rounded-xl p-5">
-                  <p class="text-[24px] font-extrabold text-gray-900">94%</p>
-                  <p class="text-[11px] font-medium text-gray-400 mt-1 leading-tight">Net retention rate</p>
-                  <p class="text-[11px] font-semibold mt-2" style="color:#16A34A;">↑ from 88%</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Slide nav -->
-            <div class="flex items-center justify-center gap-2.5 mt-5">
-              <button id="prev-btn" onclick="prevSlide()" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          <!-- Slide view (shown after generation) -->
+          <div id="slide-display" class="hidden flex-col flex-1 items-center justify-center overflow-auto" style="padding:20px 16px;">
+            <div style="display:flex;align-items:center;gap:14px;width:100%;max-width:900px;margin:auto;">
+              <button id="prev-btn" onclick="prevSlide()" class="canvas-nav" disabled>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               </button>
-              <span id="slide-counter" class="text-[13px] font-semibold text-gray-500 tabular-nums px-2">2 / 8</span>
-              <button id="next-btn" onclick="nextSlide()" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 transition-colors">
+
+              <!-- Main 16:9 slide frame -->
+              <div id="main-slide-frame" style="flex:1;aspect-ratio:16/9;position:relative;overflow:hidden;background:white;box-shadow:0 4px 24px rgba(0,0,0,0.14),0 1px 4px rgba(0,0,0,0.08);border-radius:2px;border:1px solid #E0E0E0;">
+
+                <!-- Slide 1: Title -->
+                <div id="slide-page-1" class="slide-page active" style="background:#0F172A;">
+                  <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;padding:5% 7%;box-sizing:border-box;position:relative;overflow:hidden;">
+                    <div style="font-size:1vw;color:#818CF8;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1.5%;">INVESTOR PITCH &middot; 2026</div>
+                    <div style="font-size:4vw;font-weight:900;color:white;line-height:1.1;margin-bottom:2%;">Sovereign<br>Capital Gate</div>
+                    <div style="font-size:1.2vw;color:#94A3B8;line-height:1.6;max-width:42%;">AI-powered investment intelligence platform for modern fund managers.</div>
+                    <div style="width:3.5%;height:4px;background:#5B63F6;border-radius:2px;margin-top:3%;"></div>
+                    <div style="display:flex;gap:1.5%;margin-top:3.5%;">
+                      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:0.6% 1.8%;"><span style="font-size:0.85vw;color:#C7D2FE;font-weight:500;">Series Seed &middot; $3M</span></div>
+                      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:0.6% 1.8%;"><span style="font-size:0.85vw;color:#C7D2FE;font-weight:500;">B2B SaaS</span></div>
+                      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:0.6% 1.8%;"><span style="font-size:0.85vw;color:#C7D2FE;font-weight:500;">YC W24</span></div>
+                    </div>
+                    <div style="position:absolute;right:-8%;top:-25%;width:55%;height:150%;background:linear-gradient(135deg,#5B63F6,#7C6FF7);opacity:0.12;border-radius:50% 0 0 50%;pointer-events:none;"></div>
+                  </div>
+                </div>
+
+                <!-- Slide 2: Problem -->
+                <div id="slide-page-2" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:2.5%;">
+                    <div style="width:5px;height:2.6vw;background:#EF4444;border-radius:3px;flex-shrink:0;"></div>
+                    <div style="font-size:2.2vw;font-weight:800;color:#0F172A;">The Problem</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2%;height:62%;">
+                    <div style="background:#FEF2F2;border-radius:12px;padding:5%;display:flex;flex-direction:column;">
+                      <div style="font-size:1.8vw;margin-bottom:5%;">&#10060;</div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Fragmented data</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Analysts waste hours consolidating reports from 12+ different sources every week.</div>
+                    </div>
+                    <div style="background:#FEF2F2;border-radius:12px;padding:5%;display:flex;flex-direction:column;">
+                      <div style="font-size:1.8vw;margin-bottom:5%;">&#9203;</div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Slow decisions</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Manual analysis delays critical investment decisions by days, not hours.</div>
+                    </div>
+                    <div style="background:#FEF2F2;border-radius:12px;padding:5%;display:flex;flex-direction:column;">
+                      <div style="font-size:1.8vw;margin-bottom:5%;">&#128202;</div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">No unified view</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Insights are scattered across spreadsheets, PDFs, and legacy tools.</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2.5%;font-size:0.85vw;color:#9CA3AF;font-style:italic;border-left:3px solid #EF4444;padding-left:1%;">82% of fund managers cite data overload as their #1 operational challenge &mdash; 2024 Investment Technology Survey</div>
+                </div>
+
+                <!-- Slide 3: Solution -->
+                <div id="slide-page-3" class="slide-page" style="background:#F0F4FF;padding:4% 6%;box-sizing:border-box;">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:2.5%;">
+                    <div style="width:5px;height:2.6vw;background:#5B63F6;border-radius:3px;flex-shrink:0;"></div>
+                    <div style="font-size:2.2vw;font-weight:800;color:#0F172A;">Our Solution</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2%;height:58%;">
+                    <div style="background:white;border-radius:14px;padding:5%;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(91,99,246,0.09);">
+                      <div style="width:2.8vw;height:2.8vw;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;">
+                        <svg style="width:1.4vw;height:1.4vw;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                      </div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Unified AI Hub</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Connect all data sources and get instant AI-driven analysis in one place.</div>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:5%;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(91,99,246,0.09);">
+                      <div style="width:2.8vw;height:2.8vw;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;">
+                        <svg style="width:1.4vw;height:1.4vw;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                      </div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Instant Insights</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Ask natural language questions, get answers from your entire portfolio in seconds.</div>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:5%;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(91,99,246,0.09);">
+                      <div style="width:2.8vw;height:2.8vw;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;">
+                        <svg style="width:1.4vw;height:1.4vw;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+                      </div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">10x Faster</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Investment analysis that took days now completes in minutes with one click.</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2.5%;background:#5B63F6;border-radius:10px;padding:1.5% 3%;display:inline-flex;align-items:center;gap:1%;">
+                    <span style="font-size:0.9vw;font-weight:600;color:white;">&#10022; &nbsp;Teams report 10x faster deal evaluation from day one</span>
+                  </div>
+                </div>
+
+                <!-- Slide 4: Market -->
+                <div id="slide-page-4" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="font-size:2.2vw;font-weight:800;color:#0F172A;margin-bottom:0.5%;">Market Opportunity</div>
+                  <div style="font-size:0.95vw;color:#6B7280;margin-bottom:3%;">A massive, growing, and underserved market</div>
+                  <div style="display:flex;align-items:center;gap:3%;height:62%;">
+                    <div style="flex:1.4;position:relative;height:100%;display:flex;align-items:center;">
+                      <div style="width:16vw;height:16vw;border-radius:50%;background:#EEF2FF;border:3px solid #5B63F6;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;left:0;">
+                        <div style="font-size:2.1vw;font-weight:900;color:#5B63F6;">$47B</div>
+                        <div style="font-size:0.72vw;color:#6B7280;font-weight:600;margin-top:2px;text-align:center;">Total Addressable Market</div>
+                      </div>
+                      <div style="width:12vw;height:12vw;border-radius:50%;background:#E0E7FF;border:3px solid #818CF8;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;left:12vw;">
+                        <div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">$8B</div>
+                        <div style="font-size:0.72vw;color:#6B7280;font-weight:600;margin-top:2px;">SAM</div>
+                      </div>
+                      <div style="width:8vw;height:8vw;border-radius:50%;background:#C7D2FE;border:3px solid #4338CA;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;left:22vw;">
+                        <div style="font-size:1.2vw;font-weight:900;color:#3730A3;">$800M</div>
+                        <div style="font-size:0.72vw;color:#3730A3;font-weight:600;margin-top:2px;">SOM</div>
+                      </div>
+                    </div>
+                    <div style="flex:0.8;display:flex;flex-direction:column;gap:4%;justify-content:center;height:100%;">
+                      <div style="border-left:3px solid #5B63F6;padding-left:4%;"><div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">18.5%</div><div style="font-size:0.9vw;color:#374151;font-weight:500;margin-top:1%;">CAGR through 2030</div></div>
+                      <div style="border-left:3px solid #5B63F6;padding-left:4%;"><div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">6,000+</div><div style="font-size:0.9vw;color:#374151;font-weight:500;margin-top:1%;">VC &amp; PE firms globally</div></div>
+                      <div style="border-left:3px solid #5B63F6;padding-left:4%;"><div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">$12K</div><div style="font-size:0.9vw;color:#374151;font-weight:500;margin-top:1%;">Avg. annual spend per analyst</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide 5: Product -->
+                <div id="slide-page-5" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="font-size:2.2vw;font-weight:800;color:#0F172A;margin-bottom:2%;">The Product</div>
+                  <div style="display:flex;gap:3%;height:72%;">
+                    <div style="flex:1.3;background:#F8F9FC;border-radius:14px;border:1px solid #E5E7EB;display:flex;flex-direction:column;overflow:hidden;">
+                      <div style="height:9%;background:#EDEEF0;display:flex;align-items:center;gap:5px;padding:0 10px;">
+                        <div style="width:8px;height:8px;border-radius:50%;background:#EF4444;"></div>
+                        <div style="width:8px;height:8px;border-radius:50%;background:#F59E0B;"></div>
+                        <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
+                        <div style="font-size:0.6vw;color:#9CA3AF;margin-left:6px;">aibii.com/dashboard</div>
+                      </div>
+                      <div style="flex:1;padding:8px;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:5px;">
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">ARR</div><div style="font-size:1.1vw;font-weight:800;color:#5B63F6;">$1.2M</div></div>
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">Customers</div><div style="font-size:1.1vw;font-weight:800;color:#16A34A;">120</div></div>
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">NRR</div><div style="font-size:1.1vw;font-weight:800;color:#F97316;">94%</div></div>
+                        <div style="background:#5B63F6;border-radius:6px;padding:5px;grid-column:span 2;"><div style="font-size:0.6vw;color:rgba(255,255,255,0.7);">AI Chat</div><div style="font-size:0.75vw;color:white;margin-top:3px;">What's the top performing fund this quarter?</div></div>
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">MRR Growth</div><div style="font-size:1.1vw;font-weight:800;color:#5B63F6;">32%</div></div>
+                      </div>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:4%;justify-content:center;">
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">AI-driven portfolio insights</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">Natural language Q&amp;A across all your data</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">Real-time data connectors</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">50+ integrations: Excel, Bloomberg &amp; more</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">Auto-generated reports</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">IC memos &amp; LP updates in seconds</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">Collaborative workspaces</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">Share, comment, and act together</div></div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide 6: Traction -->
+                <div id="slide-page-6" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="display:flex;align-items:center;gap:2%;margin-bottom:0.5%;">
+                    <div style="font-size:2.2vw;font-weight:800;color:#0F172A;">We're Growing Fast</div>
+                    <div style="font-size:0.8vw;background:#DCFCE7;color:#16A34A;padding:0.25% 0.9%;border-radius:999px;font-weight:700;">All-Time High Q4 2024</div>
+                  </div>
+                  <div style="font-size:0.95vw;color:#6B7280;margin-bottom:2.5%;">Key metrics as of Q4 2024</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2%;height:52%;">
+                    <div style="background:#F8F9FC;border-radius:14px;padding:5%;display:flex;flex-direction:column;justify-content:space-between;">
+                      <div><div style="font-size:2.6vw;font-weight:900;color:#111827;">$1.2M</div><div style="font-size:0.9vw;color:#6B7280;margin-top:1.5%;line-height:1.4;">Annual Recurring Revenue</div></div>
+                      <div style="font-size:1vw;font-weight:700;color:#16A34A;">&#8593; 3.2x YoY</div>
+                    </div>
+                    <div style="background:#F8F9FC;border-radius:14px;padding:5%;display:flex;flex-direction:column;justify-content:space-between;">
+                      <div><div style="font-size:2.6vw;font-weight:900;color:#111827;">120</div><div style="font-size:0.9vw;color:#6B7280;margin-top:1.5%;line-height:1.4;">Paying customers</div></div>
+                      <div style="font-size:1vw;font-weight:700;color:#16A34A;">&#8593; 2.8x YoY</div>
+                    </div>
+                    <div style="background:#F8F9FC;border-radius:14px;padding:5%;display:flex;flex-direction:column;justify-content:space-between;">
+                      <div><div style="font-size:2.6vw;font-weight:900;color:#111827;">94%</div><div style="font-size:0.9vw;color:#6B7280;margin-top:1.5%;line-height:1.4;">Net retention rate</div></div>
+                      <div style="font-size:1vw;font-weight:700;color:#16A34A;">&#8593; from 88%</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2%;display:grid;grid-template-columns:1fr 1fr;gap:2%;height:17%;">
+                    <div style="background:#F0FDF4;border-radius:10px;padding:2%;display:flex;align-items:center;gap:3%;"><div style="font-size:2.2vw;font-weight:900;color:#16A34A;">18</div><div style="font-size:0.8vw;color:#374151;font-weight:500;">New customers added<br>this quarter</div></div>
+                    <div style="background:#EEF2FF;border-radius:10px;padding:2%;display:flex;align-items:center;gap:3%;"><div style="font-size:2.2vw;font-weight:900;color:#5B63F6;">8.9</div><div style="font-size:0.8vw;color:#374151;font-weight:500;">Average NPS from<br>enterprise clients</div></div>
+                  </div>
+                </div>
+
+                <!-- Slide 7: Team -->
+                <div id="slide-page-7" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="font-size:2.2vw;font-weight:800;color:#0F172A;margin-bottom:0.5%;">The Team</div>
+                  <div style="font-size:0.95vw;color:#6B7280;margin-bottom:3.5%;">World-class experience in finance, AI, and enterprise software</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5%;height:60%;">
+                    <div style="border:1.5px solid #E5E7EB;border-radius:16px;padding:5%;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                      <div style="width:4.2vw;height:4.2vw;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;font-size:1.8vw;font-weight:900;color:#5B63F6;">A</div>
+                      <div style="font-size:1.1vw;font-weight:700;color:#111827;margin-bottom:1%;">Aryan Shah</div>
+                      <div style="font-size:0.85vw;color:#5B63F6;font-weight:600;margin-bottom:2.5%;">CEO &amp; Founder</div>
+                      <div style="font-size:0.8vw;color:#6B7280;line-height:1.55;">Ex-Goldman Sachs. 10+ yrs in finance &amp; software. MBA Wharton.</div>
+                    </div>
+                    <div style="border:1.5px solid #E5E7EB;border-radius:16px;padding:5%;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                      <div style="width:4.2vw;height:4.2vw;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;margin-bottom:4%;font-size:1.8vw;font-weight:900;color:#16A34A;">P</div>
+                      <div style="font-size:1.1vw;font-weight:700;color:#111827;margin-bottom:1%;">Priya Mehta</div>
+                      <div style="font-size:0.85vw;color:#16A34A;font-weight:600;margin-bottom:2.5%;">CTO</div>
+                      <div style="font-size:0.8vw;color:#6B7280;line-height:1.55;">Ex-Google AI. PhD ML Stanford. Led teams of 40+ engineers.</div>
+                    </div>
+                    <div style="border:1.5px solid #E5E7EB;border-radius:16px;padding:5%;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                      <div style="width:4.2vw;height:4.2vw;border-radius:50%;background:#FFF7ED;display:flex;align-items:center;justify-content:center;margin-bottom:4%;font-size:1.8vw;font-weight:900;color:#F97316;">R</div>
+                      <div style="font-size:1.1vw;font-weight:700;color:#111827;margin-bottom:1%;">Rahul Verma</div>
+                      <div style="font-size:0.85vw;color:#F97316;font-weight:600;margin-bottom:2.5%;">Head of Sales</div>
+                      <div style="font-size:0.8vw;color:#6B7280;line-height:1.55;">Ex-Sequoia. Closed $50M+ in enterprise deals across Asia &amp; EU.</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2.5%;display:flex;gap:1.5%;align-items:center;">
+                    <div style="background:#F8F9FC;border-radius:8px;padding:1% 2%;"><span style="font-size:0.8vw;color:#374151;font-weight:500;">&#127942; YC W24</span></div>
+                    <div style="background:#F8F9FC;border-radius:8px;padding:1% 2%;"><span style="font-size:0.8vw;color:#374151;font-weight:500;">&#127891; Advisors: ex-CXOs from Blackstone, KKR, Apollo</span></div>
+                  </div>
+                </div>
+
+                <!-- Slide 8: The Ask -->
+                <div id="slide-page-8" class="slide-page" style="background:#5B63F6;padding:5% 7%;box-sizing:border-box;position:relative;overflow:hidden;">
+                  <div style="font-size:0.9vw;color:#C7D2FE;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1.5%;">THE ASK</div>
+                  <div style="font-size:3.8vw;font-weight:900;color:white;line-height:1.1;margin-bottom:2%;">Raising $3M<br>Seed Round</div>
+                  <div style="font-size:1.1vw;color:#E0E7FF;line-height:1.6;max-width:48%;margin-bottom:3.5%;">Join us in redefining investment intelligence for the next generation of fund managers.</div>
+                  <div style="display:flex;gap:1.5%;margin-bottom:3%;">
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:2% 3%;flex:1;"><div style="font-size:1.7vw;font-weight:900;color:white;">$1.5M</div><div style="font-size:0.8vw;color:#C7D2FE;margin-top:1.5%;">Product &amp; Engineering</div></div>
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:2% 3%;flex:1;"><div style="font-size:1.7vw;font-weight:900;color:white;">$900K</div><div style="font-size:0.8vw;color:#C7D2FE;margin-top:1.5%;">Sales &amp; Marketing</div></div>
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:2% 3%;flex:1;"><div style="font-size:1.7vw;font-weight:900;color:white;">$600K</div><div style="font-size:0.8vw;color:#C7D2FE;margin-top:1.5%;">Operations &amp; Hiring</div></div>
+                  </div>
+                  <div style="display:inline-flex;align-items:center;gap:2%;background:rgba(255,255,255,0.12);border-radius:10px;padding:1.5% 2.5%;">
+                    <svg style="width:1.2vw;height:1.2vw;color:white;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                    <div style="font-size:0.85vw;color:rgba(255,255,255,0.9);font-weight:500;">aryan@sovereigncapitalgate.com &nbsp;&middot;&nbsp; sovereigncapitalgate.com</div>
+                  </div>
+                  <div style="position:absolute;right:-10%;bottom:-30%;width:55%;height:140%;background:rgba(255,255,255,0.05);border-radius:50% 0 0 50%;pointer-events:none;"></div>
+                </div>
+
+              </div><!-- end main-slide-frame -->
+
+              <button id="next-btn" onclick="nextSlide()" class="canvas-nav">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
               </button>
-            </div>
-          </div>
+            </div><!-- end flex row -->
+          </div><!-- end slide-display -->
 
-        </div>
+        </div><!-- end canvas column -->
 
       </div><!-- end state-editor -->
     </div><!-- end editor column -->
@@ -741,58 +1051,65 @@
     // ════════════════════════════════════════
     //  SLIDE GENERATION
     // ════════════════════════════════════════
-    var slideIndex = 2;
+    var slideIndex = 1;
     var totalSlides = 8;
     var _slidesGenerated = false;
 
     function generateSlides() {
       if (_slidesGenerated) return;
       _slidesGenerated = true;
-      var slideEl  = document.getElementById('slide-display');
+      var slideEl   = document.getElementById('slide-display');
       var overlayEl = document.getElementById('generating-overlay');
-      var emptyEl  = document.getElementById('canvas-empty-state');
-      var stripEl  = document.getElementById('slides-strip');
-      if (emptyEl) emptyEl.style.display = 'none';
-      slideEl.classList.remove('fade-up');
-      slideEl.classList.add('hidden');
+      var emptyEl   = document.getElementById('canvas-empty-state');
+      var panelEl   = document.getElementById('slides-panel');
+      if (emptyEl) { emptyEl.style.display = 'none'; }
       overlayEl.style.display = 'flex';
-      stripEl.style.display = 'flex';
       setTimeout(function() {
         overlayEl.style.display = 'none';
+        panelEl.classList.remove('hidden');
+        panelEl.classList.add('flex');
         slideEl.classList.remove('hidden');
-        void slideEl.offsetWidth;
-        slideEl.classList.add('fade-up');
+        slideEl.classList.add('flex');
+        selectSlide(1);
       }, 2000);
     }
 
-
-    function selectSlide(thumb, num) {
-      document.querySelectorAll('.sthumb').forEach(function(t) { t.classList.remove('active'); });
-      thumb.classList.add('active');
+    function selectSlide(num) {
+      // Update thumbnail active state
+      document.querySelectorAll('.thumb-preview').forEach(function(tp) {
+        tp.classList.remove('active');
+      });
+      var tp = document.getElementById('tp-' + num);
+      if (tp) tp.classList.add('active');
+      // Show correct slide page
+      document.querySelectorAll('.slide-page').forEach(function(sp) {
+        sp.classList.remove('active');
+      });
+      var sp = document.getElementById('slide-page-' + num);
+      if (sp) sp.classList.add('active');
       slideIndex = num;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
+      var counter = document.getElementById('slide-counter');
+      if (counter) counter.textContent = slideIndex + ' / ' + totalSlides;
       updateNavButtons();
+      // Scroll thumbnail into view
+      if (tp) tp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function prevSlide() {
       if (slideIndex <= 1) return;
-      slideIndex--;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
-      updateNavButtons();
+      selectSlide(slideIndex - 1);
     }
 
     function nextSlide() {
       if (slideIndex >= totalSlides) return;
-      slideIndex++;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
-      updateNavButtons();
+      selectSlide(slideIndex + 1);
     }
 
     function updateNavButtons() {
       var prev = document.getElementById('prev-btn');
       var next = document.getElementById('next-btn');
-      prev.disabled = slideIndex <= 1;
-      next.disabled = slideIndex >= totalSlides;
+      if (prev) prev.disabled = slideIndex <= 1;
+      if (next) next.disabled = slideIndex >= totalSlides;
     }
 
     // ════════════════════════════════════════
