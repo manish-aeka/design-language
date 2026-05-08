@@ -968,9 +968,11 @@
 
     // ─── Open wizard for connector ─────────────────────────────
     let _wizCat = 'db';
+    let _wizName = '';
     function openWizard(name) {
       const schema = WIZ_FIELDS[name] || { cat:'db', sub:'Configure your connection', fields:[] };
       _wizCat = schema.cat;
+      _wizName = name;
 
       document.getElementById('wizard-heading').textContent    = 'Add ' + name;
       document.getElementById('wizard-subheading').textContent = 'Configure your connection step by step';
@@ -1281,6 +1283,21 @@
 
     // ─── Finish wizard ────────────────────────────────────────
     function finishWizard() {
+      const connName = document.getElementById('conn-name').value.trim() || _wizName;
+      const typeMap  = { db: 'Database', file: 'File', api: 'API' };
+      const newDs = {
+        name:      connName,
+        type:      typeMap[_wizCat] || 'Database',
+        connector: _wizName,
+        status:    'Pending',
+        tables:    _wizCat === 'file' ? 1 : _wizCat === 'api' ? 2 : 4
+      };
+      try {
+        const existing = JSON.parse(localStorage.getItem('aibii_added_datasources') || '[]');
+        const deduped  = existing.filter(d => d.name !== newDs.name);
+        deduped.push(newDs);
+        localStorage.setItem('aibii_added_datasources', JSON.stringify(deduped));
+      } catch(e) {}
       showView('view-add');
       showToast('Datasource connected successfully!');
     }
