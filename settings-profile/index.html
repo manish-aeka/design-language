@@ -1119,15 +1119,15 @@
               <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color:#D97706" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
               <p class="text-[12px] leading-relaxed" style="color:#92400E">Some datasources are <strong>Pending</strong> — click <strong>Select Tables</strong> to choose which tables to include, then click <strong>Start Processing</strong> to begin the integration.</p>
             </div>
-            <div class="rounded-xl border border-gray-200 flex-1 min-h-0" style="overflow-x:hidden;overflow-y:auto;">
-                <table class="w-full text-[13px] table-fixed">
+            <div class="rounded-xl border border-gray-200 flex-1 min-h-0" style="overflow-x:auto;overflow-y:auto;">
+                <table class="w-full text-[13px] table-fixed" style="min-width:820px">
                   <thead class="sticky top-0 z-10">
                     <tr class="bg-gray-50 border-b border-gray-200">
-                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Name</th>
-                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Category</th>
-                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:16%">Status</th>
-                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:9%">Tables</th>
-                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%"></th>
+                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:40%">Name</th>
+                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Category</th>
+                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:25%">Status</th>
+                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:15%">Tables</th>
+                      <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:20%">Action</th>
                     </tr>
                   </thead>
                   <tbody id="org-ds-tbody"></tbody>
@@ -1765,22 +1765,34 @@
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
           <td class="px-4 py-3 text-gray-500 text-[13px]">${d.status === 'Pending' ? '—' : (ORG_DS_MOCK[d.name]?.tables.length ?? d.tables)}</td>
-          <td class="px-4 py-3 text-right">
-            <div class="inline-flex items-center gap-2">
+          <td class="px-4 py-3">
             ${(() => {
-              const viewActive   = `<button onclick="openOrgDsTables('${d.name}', '${d.type}', '${d.status}')" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium transition-colors" style="color:#5B63F6;border:1px solid #C7D2FE;background:#EEF2FF" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>View Tables</button>`;
-              const viewDisabled = `<button disabled class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-gray-400 border border-gray-200 bg-gray-50 cursor-not-allowed"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>View Tables</button>`;
-              const selectActive  = `<button onclick="openCompleteIntegration('${d.name}','${d.type}')" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-amber-700 border border-amber-200 bg-amber-50 hover:bg-amber-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Select Tables</button>`;
-              const selectDone    = `<button disabled class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-semibold cursor-not-allowed" style="background:#DCFCE7;color:#15803D;opacity:0.75"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Select Tables</button>`;
-              const reviewActive  = `<button onclick="openOrgDsTables('${d.name}', '${d.type}', '${d.status}')" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-orange-600 border border-orange-200 bg-orange-50 hover:bg-orange-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.042.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.042-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>Review</button>`;
-              const reviewDone    = `<button disabled class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-semibold cursor-not-allowed" style="background:#DCFCE7;color:#15803D;opacity:0.75"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.042.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.042-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>Review</button>`;
-              const reviewGray    = `<button disabled class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-gray-400 border border-gray-200 bg-gray-50 cursor-not-allowed"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.042.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.042-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>Review</button>`;
-              if (d.status === 'Pending')    return viewDisabled + selectActive  + reviewGray;
-              if (d.status === 'Processing') return viewDisabled + selectDone    + reviewDone;
-              if (d.status === 'Review')     return viewDisabled + selectDone    + reviewActive;
-              return viewActive + selectDone + reviewDone;
+              const eyeIcon = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+              const viewBtn = `<button onclick="openOrgDsTables('${d.name}','${d.type}','${d.status}')" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium transition-colors" style="color:#5B63F6;border:1px solid #C7D2FE;background:#EEF2FF" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">${eyeIcon} View Tables</button>`;
+              if (d.status === 'Pending') return `
+                <div class="flex items-center gap-2">
+                  <button onclick="openCompleteIntegration('${d.name}','${d.type}')" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-semibold transition-colors" style="color:#92400E;border:1px solid #FCD34D;background:#FFFBEB" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#FFFBEB'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Select Tables
+                  </button>
+                </div>`;
+              if (d.status === 'Processing') return `
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium" style="color:#2563EB;background:#EFF6FF">
+                    <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                    Processing…
+                  </span>
+                  ${viewBtn}
+                </div>`;
+              if (d.status === 'Review') return `
+                <div class="flex items-center gap-2">
+                  <button onclick="openOrgDsTables('${d.name}','${d.type}','${d.status}')" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-semibold transition-colors" style="color:#9A3412;border:1px solid #FDBA74;background:#FFF7ED" onmouseover="this.style.background='#FFEDD5'" onmouseout="this.style.background='#FFF7ED'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.042.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.042-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>
+                    Review Now
+                  </button>
+                </div>`;
+              return `<div class="flex items-center gap-2">${viewBtn}</div>`;
             })()}
-            </div>
           </td>
         </tr>`;
       }).join('');
