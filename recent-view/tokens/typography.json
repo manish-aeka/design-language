@@ -7,28 +7,38 @@
       }
     },
     "size": {
-      "display":    { "value": "28px", "comment": "Page title (Recent)" },
-      "subtitle":   { "value": "14px", "comment": "Page subtitle under the title" },
-      "headingMd":  { "value": "16px", "comment": "Section / dialog headings" },
-      "bodyMd":     { "value": "14px", "comment": "Action card labels, nav labels" },
-      "bodySm":     { "value": "13px", "comment": "Action card descriptions" },
-      "cardTitle":  { "value": "14px", "comment": "Document card title" },
-      "tab":        { "value": "14px", "comment": "Filter tab labels" },
-      "label":      { "value": "12px", "comment": "Timestamps (Edited N minutes ago)" },
-      "caption":    { "value": "11px", "comment": "Helper text, explore free features banner" }
+      "navPrimary":           { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Primary nav labels (text-sm)" },
+      "navActive":            { "value": "14px",   "weight": "500", "color": "#111827", "comment": "Active nav item label (font-medium)" },
+      "navSub":               { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sub-item labels" },
+      "sectionLabel":         { "value": "11px",   "weight": "500", "color": "#9CA3AF", "comment": "PROJECTS uppercase section label (tracking-widest)" },
+      "workspaceName":        { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Workspace switcher name (font-semibold, text-sm)" },
+      "pageTitle":            { "value": "22px",   "weight": "700", "color": "#111827", "comment": "\"Recent\" or workspace page heading" },
+      "pageSubtitle":         { "value": "14px",   "weight": "400", "color": "#6B7280", "comment": "Supporting subtitle below page heading" },
+      "cardTitle":            { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Document card title in grid view" },
+      "cardTitleList":        { "value": "13px",   "weight": "500", "color": "#111827", "comment": "Document title in list view row (truncated)" },
+      "cardTimestamp":        { "value": "12px",   "weight": "400", "color": "#6B7280", "comment": "\"Edited N minutes ago\" timestamp on card" },
+      "actionCardLabel":      { "value": "14px",   "weight": "500", "color": "#111827", "comment": "Action shortcut card label" },
+      "actionCardDesc":       { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Action shortcut card description" },
+      "tabLabel":             { "value": "13px",   "weight": "500", "color": "#6B7280", "comment": "Inactive filter tab label (gray-500)" },
+      "tabLabelActive":       { "value": "13px",   "weight": "600", "color": "#111827", "comment": "Active filter tab label (gray-900, font-semibold)" },
+      "typeBadge":            { "value": "11px",   "weight": "500", "color": "varies",  "comment": "Content-type badge label — colour from contentType tokens" },
+      "contextMenuItem":      { "value": "13px",   "weight": "400", "color": "#374151", "comment": ".card-menu-item label (gray-700)" },
+      "toolbarBtn":           { "value": "12px",   "weight": "500", "color": "#374151", "comment": "Toolbar button labels (Sort, Filter, etc.)" }
     },
     "weight": {
-      "regular":    { "value": "400" },
-      "medium":     { "value": "500" },
-      "semiBold":   { "value": "600" },
-      "bold":       { "value": "700" },
-      "extraBold":  { "value": "800" }
+      "regular":              { "value": "400" },
+      "medium":               { "value": "500" },
+      "semiBold":             { "value": "600" },
+      "bold":                 { "value": "700" },
+      "extraBold":            { "value": "800" }
     },
     "lineHeight": {
-      "tight":      { "value": "1.2", "comment": "Display title" },
-      "snug":       { "value": "1.3", "comment": "Labels, tabs, captions" },
-      "normal":     { "value": "1.4", "comment": "Card titles, body small" },
-      "relaxed":    { "value": "1.5", "comment": "Body text, nav labels, subtitle" }
+      "tight":                { "value": "1.2",  "comment": "Page title" },
+      "normal":               { "value": "1.5",  "comment": "Card titles, nav items, tab labels" },
+      "relaxed":              { "value": "1.65", "comment": "Action card descriptions, subtitles" }
+    },
+    "letterSpacing": {
+      "wide":                 { "value": "0.08em", "comment": "PROJECTS section label (uppercase tracking-widest)" }
     }
   }
 }

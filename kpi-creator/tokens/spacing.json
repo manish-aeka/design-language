@@ -9,6 +9,12 @@
     "topbarHeight":          { "value": "44px",    "comment": "h-11 topbar" },
     "canvasPadding":         { "value": "32px",    "comment": "p-8 — padding wrapping the chart card inside the canvas" }
   },
+  "toolbar": {
+    "buttonHeight":          { "value": "30px",    "comment": "h-[30px] .toolbar-btn height" },
+    "buttonPaddingX":        { "value": "10px",    "comment": "px-[10px] .toolbar-btn horizontal padding" },
+    "buttonGap":             { "value": "6px",     "comment": "gap-1.5 between icon and label inside .toolbar-btn" },
+    "buttonBorderRadius":    { "value": "8px",     "comment": "border-radius on .toolbar-btn" }
+  },
   "chatPanel": {
     "paddingX":              { "value": "12px",    "comment": "px-3 — horizontal padding inside message list and input area" },
     "paddingYMessages":      { "value": "16px",    "comment": "py-4 — vertical padding on message list" },

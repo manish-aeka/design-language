@@ -1,0 +1,50 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
+  },
+  "layout": {
+    "sidebarWidth":           { "value": "220px",  "comment": "Fixed sidebar width" },
+    "topbarHeight":           { "value": "44px",   "comment": "h-11 topbar strip" },
+    "contentMaxWidth":        { "value": "480px",  "comment": "Max width of the create workspace form panel" },
+    "contentPaddingX":        { "value": "40px",   "comment": "Horizontal padding on the main content area" },
+    "contentPaddingY":        { "value": "48px",   "comment": "Vertical padding on the main content area" }
+  },
+  "sidebar": {
+    "paddingX":               { "value": "12px",   "comment": "px-3 nav horizontal padding" },
+    "paddingY":               { "value": "8px",    "comment": "py-2 nav vertical padding" },
+    "navItemHeight":          { "value": "36px",   "comment": "h-9 primary nav row height" },
+    "navItemGap":             { "value": "10px",   "comment": "gap-2.5 icon-to-label gap" },
+    "navItemPaddingX":        { "value": "12px",   "comment": "px-3 inside each nav item" },
+    "subItemHeight":          { "value": "32px",   "comment": "h-8 sub-item row height" },
+    "subItemIndent":          { "value": "16px",   "comment": "pl-4 indent for sub-item block" },
+    "dividerMarginX":         { "value": "12px",   "comment": "mx-3 on section dividers" }
+  },
+  "formField": {
+    "labelMarginBottom":      { "value": "6px",    "comment": "mb-1.5 gap between label and input" },
+    "inputHeight":            { "value": "40px",   "comment": "h-10 standard input field height" },
+    "inputPaddingX":          { "value": "12px",   "comment": "px-3 inside input" },
+    "inputBorderWidth":       { "value": "1px",    "comment": "Border on input at rest" },
+    "fieldGap":               { "value": "20px",   "comment": "space-y-5 between form field rows" },
+    "helperMarginTop":        { "value": "4px",    "comment": "mt-1 above helper text" }
+  },
+  "avatarPicker": {
+    "size":                   { "value": "44px",   "comment": "w-11 h-11 workspace avatar preview" },
+    "swatchSize":             { "value": "24px",   "comment": "w-6 h-6 colour swatch in picker" },
+    "swatchGap":              { "value": "8px",    "comment": "gap-2 between swatches" },
+    "ringWidth":              { "value": "2px",    "comment": "Ring width on selected swatch" },
+    "ringOffset":             { "value": "2px",    "comment": "Ring offset on selected swatch" }
+  },
+  "createButton": {
+    "height":                 { "value": "40px",   "comment": "h-10 Create Workspace button height" },
+    "paddingX":               { "value": "24px",   "comment": "px-6 Create button horizontal padding" },
+    "marginTop":              { "value": "32px",   "comment": "mt-8 gap above the Create button" }
+  },
+  "borderRadius": {
+    "sm":                     { "value": "4px",    "comment": "Small badges" },
+    "md":                     { "value": "8px",    "comment": "Buttons, small controls" },
+    "lg":                     { "value": "12px",   "comment": "Input fields, modals" },
+    "navItem":                { "value": "8px",    "comment": "rounded-lg on nav items" },
+    "avatar":                 { "value": "50%",    "comment": "Circular workspace avatar" },
+    "swatch":                 { "value": "50%",    "comment": "Circular colour swatches" }
+  }
+}

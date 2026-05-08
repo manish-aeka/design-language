@@ -1,0 +1,47 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Loaded from Google Fonts at weights 400/500/600/700/800"
+      }
+    },
+    "size": {
+      "navPrimary":           { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Primary nav labels (text-sm)" },
+      "navSub":               { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sub-item labels" },
+      "sectionLabel":         { "value": "11px",   "weight": "500", "color": "#9CA3AF", "comment": "PROJECTS uppercase section label" },
+      "workspaceName":        { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Workspace switcher name" },
+      "topbarTitle":          { "value": "15px",   "weight": "600", "color": "#111827", "comment": "Document title in topbar" },
+      "toolbarBtn":           { "value": "12px",   "weight": "500", "color": "#374151", "comment": "Toolbar button labels (Share, Export, etc.)" },
+      "formatBtn":            { "value": "13px",   "weight": "500", "color": "#374151", "comment": "Format toolbar button labels (B, I, U, etc.)" },
+      "editorH1":             { "value": "28px",   "weight": "700", "color": "#111827", "comment": "Document heading level 1" },
+      "editorH2":             { "value": "22px",   "weight": "700", "color": "#111827", "comment": "Document heading level 2" },
+      "editorH3":             { "value": "18px",   "weight": "600", "color": "#111827", "comment": "Document heading level 3" },
+      "editorBody":           { "value": "15px",   "weight": "400", "color": "#111827", "comment": "Document body prose text (#doc-body)" },
+      "editorPlaceholder":    { "value": "15px",   "weight": "400", "color": "#9CA3AF", "comment": "Contenteditable placeholder (gray-400)" },
+      "aiPanelHeading":       { "value": "14px",   "weight": "600", "color": "#111827", "comment": "AI panel section heading" },
+      "aiPanelSubtitle":      { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "AI panel subtitle / description" },
+      "aiInput":              { "value": "13px",   "weight": "400", "color": "#374151", "comment": "AI chat input textarea text" },
+      "aiInputPlaceholder":   { "value": "13px",   "weight": "400", "color": "#9CA3AF", "comment": "AI input placeholder (gray-400)" },
+      "suggestBtn":           { "value": "13px",   "weight": "500", "color": "#374151", "comment": ".suggest-btn label text" },
+      "aiTypingCursor":       { "value": "15px",   "weight": "400", "color": "#5B63F6", "comment": "Typing cursor animation colour (brand primary)" },
+      "sourcesDrawerHeader":  { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Sources drawer panel heading" },
+      "sourcesItem":          { "value": "12px",   "weight": "400", "color": "#4B5563", "comment": "Individual source item label" }
+    },
+    "weight": {
+      "regular":              { "value": "400" },
+      "medium":               { "value": "500" },
+      "semiBold":             { "value": "600" },
+      "bold":                 { "value": "700" },
+      "extraBold":            { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":                { "value": "1.25", "comment": "Heading levels H1–H3" },
+      "normal":               { "value": "1.5",  "comment": "Nav items, toolbar labels, UI text" },
+      "prose":                { "value": "1.75", "comment": "Document body text (line-height: 1.75)" }
+    },
+    "letterSpacing": {
+      "wide":                 { "value": "0.08em", "comment": "PROJECTS section label uppercase" }
+    }
+  }
+}

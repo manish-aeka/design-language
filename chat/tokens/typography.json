@@ -1,0 +1,46 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Loaded from Google Fonts at weights 400/500/600/700/800"
+      }
+    },
+    "size": {
+      "navPrimary":           { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Primary nav labels (text-sm)" },
+      "navSub":               { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sub-item labels (text-[13px])" },
+      "navActive":            { "value": "14px",   "weight": "500", "color": "#111827", "comment": "Active nav item label (font-medium)" },
+      "sectionLabel":         { "value": "11px",   "weight": "500", "color": "#9CA3AF", "comment": "PROJECTS section header (uppercase tracking-widest)" },
+      "workspaceName":        { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Workspace switcher name (font-semibold, text-sm)" },
+      "workspaceAvatar":      { "value": "12px",   "weight": "700", "color": "#FFFFFF", "comment": "Workspace avatar initials (text-xs font-bold)" },
+      "topbarTitle":          { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Topbar conversation title" },
+      "modelDropdownLabel":   { "value": "13px",   "weight": "500", "color": "#374151", "comment": "Selected model name in topbar button" },
+      "bubbleText":           { "value": "14px",   "weight": "400", "color": "#111827", "comment": "Message bubble body text (text-sm)" },
+      "timestamp":            { "value": "11px",   "weight": "400", "color": "#9CA3AF", "comment": "Message timestamp label" },
+      "chipLabel":            { "value": "13px",   "weight": "500", "color": "#374151", "comment": "Suggestion chip text" },
+      "inputText":            { "value": "14px",   "weight": "400", "color": "#111827", "comment": "User typing text inside textarea" },
+      "inputPlaceholder":     { "value": "14px",   "weight": "400", "color": "#9CA3AF", "comment": "Textarea placeholder" },
+      "sendButton":           { "value": "12px",   "weight": "600", "color": "#FFFFFF", "comment": "Send button label" },
+      "sourcePill":           { "value": "11px",   "weight": "500", "color": "#5B63F6", "comment": "Source reference pill label" },
+      "aiActionBtn":          { "value": "12px",   "weight": "400", "color": "#6B7280", "comment": "Copy / Like / Dislike AI action labels" },
+      "drawerHeader":         { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Sources drawer panel heading" },
+      "drawerAccordionTitle": { "value": "13px",   "weight": "500", "color": "#374151", "comment": "Sources accordion group title" },
+      "drawerItem":           { "value": "12px",   "weight": "400", "color": "#4B5563", "comment": "Individual source item label inside accordion" }
+    },
+    "weight": {
+      "regular":              { "value": "400" },
+      "medium":               { "value": "500" },
+      "semiBold":             { "value": "600" },
+      "bold":                 { "value": "700" },
+      "extraBold":            { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":                { "value": "1.25", "comment": "Topbar title, button labels" },
+      "normal":               { "value": "1.5",  "comment": "Nav items, chips, timestamps" },
+      "relaxed":              { "value": "1.65", "comment": "Message bubble body text" }
+    },
+    "letterSpacing": {
+      "wide":                 { "value": "0.08em", "comment": "PROJECTS section label uppercase" }
+    }
+  }
+}

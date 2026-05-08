@@ -1,40 +1,111 @@
 {
   "color": {
     "brand": {
-      "primary":         { "value": "#5B63F6", "comment": "Links, active tab text, icon strokes, focus rings" },
-      "secondary":       { "value": "#7C6FF7", "comment": "Gradient end, AI and Upgrade accents" },
-      "gradientStart":   { "value": "#4F6EF7", "comment": "Logo gradient start" },
-      "gradientEnd":     { "value": "#8B5CF6", "comment": "Logo gradient end" }
+      "primary":              { "value": "#5B63F6", "comment": "Active nav border, active tab text, toggle active icon, focus rings" },
+      "secondary":            { "value": "#7C6FF7", "comment": "Gradient end, AI and Upgrade accents" },
+      "upgrade":              { "value": "#7C3AED", "comment": "Upgrade this workspace link (violet-700)" },
+      "workspace":            { "value": "#3B5BDB", "comment": "Workspace switcher avatar background" }
     },
-    "background": {
-      "base":            { "value": "#FFFFFF", "comment": "Page background" },
-      "sidebar":         { "value": "#F8F9FC", "comment": "Left navigation sidebar" },
-      "hover":           { "value": "#EEF2FF", "comment": "Nav item hover" },
-      "card":            { "value": "#FFFFFF", "comment": "Document card surface" },
-      "placeholder":     { "value": "#F0F1F4", "comment": "Empty document thumbnail background" },
-      "tabActive":       { "value": "#FFFFFF", "comment": "Active pill tab background" },
-      "tabInactive":     { "value": "transparent", "comment": "Inactive tab background" },
-      "tabContainer":    { "value": "#F3F4F6", "comment": "Pill group container background" }
+    "surface": {
+      "page":                 { "value": "#FFFFFF", "comment": "Page and sidebar background" },
+      "sidebar":              { "value": "#F8F9FC", "comment": "Left navigation sidebar" },
+      "card":                 { "value": "#FFFFFF", "comment": "Document / action card surface" },
+      "tabContainer":         { "value": "#F3F4F6", "comment": "Pill group container background (gray-100)" },
+      "tabActive":            { "value": "#FFFFFF", "comment": "Active pill tab background" },
+      "placeholder":          { "value": "#F0F1F4", "comment": "Empty document thumbnail background" }
+    },
+    "nav": {
+      "item.text":            { "value": "#374151", "comment": "Primary nav text (gray-700)" },
+      "item.hover.bg":        { "value": "#EEF2FF", "comment": "Nav item hover background (indigo-50)" },
+      "item.active.bg":       { "value": "#EEF2FF", "comment": "Active nav item background" },
+      "item.active.border":   { "value": "#5B63F6", "comment": "Active nav item left border (2px)" },
+      "item.active.text":     { "value": "#111827", "comment": "Active nav item label (gray-900, font-medium)" },
+      "sub.text":             { "value": "#6B7280", "comment": "Sub-item text (gray-500)" },
+      "sidebar.border":       { "value": "#F3F4F6", "comment": "Sidebar right border and dividers (gray-100)" },
+      "sectionLabel":         { "value": "#9CA3AF", "comment": "PROJECTS section label (gray-400)" }
+    },
+    "reportCard": {
+      "bg":                   { "value": "#FFFFFF", "comment": "Report / document card background" },
+      "border":               { "value": "#E5E7EB", "comment": "Card border at rest (gray-200)" },
+      "border.hover":         { "value": "rgba(91,99,246,0.40)", "comment": "Card border on hover — brand primary at 40% opacity" },
+      "shadow":               { "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "comment": "Card resting shadow" },
+      "shadow.hover":         { "value": "0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)", "comment": "Card elevated shadow on hover" },
+      "listView.hover.bg":    { "value": "#F9FAFB", "comment": "Card row background on hover in list view (gray-50)" },
+      "listView.divider":     { "value": "#F3F4F6", "comment": "Row divider between cards in list view (gray-100)" },
+      "overflowBtn.opacity":  { "value": "0",       "comment": "Overflow ⋯ button opacity at rest (shown on card hover)" }
+    },
+    "actionCard": {
+      "bg":                   { "value": "#FFFFFF", "comment": "Action shortcut card background" },
+      "border":               { "value": "#E5E7EB", "comment": "Action card border at rest" },
+      "shadow.hover":         { "value": "0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)", "comment": "Action card hover shadow" },
+      "icon":                 { "value": "#5B63F6", "comment": "Action card icon colour (brand primary)" }
+    },
+    "contextMenu": {
+      "bg":                   { "value": "#FFFFFF", "comment": "#card-menu background" },
+      "border":               { "value": "#E5E7EB", "comment": "#card-menu border (gray-200)" },
+      "shadow":               { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "#card-menu drop-shadow" },
+      "item.bg.hover":        { "value": "#F3F4F6", "comment": ".card-menu-item hover background (gray-100)" },
+      "item.text":            { "value": "#374151", "comment": ".card-menu-item text (gray-700)" },
+      "item.destructive":     { "value": "#EF4444", "comment": "Delete / destructive menu item text (red-500)" },
+      "item.destructive.bg":  { "value": "#FEF2F2", "comment": "Delete / destructive menu item hover bg (red-50)" }
+    },
+    "toggle": {
+      "btn.bg.active":        { "value": "#EEF2FF", "comment": ".toggle-btn.toggle-active background (indigo-50)" },
+      "btn.shadow.active":    { "value": "0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08)", "comment": "Active toggle button shadow" },
+      "btn.text.active":      { "value": "#5B63F6", "comment": "Active toggle icon colour (brand primary)" },
+      "btn.bg.hover":         { "value": "rgba(0,0,0,0.05)", "comment": "Inactive toggle hover background" },
+      "btn.text.hover":       { "value": "#6B7280", "comment": "Inactive toggle hover icon colour (gray-500)" },
+      "btn.text.rest":        { "value": "#9CA3AF", "comment": "Toggle icon at rest (gray-400)" }
+    },
+    "typeFilter": {
+      "item.bg.hover":        { "value": "#F3F4F6", "comment": ".type-item hover background (gray-100)" },
+      "item.text":            { "value": "#374151", "comment": "Type filter option text (gray-700)" }
+    },
+    "tab": {
+      "active.bg":            { "value": "#FFFFFF", "comment": "Active filter tab background (white pill)" },
+      "active.shadow":        { "value": "0 1px 4px rgba(0,0,0,0.10)", "comment": "Active tab pill shadow" },
+      "active.text":          { "value": "#111827", "comment": "Active tab text (gray-900)" },
+      "inactive.text":        { "value": "#6B7280", "comment": "Inactive tab text (gray-500)" }
+    },
+    "contentType": {
+      "chat":                 { "value": "#5B63F6", "comment": "Chat item icon colour (brand primary)" },
+      "dashboard":            { "value": "#16A34A", "comment": "Dashboard item icon colour (green-600)" },
+      "document":             { "value": "#F97316", "comment": "Document item icon colour (orange-500)" },
+      "presentation":         { "value": "#8B5CF6", "comment": "Presentation item icon colour (violet-500)" }
     },
     "text": {
-      "primary":         { "value": "#111827", "comment": "Page title, card titles, nav labels" },
-      "secondary":       { "value": "#6B7280", "comment": "Subtitle, timestamps, inactive tab text" },
-      "tertiary":        { "value": "#9CA3AF", "comment": "Placeholder and disabled states" },
-      "link":            { "value": "#5B63F6", "comment": "Active tab text, action icon labels" },
-      "upgrade":         { "value": "#7C3AED", "comment": "Upgrade this workspace link" }
+      "primary":              { "value": "#111827", "comment": "Page title, card names, nav active" },
+      "secondary":            { "value": "#6B7280", "comment": "Subtitles, timestamps, inactive labels" },
+      "tertiary":             { "value": "#9CA3AF", "comment": "Placeholder text, disabled states" }
     },
-    "border": {
-      "default":         { "value": "#E5E7EB", "comment": "Card borders, tab container border" },
-      "subtle":          { "value": "#F3F4F6", "comment": "Sidebar dividers" },
-      "tabActive":       { "value": "#E5E7EB", "comment": "Active pill tab border" }
+    "modal": {
+      "backdrop":             { "value": "rgba(0,0,0,0.40)", "comment": "Workspace switcher modal backdrop" },
+      "bg":                   { "value": "#FFFFFF", "comment": "Modal panel background" }
+    },    "freeBanner": {
+      "bg":               { "value": "#E8EEFF", "comment": "'Explore free features' sidebar banner background" },
+      "icon.bg":          { "value": "#C7D2FE", "comment": "Banner sparkle icon circle bg (indigo-200)" },
+      "icon.color":       { "value": "#4F6EF7", "comment": "Banner sparkle icon colour" },
+      "title":            { "value": "#3B4ECC", "comment": "Banner title text" },
+      "credit":           { "value": "#6B7ADE", "comment": "'Credit left: 15' text" }
     },
-    "icon": {
-      "brand":           { "value": "#5B63F6", "comment": "Action card icons" },
-      "muted":           { "value": "#D1D5DB", "comment": "Document placeholder icons" }
+    "notifDropdown": {
+      "bg":               { "value": "#FFFFFF", "comment": "#notif-dropdown background" },
+      "border":           { "value": "#E5E7EB", "comment": "Dropdown border (gray-200)" },
+      "shadow":           { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "Dropdown shadow" },
+      "unread.bg":        { "value": "rgba(238,242,255,0.40)", "comment": "Unread notification row (indigo-50/40)" },
+      "unread.hover":     { "value": "#EEF2FF", "comment": "Unread row hover (indigo-50)" },
+      "unread.dot":       { "value": "#6366F1", "comment": "Unread indicator dot (indigo-500)" },
+      "bell.dot":         { "value": "#EF4444", "comment": "Red notification dot on bell (red-500)" }
     },
-    "scrollbar": {
-      "thumb":           { "value": "#CBD5E1", "comment": "Scrollbar thumb" },
-      "track":           { "value": "transparent", "comment": "Scrollbar track" }
+    "userMenu": {
+      "bg":               { "value": "#FFFFFF", "comment": "#user-dropdown background" },
+      "border":           { "value": "#E5E7EB", "comment": "User menu border (gray-200)" },
+      "shadow":           { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "User menu shadow" },
+      "logout.text":      { "value": "#EF4444", "comment": "Log out option text (red-500)" },
+      "logout.hover.bg":  { "value": "#FEF2F2", "comment": "Log out hover background (red-50)" }
+    },    "scrollbar": {
+      "thumb":                { "value": "#CBD5E1", "comment": "Scrollbar thumb (slate-300)" },
+      "track":                { "value": "transparent", "comment": "Scrollbar track" }
     }
   }
 }

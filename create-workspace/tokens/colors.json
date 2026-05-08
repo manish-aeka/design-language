@@ -1,0 +1,46 @@
+{
+  "color": {
+    "brand": {
+      "primary":              { "value": "#5B63F6", "comment": "Create button background, focus ring, active nav border" },
+      "secondary":            { "value": "#7C6FF7", "comment": "Secondary brand — gradient end" },
+      "workspace":            { "value": "#3B5BDB", "comment": "Workspace switcher avatar background" }
+    },
+    "surface": {
+      "page":                 { "value": "#FFFFFF", "comment": "Page and sidebar background" },
+      "input.bg":             { "value": "#FFFFFF", "comment": "Text input background" },
+      "hover.bg":             { "value": "#F9FAFB", "comment": "Hover state on workspace switcher button (gray-50)" }
+    },
+    "nav": {
+      "item.text":            { "value": "#374151", "comment": "Primary nav text (gray-700)" },
+      "item.hover.bg":        { "value": "#EEF2FF", "comment": "Nav item hover background (indigo-50)" },
+      "sub.text":             { "value": "#6B7280", "comment": "Sub-item text (gray-500)" },
+      "sidebar.border":       { "value": "#F3F4F6", "comment": "Sidebar right border and dividers (gray-100)" },
+      "sectionLabel":         { "value": "#9CA3AF", "comment": "PROJECTS section label (gray-400)" }
+    },
+    "form": {
+      "label":                { "value": "#374151", "comment": "Input label text (gray-700)" },
+      "input.border":         { "value": "#D1D5DB", "comment": "Input border at rest (gray-300)" },
+      "input.border.focus":   { "value": "#5B63F6", "comment": "Input border on focus (brand primary)" },
+      "input.shadow.focus":   { "value": "0 0 0 3px rgba(91,99,246,0.12)", "comment": "Soft glow on focused input" },
+      "input.text":           { "value": "#111827", "comment": "Input value text (gray-900)" },
+      "input.placeholder":    { "value": "#9CA3AF", "comment": "Input placeholder text (gray-400)" },
+      "helperText":           { "value": "#6B7280", "comment": "Helper / hint text below inputs (gray-500)" },
+      "error":                { "value": "#EF4444", "comment": "Validation error text (red-500)" }
+    },
+    "createButton": {
+      "bg":                   { "value": "#5B63F6", "comment": "Enabled Create Workspace button background" },
+      "bg.hover":             { "value": "#4850e4", "comment": "Hover background — slightly darker brand primary" },
+      "bg.disabled":          { "value": "#E5E7EB", "comment": "Disabled button background (gray-200)" },
+      "text":                 { "value": "#FFFFFF", "comment": "Button text colour" },
+      "text.disabled":        { "value": "#9CA3AF", "comment": "Disabled button text (gray-400)" },
+      "shadow":               { "value": "0 2px 8px rgba(91,99,246,0.30)", "comment": "Enabled button drop-shadow" }
+    },
+    "avatarPicker": {
+      "ring":                 { "value": "#5B63F6", "comment": "Selected colour swatch ring" },
+      "workspace":            { "value": "#3B5BDB", "comment": "Default workspace colour swatch" }
+    },
+    "scrollbar": {
+      "thumb":                { "value": "#CBD5E1", "comment": "Scrollbar thumb (slate-300)" }
+    }
+  }
+}

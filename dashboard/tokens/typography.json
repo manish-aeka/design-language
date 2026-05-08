@@ -1,0 +1,45 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Loaded from Google Fonts at weights 400/500/600/700/800"
+      }
+    },
+    "size": {
+      "navPrimary":           { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Primary nav labels (text-sm)" },
+      "navSub":               { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sub-item labels" },
+      "sectionLabel":         { "value": "11px",   "weight": "500", "color": "#9CA3AF", "comment": "PROJECTS uppercase section label" },
+      "workspaceName":        { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Workspace switcher name" },
+      "topbarTitle":          { "value": "15px",   "weight": "600", "color": "#111827", "comment": "Dashboard name in topbar" },
+      "toolbarBtn":           { "value": "12px",   "weight": "500", "color": "#374151", "comment": "Toolbar button labels" },
+      "tabLabel":             { "value": "13px",   "weight": "500", "color": "#6B7280", "comment": "Inactive tab label (gray-500)" },
+      "tabLabelActive":       { "value": "13px",   "weight": "600", "color": "#111827", "comment": "Active tab label (gray-900, semibold)" },
+      "chartCardTitle":       { "value": "12px",   "weight": "600", "color": "#374151", "comment": ".chart-card-title — uppercase, letter-spacing" },
+      "chartCardMeta":        { "value": "11px",   "weight": "400", "color": "#9CA3AF", "comment": ".chart-card-meta — subtitle / data range" },
+      "kpiValue":             { "value": "28px",   "weight": "700", "color": "#111827", "comment": "Large KPI number display" },
+      "kpiLabel":             { "value": "12px",   "weight": "500", "color": "#6B7280", "comment": "KPI metric label below value" },
+      "kpiTrend":             { "value": "11px",   "weight": "600", "color": "varies",  "comment": "Trend badge — colour from kpi.trend tokens" },
+      "filterPanelHeading":   { "value": "13px",   "weight": "600", "color": "#E5E7EB", "comment": "Section heading inside dark filter panel" },
+      "filterPanelLabel":     { "value": "12px",   "weight": "400", "color": "#9CA3AF", "comment": "Filter label text on dark background" },
+      "filterToggleLabel":    { "value": "12px",   "weight": "500", "color": "#E5E7EB", "comment": "Toggle option label in dark mode" }
+    },
+    "weight": {
+      "regular":              { "value": "400" },
+      "medium":               { "value": "500" },
+      "semiBold":             { "value": "600" },
+      "bold":                 { "value": "700" },
+      "extraBold":            { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":                { "value": "1.25", "comment": "KPI values, chart titles" },
+      "normal":               { "value": "1.5",  "comment": "Nav items, toolbar labels, meta text" },
+      "relaxed":              { "value": "1.65", "comment": "Filter panel descriptions" }
+    },
+    "letterSpacing": {
+      "wide":                 { "value": "0.04em", "comment": ".chart-card-title uppercase letter spacing" },
+      "widest":               { "value": "0.08em", "comment": "PROJECTS section label uppercase" }
+    },
+    "tabularNums":            { "value": "tabular-nums", "comment": "Applied to KPI values and chart counters for alignment" }
+  }
+}

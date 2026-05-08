@@ -1,41 +1,81 @@
 {
   "spacing": {
-    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" },
-    "1":  { "value": "4px",  "comment": "Micro gaps, tab bar inner gap" },
-    "2":  { "value": "8px",  "comment": "Icon-to-label gap, page title icon gap" },
-    "3":  { "value": "12px", "comment": "Card info area padding, compact rows" },
-    "4":  { "value": "16px", "comment": "Card padding, grid gap, action card gap" },
-    "5":  { "value": "20px", "comment": "Sidebar horizontal padding" },
-    "6":  { "value": "24px", "comment": "Header-to-action-cards gap, tabs-to-grid gap" },
-    "7":  { "value": "28px", "comment": "Action-cards-to-filter-tabs gap" },
-    "8":  { "value": "32px", "comment": "Content area horizontal padding" },
-    "10": { "value": "40px", "comment": "Between major layout zones" }
-  },
-  "borderRadius": {
-    "sm":   { "value": "4px",    "comment": "Badges, tight labels" },
-    "md":   { "value": "8px",    "comment": "Buttons, icon backgrounds, nav items" },
-    "lg":   { "value": "12px",   "comment": "Document cards, action cards" },
-    "xl":   { "value": "16px",   "comment": "Modals, dialogs" },
-    "full": { "value": "9999px", "comment": "Pill tabs, avatar chips, scrollbar thumb" }
-  },
-  "shadow": {
-    "none":      { "value": "none", "comment": "Sidebar, flat surfaces" },
-    "card":      { "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "comment": "Document cards at rest" },
-    "cardHover": { "value": "0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)", "comment": "Document cards on hover" },
-    "tabActive": { "value": "0 1px 4px rgba(0,0,0,0.10)", "comment": "Active pill tab" },
-    "modal":     { "value": "0 20px 60px rgba(0,0,0,0.18)", "comment": "Modals and popovers" }
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
   },
   "layout": {
-    "sidebarWidth":       { "value": "220px", "comment": "Fixed sidebar width" },
-    "contentPaddingX":    { "value": "32px",  "comment": "Content area horizontal padding" },
-    "documentGridCols":   { "value": "4",     "comment": "Default document grid columns" },
-    "documentGridGap":    { "value": "16px",  "comment": "Gap between document cards" },
-    "actionCardGap":      { "value": "16px",  "comment": "Gap between action shortcut cards" },
-    "cardMinWidth":       { "value": "200px", "comment": "Minimum document card width" },
-    "tabHeight":          { "value": "32px",  "comment": "Height of each pill tab" },
-    "tabPaddingX":        { "value": "16px",  "comment": "Horizontal padding inside a tab" },
-    "tabContainerPad":    { "value": "4px",   "comment": "Inner padding of tab group container" },
-    "navItemHeight":      { "value": "36px",  "comment": "Sidebar nav item height" },
-    "scrollbarWidth":     { "value": "6px",   "comment": "Content area scrollbar width" }
+    "sidebarWidth":           { "value": "220px",  "comment": "Fixed sidebar width" },
+    "topbarHeight":           { "value": "44px",   "comment": "h-11 topbar strip" },
+    "contentPaddingX":        { "value": "32px",   "comment": "px-8 content area horizontal padding" },
+    "contentPaddingY":        { "value": "24px",   "comment": "py-6 content area top padding" },
+    "sidebarTransition":      { "value": "width 220ms ease, min-width 220ms ease, opacity 180ms ease", "comment": "Sidebar collapse / expand animation" }
+  },
+  "sidebar": {
+    "paddingX":               { "value": "12px",   "comment": "px-3 nav section horizontal padding" },
+    "paddingY":               { "value": "8px",    "comment": "py-2 nav section vertical padding" },
+    "navItemHeight":          { "value": "36px",   "comment": "h-9 primary nav row height" },
+    "navItemGap":             { "value": "10px",   "comment": "gap-2.5 icon-to-label gap" },
+    "navItemPaddingX":        { "value": "12px",   "comment": "px-3 inside each nav item" },
+    "subItemHeight":          { "value": "32px",   "comment": "h-8 sub-item row height" },
+    "subItemIndent":          { "value": "16px",   "comment": "pl-4 indent for sub-item block" },
+    "dividerMarginX":         { "value": "12px",   "comment": "mx-3 on section dividers" }
+  },
+  "toolbar": {
+    "height":                 { "value": "44px",   "comment": "h-11 content toolbar" },
+    "paddingX":               { "value": "16px",   "comment": "px-4 inside toolbar" },
+    "toggleBtnSize":          { "value": "28px",   "comment": "w-7 h-7 grid/list toggle button" },
+    "toggleBtnGap":           { "value": "4px",    "comment": "gap-1 between toggle buttons" }
+  },
+  "filterTabs": {
+    "containerPaddingX":      { "value": "4px",    "comment": "p-1 tab group container inset padding" },
+    "tabHeight":              { "value": "32px",   "comment": "h-8 filter tab height" },
+    "tabPaddingX":            { "value": "16px",   "comment": "px-4 inside each tab" },
+    "tabGap":                 { "value": "4px",    "comment": "gap-1 between tabs inside container" }
+  },
+  "reportCard": {
+    "minWidth":               { "value": "200px",  "comment": "Minimum card width in grid view" },
+    "thumbnailHeight":        { "value": "120px",  "comment": "Card thumbnail area height in grid view" },
+    "padding":                { "value": "12px",   "comment": "p-3 card info area padding" },
+    "gap":                    { "value": "16px",   "comment": "gap-4 between cards in grid" },
+    "hoverTranslateY":        { "value": "-1px",   "comment": "translateY on card hover" },
+    "listThumbSize":          { "value": "40px",   "comment": "w-10 h-10 thumbnail size in list view" },
+    "listThumbMargin":        { "value": "10px 12px 10px 16px", "comment": "Thumbnail margin in list view row" },
+    "listRowPaddingRight":    { "value": "16px",   "comment": "Right padding on list row body" },
+    "listTitleMaxWidth":      { "value": "200px",  "comment": "max-w on card title in list view to allow truncation" }
+  },
+  "actionCard": {
+    "minWidth":               { "value": "160px",  "comment": "Minimum action shortcut card width" },
+    "padding":                { "value": "16px",   "comment": "p-4 inside action card" },
+    "gap":                    { "value": "16px",   "comment": "gap-4 between action cards" },
+    "iconSize":               { "value": "24px",   "comment": "w-6 h-6 action card icon" }
+  },
+  "contextMenu": {
+    "minWidth":               { "value": "148px",  "comment": "min-w of #card-menu panel" },
+    "padding":                { "value": "4px",    "comment": "p-1 inside context menu" },
+    "itemHeight":             { "value": "34px",   "comment": "Approx height of .card-menu-item row (7px top+bottom, 13px font)" },
+    "itemPaddingX":           { "value": "10px",   "comment": "px-2.5 inside menu item" },
+    "itemPaddingY":           { "value": "7px",    "comment": "py-1.75 inside menu item" },
+    "itemGap":                { "value": "9px",    "comment": "gap-2.25 between icon and label in menu item" }
+  },
+  "typeBadge": {
+    "width":                  { "value": "96px",   "comment": "Fixed width of type badge in list view (justify-content: center)" },
+    "paddingX":               { "value": "8px",    "comment": "px-2 inside type badge" },
+    "paddingY":               { "value": "2px",    "comment": "py-0.5 inside type badge" }
+  },
+  "borderRadius": {
+    "sm":                     { "value": "4px",    "comment": "Badges, tight labels" },
+    "md":                     { "value": "8px",    "comment": "Buttons, nav items, icon backgrounds, list-view thumbnail" },
+    "lg":                     { "value": "12px",   "comment": "Document cards, action cards, list-view grid wrapper" },
+    "xl":                     { "value": "16px",   "comment": "Modals, context menu panel" },
+    "contextMenu":            { "value": "10px",   "comment": "#card-menu border-radius" },
+    "contextMenuItem":        { "value": "7px",    "comment": ".card-menu-item border-radius" },
+    "avatar":                 { "value": "50%",    "comment": "Circular avatars" },
+    "full":                   { "value": "9999px", "comment": "Pill tabs, scrollbar thumb" }
+  },
+  "shadow": {
+    "card":                   { "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "comment": "Card resting shadow" },
+    "cardHover":              { "value": "0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)", "comment": "Card hover shadow" },
+    "tabActive":              { "value": "0 1px 4px rgba(0,0,0,0.10)", "comment": "Active pill tab shadow" },
+    "contextMenu":            { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "Context menu drop-shadow" },
+    "modal":                  { "value": "0 20px 60px rgba(0,0,0,0.18)", "comment": "Modal / dialog shadow" }
   }
 }
