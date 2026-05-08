@@ -42,30 +42,45 @@
       };
       reader.readAsDataURL(file);
     }
-    function handleOrgLogoUpload(e) {
-      var file = e.target.files && e.target.files[0];
+    function _handleUpload(file, zoneId, inputId) {
       if (!file) return;
       var reader = new FileReader();
       reader.onload = function(ev) {
-        var badge = document.getElementById('org-logo-badge');
-        if (!badge) return;
-        badge.textContent = '';
-        badge.style.background = 'none';
-        badge.style.border = 'none';
-        badge.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover">';
+        var zone = document.getElementById(zoneId);
+        if (!zone) return;
+        zone.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover rounded-lg"/>';
+        zone.classList.remove('border-dashed', 'border-gray-300', 'bg-white');
+        zone.classList.add('border-solid', 'border-gray-200');
+        var rmBtn = document.getElementById(zoneId + '-remove');
+        if (rmBtn) rmBtn.classList.remove('hidden');
       };
       reader.readAsDataURL(file);
     }
-    function handleProfilePicUpload(e) {
-      var file = e.target.files && e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var box = document.querySelector('#section-profile .w-16');
-        if (!box) return;
-        box.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover">';
-      };
-      reader.readAsDataURL(file);
+    function _removeUpload(zoneId, placeholder, inputId) {
+      var zone = document.getElementById(zoneId);
+      if (zone) {
+        zone.innerHTML = placeholder;
+        zone.classList.add('border-dashed', 'border-gray-300', 'bg-white');
+        zone.classList.remove('border-solid', 'border-gray-200');
+      }
+      var inp = document.getElementById(inputId);
+      if (inp) inp.value = '';
+      var rmBtn = document.getElementById(zoneId + '-remove');
+      if (rmBtn) rmBtn.classList.add('hidden');
+    }
+    var _profilePlaceholder = '<div class="flex flex-col items-center justify-center gap-2 pointer-events-none"><svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="text-[11px] text-gray-400">Drag and drop or browse files</span></div>';
+    var _wsLogoPlaceholder = '<div class="flex flex-col items-center justify-center gap-2 pointer-events-none"><svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="text-[11px] text-gray-400">Drag and drop or browse files</span></div>';
+    var _orgLogoPlaceholder = '<div class="flex flex-col items-center justify-center gap-2 pointer-events-none"><svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="text-[11px] text-gray-400">Drag and drop or browse files</span></div>';
+    function handleOrgLogoUpload(e) { _handleUpload(e.target.files && e.target.files[0], 'org-upload-zone', 'org-logo-input'); }
+    function handleProfilePicUpload(e) { _handleUpload(e.target.files && e.target.files[0], 'profile-upload-zone', 'profile-pic-input'); }
+    function handleWsLogoUpload(e) { _handleUpload(e.target.files && e.target.files[0], 'ws-upload-zone', 'ws-logo-input'); }
+    function _setupDropZone(zoneId, inputId) {
+      var zone = document.getElementById(zoneId);
+      if (!zone) return;
+      zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.style.borderColor='#5B63F6'; zone.style.background='#EEF2FF'; });
+      zone.addEventListener('dragleave', function(){ zone.style.borderColor=''; zone.style.background=''; });
+      zone.addEventListener('drop', function(e){ e.preventDefault(); zone.style.borderColor=''; zone.style.background=''; var f=e.dataTransfer.files[0]; if(f){ var inp=document.getElementById(inputId); _handleUpload(f, zoneId, inputId); } });
+      zone.addEventListener('click', function(){ document.getElementById(inputId).click(); });
     }
   </script>
 
@@ -400,15 +415,6 @@
       <div id="section-profile" class="settings-panel active">
         <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
 
-          <!-- Picture -->
-          <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
-            <div class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center">
-              <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-            </div>
-            <button onclick="document.getElementById('profile-pic-input').click()" class="px-4 h-9 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload an image</button>
-            <input type="file" id="profile-pic-input" accept="image/*" onchange="handleProfilePicUpload(event)" class="hidden" />
-          </div>
-
           <!-- First / Last name -->
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -458,12 +464,26 @@
         <!-- Sub-panel: Workspace Info -->
         <div id="wspanel-info" class="ws-panel active">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
-            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
-              <div class="flex-1 min-w-0">
-                <p id="ws-display-name" class="text-[14px] font-semibold text-gray-900 px-1">Manish kumar's Workspace</p>
-                <p class="text-[12px] text-gray-400 mt-0.5 px-1">Created April 2024 · 3 members</p>
+            <div class="mb-4 pb-4 border-b border-gray-100">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
+                <div class="flex-1 min-w-0">
+                  <p id="ws-display-name" class="text-[14px] font-semibold text-gray-900">Manish kumar's Workspace</p>
+                  <p class="text-[12px] text-gray-400 mt-0.5">Created April 2024 · 3 members</p>
+                </div>
               </div>
+              <p class="text-[12px] font-medium text-gray-600 mb-2">Workspace icon</p>
+              <div id="ws-upload-zone" class="relative flex items-center justify-center w-full h-28 rounded-xl border border-dashed border-gray-300 bg-white cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-colors overflow-hidden">
+                <div class="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                  <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                  <span class="text-[11px] text-gray-400">Drag and drop or browse files</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mt-1.5">
+                <p class="text-[11px] text-gray-400">PNG, JPG or SVG · max 2 MB</p>
+                <button id="ws-upload-zone-remove" onclick="_removeUpload('ws-upload-zone',_wsLogoPlaceholder,'ws-logo-input')" class="hidden text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors">Remove</button>
+              </div>
+              <input type="file" id="ws-logo-input" accept="image/*" onchange="handleWsLogoUpload(event)" class="hidden" />
             </div>
             <div class="space-y-3 flex-1">
               <div>
@@ -792,10 +812,19 @@
         <div id="orgpanel-info" class="ws-panel active">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
 
-            <!-- Logo row — mirrors Profile picture row -->
-            <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
-              <div id="org-logo-badge" class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center text-gray-400 text-2xl font-bold">A</div>
-              <button onclick="document.getElementById('org-logo-input').click()" class="px-4 h-9 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload a logo</button>
+            <!-- Logo upload -->
+            <div class="mb-5 pb-5 border-b border-gray-100">
+              <p class="text-[12px] font-medium text-gray-600 mb-2">Organisation logo</p>
+              <div id="org-upload-zone" class="relative flex items-center justify-center w-full h-28 rounded-xl border border-dashed border-gray-300 bg-white cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-colors overflow-hidden">
+                <div class="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                  <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                  <span class="text-[11px] text-gray-400">Drag and drop or browse files</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mt-1.5">
+                <p class="text-[11px] text-gray-400">PNG, JPG or SVG · max 2 MB</p>
+                <button id="org-upload-zone-remove" onclick="_removeUpload('org-upload-zone',_orgLogoPlaceholder,'org-logo-input')" class="hidden text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors">Remove</button>
+              </div>
               <input type="file" id="org-logo-input" accept="image/*" onchange="handleOrgLogoUpload(event)" class="hidden" />
             </div>
 
@@ -1085,12 +1114,12 @@
   </div>
 
 </div>
+            <!-- Pending note banner — outside scroll, sits between toolbar and table -->
+            <div id="org-ds-pending-note" style="display:none;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;margin-bottom:8px" class="flex-shrink-0 items-start gap-2.5 px-4 py-3">
+              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color:#D97706" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+              <p class="text-[12px] leading-relaxed" style="color:#92400E">Some datasources are <strong>Pending</strong> — click <strong>Select Tables</strong> to choose which tables to include, then click <strong>Start Processing</strong> to begin the integration.</p>
+            </div>
             <div class="rounded-xl border border-gray-200 flex-1 min-h-0" style="overflow-x:hidden;overflow-y:auto;">
-                <!-- Pending note banner -->
-                <div id="org-ds-pending-note" style="display:none;background:#FFFBEB;border-bottom:1px solid #FDE68A" class="items-start gap-2.5 px-4 py-3">
-                  <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color:#D97706" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                  <p class="text-[12px] leading-relaxed" style="color:#92400E">Some datasources are <strong>Pending</strong> — click <strong>Select Tables</strong> to choose which tables to include, then click <strong>Start Processing</strong> to begin the integration.</p>
-                </div>
                 <table class="w-full text-[13px] table-fixed">
                   <thead class="sticky top-0 z-10">
                     <tr class="bg-gray-50 border-b border-gray-200">
@@ -2465,6 +2494,9 @@
       renderSettingDsTable();
       renderOrgDsTable();
       renderBillingInvoices(2026);
+      _setupDropZone('profile-upload-zone', 'profile-pic-input');
+      _setupDropZone('ws-upload-zone', 'ws-logo-input');
+      _setupDropZone('org-upload-zone', 'org-logo-input');
     });
 
     document.addEventListener('click', e => {
