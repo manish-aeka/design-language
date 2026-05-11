@@ -458,59 +458,61 @@
 
       <!-- Toolbar: search + filters + view toggle -->
       <div class="flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
+        <!-- Type filter dropdown -->
+        <div class="relative">
+          <button onclick="toggleDsTypeDd()" class="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:border-gray-300 transition-colors" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+            <span id="ds-type-label">Type</span>
+            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[155px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+            <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 font-medium">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+              All
+            </button>
+            <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+              Database
+            </button>
+            <button onclick="setDsFilter('File')" id="dsf-File" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              File
+            </button>
+            <button onclick="setDsFilter('API')" id="dsf-API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+              API
+            </button>
+          </div>
+        </div>
         <!-- Search -->
         <div class="relative flex-1 max-w-xs">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
           <input id="ds-search" type="text" placeholder="Search datasources..." oninput="filterDsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
         </div>
-        <!-- Type filter pills -->
+        <!-- Status filter pills -->
         <div class="flex items-center gap-1">
-          <button onclick="setDsFilter('all')"      id="dsf-all"      class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border transition-colors" style="background:#EEF2FF;color:#5B63F6;border-color:#C7D2FE">All</button>
-          <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Database</button>
-          <button onclick="setDsFilter('File')"     id="dsf-File"     class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">File</button>
-          <button onclick="setDsFilter('API')"      id="dsf-API"      class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">API</button>
-        </div>
-        <!-- Status filter -->
-        <div class="relative">
-          <button onclick="toggleDsStatusDd()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[12px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-            <span id="ds-status-label">Status</span>
-            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div id="ds-status-dd" class="hidden absolute top-full left-0 mt-1 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[140px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)">
-            <button onclick="setDsStatus('all')"       class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">All Status</button>
-            <button onclick="setDsStatus('Connected')" class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Connected</button>
-            <button onclick="setDsStatus('Syncing')"   class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Syncing</button>
-            <button onclick="setDsStatus('Error')"     class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Error</button>
-            <button onclick="setDsStatus('Pending')"   class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Pending</button>
-          </div>
+          <button onclick="setDsStatus('all')"       id="dss-pill-all"       class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border transition-colors" style="background:#EEF2FF;color:#5B63F6;border-color:#C7D2FE">All</button>
+          <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Connected</button>
+          <button onclick="setDsStatus('Syncing')"   id="dss-pill-Syncing"   class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Syncing</button>
+          <button onclick="setDsStatus('Error')"     id="dss-pill-Error"     class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Error</button>
+          <button onclick="setDsStatus('Pending')"   id="dss-pill-Pending"   class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Pending</button>
         </div>
         <div class="flex-1"></div>
-        <!-- Sort -->
-        <select id="ds-sort" onchange="renderDsList()" class="h-9 px-3 pr-7 text-[12px] text-gray-600 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400 cursor-pointer">
-          <option value="name">Sort: Name</option>
-          <option value="status">Sort: Status</option>
-          <option value="tables">Sort: Tables</option>
-          <option value="updated">Sort: Last Sync</option>
-        </select>
+        <!-- View toggle -->
+        <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+          <button id="ds-view-list" onclick="setDsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+          </button>
+          <button id="ds-view-grid" onclick="setDsView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+          </button>
+        </div>
       </div>
 
       <!-- Datasource list -->
       <div class="flex-1 overflow-y-auto px-6 py-4 relative">
 
-        <!-- Table header (sticky) -->
-        <div class="sticky top-0 z-10 flex items-center gap-4 px-5 py-3 mb-2 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-          <div class="w-[32px] flex-shrink-0"></div>
-          <div class="w-[280px] flex-shrink-0">Name / Connection</div>
-          <div class="w-[100px] text-center flex-shrink-0">Type</div>
-          <div class="w-[110px] text-center flex-shrink-0">Status</div>
-          <div class="w-[80px] text-center flex-shrink-0">Tables</div>
-          <div class="w-[140px] flex-shrink-0">Last Sync</div>
-          <div class="w-[140px] flex-shrink-0">Owner</div>
-          <div class="w-[90px] flex-shrink-0 text-right">Actions</div>
-        </div>
-
-        <div id="ds-list-body" class="space-y-2"></div>
+        <div id="ds-list-body" class="grid grid-cols-3 gap-4"></div>
 
         <!-- Empty state -->
         <div id="ds-empty" class="hidden flex-col items-center justify-center py-24 gap-4 text-center">
@@ -600,10 +602,20 @@
           <button id="ws-add-cancel" onclick="cancelWsAdd()" class="hidden h-9 px-3 rounded-lg text-[12px] font-medium text-gray-500 hover:bg-gray-100 transition-colors flex-shrink-0">
             Cancel
           </button>
+          <div class="flex-1"></div>
+          <!-- View toggle -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+            <button id="ws-view-list" onclick="setWsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            </button>
+            <button id="ws-view-grid" onclick="setWsView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+            </button>
+          </div>
         </div>
         <!-- Assigned list -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
-          <div id="ws-assign-list" class="space-y-2"></div>
+          <div id="ws-assign-list" class="grid grid-cols-3 gap-4"></div>
           <div id="ws-empty-state" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
               <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
@@ -667,9 +679,27 @@
             </div>
           </div>
         </div>
+        <!-- Toolbar -->
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+          <!-- Search -->
+          <div class="relative flex-1 max-w-xs">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+            <input id="proj-search" type="text" placeholder="Search datasources…" oninput="filterProjList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
+          </div>
+          <div class="flex-1"></div>
+          <!-- View toggle -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+            <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            </button>
+            <button id="proj-view-grid" onclick="setProjView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+            </button>
+          </div>
+        </div>
         <!-- List -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
-          <div id="proj-assign-list" class="space-y-2"></div>
+          <div id="proj-assign-list" class="grid grid-cols-3 gap-4"></div>
           <!-- Empty state if no ws assignments -->
           <div id="proj-empty-ws" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
@@ -715,39 +745,46 @@
         <div class="flex-1 overflow-y-auto px-6 py-5">
           <!-- Overview tab -->
           <div id="panel-overview" class="space-y-4">
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-gray-50 rounded-xl px-4 py-3">
-                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Status</p>
+            <!-- Status + Type + Tables + Owner -->
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+              <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                <span class="text-[12px] font-medium text-gray-400">Status</span>
                 <span id="panel-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-semibold"></span>
               </div>
-              <div class="bg-gray-50 rounded-xl px-4 py-3">
-                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Type</p>
-                <p id="panel-type" class="text-[13px] font-semibold text-gray-800"></p>
+              <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                <span class="text-[12px] font-medium text-gray-400">Type</span>
+                <span id="panel-type" class="text-[13px] font-semibold text-gray-900"></span>
               </div>
-              <div class="bg-gray-50 rounded-xl px-4 py-3">
-                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Tables</p>
-                <p id="panel-tables" class="text-[13px] font-semibold text-gray-800"></p>
+              <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                <span class="text-[12px] font-medium text-gray-400">Tables</span>
+                <span id="panel-tables" class="text-[13px] font-semibold text-gray-900"></span>
               </div>
-              <div class="bg-gray-50 rounded-xl px-4 py-3">
-                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Owner</p>
-                <p id="panel-owner" class="text-[13px] font-semibold text-gray-800"></p>
-              </div>
-            </div>
-            <div class="bg-gray-50 rounded-xl px-4 py-3">
-              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Sync Schedule</p>
-              <div class="flex items-center justify-between">
-                <p id="panel-schedule" class="text-[13px] font-semibold text-gray-800">Every 6 hours</p>
-                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full" style="background:#F0FDF4;color:#15803D">Active</span>
+              <div class="flex items-center justify-between px-5 py-3.5">
+                <span class="text-[12px] font-medium text-gray-400">Owner</span>
+                <span id="panel-owner" class="text-[13px] font-semibold text-gray-900"></span>
               </div>
             </div>
-            <div class="bg-gray-50 rounded-xl px-4 py-3">
-              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Connection Info</p>
-              <div id="panel-conn-info" class="space-y-1.5 text-[13px]"></div>
+            <!-- Sync Schedule -->
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+              <div class="px-5 py-3 border-b border-gray-100">
+                <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Sync Schedule</p>
+              </div>
+              <div class="flex items-center justify-between px-5 py-3.5">
+                <span id="panel-schedule" class="text-[13px] font-semibold text-gray-900">Every 6 hours</span>
+                <span class="text-[12px] font-semibold" style="color:#16A34A">Active</span>
+              </div>
+            </div>
+            <!-- Connection Info -->
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+              <div class="px-5 py-3 border-b border-gray-100">
+                <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Connection Info</p>
+              </div>
+              <div id="panel-conn-info" class="divide-y divide-gray-100 px-5"></div>
             </div>
             <!-- Actions -->
-            <div class="flex justify-end gap-2 pt-1 ds-edit-only">
-              <button onclick="syncDs(currentDetailId)" class="flex items-center justify-center gap-1.5 px-4 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+            <div class="flex justify-end pt-1 ds-edit-only">
+              <button onclick="syncDs(currentDetailId)" class="flex items-center gap-2 px-5 h-10 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
                 Sync Now
               </button>
             </div>
@@ -1738,6 +1775,10 @@
       return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${cls}">${dot}&nbsp;${status}</span>`;
     }
 
+    function statusCardBg(status) {
+      return { 'Connected': '#DCFCE7', 'Error': '#FEE2E2', 'Syncing': '#DCFCE7', 'Pending': '#F3F4F6' }[status] || '#EEF2FF';
+    }
+
     function typeIconHtml(type) {
       const icons = {
         'Database': `<svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>`,
@@ -1745,6 +1786,29 @@
         'API':      `<svg class="w-3.5 h-3.5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>`,
       };
       return icons[type] || '';
+    }
+
+    let _dsView = 'grid';
+    let _wsView  = 'grid';
+    let _projView = 'grid';
+
+    function setDsView(v) {
+      _dsView = v;
+      const btnList = document.getElementById('ds-view-list');
+      const btnGrid = document.getElementById('ds-view-grid');
+      if (btnList && btnGrid) {
+        btnList.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        if (v === 'list') btnList.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'; else btnList.style.boxShadow = '';
+        btnGrid.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'grid' ? 'bg-white text-gray-700' : 'text-gray-400');
+        if (v === 'grid') btnGrid.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'; else btnGrid.style.boxShadow = '';
+      }
+      const body = document.getElementById('ds-list-body');
+      if (v === 'grid') {
+        body.className = 'grid grid-cols-3 gap-4';
+      } else {
+        body.className = 'border border-gray-200 rounded-xl overflow-hidden';
+      }
+      renderDsList();
     }
 
     function renderDsList() {
@@ -1762,34 +1826,62 @@
       empty.classList.add('hidden');
       empty.classList.remove('flex');
 
-      body.innerHTML = list.map(d => `
-        <div class="ds-row flex items-center gap-4 px-5 py-4 rounded-xl border cursor-pointer" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
-          <div class="w-[32px] flex-shrink-0">${connectorIcon(d.connector, 24)}</div>
-          <div class="w-[280px] flex-shrink-0 min-w-0">
-            <p class="text-[14px] font-semibold text-gray-900 truncate leading-snug">${d.name}</p>
-            <p class="text-[12px] text-gray-500 mt-1 truncate">${d.connector}${d.host ? ' · ' + d.host : d.database ? '' : ''}</p>
+      body.innerHTML = _dsView === 'grid' ? list.map(d => `
+        <div class="ds-row group bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-indigo-300 hover:shadow-md" onclick="openDetailPanel('${d.id}')" id="row-${d.id}" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+          <!-- Card header -->
+          <div class="h-28 rounded-t-xl flex items-center justify-center" style="background:${statusCardBg(d.status)}">
+            <div style="transform:scale(1.6)">${connectorIcon(d.connector, 24)}</div>
           </div>
-          <div class="w-[100px] text-center flex-shrink-0">
-            <span class="inline-flex items-center justify-center gap-1.5 text-[13px] font-medium text-gray-700">${typeIconHtml(d.type)}<span>${d.type}</span></span>
-          </div>
-          <div class="w-[110px] text-center flex-shrink-0">${statusBadgeHtml(d.status)}</div>
-          <div class="w-[80px] text-center flex-shrink-0 text-[14px] font-semibold text-gray-800">${d.tables}</div>
-          <div class="w-[140px] flex-shrink-0 text-[12px] text-gray-500 flex items-center gap-1.5">
-            ${d.status === 'Syncing' ? '<svg class="w-3 h-3 ds-spin flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>' : ''}
-            <span class="truncate">${d.updated}</span>
-          </div>
-          <div class="w-[140px] flex-shrink-0 min-w-0">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style="background:#3B5BDB">${d.owner[0]}</div>
-              <span class="text-[13px] text-gray-700 font-medium truncate">${d.owner}</span>
+          <!-- Card body -->
+          <div class="px-4 pt-3 pb-3">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
+                <p class="text-[11px] text-gray-400 mt-0.5 truncate">${d.connector}${d.host ? ' · ' + d.host : ''}</p>
+              </div>
+              <div class="relative flex-shrink-0 -mt-0.5" onclick="event.stopPropagation()">
+                <button onclick="toggleDsCardMenu(event,'${d.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 text-gray-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(d.type)}<span>${d.type}</span></span>
+              ${statusBadgeHtml(d.status)}
+            </div>
+            <div class="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-100">
+              <div class="flex items-center gap-1.5">
+                <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
+                <span class="text-[11px] text-gray-500 truncate max-w-[80px]">${d.owner}</span>
+              </div>
+              <span class="text-[11px] text-gray-400">${d.tables} tables</span>
             </div>
           </div>
-          <div class="w-[90px] flex-shrink-0 flex items-center justify-end gap-1.5" onclick="event.stopPropagation()">
-            <button onclick="syncDs('${d.id}')" data-tip="Sync now" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+        </div>
+      `).join('') : list.map((d, idx) => `
+        <div class="ds-row group flex items-center cursor-pointer transition-colors hover:bg-gray-50 ${idx < list.length - 1 ? 'border-b border-gray-100' : ''}" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mx-4 my-2.5" style="background:#EEF2FF">${connectorIcon(d.connector, 20)}</div>
+          <div class="flex-1 min-w-0 py-3 pr-4">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(d.type)}<span>${d.type}</span></span>
+              ${statusBadgeHtml(d.status)}
+            </div>
+            <p class="text-[11px] text-gray-400 mt-0.5 truncate">${d.connector}${d.host ? ' · ' + d.host : ''} · ${d.tables} tables · ${d.updated}</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0 pr-4">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
+            <span class="text-[12px] text-gray-500 truncate max-w-[100px]">${d.owner}</span>
+          </div>
+          <div class="flex items-center gap-0.5 flex-shrink-0 pr-3 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
+            <button onclick="syncDs('${d.id}')" title="Sync" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
             </button>
-            <button onclick="deleteDs('${d.id}')" data-tip="Remove" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            <button onclick="deleteDs('${d.id}')" title="Remove" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            </button>
+            <button class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="More">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
             </button>
           </div>
         </div>
@@ -1808,35 +1900,41 @@
     }
 
     // ─── Filters ──────────────────────────────────────────────
+    function toggleDsTypeDd() {
+      document.getElementById('ds-type-dd').classList.toggle('hidden');
+      document.getElementById('ds-status-dd').classList.add('hidden');
+    }
+
     function setDsFilter(type) {
       _dsFilterType = type;
-      document.querySelectorAll('.ds-fpill').forEach(btn => {
-        const isActive = btn.id === 'dsf-' + type;
-        btn.style.background   = isActive ? '#EEF2FF' : '';
-        btn.style.color        = isActive ? '#5B63F6' : '';
-        btn.style.borderColor  = isActive ? '#C7D2FE' : '';
-      });
+      document.getElementById('ds-type-label').textContent = type === 'all' ? 'Type' : type;
+      document.getElementById('ds-type-dd').classList.add('hidden');
       renderDsList();
     }
 
     function toggleDsStatusDd() {
       document.getElementById('ds-status-dd').classList.toggle('hidden');
+      document.getElementById('ds-type-dd').classList.add('hidden');
     }
 
     function setDsStatus(status) {
       _dsFilterStatus = status;
-      document.getElementById('ds-status-label').textContent = status === 'all' ? 'Status' : status;
-      document.getElementById('ds-status-dd').classList.add('hidden');
+      document.querySelectorAll('.ds-spill').forEach(btn => {
+        const isActive = btn.id === 'dss-pill-' + status;
+        btn.style.background  = isActive ? '#EEF2FF' : '';
+        btn.style.color       = isActive ? '#5B63F6' : '';
+        btn.style.borderColor = isActive ? '#C7D2FE' : '';
+      });
       renderDsList();
     }
 
     function filterDsList() { renderDsList(); }
 
     document.addEventListener('click', e => {
-      const dd = document.getElementById('ds-status-dd');
-      if (dd && !e.target.closest('#ds-status-dd') && !e.target.closest('[onclick="toggleDsStatusDd()"]')) {
-        dd.classList.add('hidden');
-      }
+      if (!e.target.closest('[onclick="toggleDsTypeDd()"]') && !e.target.closest('#ds-type-dd'))
+        document.getElementById('ds-type-dd')?.classList.add('hidden');
+      if (!e.target.closest('[onclick="toggleDsStatusDd()"]') && !e.target.closest('#ds-status-dd'))
+        document.getElementById('ds-status-dd')?.classList.add('hidden');
     });
 
     function dsToggleAll(master) {
@@ -1910,8 +2008,8 @@
       if (ds.port)     infoRows.push(['Port', ds.port]);
       if (ds.database) infoRows.push(['Database', ds.database]);
       document.getElementById('panel-conn-info').innerHTML = infoRows.length
-        ? infoRows.map(([k, v]) => `<div class="flex items-center justify-between"><span class="text-gray-400">${k}</span><span class="font-medium text-gray-800">${v}</span></div>`).join('')
-        : '<span class="text-gray-400 text-[12px]">No connection details available</span>';
+        ? infoRows.map(([k, v]) => `<div class="flex items-center justify-between py-3"><span class="text-[13px] text-gray-400">${k}</span><span class="text-[13px] font-semibold text-gray-900">${v}</span></div>`).join('')
+        : '<p class="text-[13px] text-gray-400 py-3">No connection details available</p>';
 
       // Edit name input
       document.getElementById('panel-edit-name').value = ds.name;
@@ -2927,6 +3025,74 @@
     // ── Workspace scope ───────────────────────────────────────────
     let _wsAddPendingId = null;
 
+    function toggleDsCardMenu(e, id) {
+      e.stopPropagation();
+      const existing = document.getElementById('ds-card-menu-portal');
+      if (existing && existing.dataset.dsId === id) { closeDsCardMenus(); return; }
+      closeDsCardMenus();
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      const menu = document.createElement('div');
+      menu.id = 'ds-card-menu-portal';
+      menu.dataset.dsId = id;
+      menu.className = 'fixed z-[9999] bg-white border border-gray-200 rounded-xl py-1 min-w-[170px]';
+      menu.style.cssText = 'box-shadow:0 8px 24px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.08);top:' + (rect.bottom + 6) + 'px;right:' + (window.innerWidth - rect.right) + 'px';
+      menu.innerHTML = `
+        <button onclick="syncDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl">
+          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+          Sync now
+        </button>
+        <div class="my-1 border-t border-gray-100"></div>
+        <button onclick="deleteDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+          Delete datasource
+        </button>`;
+      document.body.appendChild(menu);
+    }
+    function closeDsCardMenus() {
+      const m = document.getElementById('ds-card-menu-portal');
+      if (m) m.remove();
+    }
+    document.addEventListener('click', closeDsCardMenus);
+
+    function setWsView(v) {
+      _wsView = v;
+      const btnList = document.getElementById('ws-view-list');
+      const btnGrid = document.getElementById('ws-view-grid');
+      if (btnList && btnGrid) {
+        btnList.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnList.style.boxShadow = v === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+        btnGrid.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'grid' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnGrid.style.boxShadow = v === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+      }
+      const listEl = document.getElementById('ws-assign-list');
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-2';
+      renderWsScope();
+    }
+
+    function filterProjList() {
+      const q = (document.getElementById('proj-search')?.value || '').toLowerCase();
+      document.querySelectorAll('#proj-assign-list .assign-row').forEach(row => {
+        const name = (row.dataset.name || '').toLowerCase();
+        row.style.display = name.includes(q) ? '' : 'none';
+      });
+    }
+
+    function setProjView(v) {
+      _projView = v;
+      const btnList = document.getElementById('proj-view-list');
+      const btnGrid = document.getElementById('proj-view-grid');
+      if (btnList && btnGrid) {
+        btnList.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnList.style.boxShadow = v === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+        btnGrid.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'grid' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnGrid.style.boxShadow = v === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+      }
+      const listEl = document.getElementById('proj-assign-list');
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-2';
+      renderProjScope();
+    }
+
     function renderWsScope() {
       const assignedList = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
       const assigned = assignedList.length;
@@ -2952,13 +3118,39 @@
         listEl.innerHTML = '';
       } else {
         emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
-        listEl.innerHTML = assignedList.map(ds => {
+        listEl.innerHTML = _wsView === 'grid' ? assignedList.map(ds => {
           const a = _wsAssignments[ds.id];
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
           const selCount = a.tables ? a.tables.length : tblCount;
           const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
           return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+          <div class="assign-row group bg-white border border-gray-200 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md" data-name="${ds.name.toLowerCase()}" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <div class="h-24 rounded-t-xl flex items-center justify-center cursor-pointer" style="background:${statusCardBg(ds.status)}" onclick="openDetailPanel('${ds.id}',true)">
+              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+            </div>
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[13px] font-semibold text-gray-900 truncate cursor-pointer hover:text-indigo-700 transition-colors" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-2">
+                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables</span>
+                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:underline ml-0.5">Edit</button>
+              </div>
+              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+                <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('') : assignedList.map(ds => {
+          const a = _wsAssignments[ds.id];
+          const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+          const selCount = a.tables ? a.tables.length : tblCount;
+          const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          return `
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white" data-name="${ds.name.toLowerCase()}">
             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer" style="background:#EEF2FF" onclick="openDetailPanel('${ds.id}',true)">${connectorIcon(ds.connector, 18)}</div>
             <div class="flex-1 min-w-0 cursor-pointer" onclick="openDetailPanel('${ds.id}',true)">
               <div class="flex items-center gap-2 flex-wrap">
@@ -2987,7 +3179,7 @@
     function filterWsList() {
       const q = (document.getElementById('ws-search')?.value || '').toLowerCase();
       document.querySelectorAll('#ws-assign-list .assign-row').forEach(row => {
-        const name = row.querySelector('span.font-semibold')?.textContent?.toLowerCase() || '';
+        const name = (row.dataset.name || row.querySelector('[class*="font-semibold"]')?.textContent || '').toLowerCase();
         row.style.display = name.includes(q) ? '' : 'none';
       });
     }
@@ -3110,13 +3302,61 @@
       }
       emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
 
-      listEl.innerHTML = wsAssigned.map(ds => {
+      listEl.innerHTML = _projView === 'grid' ? wsAssigned.map(ds => {
         const a = _wsAssignments[ds.id];
         const tblCount = (ds.tables_list || []).length || ds.tables || 0;
         const selCount = a.tables ? a.tables.length : tblCount;
         const inProj   = _projAssignments.has(ds.id);
         const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
-
+        if (inProj) {
+          return `
+          <div class="assign-row group bg-white border border-green-200 rounded-xl transition-all hover:shadow-md" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <div class="h-24 rounded-t-xl flex items-center justify-center relative" style="background:${statusCardBg(ds.status)}">
+              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+              <span class="absolute top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:rgba(255,255,255,0.9);color:#15803D">In Project</span>
+            </div>
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">${ds.name}</p>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-2">
+                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span class="text-[11px] text-gray-500">${selCount} table${selCount !== 1 ? 's' : ''} accessible</span>
+              </div>
+              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+                <button onclick="toggleProjAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
+              </div>
+            </div>
+          </div>`;
+        } else {
+          return `
+          <div class="assign-row group bg-white border border-gray-200 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md opacity-70 hover:opacity-100" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <div class="h-24 rounded-t-xl flex items-center justify-center" style="background:${statusCardBg(ds.status)}">
+              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+            </div>
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[13px] font-semibold text-gray-700 truncate">${ds.name}</p>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <p class="text-[11px] text-gray-400 mt-2">${selCount} table${selCount !== 1 ? 's' : ''} available</p>
+              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+                <button onclick="toggleProjAssign('${ds.id}')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white px-2.5 py-1 rounded-md hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add
+                </button>
+              </div>
+            </div>
+          </div>`;
+        }
+      }).join('') : wsAssigned.map(ds => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        const selCount = a.tables ? a.tables.length : tblCount;
+        const inProj   = _projAssignments.has(ds.id);
+        const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
         if (inProj) {
           return `
           <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
