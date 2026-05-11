@@ -380,7 +380,7 @@
       </div>
       <!-- Actions shown only on list view -->
       <div id="list-actions" class="flex items-center gap-2">
-        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
           Add Datasource
         </button>
@@ -525,7 +525,7 @@
             <p class="text-[14px] font-semibold text-gray-800">No datasources found</p>
             <p class="text-[13px] text-gray-400 mt-1">Try adjusting your filters or add a new datasource.</p>
           </div>
-          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#5B63F6">Add Datasource</button>
+          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#3B5BDB">Add Datasource</button>
         </div>
 
       </div>
@@ -1504,7 +1504,14 @@
       <div class="space-y-3">
         <div>
           <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Related table <span class="text-red-400">*</span></label>
-          <input id="rel-with" type="text" placeholder="e.g. orders" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
+          <div class="relative" id="rel-with-wrapper">
+            <input id="rel-with" type="text" placeholder="e.g. orders" autocomplete="off"
+              class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400"
+              oninput="filterRelTableDd(this.value)" onfocus="openRelTableDd()" onclick="event.stopPropagation()" />
+            <div id="rel-with-dd" class="hidden absolute left-0 top-full mt-1 w-full z-[80] bg-white border border-gray-200 rounded-xl overflow-y-auto" style="box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:176px">
+              <div id="rel-with-dd-list"></div>
+            </div>
+          </div>
         </div>
         <div>
           <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Cardinality</label>
@@ -2812,11 +2819,44 @@
       document.getElementById('rel-type').value = rel?.type || 'one-to-many';
       document.getElementById('rel-on').value   = rel?.on   || '';
       document.getElementById('rel-desc').value = rel?.desc || '';
+      // Populate sibling table list
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const currentTblName = document.getElementById('tbl-detail-name').textContent;
+      const siblings = (ds?.tables_list || []).filter(t => t.name !== currentTblName);
+      document.getElementById('rel-with-dd-list').innerHTML = siblings.length
+        ? siblings.map(t => `
+          <button type="button" onclick="selectRelTable('${t.name}')" class="w-full flex items-center gap-2.5 px-3 h-9 text-left hover:bg-indigo-50 transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            <span class="text-[13px] text-gray-800">${t.name}</span>
+          </button>`).join('')
+        : '<p class="px-3 py-2.5 text-[12px] text-gray-400">No other tables available</p>';
       const bd = document.getElementById('rel-modal-backdrop');
       bd.classList.remove('hidden');
       bd.classList.add('flex');
       document.getElementById('rel-with').focus();
     }
+
+    function openRelTableDd() {
+      filterRelTableDd(document.getElementById('rel-with').value);
+      document.getElementById('rel-with-dd').classList.remove('hidden');
+    }
+    function filterRelTableDd(q) {
+      document.getElementById('rel-with-dd').classList.remove('hidden');
+      const lq = (q || '').toLowerCase();
+      document.querySelectorAll('#rel-with-dd-list button').forEach(btn => {
+        const name = btn.querySelector('span')?.textContent?.toLowerCase() || '';
+        btn.style.display = name.includes(lq) ? '' : 'none';
+      });
+    }
+    function selectRelTable(name) {
+      document.getElementById('rel-with').value = name;
+      document.getElementById('rel-with').style.borderColor = '';
+      document.getElementById('rel-with-dd').classList.add('hidden');
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#rel-with-wrapper'))
+        document.getElementById('rel-with-dd')?.classList.add('hidden');
+    });
 
     function closeRelModal(e) {
       if (e && e.target !== document.getElementById('rel-modal-backdrop')) return;
