@@ -49,6 +49,14 @@
     .nav-item { transition: background-color 100ms ease; }
     .nav-item:hover { background-color: #EEF2FF; }
 
+    /* Report Card styling (from Recent View) */
+    .report-card { transition: all 150ms ease-out; }
+    .report-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); border-color: rgba(91,99,246,0.4); transform: translateY(-1px); }
+    .report-card:hover .overflow-btn { opacity: 1; }
+
+    /* Overflow button — hidden by default, shown on card hover */
+    .overflow-btn { opacity: 0; transition: opacity 100ms ease; pointer-events: auto; }
+
     .ws-submenu { display: none; }
     .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
     .ws-chevron { transition: transform 150ms ease; }
@@ -100,6 +108,10 @@
     /* Sync spin */
     @keyframes ds-spin { to { transform: rotate(360deg); } }
     .ds-spin { animation: ds-spin 0.9s linear infinite; }
+
+    /* Status pulse dot for Syncing */
+    @keyframes status-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.75)} }
+    .status-dot-pulse { animation: status-pulse 1.4s ease-in-out infinite; }
 
     /* Tab bar */
     .ds-tab { cursor:pointer; border-radius:9999px; padding:0 16px; height:32px; font-size:13px; transition:background-color 120ms,box-shadow 120ms,color 120ms; white-space:nowrap; display:inline-flex; align-items:center; }
@@ -380,7 +392,7 @@
       </div>
       <!-- Actions shown only on list view -->
       <div id="list-actions" class="flex items-center gap-2">
-        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
           Add Datasource
         </button>
@@ -458,53 +470,82 @@
 
       <!-- Toolbar: search + filters + view toggle -->
       <div class="flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
-        <!-- Type filter dropdown -->
+        <!-- Workspace filter -->
         <div class="relative">
-          <button onclick="toggleDsTypeDd()" class="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:border-gray-300 transition-colors" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-            <span id="ds-type-label">Type</span>
-            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          <button onclick="toggleDsWsDd()" id="ds-ws-dd-btn" class="flex items-center gap-2 h-9 px-3.5 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-50/50 border border-gray-200 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all">
+            <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v14.25A2.25 2.25 0 005.25 19.5h13.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0018.75 4.5H5.25a2.25 2.25 0 00-2.25 2.25z"/></svg>
+            <span id="ds-ws-label" class="max-w-[120px] truncate">All Workspaces</span>
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </button>
-          <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[155px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
-            <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 font-medium">
-              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+          <div id="ds-ws-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[220px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+            <div class="px-3 py-1.5 mb-1 border-b border-gray-50">
+              <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Select Workspace</span>
+            </div>
+            <button onclick="setWsFilter('all')" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">
+              <div class="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-gray-400">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+              </div>
               All
             </button>
-            <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">
-              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
-              Database
-            </button>
-            <button onclick="setDsFilter('File')" id="dsf-File" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">
-              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-              File
-            </button>
-            <button onclick="setDsFilter('API')" id="dsf-API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">
-              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
-              API
+            <button onclick="setWsFilter('assigned')" class="w-full flex items-center gap-2.5 px-3 h-10 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+              <div class="w-5 h-5 rounded bg-indigo-500 flex items-center justify-center text-[9px] text-white font-black shadow-sm">M</div>
+              <span class="truncate">Manish Kumar's Work...</span>
             </button>
           </div>
         </div>
-        <!-- Search -->
-        <div class="relative flex-1 max-w-xs">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-          <input id="ds-search" type="text" placeholder="Search datasources..." oninput="filterDsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
-        </div>
-        <!-- Status filter pills -->
-        <div class="flex items-center gap-1">
-          <button onclick="setDsStatus('all')"       id="dss-pill-all"       class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border transition-colors" style="background:#EEF2FF;color:#5B63F6;border-color:#C7D2FE">All</button>
-          <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Connected</button>
-          <button onclick="setDsStatus('Syncing')"   id="dss-pill-Syncing"   class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Syncing</button>
-          <button onclick="setDsStatus('Error')"     id="dss-pill-Error"     class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Error</button>
-          <button onclick="setDsStatus('Pending')"   id="dss-pill-Pending"   class="ds-spill h-8 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Pending</button>
-        </div>
-        <div class="flex-1"></div>
-        <!-- View toggle -->
-        <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
-          <button id="ds-view-list" onclick="setDsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+
+        <!-- Divider -->
+        <div class="h-5 w-px bg-gray-200 mx-1"></div>
+
+        <!-- Type filter -->
+        <div class="relative">
+          <button onclick="toggleDsTypeDd()" class="flex items-center gap-2 h-9 px-3.5 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-50/50 border border-gray-200 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all">
+            <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+            <span id="ds-type-label">All Types</span>
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </button>
-          <button id="ds-view-grid" onclick="setDsView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+          <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[160px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+            <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">All</button>
+            <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">Database</button>
+            <button onclick="setDsFilter('File')" id="dsf-File" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">File</button>
+            <button onclick="setDsFilter('API')" id="dsf-API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">API</button>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="relative flex-1 max-w-sm ml-2">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="ds-search" type="text" placeholder="Search across all datasources..." oninput="filterDsList()" class="w-full h-9 pl-10 pr-4 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-400 focus:bg-white transition-all shadow-inner-sm" />
+        </div>
+
+        <div class="flex-1"></div>
+
+        <!-- Status pills -->
+        <div class="flex items-center gap-1.5 px-1.5 py-1 bg-gray-50/80 border border-gray-200 rounded-xl shadow-inner-sm">
+          <button onclick="setDsStatus('all')" id="dss-pill-all" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5" style="background:#EEF2FF;color:#5B63F6">
+            All
+          </button>
+          <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide text-gray-400 hover:text-gray-600 hover:bg-white transition-all flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            Connected
+          </button>
+          <button onclick="setDsStatus('Syncing')" id="dss-pill-Syncing" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide text-gray-400 hover:text-gray-600 hover:bg-white transition-all flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#5B63F6]"></span>
+            Syncing
+          </button>
+          <button onclick="setDsStatus('Error')" id="dss-pill-Error" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide text-gray-400 hover:text-gray-600 hover:bg-white transition-all flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            Error
+          </button>
+        </div>
+
+        <!-- View toggle -->
+        <div class="flex items-center gap-1 p-1 bg-gray-100/80 rounded-lg border border-gray-200/50">
+          <button id="ds-view-list" onclick="setDsView('list')" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+          </button>
+          <button id="ds-view-grid" onclick="setDsView('grid')" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-indigo-600 shadow-sm transition-all">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
           </button>
         </div>
       </div>
@@ -512,7 +553,7 @@
       <!-- Datasource list -->
       <div class="flex-1 overflow-y-auto px-6 py-4 relative">
 
-        <div id="ds-list-body" class="grid grid-cols-3 gap-4"></div>
+        <div id="ds-list-body" class="grid grid-cols-4 gap-4"></div>
 
         <!-- Empty state -->
         <div id="ds-empty" class="hidden flex-col items-center justify-center py-24 gap-4 text-center">
@@ -525,7 +566,7 @@
             <p class="text-[14px] font-semibold text-gray-800">No datasources found</p>
             <p class="text-[13px] text-gray-400 mt-1">Try adjusting your filters or add a new datasource.</p>
           </div>
-          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#5B63F6">Add Datasource</button>
+          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#3B5BDB">Add Datasource</button>
         </div>
 
       </div>
@@ -540,7 +581,6 @@
             <p class="text-[13px] font-semibold text-gray-800">Workspace datasources</p>
             <p class="text-[12px] text-gray-400 mt-0.5">Datasources assigned to this workspace. Select tables to control what's accessible.</p>
           </div>
-          <div id="ws-summary-chip" class="flex-shrink-0 text-[12px] font-semibold px-3 py-1 rounded-lg" style="background:#EEF2FF;color:#5B63F6"></div>
         </div>
         <!-- KPI bar -->
         <div class="grid grid-cols-3 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
@@ -615,7 +655,7 @@
         </div>
         <!-- Assigned list -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
-          <div id="ws-assign-list" class="grid grid-cols-3 gap-4"></div>
+          <div id="ws-assign-list" class="grid grid-cols-4 gap-4"></div>
           <div id="ws-empty-state" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
               <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
@@ -628,13 +668,29 @@
 
       <!-- ── Project scope ── -->
       <div id="scope-proj" class="hidden flex-col flex-1 overflow-hidden">
-        <!-- Header banner -->
-        <div class="flex-shrink-0 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <div>
-            <p class="text-[13px] font-semibold text-gray-800">Add datasources to this project</p>
-            <p class="text-[12px] text-gray-400 mt-0.5">Select from workspace-assigned datasources. Only selected tables will be accessible in this project.</p>
+        <!-- Project selector header (Redesigned) -->
+        <div class="flex-shrink-0 px-6 py-4 border-b border-gray-100 bg-white flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col gap-0.5">
+            <h2 class="text-[15px] font-bold text-gray-900">Project Workspace</h2>
+            <p class="text-[12px] text-gray-500">Manage data sources for specific projects</p>
           </div>
-          <div id="proj-summary-chip" class="flex-shrink-0 text-[12px] font-semibold px-3 py-1 rounded-lg" style="background:#EEF2FF;color:#5B63F6"></div>
+          
+          <div class="flex items-center gap-3 ml-auto">
+            <div class="relative" id="proj-picker-wrapper">
+              <button onclick="toggleProjPicker()" class="group flex items-center gap-2.5 h-10 px-4 rounded-xl text-[13px] font-semibold text-gray-800 bg-gray-50 border border-gray-200 hover:border-indigo-400 hover:bg-white transition-all shadow-sm" style="min-width:240px">
+                <div id="proj-picker-indicator" class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(91,99,246,0.4)]"></div>
+                <span id="proj-picker-label" class="flex-1 text-left truncate">Analytics Dashboard</span>
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              
+              <div id="proj-picker-dd" class="hidden absolute top-full right-0 mt-2 z-50 bg-white border border-gray-200 rounded-2xl py-2 min-w-[280px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden">
+                <div class="px-4 py-2 border-b border-gray-50 bg-gray-50/50 mb-1">
+                  <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Select Project</span>
+                </div>
+                <div id="proj-picker-list" class="max-height-[320px] overflow-y-auto"></div>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- KPI bar -->
         <div class="grid grid-cols-4 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
@@ -699,7 +755,7 @@
         </div>
         <!-- List -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
-          <div id="proj-assign-list" class="grid grid-cols-3 gap-4"></div>
+          <div id="proj-assign-list" class="grid grid-cols-4 gap-4"></div>
           <!-- Empty state if no ws assignments -->
           <div id="proj-empty-ws" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
@@ -793,11 +849,15 @@
           <div id="panel-tables-tab" style="display:none">
             <!-- Table list view -->
             <div id="tbl-list-view">
-              <div class="pb-3">
-                <div class="relative">
+              <div class="flex items-center gap-2 pb-3">
+                <div class="relative flex-1">
                   <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
                   <input type="text" placeholder="Search tables..." class="w-full h-8 pl-9 pr-3 text-[12px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" oninput="filterPanelTables(this.value)" />
                 </div>
+                <button onclick="openAddTableModal()" class="ds-edit-only flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-semibold text-white flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  Add Table
+                </button>
               </div>
               <div id="panel-tables-list"></div>
             </div>
@@ -1504,7 +1564,14 @@
       <div class="space-y-3">
         <div>
           <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Related table <span class="text-red-400">*</span></label>
-          <input id="rel-with" type="text" placeholder="e.g. orders" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
+          <div class="relative" id="rel-with-wrapper">
+            <input id="rel-with" type="text" placeholder="e.g. orders" autocomplete="off"
+              class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400"
+              oninput="filterRelTableDd(this.value)" onfocus="openRelTableDd()" onclick="event.stopPropagation()" />
+            <div id="rel-with-dd" class="hidden absolute left-0 top-full mt-1 w-full z-[80] bg-white border border-gray-200 rounded-xl overflow-y-auto" style="box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:176px">
+              <div id="rel-with-dd-list"></div>
+            </div>
+          </div>
         </div>
         <div>
           <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Cardinality</label>
@@ -1527,6 +1594,36 @@
       <div class="flex gap-2 mt-5">
         <button onclick="closeRelModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
         <button onclick="saveRel()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ ADD TABLE MODAL ═══════════════════ -->
+  <div id="add-table-backdrop" class="fixed inset-0 z-[70] hidden items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeAddTableModal(event)">
+    <div class="bg-white rounded-2xl w-full max-w-md mx-4 flex flex-col" style="max-height:560px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h3 class="text-[15px] font-semibold text-gray-900">Add tables</h3>
+          <p class="text-[12px] text-gray-400 mt-0.5">Select tables from the schema to include</p>
+        </div>
+        <button onclick="closeAddTableModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-6 py-3 border-b border-gray-100 flex-shrink-0">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="add-tbl-search" type="text" placeholder="Search available tables..." oninput="filterAddTableList(this.value)"
+            class="w-full h-9 pl-9 pr-3 text-[13px] bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors" />
+        </div>
+      </div>
+      <div id="add-tbl-list" class="flex-1 overflow-y-auto px-2 py-2"></div>
+      <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100 flex-shrink-0">
+        <span id="add-tbl-count" class="text-[12px] text-gray-400">0 selected</span>
+        <div class="flex gap-2">
+          <button onclick="closeAddTableModal()" class="h-9 px-4 rounded-xl text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+          <button onclick="confirmAddTables()" class="h-9 px-4 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">Add Selected</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1728,6 +1825,7 @@
     let _dsList = [];
     let _dsFilterType   = 'all';
     let _dsFilterStatus = 'all';
+    let _dsFilterWs     = 'all'; // Filter by Workspace assignment
 
     function loadDsList() {
       let extra = [];
@@ -1751,8 +1849,9 @@
       let list = _dsList.filter(d => {
         const matchType   = _dsFilterType   === 'all' || d.type      === _dsFilterType;
         const matchStatus = _dsFilterStatus === 'all' || d.status    === _dsFilterStatus;
+        const matchWs     = _dsFilterWs     === 'all' || (_wsAssignments[d.id]?.assigned === true);
         const matchQ      = !q || d.name.toLowerCase().includes(q) || d.connector.toLowerCase().includes(q);
-        return matchType && matchStatus && matchQ;
+        return matchType && matchStatus && matchWs && matchQ;
       });
       list.sort((a, b) => {
         if (sort === 'name')    return a.name.localeCompare(b.name);
@@ -1765,18 +1864,28 @@
     }
 
     function statusBadgeHtml(status) {
-      const map = {
-        'Connected': ['badge-connected', '●'],
-        'Syncing':   ['badge-syncing',   '↻'],
-        'Error':     ['badge-error',     '✕'],
-        'Pending':   ['badge-pending',   '○'],
+      const cls = {
+        'Connected': 'badge-connected',
+        'Syncing':   'badge-syncing',
+        'Error':     'badge-error',
+        'Pending':   'badge-pending',
+      }[status] || 'badge-pending';
+      const dotMap = {
+        'Connected': `<span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>`,
+        'Error':     `<span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>`,
+        'Syncing':   `<span class="w-1.5 h-1.5 rounded-full flex-shrink-0 status-dot-pulse" style="background:#5B63F6"></span>`,
+        'Pending':   `<span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>`,
       };
-      const [cls, dot] = map[status] || ['badge-pending', '○'];
-      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${cls}">${dot}&nbsp;${status}</span>`;
+      const dot = dotMap[status] || `<span class="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>`;
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${cls}">${dot}${status}</span>`;
     }
 
     function statusCardBg(status) {
-      return { 'Connected': '#DCFCE7', 'Error': '#FEE2E2', 'Syncing': '#DCFCE7', 'Pending': '#F3F4F6' }[status] || '#EEF2FF';
+      return { 'Connected': '#DCFCE7', 'Error': '#FEE2E2', 'Syncing': '#EEF2FF', 'Pending': '#FEF9C3' }[status] || '#F3F4F6';
+    }
+
+    function statusTopBorder(status) {
+      return { 'Connected': '#16A34A', 'Error': '#DC2626', 'Syncing': '#5B63F6', 'Pending': '#D97706' }[status] || '#9CA3AF';
     }
 
     function typeIconHtml(type) {
@@ -1786,6 +1895,151 @@
         'API':      `<svg class="w-3.5 h-3.5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>`,
       };
       return icons[type] || '';
+    }
+
+    // Per-connector pastel palette — recent-view style light backgrounds
+    function connectorPalette(connector) {
+      const map = {
+        'Postgres':   { bg:'#EEF2FF', color:'#818CF8' },
+        'MySQL':      { bg:'#FFF7ED', color:'#FB923C' },
+        'MongoDB':    { bg:'#F0FDF4', color:'#4ADE80' },
+        'SQL Server': { bg:'#FEF2F2', color:'#F87171' },
+        'BigQuery':   { bg:'#EFF6FF', color:'#60A5FA' },
+        'Snowflake':  { bg:'#F0F9FF', color:'#38BDF8' },
+        'Redshift':   { bg:'#FDF4FF', color:'#C084FC' },
+        'Excel':      { bg:'#F0FDF4', color:'#34D399' },
+        'CSV':        { bg:'#FEFCE8', color:'#FCD34D' },
+        'JSON':       { bg:'#FFF7ED', color:'#FCA96A' },
+        'REST API':   { bg:'#F0FDFA', color:'#2DD4BF' },
+        'GraphQL':    { bg:'#FDF4FF', color:'#E879F9' },
+      };
+      return map[connector] || { bg:'#EEF2FF', color:'#93A8F4' };
+    }
+
+    // Brand-accurate connector icons (filled, recognizable)
+    function connectorIconLarge(connector, size) {
+      const s = size;
+      const icons = {
+        'Postgres': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <ellipse cx="32" cy="28" rx="16" ry="20" fill="#818CF8" opacity="0.18"/>
+          <ellipse cx="32" cy="28" rx="16" ry="20" stroke="#818CF8" stroke-width="2.5"/>
+          <ellipse cx="32" cy="28" rx="10" ry="6" fill="#818CF8" opacity="0.3"/>
+          <path d="M22 22 C20 16 24 10 32 10 C40 10 44 16 44 22" stroke="#818CF8" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M32 36 L32 46" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 46 L36 46" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="40" cy="15" r="3" fill="#818CF8" opacity="0.6"/>
+        </svg>`,
+
+        'MySQL': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <path d="M8 46 C8 40 14 34 20 28 L24 14 L28 26 L38 8 L42 28 L47 18 L54 40" stroke="#FB923C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M50 16 C54 13 56 18 53 21 C56 19 59 22 57 26" stroke="#FB923C" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+        </svg>`,
+
+        'MongoDB': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <path d="M32 6 C32 6 46 18 46 34 C46 44 40 52 32 56 C24 52 18 44 18 34 C18 18 32 6 32 6Z" fill="#4ADE80" opacity="0.25"/>
+          <path d="M32 6 C32 6 46 18 46 34 C46 44 40 52 32 56 C24 52 18 44 18 34 C18 18 32 6 32 6Z" stroke="#4ADE80" stroke-width="2.5"/>
+          <path d="M32 10 L32 52" stroke="#22C55E" stroke-width="2" stroke-linecap="round"/>
+          <path d="M28 42 C28 44 30 46 32 46" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>`,
+
+        'SQL Server': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <ellipse cx="32" cy="18" rx="18" ry="8" fill="#F87171" opacity="0.2" stroke="#F87171" stroke-width="2"/>
+          <path d="M14 18 L14 46 C14 50.4 22.4 54 32 54 C41.6 54 50 50.4 50 46 L50 18" stroke="#F87171" stroke-width="2"/>
+          <path d="M14 32 C14 36.4 22.4 40 32 40 C41.6 40 50 36.4 50 32" stroke="#F87171" stroke-width="1.8"/>
+          <circle cx="32" cy="18" r="4" fill="#F87171" opacity="0.5"/>
+        </svg>`,
+
+        'Excel': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <rect x="6" y="6" width="32" height="52" rx="4" fill="#34D399" opacity="0.2"/>
+          <rect x="6" y="6" width="32" height="52" rx="4" stroke="#34D399" stroke-width="2.5"/>
+          <rect x="26" y="6" width="32" height="52" rx="4" fill="#34D399" opacity="0.35"/>
+          <rect x="26" y="6" width="32" height="52" rx="4" stroke="#34D399" stroke-width="2"/>
+          <path d="M16 22 L26 38 M26 22 L16 38" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <line x1="32" y1="28" x2="52" y2="28" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+          <line x1="32" y1="36" x2="52" y2="36" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+          <line x1="32" y1="44" x2="52" y2="44" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        </svg>`,
+
+        'CSV': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="8" width="48" height="48" rx="6" fill="#FCD34D" opacity="0.2" stroke="#FCD34D" stroke-width="2.5"/>
+          <line x1="8" y1="24" x2="56" y2="24" stroke="#FCD34D" stroke-width="1.8"/>
+          <line x1="8" y1="36" x2="56" y2="36" stroke="#FCD34D" stroke-width="1.8"/>
+          <line x1="8" y1="48" x2="56" y2="48" stroke="#FCD34D" stroke-width="1.8"/>
+          <line x1="24" y1="8" x2="24" y2="56" stroke="#FCD34D" stroke-width="1.5" opacity="0.6"/>
+          <line x1="40" y1="8" x2="40" y2="56" stroke="#FCD34D" stroke-width="1.5" opacity="0.6"/>
+          <text x="32" y="20" font-size="7" font-family="Inter,sans-serif" font-weight="800" fill="#B45309" text-anchor="middle">CSV</text>
+        </svg>`,
+
+        'REST API': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="8" width="48" height="48" rx="8" fill="#2DD4BF" opacity="0.15" stroke="#2DD4BF" stroke-width="2"/>
+          <path d="M18 24 L26 32 L18 40" stroke="#2DD4BF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="30" y1="40" x2="46" y2="40" stroke="#2DD4BF" stroke-width="3" stroke-linecap="round"/>
+          <line x1="30" y1="24" x2="46" y2="24" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          <line x1="30" y1="32" x2="40" y2="32" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        </svg>`,
+
+        'GraphQL': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="10" r="4" fill="#E879F9"/>
+          <circle cx="32" cy="54" r="4" fill="#E879F9"/>
+          <circle cx="10" cy="22" r="4" fill="#E879F9"/>
+          <circle cx="54" cy="22" r="4" fill="#E879F9"/>
+          <circle cx="10" cy="42" r="4" fill="#E879F9"/>
+          <circle cx="54" cy="42" r="4" fill="#E879F9"/>
+          <line x1="32" y1="10" x2="10" y2="22" stroke="#E879F9" stroke-width="2"/>
+          <line x1="32" y1="10" x2="54" y2="22" stroke="#E879F9" stroke-width="2"/>
+          <line x1="10" y1="22" x2="10" y2="42" stroke="#E879F9" stroke-width="2"/>
+          <line x1="54" y1="22" x2="54" y2="42" stroke="#E879F9" stroke-width="2"/>
+          <line x1="10" y1="42" x2="32" y2="54" stroke="#E879F9" stroke-width="2"/>
+          <line x1="54" y1="42" x2="32" y2="54" stroke="#E879F9" stroke-width="2"/>
+          <line x1="10" y1="22" x2="54" y2="42" stroke="#E879F9" stroke-width="1.5" opacity="0.4"/>
+          <line x1="54" y1="22" x2="10" y2="42" stroke="#E879F9" stroke-width="1.5" opacity="0.4"/>
+        </svg>`,
+        'BigQuery': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <path d="M32 8 L54 20 L54 44 L32 56 L10 44 L10 20 Z" fill="#60A5FA" opacity="0.18" stroke="#60A5FA" stroke-width="2"/>
+          <path d="M22 32 L22 44" stroke="#60A5FA" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M32 26 L32 44" stroke="#60A5FA" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M42 20 L42 44" stroke="#60A5FA" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="44" cy="46" r="9" fill="#EFF6FF" stroke="#60A5FA" stroke-width="2"/>
+          <path d="M43 46 L47 50" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        'Snowflake': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <line x1="32" y1="8" x2="32" y2="56" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="8" y1="32" x2="56" y2="32" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="14" y1="14" x2="50" y2="50" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="50" y1="14" x2="14" y2="50" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="32" cy="32" r="6" fill="#38BDF8" opacity="0.35"/>
+          <circle cx="32" cy="32" r="3" fill="#38BDF8"/>
+          <circle cx="32" cy="8" r="3" fill="#38BDF8" opacity="0.5"/>
+          <circle cx="32" cy="56" r="3" fill="#38BDF8" opacity="0.5"/>
+          <circle cx="8" cy="32" r="3" fill="#38BDF8" opacity="0.5"/>
+          <circle cx="56" cy="32" r="3" fill="#38BDF8" opacity="0.5"/>
+        </svg>`,
+        'Redshift': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <ellipse cx="32" cy="20" rx="18" ry="8" fill="#C084FC" opacity="0.25" stroke="#C084FC" stroke-width="2"/>
+          <path d="M14 20 L14 42 C14 46.4 22.4 50 32 50 C41.6 50 50 46.4 50 42 L50 20" stroke="#C084FC" stroke-width="2"/>
+          <path d="M14 30 C14 34.4 22.4 38 32 38 C41.6 38 50 34.4 50 30" stroke="#C084FC" stroke-width="1.8"/>
+          <path d="M26 20 L26 50" stroke="#C084FC" stroke-width="1.2" opacity="0.4"/>
+          <path d="M38 20 L38 50" stroke="#C084FC" stroke-width="1.2" opacity="0.4"/>
+        </svg>`,
+        'JSON': `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="10" width="48" height="44" rx="6" fill="#FCA96A" opacity="0.15" stroke="#FCA96A" stroke-width="2"/>
+          <path d="M24 20 C20 20 18 22 18 26 L18 30 C18 33 16 34 14 34 C16 34 18 35 18 38 L18 42 C18 46 20 48 24 48" stroke="#FCA96A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M40 20 C44 20 46 22 46 26 L46 30 C46 33 48 34 50 34 C48 34 46 35 46 38 L46 42 C46 46 44 48 40 48" stroke="#FCA96A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="32" cy="34" r="3" fill="#FCA96A"/>
+          <circle cx="24" cy="34" r="2" fill="#FCA96A" opacity="0.5"/>
+          <circle cx="40" cy="34" r="2" fill="#FCA96A" opacity="0.5"/>
+        </svg>`,
+      };
+      // Default: generic db/file/api icon colored with palette
+      const pal = connectorPalette(connector);
+      if (icons[connector]) return icons[connector];
+      // Generic fallback based on type
+      const color = pal.color;
+      return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none">
+        <ellipse cx="32" cy="20" rx="18" ry="8" fill="${color}" opacity="0.2" stroke="${color}" stroke-width="2"/>
+        <path d="M14 20 L14 44 C14 48.4 22.4 52 32 52 C41.6 52 50 48.4 50 44 L50 20" stroke="${color}" stroke-width="2"/>
+        <path d="M14 32 C14 36.4 22.4 40 32 40 C41.6 40 50 36.4 50 32" stroke="${color}" stroke-width="1.8"/>
+      </svg>`;
     }
 
     let _dsView = 'grid';
@@ -1804,7 +2058,7 @@
       }
       const body = document.getElementById('ds-list-body');
       if (v === 'grid') {
-        body.className = 'grid grid-cols-3 gap-4';
+        body.className = 'grid grid-cols-4 gap-4';
       } else {
         body.className = 'border border-gray-200 rounded-xl overflow-hidden';
       }
@@ -1825,40 +2079,35 @@
       }
       empty.classList.add('hidden');
       empty.classList.remove('flex');
+      const countEl = document.getElementById('ds-result-count');
+      if (countEl) countEl.textContent = list.length + ' source' + (list.length !== 1 ? 's' : '');
 
-      body.innerHTML = _dsView === 'grid' ? list.map(d => `
-        <div class="ds-row group bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-indigo-300 hover:shadow-md" onclick="openDetailPanel('${d.id}')" id="row-${d.id}" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-          <!-- Card header -->
-          <div class="h-28 rounded-t-xl flex items-center justify-center" style="background:${statusCardBg(d.status)}">
-            <div style="transform:scale(1.6)">${connectorIcon(d.connector, 24)}</div>
+      body.innerHTML = _dsView === 'grid' ? list.map(d => {
+        const pal = connectorPalette(d.connector);
+        return `
+        <div class="ds-row group bg-white border border-gray-100 rounded-2xl cursor-pointer transition-all hover:shadow-lg overflow-hidden" onclick="openDetailPanel('${d.id}')" id="row-${d.id}" style="box-shadow:0 1px 6px rgba(0,0,0,0.07)">
+          <!-- Colored preview area -->
+          <div class="flex items-center justify-center p-6" style="height:156px;background:${pal.bg}">
+            ${connectorIconLarge(d.connector, 64)}
           </div>
-          <!-- Card body -->
-          <div class="px-4 pt-3 pb-3">
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
-                <p class="text-[11px] text-gray-400 mt-0.5 truncate">${d.connector}${d.host ? ' · ' + d.host : ''}</p>
-              </div>
-              <div class="relative flex-shrink-0 -mt-0.5" onclick="event.stopPropagation()">
-                <button onclick="toggleDsCardMenu(event,'${d.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 text-gray-400">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-                </button>
-              </div>
+          <!-- Content area -->
+          <div class="px-4 pt-3 pb-4">
+            <div class="flex items-start justify-between gap-1">
+              <p class="text-[15px] font-semibold text-gray-900 truncate leading-snug" style="letter-spacing:-0.01em">${d.name}</p>
+              <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${d.id}')" class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all -mr-1 mt-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+              </button>
             </div>
-            <div class="flex items-center gap-1.5 mt-2 flex-wrap">
-              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(d.type)}<span>${d.type}</span></span>
+            <div class="mt-1.5 flex items-center gap-1.5 flex-wrap">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium" style="background:${pal.bg};color:${pal.color}">
+                ${connectorIcon(d.connector, 11)}
+                <span>${d.connector}</span>
+              </span>
               ${statusBadgeHtml(d.status)}
             </div>
-            <div class="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-100">
-              <div class="flex items-center gap-1.5">
-                <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
-                <span class="text-[11px] text-gray-500 truncate max-w-[80px]">${d.owner}</span>
-              </div>
-              <span class="text-[11px] text-gray-400">${d.tables} tables</span>
-            </div>
+            <p class="text-[12px] text-gray-400 mt-2">Updated ${d.updated}</p>
           </div>
-        </div>
-      `).join('') : list.map((d, idx) => `
+        </div>`; }).join('') : list.map((d, idx) => `
         <div class="ds-row group flex items-center cursor-pointer transition-colors hover:bg-gray-50 ${idx < list.length - 1 ? 'border-b border-gray-100' : ''}" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mx-4 my-2.5" style="background:#EEF2FF">${connectorIcon(d.connector, 20)}</div>
           <div class="flex-1 min-w-0 py-3 pr-4">
@@ -1901,40 +2150,60 @@
 
     // ─── Filters ──────────────────────────────────────────────
     function toggleDsTypeDd() {
-      document.getElementById('ds-type-dd').classList.toggle('hidden');
-      document.getElementById('ds-status-dd').classList.add('hidden');
+      const typeDd = document.getElementById('ds-type-dd');
+      const wsDd   = document.getElementById('ds-ws-dd');
+      wsDd?.classList.add('hidden');
+      typeDd?.classList.toggle('hidden');
     }
 
     function setDsFilter(type) {
       _dsFilterType = type;
-      document.getElementById('ds-type-label').textContent = type === 'all' ? 'Type' : type;
+      document.getElementById('ds-type-label').textContent = type === 'all' ? 'All Types' : type;
       document.getElementById('ds-type-dd').classList.add('hidden');
       renderDsList();
-    }
-
-    function toggleDsStatusDd() {
-      document.getElementById('ds-status-dd').classList.toggle('hidden');
-      document.getElementById('ds-type-dd').classList.add('hidden');
     }
 
     function setDsStatus(status) {
       _dsFilterStatus = status;
       document.querySelectorAll('.ds-spill').forEach(btn => {
         const isActive = btn.id === 'dss-pill-' + status;
-        btn.style.background  = isActive ? '#EEF2FF' : '';
-        btn.style.color       = isActive ? '#5B63F6' : '';
-        btn.style.borderColor = isActive ? '#C7D2FE' : '';
+        // Apply active styles
+        if (isActive) {
+          btn.style.background = '#EEF2FF';
+          btn.style.color      = '#5B63F6';
+        } else {
+          btn.style.background = '';
+          btn.style.color      = '';
+        }
       });
+      renderDsList();
+    }
+
+    function toggleDsWsDd() {
+      const typeDd = document.getElementById('ds-type-dd');
+      const wsDd   = document.getElementById('ds-ws-dd');
+      typeDd?.classList.add('hidden');
+      wsDd?.classList.toggle('hidden');
+    }
+
+    function setWsFilter(ws) {
+      _dsFilterWs = ws;
+      const label = document.getElementById('ds-ws-label');
+      if (label) label.textContent = ws === 'all' ? 'All Workspaces' : 'Manish Kumar\'s Workspace';
+      document.getElementById('ds-ws-dd')?.classList.add('hidden');
       renderDsList();
     }
 
     function filterDsList() { renderDsList(); }
 
     document.addEventListener('click', e => {
-      if (!e.target.closest('[onclick="toggleDsTypeDd()"]') && !e.target.closest('#ds-type-dd'))
+      // Logic for closing dropdowns when clicking outside
+      const btn = e.target.closest('button[onclick*="toggleDs"]');
+      const dropdown = e.target.closest('[id$="-dd"]');
+      if (!btn && !dropdown) {
         document.getElementById('ds-type-dd')?.classList.add('hidden');
-      if (!e.target.closest('[onclick="toggleDsStatusDd()"]') && !e.target.closest('#ds-status-dd'))
-        document.getElementById('ds-status-dd')?.classList.add('hidden');
+        document.getElementById('ds-ws-dd')?.classList.add('hidden');
+      }
     });
 
     function dsToggleAll(master) {
@@ -2820,11 +3089,44 @@
       document.getElementById('rel-type').value = rel?.type || 'one-to-many';
       document.getElementById('rel-on').value   = rel?.on   || '';
       document.getElementById('rel-desc').value = rel?.desc || '';
+      // Populate sibling table list
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const currentTblName = document.getElementById('tbl-detail-name').textContent;
+      const siblings = (ds?.tables_list || []).filter(t => t.name !== currentTblName);
+      document.getElementById('rel-with-dd-list').innerHTML = siblings.length
+        ? siblings.map(t => `
+          <button type="button" onclick="selectRelTable('${t.name}')" class="w-full flex items-center gap-2.5 px-3 h-9 text-left hover:bg-indigo-50 transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            <span class="text-[13px] text-gray-800">${t.name}</span>
+          </button>`).join('')
+        : '<p class="px-3 py-2.5 text-[12px] text-gray-400">No other tables available</p>';
       const bd = document.getElementById('rel-modal-backdrop');
       bd.classList.remove('hidden');
       bd.classList.add('flex');
       document.getElementById('rel-with').focus();
     }
+
+    function openRelTableDd() {
+      filterRelTableDd(document.getElementById('rel-with').value);
+      document.getElementById('rel-with-dd').classList.remove('hidden');
+    }
+    function filterRelTableDd(q) {
+      document.getElementById('rel-with-dd').classList.remove('hidden');
+      const lq = (q || '').toLowerCase();
+      document.querySelectorAll('#rel-with-dd-list button').forEach(btn => {
+        const name = btn.querySelector('span')?.textContent?.toLowerCase() || '';
+        btn.style.display = name.includes(lq) ? '' : 'none';
+      });
+    }
+    function selectRelTable(name) {
+      document.getElementById('rel-with').value = name;
+      document.getElementById('rel-with').style.borderColor = '';
+      document.getElementById('rel-with-dd').classList.add('hidden');
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#rel-with-wrapper'))
+        document.getElementById('rel-with-dd')?.classList.add('hidden');
+    });
 
     function closeRelModal(e) {
       if (e && e.target !== document.getElementById('rel-modal-backdrop')) return;
@@ -2925,6 +3227,79 @@
       showToast('Table description updated.');
     }
 
+    // ─── Add Table modal ──────────────────────────────────────
+    const _SCHEMA_POOL = {
+      Database: ['audit_log','notifications','email_templates','settings','migrations','tags','attachments','comments','roles','permissions','user_roles','webhooks','api_keys','billing_plans','coupons','addresses','categories','media','reports','exports'],
+      File:     ['Sheet5 – Raw Data','Sheet6 – Pivot','Sheet7 – Charts','Sheet8 – Lookup'],
+      API:      ['/events','/reports','/invoices','/webhooks','/metrics','/batch','/audit'],
+    };
+    let _addTblSelected = new Set();
+    let _addTblAvailable = [];
+
+    function openAddTableModal() {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      if (!ds) return;
+      const existing = new Set((ds.tables_list || []).map(t => t.name));
+      const pool = _SCHEMA_POOL[ds.type] || _SCHEMA_POOL.Database;
+      _addTblAvailable = pool.filter(n => !existing.has(n));
+      _addTblSelected = new Set();
+      document.getElementById('add-tbl-search').value = '';
+      document.getElementById('add-tbl-count').textContent = '0 selected';
+      _renderAddTableList(_addTblAvailable);
+      const bd = document.getElementById('add-table-backdrop');
+      bd.classList.remove('hidden');
+      bd.classList.add('flex');
+    }
+
+    function _renderAddTableList(items) {
+      const container = document.getElementById('add-tbl-list');
+      if (!items.length) {
+        container.innerHTML = '<p class="text-center text-[13px] text-gray-400 py-8">All schema tables are already added</p>';
+        return;
+      }
+      container.innerHTML = items.map(name => `
+        <label class="add-tbl-row flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition-colors select-none" data-name="${name.toLowerCase()}">
+          <input type="checkbox" value="${name}" ${_addTblSelected.has(name) ? 'checked' : ''} onchange="toggleAddTableRow('${name}',this.checked)"
+            class="w-4 h-4 rounded border-gray-300 accent-indigo-600 flex-shrink-0 cursor-pointer" />
+          <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+          <span class="text-[13px] text-gray-800">${name}</span>
+        </label>`).join('');
+    }
+
+    function toggleAddTableRow(name, checked) {
+      if (checked) _addTblSelected.add(name); else _addTblSelected.delete(name);
+      const n = _addTblSelected.size;
+      document.getElementById('add-tbl-count').textContent = n === 0 ? '0 selected' : `${n} table${n > 1 ? 's' : ''} selected`;
+    }
+
+    function filterAddTableList(q) {
+      document.querySelectorAll('#add-tbl-list .add-tbl-row').forEach(row => {
+        row.style.display = row.dataset.name.includes(q.toLowerCase()) ? '' : 'none';
+      });
+    }
+
+    function confirmAddTables() {
+      if (_addTblSelected.size === 0) return;
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      if (!ds) return;
+      _addTblSelected.forEach(name => {
+        ds.tables_list.push({ name, rows: '—', cols: 0, desc: '' });
+      });
+      ds.tables = ds.tables_list.length;
+      document.getElementById('panel-tables').textContent = ds.tables + ' objects';
+      const n = _addTblSelected.size;
+      closeAddTableModal();
+      renderPanelTables();
+      showToast(`${n} table${n > 1 ? 's' : ''} added successfully`);
+    }
+
+    function closeAddTableModal(e) {
+      if (e && e.target !== document.getElementById('add-table-backdrop')) return;
+      const bd = document.getElementById('add-table-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+    }
+
     // ─── Column description modal ─────────────────────────────
     let _colDescIdx = null;
     let _colDescTblName = null;
@@ -2984,13 +3359,88 @@
     const _wsAssignments = {
       'ds-1': { assigned: true,  tables: null },
       'ds-2': { assigned: true,  tables: ['users','orders'] },
-      'ds-3': { assigned: false, tables: null },
-      'ds-4': { assigned: false, tables: null },
-      'ds-5': { assigned: false, tables: null },
+      'ds-3': { assigned: true,  tables: null },
+      'ds-4': { assigned: true,  tables: null },
+      'ds-5': { assigned: true,  tables: null },
     };
 
-    // Project assignments: Set of dsIds
-    const _projAssignments = new Set(['ds-1']);
+    // Projects list
+    const PROJECTS = [
+      { id: 'p-1', name: 'Analytics Dashboard', color: '#5B63F6', sources: ['Production Analytics DB', 'CRM MySQL Database'] },
+      { id: 'p-2', name: 'Sales Pipeline',       color: '#0EA5E9', sources: ['CRM MySQL Database', 'Marketing Leads API'] },
+      { id: 'p-3', name: 'Marketing Reports',    color: '#F59E0B', sources: ['Marketing Leads API', 'Q2 Revenue Sheet'] },
+      { id: 'p-4', name: 'Finance Overview',     color: '#10B981', sources: ['Q2 Revenue Sheet', 'Accounting API'] },
+      { id: 'p-5', name: 'Product Metrics',      color: '#8B5CF6', sources: ['Production Analytics DB', 'Product Metrics S3'] },
+    ];
+    // Per-project assignments: { projectId: Set<dsId> }
+    const _allProjAssignments = {
+      'p-1': new Set(['ds-1', 'ds-2', 'ds-3']),
+      'p-2': new Set(['ds-3', 'ds-4']),
+      'p-3': new Set(['ds-4', 'ds-5', 'ds-1']),
+      'p-4': new Set(['ds-2', 'ds-1', 'ds-3']),
+      'p-5': new Set(['ds-1', 'ds-5', 'ds-4']),
+    };
+    let _currentProjectId = 'p-1';
+
+    function _getProjAssignments() {
+      return _allProjAssignments[_currentProjectId] || new Set();
+    }
+    // keep _projAssignments as a proxy alias so all existing code works unchanged
+    const _projAssignments = {
+      has:    (id) => _getProjAssignments().has(id),
+      add:    (id) => _getProjAssignments().add(id),
+      delete: (id) => _getProjAssignments().delete(id),
+      get size() { return _getProjAssignments().size; },
+    };
+
+    function toggleProjPicker() {
+      const dd = document.getElementById('proj-picker-dd');
+      if (dd.classList.contains('hidden')) {
+        // populate
+        const list = document.getElementById('proj-picker-list');
+        list.innerHTML = PROJECTS.map(p => {
+          const active = p.id === _currentProjectId;
+          const sourcesList = (p.sources || []).slice(0, 2).join(', ') + ((p.sources || []).length > 2 ? '...' : '');
+          return `<button onclick="selectProject('${p.id}')" class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-indigo-50/50 transition-all ${active ? 'bg-indigo-50/80' : ''}">
+            <div class="relative flex-shrink-0">
+              <span class="w-3.5 h-3.5 rounded-full block border-2 border-white shadow-sm" style="background:${p.color}"></span>
+              ${active ? '<span class="absolute -inset-1 rounded-full bg-indigo-400/20 animate-ping"></span>' : ''}
+            </div>
+            <div class="flex-1 min-w-0">
+               <div class="flex items-center justify-between gap-2">
+                 <p class="text-[13px] ${active ? 'font-bold text-indigo-700' : 'font-semibold text-gray-800'} truncate">${p.name}</p>
+                 ${active ? '<svg class="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : ''}
+               </div>
+               <p class="text-[11px] text-gray-500 truncate mt-0.5">${sourcesList || 'No sources'}</p>
+            </div>
+          </button>`;
+        }).join('');
+        dd.classList.remove('hidden');
+      } else {
+        dd.classList.add('hidden');
+      }
+    }
+
+    function selectProject(id) {
+      _currentProjectId = id;
+      const proj = PROJECTS.find(p => p.id === id);
+      document.getElementById('proj-picker-label').textContent = proj?.name || id;
+      
+      // Update color indicator
+      const indicator = document.getElementById('proj-picker-indicator');
+      if (indicator && proj) {
+          indicator.style.backgroundColor = proj.color;
+          indicator.style.boxShadow = `0 0 8px ${proj.color}66`;
+      }
+      
+      document.getElementById('proj-picker-dd').classList.add('hidden');
+      renderProjScope();
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#proj-picker-wrapper'))
+        document.getElementById('proj-picker-dd')?.classList.add('hidden');
+    });
 
     let _currentScope = 'org';
 
@@ -3018,7 +3468,9 @@
       // Render relevant scope
       updateScopeCounts();
       if (scope === 'ws')   renderWsScope();
-      if (scope === 'proj') renderProjScope();
+      if (scope === 'proj') {
+        renderProjScope();
+      }
     }
 
     function updateScopeCounts() {
@@ -3104,7 +3556,6 @@
     function renderWsScope() {
       const assignedList = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
       const assigned = assignedList.length;
-      document.getElementById('ws-summary-chip').textContent = assigned + ' of ' + _dsList.length + ' assigned';
 
       // KPI bar
       const wsConnected = assignedList.filter(ds => ds.status === 'Connected').length;
@@ -3131,23 +3582,33 @@
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
           const selCount = a.tables ? a.tables.length : tblCount;
           const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          
           return `
-          <div class="assign-row group bg-white border border-gray-200 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md" data-name="${ds.name.toLowerCase()}" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-            <div class="h-24 rounded-t-xl flex items-center justify-center cursor-pointer" style="background:${statusCardBg(ds.status)}" onclick="openDetailPanel('${ds.id}',true)">
-              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+          <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer transition-all" data-name="${ds.name.toLowerCase()}" onclick="event.stopPropagation()">
+            <div class="h-32 rounded-t-xl flex items-center justify-center relative" style="background:${connectorPalette(ds.connector).bg}" onclick="openDetailPanel('${ds.id}',true)">
+              <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
             </div>
-            <div class="px-4 pt-3 pb-3">
-              <p class="text-[13px] font-semibold text-gray-900 truncate cursor-pointer hover:text-indigo-700 transition-colors" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
-              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+            <div class="px-3 pt-3 pb-3">
+              <div class="flex items-start justify-between">
+                <div class="min-w-0 flex-1">
+                  <p class="text-[13px] font-semibold text-gray-900 truncate mb-1 cursor-pointer hover:text-indigo-700" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
+                    ${typeIconHtml(ds.type)}
+                    <span>${ds.type}</span>
+                  </span>
+                </div>
+                <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-1 flex-shrink-0">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+                </button>
               </div>
-              <div class="flex items-center gap-1.5 mt-2">
-                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables</span>
-                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:underline ml-0.5">Edit</button>
+
+              <div class="flex items-center gap-2 mt-3 text-[11px] text-gray-500">
+                <span class="inline-block w-1.5 h-1.5 rounded-full ${ds.status === 'Connected' ? 'bg-green-500' : 'bg-red-500'}"></span>
+                <span class="truncate">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables included</span>
               </div>
-              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+
+              <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Edit Tables</button>
                 <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
               </div>
             </div>
@@ -3282,9 +3743,9 @@
 
     // ── Project scope ─────────────────────────────────────────────
     function renderProjScope() {
+      // Re-read assignments to be sure
       const wsAssigned = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
       const projCount  = _projAssignments.size;
-      document.getElementById('proj-summary-chip').textContent = projCount + ' of ' + wsAssigned.length + ' in project';
 
       // KPI bar (counts only project-assigned datasources)
       const projList      = _dsList.filter(ds => _projAssignments.has(ds.id));
@@ -3303,6 +3764,8 @@
       const emptyEl = document.getElementById('proj-empty-ws');
       const listEl  = document.getElementById('proj-assign-list');
 
+      // The key is to show BOTH assigned and unassigned (but workspace-available) sources
+      // so the user can actually see what's available to add to the project.
       if (wsAssigned.length === 0) {
         emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
         listEl.innerHTML = '';
@@ -3316,49 +3779,44 @@
         const selCount = a.tables ? a.tables.length : tblCount;
         const inProj   = _projAssignments.has(ds.id);
         const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
-        if (inProj) {
-          return `
-          <div class="assign-row group bg-white border border-green-200 rounded-xl transition-all hover:shadow-md" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-            <div class="h-24 rounded-t-xl flex items-center justify-center relative" style="background:${statusCardBg(ds.status)}">
-              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
-              <span class="absolute top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:rgba(255,255,255,0.9);color:#15803D">In Project</span>
+        
+        return `
+          <div class="report-card bg-white border ${inProj ? 'border-blue-200' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-80 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
+            <div class="h-32 rounded-t-xl flex items-center justify-center relative" style="background:${connectorPalette(ds.connector).bg}">
+              <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
+              ${inProj ? '<span class="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm" style="background:rgba(255,255,255,0.95);color:#5B63F6; border:1px solid rgba(91,99,246,0.1)">Active in Project</span>' : ''}
             </div>
-            <div class="px-4 pt-3 pb-3">
-              <p class="text-[13px] font-semibold text-gray-900 truncate">${ds.name}</p>
-              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
-              </div>
-              <div class="flex items-center gap-1.5 mt-2">
-                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                <span class="text-[11px] text-gray-500">${selCount} table${selCount !== 1 ? 's' : ''} accessible</span>
-              </div>
-              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
-                <button onclick="toggleProjAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
-              </div>
-            </div>
-          </div>`;
-        } else {
-          return `
-          <div class="assign-row group bg-white border border-gray-200 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md opacity-70 hover:opacity-100" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-            <div class="h-24 rounded-t-xl flex items-center justify-center" style="background:${statusCardBg(ds.status)}">
-              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
-            </div>
-            <div class="px-4 pt-3 pb-3">
-              <p class="text-[13px] font-semibold text-gray-700 truncate">${ds.name}</p>
-              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
-              </div>
-              <p class="text-[11px] text-gray-400 mt-2">${selCount} table${selCount !== 1 ? 's' : ''} available</p>
-              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
-                <button onclick="toggleProjAssign('${ds.id}')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white px-2.5 py-1 rounded-md hover:opacity-90 transition-opacity" style="background:#5B63F6">
-                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add
+            <div class="px-3 pt-3 pb-3">
+              <div class="flex items-start justify-between">
+                <div class="min-w-0 flex-1">
+                  <p class="text-[13px] font-semibold text-gray-900 truncate mb-1">${ds.name}</p>
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
+                    ${typeIconHtml(ds.type)}
+                    <span>${ds.type}</span>
+                  </span>
+                </div>
+                <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-1 flex-shrink-0">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
                 </button>
               </div>
+
+              <div class="flex items-center gap-2 mt-3 text-[11px] text-gray-500">
+                <span class="inline-block w-1.5 h-1.5 rounded-full ${ds.status === 'Connected' ? 'bg-green-500' : 'bg-red-500'}"></span>
+                <span>${selCount} tables accessible</span>
+              </div>
+
+              <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">${ds.status}</span>
+                ${inProj ? `
+                  <button onclick="toggleProjAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
+                ` : `
+                  <button onclick="toggleProjAssign('${ds.id}')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add to Project
+                  </button>
+                `}
+              </div>
             </div>
           </div>`;
-        }
       }).join('') : wsAssigned.map(ds => {
         const a = _wsAssignments[ds.id];
         const tblCount = (ds.tables_list || []).length || ds.tables || 0;
@@ -3367,7 +3825,7 @@
         const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
         if (inProj) {
           return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white" data-name="${ds.name}">
             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
@@ -3389,7 +3847,7 @@
           </div>`;
         } else {
           return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white opacity-70 hover:opacity-100 transition-opacity">
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white opacity-70 hover:opacity-100 transition-opacity" data-name="${ds.name}">
             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F9FAFB">${connectorIcon(ds.connector, 18)}</div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
