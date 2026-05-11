@@ -10,7 +10,18 @@
       theme: {
         extend: {
           colors: {
-            brand: { primary: '#5B63F6', secondary: '#7C6FF7' },
+            brand: {
+              primary:   '#5B63F6',
+              secondary: '#7C6FF7',
+              upgrade:   '#7C3AED',
+            },
+            sidebar: '#F8F9FC',
+            hover:   '#EEF2FF',
+            placeholder: '#F0F1F4',
+            'tab-container': '#F3F4F6',
+            'toggle-bg':  '#12131F',
+            'toggle-active': '#1C3A6E',
+            'filter-bg':  '#1A1A2A',
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -18,6 +29,8 @@
           boxShadow: {
             card:       '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
             'card-hover':'0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)',
+            'tab-active':'0 1px 4px rgba(0,0,0,0.10)',
+            'filter':   '0 8px 24px rgba(0,0,0,0.40)',
           },
         },
       },
@@ -27,15 +40,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    ::-webkit-scrollbar { width: 5px; }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
     ::-webkit-scrollbar-track { background: transparent; }
 
+    /* Nav item hover */
     .nav-item { transition: background-color 100ms ease; }
     .nav-item:hover { background-color: #EEF2FF; }
 
     .ws-submenu { display: none; }
-    .ws-submenu.open { display: block; }
+    .ws-submenu.open { display: block; max-height: 160px; overflow-y: auto; }
     .ws-chevron { transition: transform 150ms ease; }
     .ws-item.open .ws-chevron { transform: rotate(90deg); }
 
@@ -60,35 +75,87 @@
 
     /* Connector card hover */
     .connector-card { position: relative; transition: all 150ms ease-out; cursor: pointer; }
-    .connector-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); border-color: rgba(91,99,246,0.35); transform: translateY(-1px); }
+    .connector-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05); border-color: rgba(91,99,246,0.4); transform: translateY(-1px); }
     .connector-card.cursor-not-allowed:hover { box-shadow: none; border-color: #E5E7EB; transform: none; }
 
     /* Step indicator */
-    .step-line { height: 1px; background: #E5E7EB; flex: 1; }
+    .step-line { height: 1px; background: #E5E7EB; flex: 1; transition: background 200ms ease; }
     .step-line.done { background: #5B63F6; }
 
     /* Input focus */
-    input:focus, textarea:focus { outline: none; border-color: #5B63F6 !important; box-shadow: 0 0 0 3px rgba(91,99,246,0.15); }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #5B63F6 !important; box-shadow: 0 0 0 3px rgba(91,99,246,0.15); }
 
     /* View transitions */
-    .view { display: none; }
-    .view.active { display: flex; }
+    .view { display: none; opacity: 0; transition: opacity 200ms ease; }
+    .view.active { display: flex; opacity: 1; }
+
+    /* Datasource list rows */
+    .ds-row { transition: all 80ms ease; border-color: transparent; background: white; }
+    .ds-row:hover { background: rgba(91,99,246,0.03); border-color: rgba(91,99,246,0.15); box-shadow: 0 1px 3px rgba(91,99,246,0.08); }
+    .ds-row.selected { background: rgba(91,99,246,0.04); border-color: rgba(91,99,246,0.2); }
+
+    /* Table header sticky shadow */
+    .sticky { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+    /* Sync spin */
+    @keyframes ds-spin { to { transform: rotate(360deg); } }
+    .ds-spin { animation: ds-spin 0.9s linear infinite; }
+
+    /* Tab bar */
+    .ds-tab { cursor:pointer; border-radius:9999px; padding:0 16px; height:32px; font-size:13px; transition:background-color 120ms,box-shadow 120ms,color 120ms; white-space:nowrap; display:inline-flex; align-items:center; }
+    .ds-tab.active { background:white; color:#111827; font-weight:600; border:1px solid #E5E7EB; box-shadow:0 1px 4px rgba(0,0,0,0.10); }
+    .ds-tab:not(.active) { color:#6B7280; background:transparent; border:1px solid transparent; }
+    .ds-tab:not(.active):hover { color:#374151; }
+
+    /* Status badges */
+    .badge-connected  { background:#DCFCE7; color:#15803D; }
+    .badge-pending    { background:#FEF9C3; color:#854D0E; }
+    .badge-error      { background:#FEF2F2; color:#B91C1C; }
+    .badge-syncing    { background:#EEF2FF; color:#5B63F6; }
+
+    /* Health bar */
+    .health-fill { height: 4px; border-radius: 9999px; background: #5B63F6; }
+
+    /* Tooltip */
+    [data-tip] { position: relative; }
+    [data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+      background: #1F2937; color: #fff; font-size: 11px; white-space: nowrap;
+      padding: 3px 8px; border-radius: 6px; z-index: 999; pointer-events: none;
+    }
 
     /* Step content fade */
-    .step-pane { display: none; }
-    .step-pane.active { display: block; }
+    .step-pane { display: none; opacity: 0; transition: opacity 200ms ease; }
+    .step-pane.active { display: block; opacity: 1; }
+
+    /* File drop zone */
+    #file-drop-zone { transition: all 150ms ease; }
+    #file-drop-zone:hover { box-shadow: 0 2px 8px rgba(91,99,246,0.12); }
 
     /* Table select checkbox */
-    .table-row { transition: background-color 80ms ease; }
-    .table-row:hover { background: #F9FAFB; }
+    .table-row { transition: all 80ms ease; }
+    .table-row:hover { background: #F9FAFB; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
 
     /* Info banner */
-    .info-banner { background: #fff; border: 1.5px solid #5B63F6; border-radius: 10px; }
+    .info-banner { background: #fff; border: 1.5px solid #5B63F6; border-radius: 10px; box-shadow: 0 2px 8px rgba(91,99,246,0.08); }
 
-    /* Step card */
-    .step-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+    /* Scope switcher tabs */
+    .scope-tab { display:inline-flex; align-items:center; gap:6px; padding:0 4px; height:42px; font-size:13px; cursor:pointer; border:none; background:transparent; border-bottom:2px solid transparent; transition:color 120ms,border-color 120ms; color:#6B7280; white-space:nowrap; }
+    .scope-tab:hover:not(.scope-active) { color:#374151; }
+    .scope-tab.scope-active { color:#5B63F6; font-weight:600; border-bottom-color:#5B63F6; }
+    .scope-count { font-size:10px; font-weight:700; padding:1px 6px; border-radius:999px; background:#EEF2FF; color:#5B63F6; }
+    .scope-tab:not(.scope-active) .scope-count { background:#F3F4F6; color:#9CA3AF; }
+    /* Scope flow arrow */
+    .scope-arrow { color:#D1D5DB; font-size:11px; margin:0 2px; }
+
+    /* Readonly detail mode — hides edit-only controls */
+    #view-detail.ds-readonly .ds-edit-only { display: none !important; }
+    #view-detail.ds-readonly .ds-readonly-only { display: table-cell !important; }
+    #view-detail.ds-readonly .ds-edit-input { pointer-events: none; }
 
     /* Test connection states */
+    .conn-idle, .conn-loading, .conn-success, .conn-error { transition: opacity 150ms ease; }
     .conn-idle    { display: flex; }
     .conn-loading { display: none; }
     .conn-success { display: none; }
@@ -100,6 +167,15 @@
 
     /* Continue btn disabled */
     button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Filter pills */
+    .ds-fpill { transition: all 120ms ease; }
+    .ds-fpill:hover:not(:disabled) { box-shadow: 0 1px 3px rgba(91,99,246,0.12); }
+
+    /* Button transitions */
+    button { transition: all 100ms ease; }
+    button:not(:disabled):hover { filter: brightness(0.98); }
+    button:not(:disabled):active { transform: scale(0.98); }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -292,21 +368,528 @@
     </div>
 
     <!-- Second topbar: title + description -->
-    <div id="sub-topbar" class="flex items-center gap-2 px-8 h-[52px] border-b border-gray-100 flex-shrink-0 bg-white">
-      <button id="sub-back-btn" onclick="subTopbarBack()" class="hidden w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-800 flex-shrink-0">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      </button>
-      <div class="min-w-0">
-        <h2 id="sub-title" class="text-[15px] font-semibold text-gray-900 leading-tight">Connect Your Data</h2>
-        <p id="sub-desc" class="text-[12px] text-gray-400 leading-tight mt-0.5">Unlock insights from your databases, files, and APIs</p>
+    <div id="sub-topbar" class="flex items-center justify-between px-6 h-[52px] border-b border-gray-100 flex-shrink-0 bg-white">
+      <div class="flex items-center gap-2 min-w-0">
+        <button id="sub-back-btn" onclick="subTopbarBack()" class="hidden w-7 h-7 items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-800 flex-shrink-0">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="min-w-0">
+          <h2 id="sub-title" class="text-[15px] font-semibold text-gray-900 leading-tight">Datasources</h2>
+          <p id="sub-desc" class="text-[12px] text-gray-400 leading-tight mt-0.5">Manage and monitor all connected data sources</p>
+        </div>
+      </div>
+      <!-- Actions shown only on list view -->
+      <div id="list-actions" class="flex items-center gap-2">
+        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Add Datasource
+        </button>
       </div>
     </div>
 
+    <!-- ─── VIEW 1: Datasource Management Hub ─── -->
+    <div id="view-list" class="view active flex-col flex-1 overflow-hidden bg-white">
 
+      <!-- ── Scope switcher ── -->
+      <div class="flex-shrink-0 bg-white border-b border-gray-100 px-6 flex items-center gap-12">
+        <button id="dss-org" onclick="switchDsScope('org')" class="scope-tab scope-active">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+          Organization
+          <span id="scope-count-org" class="scope-count">—</span>
+        </button>
+        <button id="dss-ws" onclick="switchDsScope('ws')" class="scope-tab">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
+          Workspace
+          <span id="scope-count-ws" class="scope-count">—</span>
+        </button>
+        <button id="dss-proj" onclick="switchDsScope('proj')" class="scope-tab">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+          Project
+          <span id="scope-count-proj" class="scope-count">—</span>
+        </button>
+      </div>
 
+      <!-- ── Organization scope ── -->
+      <div id="scope-org" class="flex flex-col flex-1 overflow-hidden">
+
+      <!-- Stats bar -->
+      <div class="grid grid-cols-4 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
+        <!-- Total Sources -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-4.5 h-4.5" style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Sources</p>
+            <p id="stat-total" class="text-[22px] font-bold text-gray-900 leading-none">5</p>
+          </div>
+        </div>
+        <!-- Connected -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+            <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Connected</p>
+            <p id="stat-connected" class="text-[22px] font-bold leading-none" style="color:#16A34A">4</p>
+          </div>
+        </div>
+        <!-- Errors -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEE2E2">
+            <svg style="color:#DC2626;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Errors</p>
+            <p id="stat-error" class="text-[22px] font-bold leading-none" style="color:#DC2626">1</p>
+          </div>
+        </div>
+        <!-- Tables -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+            <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
+            <p id="stat-tables" class="text-[22px] font-bold text-gray-900 leading-none">48</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar: search + filters + view toggle -->
+      <div class="flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
+        <!-- Search -->
+        <div class="relative flex-1 max-w-xs">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="ds-search" type="text" placeholder="Search datasources..." oninput="filterDsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
+        </div>
+        <!-- Type filter pills -->
+        <div class="flex items-center gap-1">
+          <button onclick="setDsFilter('all')"      id="dsf-all"      class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border transition-colors" style="background:#EEF2FF;color:#5B63F6;border-color:#C7D2FE">All</button>
+          <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Database</button>
+          <button onclick="setDsFilter('File')"     id="dsf-File"     class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">File</button>
+          <button onclick="setDsFilter('API')"      id="dsf-API"      class="ds-fpill px-3 h-8 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">API</button>
+        </div>
+        <!-- Status filter -->
+        <div class="relative">
+          <button onclick="toggleDsStatusDd()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[12px] font-medium text-gray-600 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+            <span id="ds-status-label">Status</span>
+            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="ds-status-dd" class="hidden absolute top-full left-0 mt-1 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[140px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)">
+            <button onclick="setDsStatus('all')"       class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">All Status</button>
+            <button onclick="setDsStatus('Connected')" class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Connected</button>
+            <button onclick="setDsStatus('Syncing')"   class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Syncing</button>
+            <button onclick="setDsStatus('Error')"     class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Error</button>
+            <button onclick="setDsStatus('Pending')"   class="w-full text-left px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50">Pending</button>
+          </div>
+        </div>
+        <div class="flex-1"></div>
+        <!-- Sort -->
+        <select id="ds-sort" onchange="renderDsList()" class="h-9 px-3 pr-7 text-[12px] text-gray-600 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400 cursor-pointer">
+          <option value="name">Sort: Name</option>
+          <option value="status">Sort: Status</option>
+          <option value="tables">Sort: Tables</option>
+          <option value="updated">Sort: Last Sync</option>
+        </select>
+      </div>
+
+      <!-- Datasource list -->
+      <div class="flex-1 overflow-y-auto px-6 py-4 relative">
+
+        <!-- Table header (sticky) -->
+        <div class="sticky top-0 z-10 flex items-center gap-4 px-5 py-3 mb-2 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+          <div class="w-[32px] flex-shrink-0"></div>
+          <div class="w-[280px] flex-shrink-0">Name / Connection</div>
+          <div class="w-[100px] text-center flex-shrink-0">Type</div>
+          <div class="w-[110px] text-center flex-shrink-0">Status</div>
+          <div class="w-[80px] text-center flex-shrink-0">Tables</div>
+          <div class="w-[140px] flex-shrink-0">Last Sync</div>
+          <div class="w-[140px] flex-shrink-0">Owner</div>
+          <div class="w-[90px] flex-shrink-0 text-right">Actions</div>
+        </div>
+
+        <div id="ds-list-body" class="space-y-2"></div>
+
+        <!-- Empty state -->
+        <div id="ds-empty" class="hidden flex-col items-center justify-center py-24 gap-4 text-center">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:#EEF2FF">
+            <svg class="w-8 h-8" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[14px] font-semibold text-gray-800">No datasources found</p>
+            <p class="text-[13px] text-gray-400 mt-1">Try adjusting your filters or add a new datasource.</p>
+          </div>
+          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#5B63F6">Add Datasource</button>
+        </div>
+
+      </div>
+
+      </div><!-- /scope-org -->
+
+      <!-- ── Workspace scope ── -->
+      <div id="scope-ws" class="hidden flex-col flex-1 overflow-hidden">
+        <!-- Header -->
+        <div class="flex-shrink-0 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <p class="text-[13px] font-semibold text-gray-800">Workspace datasources</p>
+            <p class="text-[12px] text-gray-400 mt-0.5">Datasources assigned to this workspace. Select tables to control what's accessible.</p>
+          </div>
+          <div id="ws-summary-chip" class="flex-shrink-0 text-[12px] font-semibold px-3 py-1 rounded-lg" style="background:#EEF2FF;color:#5B63F6"></div>
+        </div>
+        <!-- KPI bar -->
+        <div class="grid grid-cols-3 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
+          <!-- Total Sources -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Sources</p>
+              <p id="ws-stat-total" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+          <!-- Connected -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+              <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Connected</p>
+              <p id="ws-stat-connected" class="text-[22px] font-bold leading-none" style="color:#16A34A">0</p>
+            </div>
+          </div>
+          <!-- Tables -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+              <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
+              <p id="ws-stat-tables" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar: search + add -->
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+          <!-- Search -->
+          <div class="relative flex-1 max-w-xs">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+            <input id="ws-search" type="text" placeholder="Search datasources…" oninput="filterWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
+          </div>
+          <div class="relative flex-1 max-w-xs" id="ws-add-wrapper">
+            <button onclick="toggleWsDropdown()" class="w-full flex items-center gap-2 px-3 h-9 rounded-lg border border-gray-200 bg-white text-[13px] text-gray-500 hover:border-indigo-300 transition-colors" id="ws-add-btn">
+              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <span id="ws-add-label" class="flex-1 text-left truncate">Add datasource…</span>
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <!-- Dropdown list -->
+            <div id="ws-add-dd" class="hidden absolute top-full left-0 mt-1 w-full z-50 bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+              <div id="ws-add-dd-list"></div>
+              <div id="ws-add-dd-empty" class="hidden px-4 py-3 text-[12px] text-gray-400 text-center">All datasources already assigned</div>
+            </div>
+          </div>
+          <!-- Confirm button, shown after selection -->
+          <button id="ws-add-confirm" onclick="confirmWsAdd()" class="hidden items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity flex-shrink-0" style="background:#5B63F6">
+            Add &amp; configure tables
+          </button>
+          <button id="ws-add-cancel" onclick="cancelWsAdd()" class="hidden h-9 px-3 rounded-lg text-[12px] font-medium text-gray-500 hover:bg-gray-100 transition-colors flex-shrink-0">
+            Cancel
+          </button>
+        </div>
+        <!-- Assigned list -->
+        <div class="flex-1 overflow-y-auto px-6 py-4">
+          <div id="ws-assign-list" class="space-y-2"></div>
+          <div id="ws-empty-state" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
+              <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+            </div>
+            <p class="text-[13px] font-semibold text-gray-700">No datasources assigned yet</p>
+            <p class="text-[12px] text-gray-400">Use the dropdown above to add a datasource.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Project scope ── -->
+      <div id="scope-proj" class="hidden flex-col flex-1 overflow-hidden">
+        <!-- Header banner -->
+        <div class="flex-shrink-0 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <p class="text-[13px] font-semibold text-gray-800">Add datasources to this project</p>
+            <p class="text-[12px] text-gray-400 mt-0.5">Select from workspace-assigned datasources. Only selected tables will be accessible in this project.</p>
+          </div>
+          <div id="proj-summary-chip" class="flex-shrink-0 text-[12px] font-semibold px-3 py-1 rounded-lg" style="background:#EEF2FF;color:#5B63F6"></div>
+        </div>
+        <!-- KPI bar -->
+        <div class="grid grid-cols-4 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
+          <!-- Total Sources -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Sources</p>
+              <p id="proj-stat-total" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+          <!-- Connected -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+              <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Connected</p>
+              <p id="proj-stat-connected" class="text-[22px] font-bold leading-none" style="color:#16A34A">0</p>
+            </div>
+          </div>
+          <!-- Errors -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEE2E2">
+              <svg style="color:#DC2626;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Errors</p>
+              <p id="proj-stat-error" class="text-[22px] font-bold leading-none" style="color:#DC2626">0</p>
+            </div>
+          </div>
+          <!-- Tables -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+              <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
+              <p id="proj-stat-tables" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+        </div>
+        <!-- List -->
+        <div class="flex-1 overflow-y-auto px-6 py-4">
+          <div id="proj-assign-list" class="space-y-2"></div>
+          <!-- Empty state if no ws assignments -->
+          <div id="proj-empty-ws" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
+              <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+            </div>
+            <div>
+              <p class="text-[13px] font-semibold text-gray-700">No workspace datasources yet</p>
+              <p class="text-[12px] text-gray-400 mt-0.5">Go to the <button onclick="switchDsScope('ws')" class="text-indigo-500 hover:underline font-medium">Workspace tab</button> to assign datasources first.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /view-list -->
+
+    <!-- ─── VIEW 4: Datasource Detail ─── -->
+    <div id="view-detail" class="view flex-col flex-1 overflow-hidden bg-white">
+        <!-- Detail header -->
+        <div class="flex-shrink-0">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div class="flex items-center gap-3 min-w-0">
+              <button onclick="closeDetailPanel()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <div id="panel-icon" class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"></div>
+              <div class="min-w-0">
+                <h3 id="panel-name" class="text-[15px] font-bold text-gray-900 leading-tight truncate"></h3>
+                <p id="panel-connector" class="text-[12px] text-gray-400 mt-0.5"></p>
+              </div>
+            </div>
+          </div>
+          <!-- Detail tabs -->
+          <div class="flex items-center gap-1 px-6 py-3 border-b border-gray-100">
+            <div class="flex items-center gap-1 p-1 rounded-full w-fit" style="background:#F3F4F6">
+              <button onclick="setPanelTab('overview')" id="ptab-overview" class="ds-tab active">Overview</button>
+              <button onclick="setPanelTab('tables')"   id="ptab-tables"   class="ds-tab">Tables</button>
+              <button onclick="setPanelTab('sync')"     id="ptab-sync"     class="ds-tab">Sync Log</button>
+              <button onclick="setPanelTab('settings')" id="ptab-settings" class="ds-tab ds-edit-only">Settings</button>
+            </div>
+          </div>
+        </div>
+        <!-- Detail body -->
+        <div class="flex-1 overflow-y-auto px-6 py-5">
+          <!-- Overview tab -->
+          <div id="panel-overview" class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-gray-50 rounded-xl px-4 py-3">
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Status</p>
+                <span id="panel-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-semibold"></span>
+              </div>
+              <div class="bg-gray-50 rounded-xl px-4 py-3">
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Type</p>
+                <p id="panel-type" class="text-[13px] font-semibold text-gray-800"></p>
+              </div>
+              <div class="bg-gray-50 rounded-xl px-4 py-3">
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Tables</p>
+                <p id="panel-tables" class="text-[13px] font-semibold text-gray-800"></p>
+              </div>
+              <div class="bg-gray-50 rounded-xl px-4 py-3">
+                <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1">Owner</p>
+                <p id="panel-owner" class="text-[13px] font-semibold text-gray-800"></p>
+              </div>
+            </div>
+            <div class="bg-gray-50 rounded-xl px-4 py-3">
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Sync Schedule</p>
+              <div class="flex items-center justify-between">
+                <p id="panel-schedule" class="text-[13px] font-semibold text-gray-800">Every 6 hours</p>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full" style="background:#F0FDF4;color:#15803D">Active</span>
+              </div>
+            </div>
+            <div class="bg-gray-50 rounded-xl px-4 py-3">
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Connection Info</p>
+              <div id="panel-conn-info" class="space-y-1.5 text-[13px]"></div>
+            </div>
+            <!-- Actions -->
+            <div class="flex justify-end gap-2 pt-1 ds-edit-only">
+              <button onclick="syncDs(currentDetailId)" class="flex items-center justify-center gap-1.5 px-4 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                Sync Now
+              </button>
+            </div>
+          </div>
+          <!-- Tables tab -->
+          <div id="panel-tables-tab" style="display:none">
+            <!-- Table list view -->
+            <div id="tbl-list-view">
+              <div class="pb-3">
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+                  <input type="text" placeholder="Search tables..." class="w-full h-8 pl-9 pr-3 text-[12px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" oninput="filterPanelTables(this.value)" />
+                </div>
+              </div>
+              <div id="panel-tables-list"></div>
+            </div>
+
+            <!-- Inline table detail view -->
+            <div id="tbl-detail-view" class="hidden">
+              <!-- Back + header -->
+              <div class="mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                  <button onclick="closeTblDetail()" class="flex items-center gap-1.5 text-[12px] font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                    Tables
+                  </button>
+                  <span class="text-gray-300">/</span>
+                  <span id="tbl-detail-name" class="text-[13px] font-semibold text-gray-900"></span>
+                </div>
+                <div class="flex items-center gap-1.5 pl-0.5">
+                  <span id="tbl-detail-desc" class="text-[12px] text-gray-400"></span>
+                  <button onclick="openTblDescModal(document.getElementById('tbl-detail-name').textContent)" class="flex-shrink-0 transition-opacity ds-edit-only" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#D1D5DB;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#D1D5DB'" title="Edit description">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pill tabs -->
+              <div class="flex items-center gap-1 p-1 rounded-xl mb-4" style="background:#F3F4F6">
+                <button id="tdtab-preview"   onclick="switchTblTab('preview')"   class="ds-tab active">Preview</button>
+                <button id="tdtab-columns"   onclick="switchTblTab('columns')"   class="ds-tab">Metadata</button>
+                <button id="tdtab-relations" onclick="switchTblTab('relations')" class="ds-tab">Relationships</button>
+              </div>
+
+              <!-- Preview pane -->
+              <div id="tbl-pane-preview">
+                <div class="rounded-xl border border-gray-200 overflow-x-auto">
+                  <table class="w-full text-[12px]" style="border-collapse:collapse;min-width:360px">
+                    <thead id="tbl-preview-head"></thead>
+                    <tbody id="tbl-preview-body"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Metadata pane -->
+              <div id="tbl-pane-columns" class="hidden">
+                <div id="tbl-kpi-bar" class="hidden flex items-center gap-5 px-4 py-3 rounded-xl mb-3" style="background:#F8FAFC;border:1px solid #E2E8F0">
+                  <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Avg Null</p><p id="tbl-kpi-null" class="text-[18px] font-bold text-gray-800 leading-tight">—</p></div>
+                  <div class="w-px h-7 bg-gray-200"></div>
+                  <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Avg Unique</p><p id="tbl-kpi-unique" class="text-[18px] font-bold text-gray-800 leading-tight">—</p></div>
+                  <div class="w-px h-7 bg-gray-200"></div>
+                  <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Distinct Values</p><p id="tbl-kpi-distinct" class="text-[18px] font-bold text-gray-800 leading-tight">—</p></div>
+                </div>
+                <div class="rounded-xl border border-gray-200 overflow-x-auto">
+                  <table class="w-full text-[12px]" style="border-collapse:collapse;min-width:700px">
+                    <thead>
+                      <tr style="background:#F8FAFC;border-bottom:1px solid #E5E7EB">
+                        <th style="padding:8px 14px;text-align:left;font-weight:600;color:#6B7280;white-space:nowrap">Column Name</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280;white-space:nowrap">Data Type</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280">Description</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280;white-space:nowrap;width:150px">Column Type</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280;width:110px">Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbl-cols-body"></tbody>
+                  </table>
+                </div>
+                <div id="tbl-no-cols" class="hidden text-center py-8"><p class="text-[13px] text-gray-400">No column metadata available.</p></div>
+              </div>
+
+              <!-- Relationships pane -->
+              <div id="tbl-pane-relations" class="hidden">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Relationships</span>
+                  <button onclick="openRelModal(null)" class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity ds-edit-only" style="background:#5B63F6">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    Add
+                  </button>
+                </div>
+                <div id="tbl-rels-list" class="space-y-2"></div>
+                <div id="tbl-no-rels" class="hidden text-center py-8"><p class="text-[13px] text-gray-400">No relationships defined for this table.</p></div>
+              </div>
+            </div>
+          </div>
+          <!-- Sync Log tab -->
+          <div id="panel-sync-tab" style="display:none" class="space-y-2">
+            <div id="panel-sync-log" class="space-y-2"></div>
+          </div>
+          <!-- Settings tab -->
+          <div id="panel-settings-tab" style="display:none" class="space-y-4">
+            <div>
+              <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Display Name</label>
+              <input type="text" id="panel-edit-name" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
+            </div>
+            <div>
+              <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Sync Frequency</label>
+              <select class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400">
+                <option>Every 1 hour</option>
+                <option selected>Every 6 hours</option>
+                <option>Every 12 hours</option>
+                <option>Daily</option>
+                <option>Manual only</option>
+              </select>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+              <div>
+                <p class="text-[13px] font-semibold text-gray-800">Auto-sync</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">Automatically sync on schedule</p>
+              </div>
+              <button onclick="toggleBtn(this)" data-on="true" class="relative w-10 h-5 rounded-full transition-colors" style="background:#5B63F6" id="autosync-toggle">
+                <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform" style="transform:translateX(20px)"></span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+              <div>
+                <p class="text-[13px] font-semibold text-gray-800">Alert on failure</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">Email notification on sync error</p>
+              </div>
+              <button onclick="toggleBtn(this)" data-on="false" class="relative w-10 h-5 rounded-full transition-colors" style="background:#E5E7EB" id="alert-toggle">
+                <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"></span>
+              </button>
+            </div>
+            <button class="w-full h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save Settings</button>
+            <button onclick="deleteDs(currentDetailId)" class="w-full h-9 rounded-lg text-[13px] font-semibold text-red-500 border border-red-200 hover:bg-red-50 transition-colors">Remove Datasource</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /view-detail -->
 
     <!-- ─── VIEW 2: Add Datasource (connector picker) ─── -->
-    <div id="view-add" class="view active flex-col flex-1 overflow-hidden">
+    <div id="view-add" class="view flex-col flex-1 overflow-hidden">
 
       <!-- Content -->
       <div class="flex-1 overflow-y-auto overflow-x-hidden px-8 py-7 bg-white">
@@ -326,7 +909,7 @@
               </button>
               <div id="type-dropdown"
                 class="type-dropdown absolute left-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[200px] bg-white"
-                style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
+                style="border:1px solid #E5E7EB; box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)">
 
                 <!-- All -->
                 <div onclick="filterByType('all')" class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" id="dd-all">
@@ -742,13 +1325,11 @@
 
       <!-- Header -->
       <div class="flex-shrink-0 rounded-t-2xl overflow-hidden">
-        <!-- Accent bar -->
-        <div style="height:3px;background:linear-gradient(90deg,#5B63F6 0%,#818CF8 50%,#C4B5FD 100%)"></div>
         <div class="flex items-center justify-between px-6 py-4">
           <div class="flex items-center gap-3">
             <div>
               <h2 id="preview-table-name" class="text-[15px] font-semibold text-gray-900 leading-tight">Table</h2>
-              <p class="text-[11px] text-gray-400 mt-0.5 leading-tight">Sample data preview</p>
+              <p id="preview-table-desc" class="text-[11px] text-gray-400 mt-0.5 leading-tight"></p>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -758,16 +1339,61 @@
             </button>
           </div>
         </div>
+        <!-- Tab bar -->
+        <div class="flex items-center gap-1 px-6 pb-0 border-b border-gray-100">
+          <button id="ptab-preview" onclick="switchPreviewTab('preview')" class="px-4 h-9 text-[13px] font-medium border-b-2 transition-colors" style="border-color:#5B63F6;color:#5B63F6">Preview</button>
+          <button id="ptab-columns" onclick="switchPreviewTab('columns')" class="px-4 h-9 text-[13px] font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">Columns</button>
+          <button id="ptab-relations" onclick="switchPreviewTab('relations')" class="px-4 h-9 text-[13px] font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">Relations</button>
+        </div>
       </div>
 
-      <!-- Table -->
-      <div class="overflow-y-auto flex-1 mx-5 mb-1 rounded-xl border border-gray-200" style="max-height:420px">
+      <!-- Preview pane -->
+      <div id="preview-pane-data" class="overflow-y-auto flex-1 mx-5 mt-3 mb-1 rounded-xl border border-gray-200" style="max-height:380px">
         <table class="w-full text-[13px]" id="preview-data-table" style="table-layout:fixed;border-collapse:collapse">
           <thead style="position:sticky;top:0;z-index:10">
             <tr id="preview-thead-row"></tr>
           </thead>
           <tbody id="preview-tbody"></tbody>
         </table>
+      </div>
+
+      <!-- Columns pane -->
+      <div id="preview-pane-columns" class="hidden flex-col flex-1 overflow-hidden px-5 mt-3 mb-1">
+        <!-- KPI bar -->
+        <div id="preview-kpi-bar" class="flex items-center gap-6 px-5 py-3 rounded-xl mb-3 flex-shrink-0" style="background:#F8FAFC;border:1px solid #E2E8F0">
+          <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Avg. Null %</p><p id="kpi-null" class="text-[22px] font-bold text-gray-800 leading-tight">—</p></div>
+          <div class="w-px h-8 bg-gray-200"></div>
+          <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Avg. Unique %</p><p id="kpi-unique" class="text-[22px] font-bold text-gray-800 leading-tight">—</p></div>
+          <div class="w-px h-8 bg-gray-200"></div>
+          <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Total Distinct Values</p><p id="kpi-distinct" class="text-[22px] font-bold text-gray-800 leading-tight">—</p></div>
+          <div class="ml-auto text-[11px] text-gray-400 bg-gray-100 px-3 py-1 rounded-full flex-shrink-0">Column quality metrics</div>
+        </div>
+        <!-- Column search -->
+        <div class="relative mb-2 flex-shrink-0">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+          <input type="text" id="preview-col-search" placeholder="Search columns…" oninput="filterPreviewColumns(this.value)" class="w-full h-9 pl-9 pr-4 text-[13px] border border-gray-200 rounded-lg bg-white placeholder-gray-400">
+        </div>
+        <!-- Column table -->
+        <div class="overflow-y-auto flex-1 rounded-xl border border-gray-200" style="max-height:300px">
+          <table class="w-full text-[13px]" style="border-collapse:collapse">
+            <thead style="position:sticky;top:0;z-index:10">
+              <tr style="background:#F8FAFC;border-bottom:1px solid #E2E8F0">
+                <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Column</th>
+                <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Type</th>
+                <th style="padding:9px 14px;text-align:center;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Nullable</th>
+                <th style="padding:9px 14px;text-align:right;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Null %</th>
+                <th style="padding:9px 14px;text-align:right;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Unique %</th>
+                <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Description</th>
+              </tr>
+            </thead>
+            <tbody id="preview-col-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Relations pane -->
+      <div id="preview-pane-relations" class="hidden flex-col flex-1 overflow-hidden px-5 mt-3 mb-1">
+        <div id="preview-relations-list" class="space-y-2 overflow-y-auto" style="max-height:400px"></div>
       </div>
 
       <!-- Footer -->
@@ -777,6 +1403,113 @@
           <span id="preview-row-count-text"></span>
         </span>
         <button onclick="closeTablePreview()" class="inline-flex items-center gap-1.5 px-4 h-8 rounded-lg text-[13px] font-medium transition-colors" style="background:#EEF2FF;color:#5B63F6" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TABLE DESCRIPTION MODAL ═══════════════════ -->
+  <div id="tbl-desc-backdrop" class="fixed inset-0 z-[70] hidden items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeTblDescModal(event)">
+    <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-[15px] font-semibold text-gray-900">Edit table description</h3>
+        <button onclick="closeTblDescModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p id="tbl-desc-modal-label" class="text-[12px] font-semibold text-gray-500 mb-1.5"></p>
+      <textarea id="tbl-desc-input" rows="3" placeholder="Describe this table..." class="w-full px-3 py-2 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 resize-none"></textarea>
+      <div class="flex gap-2 mt-4">
+        <button onclick="closeTblDescModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+        <button onclick="saveTblDesc()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TABLE PICKER MODAL (workspace config) ═══════════════════ -->
+  <div id="tbl-picker-backdrop" class="fixed inset-0 z-[70] hidden items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeTblPicker(event)">
+    <div class="bg-white rounded-2xl w-full max-w-md mx-4 flex flex-col" style="max-height:82vh;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div>
+          <h3 class="text-[15px] font-semibold text-gray-900">Configure table access</h3>
+          <p id="tbl-picker-subtitle" class="text-[12px] text-gray-400 mt-0.5"></p>
+        </div>
+        <button onclick="closeTblPicker()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors flex-shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Select all bar -->
+      <div class="flex items-center justify-between px-6 py-2.5 border-b border-gray-100 bg-gray-50/50">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input id="tbl-picker-all" type="checkbox" onchange="toggleAllTblPicker(this.checked)" class="w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer" />
+          <span class="text-[12px] font-semibold text-gray-700">All tables</span>
+        </label>
+        <span id="tbl-picker-count" class="text-[11px] text-gray-400 font-medium"></span>
+      </div>
+      <!-- Table list -->
+      <div id="tbl-picker-list" class="flex-1 overflow-y-auto divide-y divide-gray-50 px-2 py-1"></div>
+      <!-- Footer -->
+      <div class="flex gap-2 px-6 py-4 border-t border-gray-100">
+        <button onclick="closeTblPicker()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+        <button onclick="saveTblPicker()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ RELATIONSHIP MODAL ═══════════════════ -->
+  <div id="rel-modal-backdrop" class="fixed inset-0 z-[70] hidden items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeRelModal(event)">
+    <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h3 id="rel-modal-title" class="text-[15px] font-semibold text-gray-900">Add relationship</h3>
+        <button onclick="closeRelModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Related table <span class="text-red-400">*</span></label>
+          <input id="rel-with" type="text" placeholder="e.g. orders" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
+        </div>
+        <div>
+          <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Cardinality</label>
+          <select id="rel-type" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400">
+            <option value="one-to-many">One to Many (1 → N)</option>
+            <option value="many-to-one">Many to One (N → 1)</option>
+            <option value="one-to-one">One to One (1 → 1)</option>
+            <option value="many-to-many">Many to Many (N → N)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Join condition <span class="text-red-400">*</span></label>
+          <input id="rel-on" type="text" placeholder="e.g. users.id = orders.user_id" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 font-mono text-[12px]" />
+        </div>
+        <div>
+          <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Description</label>
+          <input id="rel-desc" type="text" placeholder="Optional description" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
+        </div>
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button onclick="closeRelModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+        <button onclick="saveRel()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ COLUMN DESCRIPTION MODAL ═══════════════════ -->
+  <div id="col-desc-backdrop" class="fixed inset-0 z-[70] hidden items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeColDescModal(event)">
+    <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-[15px] font-semibold text-gray-900">Edit description</h3>
+          <p id="col-desc-modal-colname" class="text-[12px] text-gray-400 mt-0.5"></p>
+        </div>
+        <button onclick="closeColDescModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <textarea id="col-desc-input" rows="3" placeholder="Describe this column…" class="w-full px-3 py-2.5 text-[13px] border border-gray-200 rounded-xl resize-none focus:outline-none focus:border-indigo-400" style="font-family:inherit"></textarea>
+      <div class="flex gap-2 mt-4">
+        <button onclick="closeColDescModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+        <button onclick="saveColDesc()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save</button>
       </div>
     </div>
   </div>
@@ -792,8 +1525,10 @@
   <script>
     // ─── View navigation ───────────────────────────────────────
     const VIEW_META = {
-      'view-add':     { title: 'Add Datasource',     desc: 'Choose a connector to connect more data', back: null },
-      'view-wizard':  { title: null,                 desc: null, back: 'view-add' },
+      'view-list':    { title: 'Datasources',           desc: 'Manage and monitor all connected data sources', back: null },
+      'view-detail':  { title: '',                        desc: '',                                              back: 'view-list' },
+      'view-add':     { title: 'Add Datasource',        desc: 'Choose a connector to connect more data',       back: 'view-list' },
+      'view-wizard':  { title: null,                    desc: null,                                            back: 'view-add' },
     };
     let _subTopbarBack = null;
 
@@ -807,10 +1542,16 @@
         ? (document.getElementById('wizard-subheading')?.textContent || '')
         : meta.desc;
       document.getElementById('sub-title').textContent = title;
-      document.getElementById('sub-desc').textContent = desc;
+      document.getElementById('sub-desc').textContent  = desc;
       _subTopbarBack = meta.back;
       const backBtn = document.getElementById('sub-back-btn');
-      backBtn.classList.toggle('hidden', !meta.back);
+      backBtn.style.display = meta.back ? 'flex' : 'none';
+      // Show/hide the "+ Add Datasource" button (only on list view)
+      const listActions = document.getElementById('list-actions');
+      if (listActions) listActions.style.display = id === 'view-list' ? 'flex' : 'none';
+      // Hide entire sub-topbar on detail view
+      const subTopbar = document.getElementById('sub-topbar');
+      if (subTopbar) subTopbar.style.display = id === 'view-detail' ? 'none' : 'flex';
     }
 
     function subTopbarBack() {
@@ -821,6 +1562,578 @@
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       updateSubTopbar(id);
+      if (id === 'view-list') { renderDsList(); updateScopeCounts(); }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  DATASOURCE LIST DATA + RENDERING
+    // ══════════════════════════════════════════════════════════════
+
+    // Connector icon renderer (inline SVG returns)
+    function connectorIcon(connector, size = 20) {
+      const icons = {
+        'Postgres':   `<svg viewBox="0 0 64 64" width="${size}" height="${size}" fill="none"><ellipse cx="32" cy="24" rx="18" ry="18" fill="#336791" opacity="0.15"/><path d="M20 20 C18 14 22 8 30 8 C38 8 44 14 44 22 C44 30 38 36 32 38 C28 39 26 42 26 46 L30 46" stroke="#336791" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="38" cy="12" r="4" fill="#336791" opacity="0.5"/><path d="M32 24 C32 28 35 32 32 36" stroke="#336791" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+        'MySQL':      `<svg viewBox="0 0 64 64" width="${size}" height="${size}" fill="none"><path d="M12 44 C12 40 16 36 20 32 L24 20 L28 32 L36 16 L40 32 L44 24 L52 44" stroke="#00758F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 20 C55 18 56 22 54 24" stroke="#F29111" stroke-width="2" stroke-linecap="round"/></svg>`,
+        'MongoDB':    `<svg viewBox="0 0 64 64" width="${size}" height="${size}" fill="none"><path d="M32 8 C32 8 44 18 44 32 C44 42 38 50 32 54 C26 50 20 42 20 32 C20 18 32 8 32 8Z" fill="#4FAE41" opacity="0.85"/><path d="M32 10 L32 52" stroke="#3D8C36" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`,
+        'SQL Server': `<svg viewBox="0 0 64 64" width="${size}" height="${size}" fill="none"><ellipse cx="32" cy="20" rx="18" ry="7" fill="#CC2927" opacity="0.15" stroke="#CC2927" stroke-width="1.5"/><path d="M14 20 L14 44 C14 48 22 51 32 51 C42 51 50 48 50 44 L50 20" stroke="#CC2927" stroke-width="1.5"/><path d="M14 32 C14 36 22 39 32 39 C42 39 50 36 50 32" stroke="#CC2927" stroke-width="1.2"/></svg>`,
+        'Excel':      `<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none"><rect x="4" y="4" width="24" height="40" rx="3" fill="#1D6F42"/><rect x="20" y="4" width="24" height="40" rx="3" fill="#217346"/><path d="M12 16 L20 28 M20 16 L12 28" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+        'CSV':        `<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none"><rect x="4" y="4" width="40" height="40" rx="4" fill="#1A7A4A" opacity="0.12"/><rect x="4" y="4" width="40" height="40" rx="4" stroke="#1A7A4A" stroke-width="1.5"/><text x="24" y="22" font-size="9" font-family="Inter,sans-serif" font-weight="700" fill="#1A7A4A" text-anchor="middle">CSV</text><line x1="10" y1="28" x2="38" y2="28" stroke="#1A7A4A" stroke-width="1.2" opacity="0.4"/><line x1="10" y1="34" x2="38" y2="34" stroke="#1A7A4A" stroke-width="1.2" opacity="0.4"/></svg>`,
+        'REST API':   `<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none"><rect x="8" y="8" width="32" height="32" rx="4" stroke="#374151" stroke-width="1.5"/><path d="M14 20 L18 24 L14 28" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="20" y1="28" x2="34" y2="28" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+        'GraphQL':    `<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none"><circle cx="24" cy="8" r="3.5" fill="#E10098"/><circle cx="24" cy="40" r="3.5" fill="#E10098"/><circle cx="8" cy="16" r="3.5" fill="#E10098"/><circle cx="40" cy="16" r="3.5" fill="#E10098"/><circle cx="8" cy="32" r="3.5" fill="#E10098"/><circle cx="40" cy="32" r="3.5" fill="#E10098"/><line x1="24" y1="8" x2="8" y2="16" stroke="#E10098" stroke-width="1.5"/><line x1="24" y1="8" x2="40" y2="16" stroke="#E10098" stroke-width="1.5"/><line x1="8" y1="16" x2="8" y2="32" stroke="#E10098" stroke-width="1.5"/><line x1="40" y1="16" x2="40" y2="32" stroke="#E10098" stroke-width="1.5"/><line x1="8" y1="32" x2="24" y2="40" stroke="#E10098" stroke-width="1.5"/><line x1="40" y1="32" x2="24" y2="40" stroke="#E10098" stroke-width="1.5"/></svg>`,
+      };
+      return icons[connector] || `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="#9CA3AF" stroke-width="1.5"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>`;
+    }
+
+    // Default datasources
+    const DEFAULT_DS = [
+      {
+        id: 'ds-1', name: 'Production Analytics DB', connector: 'Postgres', type: 'Database',
+        status: 'Connected', tables: 18, host: 'prod-db.internal.com', port: '5432',
+        database: 'analytics_prod', updated: '2 min ago', updatedMs: Date.now() - 2*60*1000,
+        owner: 'Manish K.', schedule: 'Every 6 hours', health: 98,
+        syncLog: [
+          { ts: '2026-05-11 09:00', status: 'success', msg: 'Synced 18 tables, 0 errors' },
+          { ts: '2026-05-11 03:00', status: 'success', msg: 'Synced 18 tables, 0 errors' },
+          { ts: '2026-05-10 21:00', status: 'warning', msg: 'Synced 17/18 tables — users table locked' },
+          { ts: '2026-05-10 15:00', status: 'success', msg: 'Synced 18 tables, 0 errors' },
+        ],
+        tables_list: [
+          { name:'users', rows:'42,810', cols:12, desc:'User accounts and profile data',
+            columns: [
+              { name:'id',         type:'INT',          nullable:false, desc:'Primary key',           nullPct:0,   uniquePct:100,  distinctCount:42810 },
+              { name:'email',      type:'VARCHAR(255)',  nullable:false, desc:'Unique user email',     nullPct:0,   uniquePct:99.98,distinctCount:42803 },
+              { name:'name',       type:'VARCHAR(100)',  nullable:false, desc:'Full name',             nullPct:0.2, uniquePct:89.5, distinctCount:38327 },
+              { name:'country',    type:'VARCHAR(50)',   nullable:true,  desc:'ISO country code',      nullPct:2.4, uniquePct:0.5,  distinctCount:214 },
+              { name:'status',     type:'ENUM',          nullable:false, desc:'Account status',        nullPct:0,   uniquePct:0.01, distinctCount:3 },
+              { name:'plan',       type:'VARCHAR(20)',   nullable:true,  desc:'Subscription plan',     nullPct:5.1, uniquePct:0.02, distinctCount:5 },
+              { name:'created_at', type:'TIMESTAMP',     nullable:false, desc:'Account creation time', nullPct:0,   uniquePct:98.3, distinctCount:42099 },
+            ],
+            relations: [
+              { with:'orders',   type:'one-to-many', on:'users.id = orders.user_id',    desc:'User orders' },
+              { with:'sessions', type:'one-to-many', on:'users.id = sessions.user_id',  desc:'User sessions' },
+            ],
+          },
+          { name:'orders', rows:'1,204,519', cols:18, desc:'Transaction records',
+            columns: [
+              { name:'id',         type:'INT',           nullable:false, desc:'Order ID',             nullPct:0,   uniquePct:100,  distinctCount:1204519 },
+              { name:'user_id',    type:'INT',           nullable:false, desc:'FK → users.id',        nullPct:0.5, uniquePct:3.5,  distinctCount:42200 },
+              { name:'amount',     type:'DECIMAL(10,2)', nullable:false, desc:'Order total',           nullPct:0,   uniquePct:85.2, distinctCount:1027000 },
+              { name:'currency',   type:'CHAR(3)',        nullable:false, desc:'ISO currency code',    nullPct:0,   uniquePct:0.003,distinctCount:36 },
+              { name:'status',     type:'VARCHAR(20)',    nullable:false, desc:'Order status',         nullPct:0,   uniquePct:0.0005,distinctCount:6 },
+              { name:'created_at', type:'TIMESTAMP',      nullable:false, desc:'Order creation time', nullPct:0,   uniquePct:99.1, distinctCount:1194000 },
+            ],
+            relations: [
+              { with:'users',    type:'many-to-one', on:'orders.user_id = users.id',   desc:'Order owner' },
+              { with:'invoices', type:'one-to-one',  on:'orders.id = invoices.order_id', desc:'Invoice' },
+            ],
+          },
+          { name:'products', rows:'3,847', cols:9, desc:'Product catalog' },
+          { name:'analytics_events', rows:'8,421,033', cols:7, desc:'Raw event stream' },
+          { name:'sessions', rows:'512,400', cols:6, desc:'User session records' },
+          { name:'invoices', rows:'84,200', cols:14, desc:'Invoice and billing records' },
+        ],
+      },
+      {
+        id: 'ds-2', name: 'Q2 Revenue Sheet', connector: 'Excel', type: 'File',
+        status: 'Connected', tables: 4, updated: '1 hr ago', updatedMs: Date.now() - 60*60*1000,
+        owner: 'Manish K.', schedule: 'Manual only', health: 100,
+        syncLog: [
+          { ts: '2026-05-11 08:15', status: 'success', msg: 'File re-extracted, 4 sheets processed' },
+          { ts: '2026-05-10 14:00', status: 'success', msg: 'File extracted, 4 sheets processed' },
+        ],
+        tables_list: [
+          { name:'Sheet1 – Revenue', rows:'365', cols:8 }, { name:'Sheet2 – Expenses', rows:'284', cols:5 },
+          { name:'Sheet3 – Summary', rows:'12', cols:10 }, { name:'Sheet4 – Forecast', rows:'24', cols:7 },
+        ],
+      },
+      {
+        id: 'ds-3', name: 'CRM MySQL Database', connector: 'MySQL', type: 'Database',
+        status: 'Syncing', tables: 12, host: 'crm.mysql.internal', port: '3306',
+        database: 'crm_v2', updated: 'Syncing…', updatedMs: Date.now() - 30*1000,
+        owner: 'Sara M.', schedule: 'Every 12 hours', health: 87,
+        syncLog: [
+          { ts: '2026-05-11 09:10', status: 'syncing', msg: 'Sync in progress — 8/12 tables done' },
+          { ts: '2026-05-10 21:10', status: 'success', msg: 'Synced 12 tables, 0 errors' },
+          { ts: '2026-05-10 09:10', status: 'error',   msg: 'Connection timeout on table leads_archive' },
+        ],
+        tables_list: [
+          { name:'contacts', rows:'28,400', cols:16 }, { name:'leads', rows:'7,200', cols:14 },
+          { name:'deals', rows:'3,100', cols:20 }, { name:'activities', rows:'95,000', cols:9 },
+        ],
+      },
+      {
+        id: 'ds-4', name: 'Payments REST API', connector: 'REST API', type: 'API',
+        status: 'Error', tables: 6, host: 'https://api.payments.internal/v2', updated: '3 hrs ago',
+        updatedMs: Date.now() - 3*60*60*1000, owner: 'Priya N.', schedule: 'Every 1 hour', health: 42,
+        syncLog: [
+          { ts: '2026-05-11 06:00', status: 'error',   msg: '401 Unauthorized — token expired' },
+          { ts: '2026-05-11 05:00', status: 'error',   msg: '401 Unauthorized — token expired' },
+          { ts: '2026-05-10 23:00', status: 'success', msg: 'Synced 6 endpoints, 0 errors' },
+        ],
+        tables_list: [
+          { name:'/payments', rows:'—', cols:12 }, { name:'/refunds', rows:'—', cols:8 },
+          { name:'/customers', rows:'—', cols:15 }, { name:'/subscriptions', rows:'—', cols:11 },
+        ],
+      },
+      {
+        id: 'ds-5', name: 'Customer CSV Export', connector: 'CSV', type: 'File',
+        status: 'Connected', tables: 1, updated: 'Yesterday', updatedMs: Date.now() - 24*60*60*1000,
+        owner: 'Manish K.', schedule: 'Manual only', health: 100,
+        syncLog: [
+          { ts: '2026-05-10 11:30', status: 'success', msg: 'CSV parsed, 1 table, 4,210 rows' },
+        ],
+        tables_list: [
+          { name:'customers.csv', rows:'4,210', cols:9 },
+        ],
+      },
+    ];
+
+    let _dsList = [];
+    let _dsFilterType   = 'all';
+    let _dsFilterStatus = 'all';
+
+    function loadDsList() {
+      let extra = [];
+      try { extra = JSON.parse(localStorage.getItem('aibii_added_datasources') || '[]'); } catch(e){}
+      _dsList = [
+        ...DEFAULT_DS,
+        ...extra.map((d, i) => ({
+          id: 'ds-extra-' + i, name: d.name, connector: d.connector, type: d.type,
+          status: d.status || 'Pending', tables: d.tables || 0,
+          updated: 'Just added', updatedMs: Date.now(),
+          owner: 'Manish K.', schedule: 'Every 6 hours', health: 100,
+          syncLog: [{ ts: new Date().toLocaleString(), status: 'success', msg: 'Datasource connected' }],
+          tables_list: [],
+        }))
+      ];
+    }
+
+    function getFilteredList() {
+      const q = (document.getElementById('ds-search')?.value || '').toLowerCase().trim();
+      const sort = document.getElementById('ds-sort')?.value || 'name';
+      let list = _dsList.filter(d => {
+        const matchType   = _dsFilterType   === 'all' || d.type      === _dsFilterType;
+        const matchStatus = _dsFilterStatus === 'all' || d.status    === _dsFilterStatus;
+        const matchQ      = !q || d.name.toLowerCase().includes(q) || d.connector.toLowerCase().includes(q);
+        return matchType && matchStatus && matchQ;
+      });
+      list.sort((a, b) => {
+        if (sort === 'name')    return a.name.localeCompare(b.name);
+        if (sort === 'status')  return a.status.localeCompare(b.status);
+        if (sort === 'tables')  return b.tables - a.tables;
+        if (sort === 'updated') return b.updatedMs - a.updatedMs;
+        return 0;
+      });
+      return list;
+    }
+
+    function statusBadgeHtml(status) {
+      const map = {
+        'Connected': ['badge-connected', '●'],
+        'Syncing':   ['badge-syncing',   '↻'],
+        'Error':     ['badge-error',     '✕'],
+        'Pending':   ['badge-pending',   '○'],
+      };
+      const [cls, dot] = map[status] || ['badge-pending', '○'];
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${cls}">${dot}&nbsp;${status}</span>`;
+    }
+
+    function typeIconHtml(type) {
+      const icons = {
+        'Database': `<svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>`,
+        'File':     `<svg class="w-3.5 h-3.5" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 9h7.5M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>`,
+        'API':      `<svg class="w-3.5 h-3.5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>`,
+      };
+      return icons[type] || '';
+    }
+
+    function renderDsList() {
+      loadDsList();
+      const list = getFilteredList();
+      const body = document.getElementById('ds-list-body');
+      const empty = document.getElementById('ds-empty');
+      if (!list.length) {
+        body.innerHTML = '';
+        empty.classList.remove('hidden');
+        empty.classList.add('flex');
+        updateStats();
+        return;
+      }
+      empty.classList.add('hidden');
+      empty.classList.remove('flex');
+
+      body.innerHTML = list.map(d => `
+        <div class="ds-row flex items-center gap-4 px-5 py-4 rounded-xl border cursor-pointer" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
+          <div class="w-[32px] flex-shrink-0">${connectorIcon(d.connector, 24)}</div>
+          <div class="w-[280px] flex-shrink-0 min-w-0">
+            <p class="text-[14px] font-semibold text-gray-900 truncate leading-snug">${d.name}</p>
+            <p class="text-[12px] text-gray-500 mt-1 truncate">${d.connector}${d.host ? ' · ' + d.host : d.database ? '' : ''}</p>
+          </div>
+          <div class="w-[100px] text-center flex-shrink-0">
+            <span class="inline-flex items-center justify-center gap-1.5 text-[13px] font-medium text-gray-700">${typeIconHtml(d.type)}<span>${d.type}</span></span>
+          </div>
+          <div class="w-[110px] text-center flex-shrink-0">${statusBadgeHtml(d.status)}</div>
+          <div class="w-[80px] text-center flex-shrink-0 text-[14px] font-semibold text-gray-800">${d.tables}</div>
+          <div class="w-[140px] flex-shrink-0 text-[12px] text-gray-500 flex items-center gap-1.5">
+            ${d.status === 'Syncing' ? '<svg class="w-3 h-3 ds-spin flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>' : ''}
+            <span class="truncate">${d.updated}</span>
+          </div>
+          <div class="w-[140px] flex-shrink-0 min-w-0">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style="background:#3B5BDB">${d.owner[0]}</div>
+              <span class="text-[13px] text-gray-700 font-medium truncate">${d.owner}</span>
+            </div>
+          </div>
+          <div class="w-[90px] flex-shrink-0 flex items-center justify-end gap-1.5" onclick="event.stopPropagation()">
+            <button onclick="syncDs('${d.id}')" data-tip="Sync now" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+            </button>
+            <button onclick="deleteDs('${d.id}')" data-tip="Remove" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+      updateStats();
+    }
+
+    function updateStats() {
+      const connected  = _dsList.filter(d => d.status === 'Connected').length;
+      const errors     = _dsList.filter(d => d.status === 'Error').length;
+      const totalTbls  = _dsList.reduce((s, d) => s + (d.tables || 0), 0);
+      document.getElementById('stat-total').textContent     = _dsList.length;
+      document.getElementById('stat-connected').textContent = connected;
+      document.getElementById('stat-error').textContent     = errors;
+      document.getElementById('stat-tables').textContent    = totalTbls;
+    }
+
+    // ─── Filters ──────────────────────────────────────────────
+    function setDsFilter(type) {
+      _dsFilterType = type;
+      document.querySelectorAll('.ds-fpill').forEach(btn => {
+        const isActive = btn.id === 'dsf-' + type;
+        btn.style.background   = isActive ? '#EEF2FF' : '';
+        btn.style.color        = isActive ? '#5B63F6' : '';
+        btn.style.borderColor  = isActive ? '#C7D2FE' : '';
+      });
+      renderDsList();
+    }
+
+    function toggleDsStatusDd() {
+      document.getElementById('ds-status-dd').classList.toggle('hidden');
+    }
+
+    function setDsStatus(status) {
+      _dsFilterStatus = status;
+      document.getElementById('ds-status-label').textContent = status === 'all' ? 'Status' : status;
+      document.getElementById('ds-status-dd').classList.add('hidden');
+      renderDsList();
+    }
+
+    function filterDsList() { renderDsList(); }
+
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('ds-status-dd');
+      if (dd && !e.target.closest('#ds-status-dd') && !e.target.closest('[onclick="toggleDsStatusDd()"]')) {
+        dd.classList.add('hidden');
+      }
+    });
+
+    function dsToggleAll(master) {
+      document.querySelectorAll('.ds-row-check').forEach(cb => cb.checked = master.checked);
+    }
+
+    // ─── Sync ─────────────────────────────────────────────────
+    function syncDs(id) {
+      const ds = _dsList.find(d => d.id === id);
+      if (!ds) return;
+      ds.status     = 'Syncing';
+      ds.updated    = 'Syncing…';
+      ds.updatedMs  = Date.now();
+      renderDsList();
+      if (currentDetailId === id) openDetailPanel(id);
+      setTimeout(() => {
+        ds.status    = 'Connected';
+        ds.updated   = 'Just now';
+        ds.updatedMs = Date.now();
+        renderDsList();
+        if (currentDetailId === id) openDetailPanel(id);
+        showToast('Sync complete — ' + ds.name);
+      }, 2500);
+    }
+
+    // ─── Delete ───────────────────────────────────────────────
+    function deleteDs(id) {
+      // Remove from extra stored list if applicable
+      try {
+        const extras = JSON.parse(localStorage.getItem('aibii_added_datasources') || '[]');
+        const dsItem = _dsList.find(d => d.id === id);
+        const updated = extras.filter(e => e.name !== (dsItem?.name || ''));
+        localStorage.setItem('aibii_added_datasources', JSON.stringify(updated));
+      } catch(e) {}
+      _dsList = _dsList.filter(d => d.id !== id);
+      closeDetailPanel();
+      renderDsList();
+      showToast('Datasource removed.');
+    }
+
+    // ─── Detail panel ─────────────────────────────────────────
+    let currentDetailId = null;
+
+    function openDetailPanel(id, readOnly = false) {
+      const ds = _dsList.find(d => d.id === id);
+      if (!ds) return;
+      currentDetailId = id;
+
+      // Apply readonly mode
+      const detailView = document.getElementById('view-detail');
+      detailView.classList.toggle('ds-readonly', readOnly);
+
+      // Header
+      document.getElementById('panel-icon').innerHTML = connectorIcon(ds.connector, 20);
+      document.getElementById('panel-name').textContent      = ds.name;
+      document.getElementById('panel-connector').textContent = ds.connector + ' · ' + ds.type;
+
+      // Status badge
+      document.getElementById('panel-status-badge').className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-semibold ' + {
+        Connected: 'badge-connected', Syncing: 'badge-syncing', Error: 'badge-error', Pending: 'badge-pending'
+      }[ds.status];
+      document.getElementById('panel-status-badge').textContent = ds.status;
+      document.getElementById('panel-type').textContent         = ds.type;
+      document.getElementById('panel-tables').textContent       = ds.tables + ' objects';
+      document.getElementById('panel-owner').textContent        = ds.owner;
+      document.getElementById('panel-schedule').textContent     = ds.schedule;
+
+      // Connection info
+      const infoRows = [];
+      if (ds.host)     infoRows.push(['Host', ds.host]);
+      if (ds.port)     infoRows.push(['Port', ds.port]);
+      if (ds.database) infoRows.push(['Database', ds.database]);
+      document.getElementById('panel-conn-info').innerHTML = infoRows.length
+        ? infoRows.map(([k, v]) => `<div class="flex items-center justify-between"><span class="text-gray-400">${k}</span><span class="font-medium text-gray-800">${v}</span></div>`).join('')
+        : '<span class="text-gray-400 text-[12px]">No connection details available</span>';
+
+      // Edit name input
+      document.getElementById('panel-edit-name').value = ds.name;
+
+      // Set tab to overview
+      setPanelTab('overview');
+
+      // Show detail view
+      showView('view-detail');
+    }
+
+    function closeDetailPanel() {
+      showView('view-list');
+      currentDetailId = null;
+    }
+
+    let _panelTab = 'overview';
+    function setPanelTab(tab) {
+      _panelTab = tab;
+      ['overview', 'tables', 'sync', 'settings'].forEach(t => {
+        document.getElementById('ptab-' + t)?.classList.toggle('active', t === tab);
+      });
+      document.getElementById('panel-overview').style.display         = tab === 'overview' ? 'block' : 'none';
+      document.getElementById('panel-tables-tab').style.display       = tab === 'tables'   ? 'block' : 'none';
+      document.getElementById('panel-sync-tab').style.display         = tab === 'sync'     ? 'block' : 'none';
+      document.getElementById('panel-settings-tab').style.display     = tab === 'settings' ? 'block' : 'none';
+
+      if (tab === 'tables') {
+        // Reset to list view when switching to tables tab
+        document.getElementById('tbl-detail-view').classList.add('hidden');
+        document.getElementById('tbl-list-view').classList.remove('hidden');
+        renderPanelTables();
+      }
+      if (tab === 'sync')   renderPanelSyncLog();
+    }
+
+    function renderPanelTables(filter) {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      if (!ds) return;
+      const q = (filter || '').toLowerCase().trim();
+      const rows = (ds.tables_list || []).filter(t => !q || t.name.toLowerCase().includes(q));
+      if (!rows.length) {
+        document.getElementById('panel-tables-list').innerHTML = `<p class="text-center text-[13px] text-gray-400 py-8">No tables found</p>`;
+        return;
+      }
+      document.getElementById('panel-tables-list').innerHTML = `
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr style="border-bottom:1.5px solid #E5E7EB">
+              <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4" style="width:22%">Table</th>
+              <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4">Description</th>
+              <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4 text-right" style="width:7%">Cols</th>
+              <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4 text-right" style="width:12%">Rows</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(t => `
+              <tr class="group border-b border-gray-50 hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="openTblDetail('${t.name}')">
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+                    <span class="text-[13px] font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors">${t.name}</span>
+                  </div>
+                </td>
+                <td class="py-3 pr-4">
+                  <div class="flex items-center gap-1.5">
+                    <span id="tbl-list-desc-${t.name}" class="text-[12px] ${t.desc ? 'text-gray-500' : 'text-gray-300 italic'} truncate max-w-xs">${t.desc || 'No description'}</span>
+                    <button onclick="event.stopPropagation();openTblDescModal('${t.name}')" class="opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity ds-edit-only" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#9CA3AF'" title="Edit description">
+                      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="py-3 pr-4 text-right text-[12px] text-gray-500">${t.cols}</td>
+                <td class="py-3 pr-4 text-right">
+                  <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background:#EEF2FF;color:#5B63F6">${t.rows}</span>
+                </td>
+
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function filterPanelTables(v) { renderPanelTables(v); }
+
+    function openTblDetail(name) {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tbl = (ds?.tables_list || []).find(t => t.name === name);
+      document.getElementById('tbl-list-view').classList.add('hidden');
+      document.getElementById('tbl-detail-view').classList.remove('hidden');
+      document.getElementById('tbl-detail-name').textContent = name;
+      const descEl = document.getElementById('tbl-detail-desc');
+      descEl.textContent = tbl?.desc || 'No description';
+      descEl.className = tbl?.desc ? 'text-[12px] text-gray-400' : 'text-[12px] text-gray-300 italic';
+
+      const hasCols = tbl?.columns?.length > 0;
+      const hasRels = tbl?.relations?.length > 0;
+
+      // Build preview table from TABLE_PREVIEW_DATA
+      const dsForCat = _dsList.find(d => d.id === currentDetailId);
+      const cat = { Database:'db', File:'file', API:'api' }[dsForCat?.type] || 'db';
+      const pdata = TABLE_PREVIEW_DATA[cat] || TABLE_PREVIEW_DATA.db;
+      const colW = Math.floor(100 / pdata.cols.length) + '%';
+      document.getElementById('tbl-preview-head').innerHTML = `<tr style="background:#F8FAFC;border-bottom:1px solid #E2E8F0">${pdata.cols.map(c=>`<th style="width:${colW};padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap">${c.replace(/_/g,' ')}</th>`).join('')}</tr>`;
+      document.getElementById('tbl-preview-body').innerHTML = pdata.rows.slice(0, 10).map((row,i)=>`<tr style="background:${i%2===0?'#fff':'#FAFAFA'};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${i%2===0?'#fff':'#FAFAFA'}'">`+row.map(cell=>`<td style="width:${colW};padding:8px 12px;font-size:12px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cell}</td>`).join('')+'</tr>').join('');
+
+      // KPI bar
+      const kpiBar = document.getElementById('tbl-kpi-bar');
+      if (hasCols) {
+        const cols = tbl.columns;
+        document.getElementById('tbl-kpi-null').textContent   = (cols.reduce((s,c)=>s+c.nullPct,0)/cols.length).toFixed(1) + '%';
+        document.getElementById('tbl-kpi-unique').textContent = (cols.reduce((s,c)=>s+c.uniquePct,0)/cols.length).toFixed(1) + '%';
+        document.getElementById('tbl-kpi-distinct').textContent = cols.reduce((s,c)=>s+c.distinctCount,0).toLocaleString();
+        kpiBar.classList.remove('hidden');
+      } else {
+        kpiBar.classList.add('hidden');
+      }
+
+      // Metadata table
+      if (hasCols) {
+        document.getElementById('tbl-no-cols').classList.add('hidden');
+        document.getElementById('tbl-cols-body').innerHTML = tbl.columns.map((c, i) => {
+          const colType = c.colType || '';
+          const unit    = c.unit    || '';
+          const bg = i % 2 === 0 ? '#fff' : '#FAFAFA';
+          return `
+          <tr style="background:${bg};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${bg}'">
+            <td style="padding:8px 14px;font-weight:600;color:#111827;white-space:nowrap">${c.name}</td>
+            <td style="padding:8px 12px"><code style="font-size:11px;font-family:monospace;background:#F3F4F6;color:#374151;padding:2px 6px;border-radius:4px">${c.type}</code></td>
+            <td style="padding:6px 12px">
+              <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" class="ds-edit-input" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
+            <td style="padding:6px 12px" class="ds-edit-only">
+              <select onchange="saveColMeta(${i},'colType',this.value)" style="width:130px;height:28px;padding:0 8px;font-size:11px;font-weight:500;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;cursor:pointer;outline:none">
+                <option value="" ${!colType?'selected':''} style="color:#9CA3AF">Select type</option>
+                <option value="measure"   ${colType==='measure'  ?'selected':''}>Measure</option>
+                <option value="dimension" ${colType==='dimension'?'selected':''}>Dimension</option>
+                <option value="time"      ${colType==='time'     ?'selected':''}>Time</option>
+              </select>
+            </td>
+            <td style="padding:6px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${colType||'—'}</td>
+            <td style="padding:6px 12px" class="ds-edit-only">
+              <input type="text" value="${unit}" placeholder="e.g. USD, km" onchange="saveColMeta(${i},'unit',this.value)" style="width:90px;height:28px;padding:0 8px;font-size:11px;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;outline:none" onfocus="this.style.borderColor='#5B63F6'" onblur="this.style.borderColor='#E5E7EB'" />
+            </td>
+            <td style="padding:6px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${unit||'—'}</td>
+          </tr>`;
+        }).join('');
+      } else {
+        document.getElementById('tbl-no-cols').classList.remove('hidden');
+        document.getElementById('tbl-cols-body').innerHTML = '';
+      }
+
+      // Relations
+      renderTblRels();
+
+      // Default to preview tab
+      switchTblTab('preview');
+    }
+
+    function renderTblRels() {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tblName = document.getElementById('tbl-detail-name').textContent;
+      const tbl = (ds?.tables_list || []).find(t => t.name === tblName);
+      const hasRels = tbl?.relations?.length > 0;
+      const cardMap = { 'one-to-many':'1 → N', 'many-to-one':'N → 1', 'one-to-one':'1 → 1', 'many-to-many':'N → N' };
+
+      document.getElementById('tbl-no-rels').classList.toggle('hidden', hasRels);
+      document.getElementById('tbl-rels-list').innerHTML = hasRels
+        ? (tbl.relations || []).map((r, i) => `
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <svg width="14" height="14" fill="none" stroke="#5B63F6" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+              <span style="font-size:13px;font-weight:600;color:#111827">${r.with}</span>
+              <span style="font-size:10px;font-weight:600;background:#EEF2FF;color:#5B63F6;padding:1px 8px;border-radius:999px">${cardMap[r.type]||r.type}</span>
+              <div style="margin-left:auto;display:flex;gap:4px" class="ds-edit-only">
+                <button onclick="openRelModal(${i})" style="width:26px;height:26px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background='#EEF2FF';this.style.color='#5B63F6'" onmouseout="this.style.background='transparent';this.style.color='#9CA3AF'">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                </button>
+                <button onclick="deleteRel(${i})" style="width:26px;height:26px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background='#FEF2F2';this.style.color='#DC2626'" onmouseout="this.style.background='transparent';this.style.color='#9CA3AF'">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+                </button>
+              </div>
+            </div>
+            <code style="font-size:11px;font-family:monospace;color:#374151;background:#E5E7EB;padding:3px 8px;border-radius:5px;display:block">${r.on}</code>
+            ${r.desc ? `<p style="font-size:11px;color:#6B7280;margin-top:5px">${r.desc}</p>` : ''}
+          </div>`).join('')
+        : '';
+    }
+
+    function switchTblTab(tab) {
+      ['preview','columns','relations'].forEach(t => {
+        const btn = document.getElementById('tdtab-' + t);
+        if (btn) btn.classList.toggle('active', t === tab);
+        const pane = document.getElementById('tbl-pane-' + t);
+        if (pane) pane.classList.toggle('hidden', t !== tab);
+      });
+    }
+
+    function closeTblDetail() {
+      document.getElementById('tbl-detail-view').classList.add('hidden');
+      document.getElementById('tbl-list-view').classList.remove('hidden');
+    }
+
+
+    function renderPanelSyncLog() {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      if (!ds) return;
+      const iconMap = {
+        success: `<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#DCFCE7"><svg class="w-3 h-3" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>`,
+        error:   `<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#FEF2F2"><svg class="w-3 h-3" style="color:#DC2626" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></div>`,
+        warning: `<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#FEF9C3"><svg class="w-3 h-3" style="color:#CA8A04" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg></div>`,
+        syncing: `<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"><svg class="w-3 h-3 ds-spin" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>`,
+      };
+      document.getElementById('panel-sync-log').innerHTML = (ds.syncLog || []).map(entry => `
+        <div class="flex items-start gap-3 px-3 py-2.5 rounded-xl bg-gray-50">
+          ${iconMap[entry.status] || iconMap.success}
+          <div class="min-w-0">
+            <p class="text-[13px] text-gray-800">${entry.msg}</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">${entry.ts}</p>
+          </div>
+        </div>
+      `).join('');
     }
 
 
@@ -1106,6 +2419,75 @@
     }
 
     // ─── Table preview modal ───────────────────────────────────
+    let _previewTableObj = null; // stores current table data object
+
+    function switchPreviewTab(tab) {
+      ['preview','columns','relations'].forEach(t => {
+        const btn = document.getElementById('ptab-' + t);
+        btn.style.borderColor = t === tab ? '#5B63F6' : 'transparent';
+        btn.style.color = t === tab ? '#5B63F6' : '';
+        btn.className = btn.className.replace(' text-gray-500',' ').replace(' hover:text-gray-700','') + ' text-gray-500 hover:text-gray-700';
+        if (t === tab) { btn.style.color = '#5B63F6'; btn.classList.remove('text-gray-500','hover:text-gray-700'); }
+      });
+      document.getElementById('preview-pane-data').classList.toggle('hidden', tab !== 'preview');
+      document.getElementById('preview-pane-columns').classList.toggle('hidden', tab !== 'columns');
+      document.getElementById('preview-pane-relations').classList.toggle('hidden', tab !== 'relations');
+      // Show/hide footer row count on preview only
+      document.getElementById('preview-row-count').style.visibility = tab === 'preview' ? '' : 'hidden';
+      if (tab === 'columns') renderPreviewColumns('');
+      if (tab === 'relations') renderPreviewRelations();
+    }
+
+    function renderPreviewColumns(q) {
+      const tbl = _previewTableObj;
+      if (!tbl || !tbl.columns || !tbl.columns.length) {
+        document.getElementById('preview-kpi-bar').style.display = 'none';
+        document.getElementById('preview-col-body').innerHTML = '<tr><td colspan="6" style="padding:24px;text-align:center;color:#9CA3AF;font-size:13px">No column metadata available</td></tr>';
+        return;
+      }
+      document.getElementById('preview-kpi-bar').style.display = '';
+      const cols = tbl.columns.filter(c => !q || c.name.toLowerCase().includes(q.toLowerCase()) || (c.desc||'').toLowerCase().includes(q.toLowerCase()));
+      const avgNull   = (cols.reduce((s,c)=>s+c.nullPct,0)/cols.length).toFixed(1);
+      const avgUnique = (cols.reduce((s,c)=>s+c.uniquePct,0)/cols.length).toFixed(1);
+      const totalDist = cols.reduce((s,c)=>s+c.distinctCount,0).toLocaleString();
+      document.getElementById('kpi-null').textContent   = avgNull + '%';
+      document.getElementById('kpi-unique').textContent = avgUnique + '%';
+      document.getElementById('kpi-distinct').textContent = totalDist;
+      document.getElementById('preview-col-body').innerHTML = cols.map((c, i) => `
+        <tr style="background:${i%2===0?'#fff':'#FAFAFA'};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${i%2===0?'#fff':'#FAFAFA'}'">
+          <td style="padding:9px 14px;font-weight:600;color:#111827;white-space:nowrap">${c.name}</td>
+          <td style="padding:9px 14px"><code style="font-size:11px;font-family:monospace;background:#F3F4F6;color:#374151;padding:2px 6px;border-radius:4px">${c.type}</code></td>
+          <td style="padding:9px 14px;text-align:center">${c.nullable
+            ? '<span style="background:#FEF9C3;color:#854D0E;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600">YES</span>'
+            : '<span style="background:#DCFCE7;color:#166534;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600">NO</span>'}</td>
+          <td style="padding:9px 14px;text-align:right;color:${c.nullPct>5?'#B91C1C':c.nullPct>0?'#B45309':'#374151'};font-weight:600;font-size:12px">${c.nullPct}%</td>
+          <td style="padding:9px 14px;text-align:right;color:#374151;font-size:12px">${c.uniquePct}%</td>
+          <td style="padding:9px 14px;color:#6B7280;font-size:12px">${c.desc||'—'}</td>
+        </tr>`).join('');
+    }
+
+    function filterPreviewColumns(q) { renderPreviewColumns(q); }
+
+    function renderPreviewRelations() {
+      const tbl = _previewTableObj;
+      const container = document.getElementById('preview-relations-list');
+      if (!tbl || !tbl.relations || !tbl.relations.length) {
+        container.innerHTML = '<p style="text-align:center;color:#9CA3AF;font-size:13px;padding:32px 0">No relationships defined for this table</p>';
+        return;
+      }
+      const cardinalityIcons = { 'one-to-many':'1 → N', 'many-to-one':'N → 1', 'one-to-one':'1 → 1', 'many-to-many':'N → N' };
+      container.innerHTML = tbl.relations.map(r => `
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <svg width="16" height="16" fill="none" stroke="#5B63F6" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+            <span style="font-size:14px;font-weight:600;color:#111827">${r.with}</span>
+            <span style="font-size:11px;font-weight:600;background:#EEF2FF;color:#5B63F6;padding:2px 8px;border-radius:999px;margin-left:auto">${cardinalityIcons[r.type]||r.type}</span>
+          </div>
+          <code style="font-size:11px;font-family:monospace;color:#374151;background:#E5E7EB;padding:3px 8px;border-radius:6px;display:block;margin-bottom:4px">${r.on}</code>
+          ${r.desc ? `<p style="font-size:12px;color:#6B7280;margin-top:4px">${r.desc}</p>` : ''}
+        </div>`).join('');
+    }
+
     const TABLE_PREVIEW_DATA = {
       db: {
         cols: ['id', 'name', 'email', 'country', 'created_at'],
@@ -1184,11 +2566,22 @@
       }
     };
 
-    function openTablePreview(name) {
-      const data = TABLE_PREVIEW_DATA[_wizCat] || TABLE_PREVIEW_DATA.db;
+    function openTablePreview(name, catOverride) {
+      const cat = catOverride || _wizCat || 'db';
+      const data = TABLE_PREVIEW_DATA[cat] || TABLE_PREVIEW_DATA.db;
+
+      // Look up rich table object from current datasource
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      _previewTableObj = (ds?.tables_list || []).find(t => t.name === name) || null;
+
       document.getElementById('preview-table-name').textContent = name;
-      document.getElementById('preview-row-badge').textContent = data.rows.length + ' rows';
+      document.getElementById('preview-table-desc').textContent = _previewTableObj?.desc || 'Sample data preview';
+      document.getElementById('preview-row-badge').textContent = (_previewTableObj?.rows || data.rows.length) + ' rows';
       document.getElementById('preview-row-count-text').textContent = 'Showing ' + data.rows.length + ' sample rows — scroll to explore';
+      document.getElementById('preview-col-search').value = '';
+
+      // Reset to Preview tab
+      switchPreviewTab('preview');
 
       const colW = `${Math.floor(100 / data.cols.length)}%`;
 
@@ -1298,8 +2691,555 @@
         deduped.push(newDs);
         localStorage.setItem('aibii_added_datasources', JSON.stringify(deduped));
       } catch(e) {}
-      showView('view-add');
+      showView('view-list');
       showToast('Datasource connected successfully!');
+    }
+
+    // ─── Relationship modal ───────────────────────────────────
+    let _relEditIdx = null;
+
+    function _getCurrentTbl() {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tblName = document.getElementById('tbl-detail-name').textContent;
+      return (ds?.tables_list || []).find(t => t.name === tblName);
+    }
+
+    function openRelModal(idx) {
+      _relEditIdx = idx;
+      const isEdit = idx !== null;
+      document.getElementById('rel-modal-title').textContent = isEdit ? 'Edit relationship' : 'Add relationship';
+      const tbl = _getCurrentTbl();
+      const rel = isEdit ? tbl?.relations?.[idx] : null;
+      document.getElementById('rel-with').value = rel?.with || '';
+      document.getElementById('rel-type').value = rel?.type || 'one-to-many';
+      document.getElementById('rel-on').value   = rel?.on   || '';
+      document.getElementById('rel-desc').value = rel?.desc || '';
+      const bd = document.getElementById('rel-modal-backdrop');
+      bd.classList.remove('hidden');
+      bd.classList.add('flex');
+      document.getElementById('rel-with').focus();
+    }
+
+    function closeRelModal(e) {
+      if (e && e.target !== document.getElementById('rel-modal-backdrop')) return;
+      const bd = document.getElementById('rel-modal-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+    }
+
+    function saveRel() {
+      const withVal = document.getElementById('rel-with').value.trim();
+      const onVal   = document.getElementById('rel-on').value.trim();
+      if (!withVal || !onVal) {
+        document.getElementById('rel-with').style.borderColor = withVal ? '' : '#EF4444';
+        document.getElementById('rel-on').style.borderColor   = onVal   ? '' : '#EF4444';
+        return;
+      }
+      document.getElementById('rel-with').style.borderColor = '';
+      document.getElementById('rel-on').style.borderColor   = '';
+
+      const tbl = _getCurrentTbl();
+      if (!tbl) return;
+      if (!tbl.relations) tbl.relations = [];
+
+      const rel = {
+        with: withVal,
+        type: document.getElementById('rel-type').value,
+        on:   onVal,
+        desc: document.getElementById('rel-desc').value.trim(),
+      };
+
+      if (_relEditIdx !== null) {
+        tbl.relations[_relEditIdx] = rel;
+      } else {
+        tbl.relations.push(rel);
+      }
+
+      const bd = document.getElementById('rel-modal-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+      renderTblRels();
+      showToast(_relEditIdx !== null ? 'Relationship updated.' : 'Relationship added.');
+    }
+
+    function deleteRel(idx) {
+      const tbl = _getCurrentTbl();
+      if (!tbl?.relations) return;
+      tbl.relations.splice(idx, 1);
+      renderTblRels();
+      showToast('Relationship removed.');
+    }
+
+    // ─── Table description modal ──────────────────────────────
+    let _tblDescName = null;
+
+    function openTblDescModal(tblName) {
+      _tblDescName = tblName;
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tbl = (ds?.tables_list || []).find(t => t.name === tblName);
+      document.getElementById('tbl-desc-modal-label').textContent = tblName;
+      document.getElementById('tbl-desc-input').value = tbl?.desc || '';
+      const bd = document.getElementById('tbl-desc-backdrop');
+      bd.classList.remove('hidden');
+      bd.classList.add('flex');
+      document.getElementById('tbl-desc-input').focus();
+    }
+
+    function closeTblDescModal(e) {
+      if (e && e.target !== document.getElementById('tbl-desc-backdrop')) return;
+      const bd = document.getElementById('tbl-desc-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+    }
+
+    function saveTblDesc() {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tbl = (ds?.tables_list || []).find(t => t.name === _tblDescName);
+      if (!tbl) return;
+      tbl.desc = document.getElementById('tbl-desc-input').value.trim();
+      const cell = document.getElementById('tbl-list-desc-' + _tblDescName);
+      if (cell) {
+        cell.textContent = tbl.desc || 'No description';
+        cell.className = tbl.desc
+          ? 'text-[12px] text-gray-500 truncate max-w-xs'
+          : 'text-[12px] text-gray-300 italic truncate max-w-xs';
+      }
+      // Also update the inline detail header if that table is open
+      const detailName = document.getElementById('tbl-detail-name');
+      if (detailName && detailName.textContent === _tblDescName) {
+        const descEl = document.getElementById('tbl-detail-desc');
+        if (descEl) {
+          descEl.textContent = tbl.desc || 'No description';
+          descEl.className = tbl.desc ? 'text-[12px] text-gray-400' : 'text-[12px] text-gray-300 italic';
+        }
+      }
+      const bd = document.getElementById('tbl-desc-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+      showToast('Table description updated.');
+    }
+
+    // ─── Column description modal ─────────────────────────────
+    let _colDescIdx = null;
+    let _colDescTblName = null;
+
+    function openColDescModal(idx, colName) {
+      _colDescIdx = idx;
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      _colDescTblName = document.getElementById('tbl-detail-name').textContent;
+      const tbl = (ds?.tables_list || []).find(t => t.name === _colDescTblName);
+      const col = tbl?.columns?.[idx];
+      document.getElementById('col-desc-modal-colname').textContent = colName;
+      document.getElementById('col-desc-input').value = col?.desc || '';
+      const bd = document.getElementById('col-desc-backdrop');
+      bd.classList.remove('hidden');
+      bd.classList.add('flex');
+      document.getElementById('col-desc-input').focus();
+    }
+
+    function closeColDescModal(e) {
+      if (e && e.target !== document.getElementById('col-desc-backdrop')) return;
+      const bd = document.getElementById('col-desc-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+    }
+
+    function saveColDesc() {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tbl = (ds?.tables_list || []).find(t => t.name === _colDescTblName);
+      const newDesc = document.getElementById('col-desc-input').value.trim();
+      if (tbl?.columns?.[_colDescIdx] !== undefined) {
+        tbl.columns[_colDescIdx].desc = newDesc;
+        const cell = document.getElementById('col-desc-cell-' + _colDescIdx);
+        if (cell) cell.value = newDesc;
+      }
+      const bd = document.getElementById('col-desc-backdrop');
+      bd.classList.add('hidden');
+      bd.classList.remove('flex');
+      showToast('Description saved.');
+    }
+
+    function saveColMeta(idx, field, value) {
+      const ds = _dsList.find(d => d.id === currentDetailId);
+      const tblName = document.getElementById('tbl-detail-name').textContent;
+      const tbl = (ds?.tables_list || []).find(t => t.name === tblName);
+      if (tbl?.columns?.[idx] !== undefined) {
+        tbl.columns[idx][field] = value;
+      }
+    }
+
+
+    // ══════════════════════════════════════════════════════════════
+    //  SCOPE SYSTEM  (Organization → Workspace → Project)
+    // ══════════════════════════════════════════════════════════════
+
+    // Workspace assignments: dsId → { assigned:bool, tables:null|string[] }
+    // null tables = all tables included
+    const _wsAssignments = {
+      'ds-1': { assigned: true,  tables: null },
+      'ds-2': { assigned: true,  tables: ['users','orders'] },
+      'ds-3': { assigned: false, tables: null },
+      'ds-4': { assigned: false, tables: null },
+      'ds-5': { assigned: false, tables: null },
+    };
+
+    // Project assignments: Set of dsIds
+    const _projAssignments = new Set(['ds-1']);
+
+    let _currentScope = 'org';
+
+    const SCOPE_META = {
+      org:  { title: 'Datasources',  desc: 'Connect and manage datasources at the organization level' },
+      ws:   { title: 'Datasources',  desc: 'Assign datasources and configure table access for this workspace' },
+      proj: { title: 'Datasources',  desc: 'Choose which workspace datasources are accessible in this project' },
+    };
+
+    function switchDsScope(scope) {
+      _currentScope = scope;
+      ['org','ws','proj'].forEach(s => {
+        document.getElementById('scope-' + s).classList.toggle('hidden', s !== scope);
+        document.getElementById('scope-' + s).classList.toggle('flex', s === scope);
+        const btn = document.getElementById('dss-' + s);
+        if (btn) btn.classList.toggle('scope-active', s === scope);
+      });
+      // Sub-topbar title/desc
+      const m = SCOPE_META[scope];
+      document.getElementById('sub-title').textContent = m.title;
+      document.getElementById('sub-desc').textContent  = m.desc;
+      // "Add Datasource" button only on org scope
+      const la = document.getElementById('list-actions');
+      if (la) la.style.display = scope === 'org' ? 'flex' : 'none';
+      // Render relevant scope
+      updateScopeCounts();
+      if (scope === 'ws')   renderWsScope();
+      if (scope === 'proj') renderProjScope();
+    }
+
+    function updateScopeCounts() {
+      const total = _dsList.length;
+      const wsCount  = Object.values(_wsAssignments).filter(a => a.assigned).length;
+      const projCount = _projAssignments.size;
+      document.getElementById('scope-count-org').textContent  = total;
+      document.getElementById('scope-count-ws').textContent   = wsCount + ' / ' + total;
+      document.getElementById('scope-count-proj').textContent = projCount + ' / ' + wsCount;
+    }
+
+    // ── Workspace scope ───────────────────────────────────────────
+    let _wsAddPendingId = null;
+
+    function renderWsScope() {
+      const assignedList = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
+      const assigned = assignedList.length;
+      document.getElementById('ws-summary-chip').textContent = assigned + ' of ' + _dsList.length + ' assigned';
+
+      // KPI bar
+      const wsConnected = assignedList.filter(ds => ds.status === 'Connected').length;
+      const wsErrors    = assignedList.filter(ds => ds.status === 'Error').length;
+      const wsTables    = assignedList.reduce((sum, ds) => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        return sum + (a.tables ? a.tables.length : tblCount);
+      }, 0);
+      document.getElementById('ws-stat-total').textContent     = assigned;
+      document.getElementById('ws-stat-connected').textContent = wsConnected;
+      document.getElementById('ws-stat-tables').textContent    = wsTables;
+
+      // Empty state
+      const emptyEl = document.getElementById('ws-empty-state');
+      const listEl  = document.getElementById('ws-assign-list');
+      if (assigned === 0) {
+        emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
+        listEl.innerHTML = '';
+      } else {
+        emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
+        listEl.innerHTML = assignedList.map(ds => {
+          const a = _wsAssignments[ds.id];
+          const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+          const selCount = a.tables ? a.tables.length : tblCount;
+          const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          return `
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer" style="background:#EEF2FF" onclick="openDetailPanel('${ds.id}',true)">${connectorIcon(ds.connector, 18)}</div>
+            <div class="flex-1 min-w-0 cursor-pointer" onclick="openDetailPanel('${ds.id}',true)">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[13px] font-semibold text-gray-900 hover:text-indigo-700 transition-colors">${ds.name}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <div class="flex items-center gap-2 mt-1">
+                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount + ' tables' : 'All ' + tblCount + ' tables'} included</span>
+                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">Edit tables</button>
+              </div>
+            </div>
+            <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-medium border transition-colors" style="border-color:#E2E8F0;color:#DC2626;background:white" onmouseover="this.style.background='#FEF2F2'" onmouseout="this.style.background='white'">
+              Remove
+            </button>
+          </div>`;
+        }).join('');
+      }
+
+      // Rebuild the add-dropdown list (unassigned only)
+      refreshWsDropdownList();
+      cancelWsAdd();
+    }
+
+    function filterWsList() {
+      const q = (document.getElementById('ws-search')?.value || '').toLowerCase();
+      document.querySelectorAll('#ws-assign-list .assign-row').forEach(row => {
+        const name = row.querySelector('span.font-semibold')?.textContent?.toLowerCase() || '';
+        row.style.display = name.includes(q) ? '' : 'none';
+      });
+    }
+
+    function refreshWsDropdownList() {
+      const unassigned = _dsList.filter(ds => !_wsAssignments[ds.id]?.assigned);
+      const ddList  = document.getElementById('ws-add-dd-list');
+      const ddEmpty = document.getElementById('ws-add-dd-empty');
+      if (!unassigned.length) {
+        ddList.innerHTML = '';
+        ddEmpty.classList.remove('hidden');
+      } else {
+        ddEmpty.classList.add('hidden');
+        ddList.innerHTML = unassigned.map(ds => {
+          const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+          const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          return `
+          <button onclick="selectWsAdd('${ds.id}')" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 transition-colors text-left">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F3F4F6">${connectorIcon(ds.connector, 14)}</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-800 truncate">${ds.name}</p>
+              <p class="text-[11px] text-gray-400">${ds.type} · ${tblCount} tables</p>
+            </div>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${statusClass}">${ds.status}</span>
+          </button>`;
+        }).join('');
+      }
+    }
+
+    function toggleWsDropdown() {
+      const dd = document.getElementById('ws-add-dd');
+      dd.classList.toggle('hidden');
+    }
+
+    function selectWsAdd(dsId) {
+      _wsAddPendingId = dsId;
+      const ds = _dsList.find(d => d.id === dsId);
+      document.getElementById('ws-add-label').textContent = ds?.name || dsId;
+      document.getElementById('ws-add-dd').classList.add('hidden');
+      document.getElementById('ws-add-confirm').classList.remove('hidden');
+      document.getElementById('ws-add-confirm').classList.add('flex');
+      document.getElementById('ws-add-cancel').classList.remove('hidden');
+      document.getElementById('ws-add-cancel').classList.add('flex');
+    }
+
+    function cancelWsAdd() {
+      _wsAddPendingId = null;
+      document.getElementById('ws-add-label').textContent = 'Add datasource…';
+      document.getElementById('ws-add-dd').classList.add('hidden');
+      document.getElementById('ws-add-confirm').classList.add('hidden');
+      document.getElementById('ws-add-confirm').classList.remove('flex');
+      document.getElementById('ws-add-cancel').classList.add('hidden');
+      document.getElementById('ws-add-cancel').classList.remove('flex');
+    }
+
+    function confirmWsAdd() {
+      if (!_wsAddPendingId) return;
+      const dsId = _wsAddPendingId; // capture before renderWsScope resets it
+      if (!_wsAssignments[dsId]) _wsAssignments[dsId] = { assigned: false, tables: null };
+      _wsAssignments[dsId].assigned = true;
+      updateScopeCounts();
+      renderWsScope();
+      // Open table picker immediately
+      openTblPicker(dsId);
+      showToast('Datasource added to workspace.');
+    }
+
+    function removeWsAssign(dsId) {
+      if (_wsAssignments[dsId]) _wsAssignments[dsId].assigned = false;
+      _projAssignments.delete(dsId);
+      updateScopeCounts();
+      renderWsScope();
+      showToast('Datasource removed from workspace.');
+    }
+
+    function toggleWsAssign(dsId) {
+      if (!_wsAssignments[dsId]) _wsAssignments[dsId] = { assigned: false, tables: null };
+      _wsAssignments[dsId].assigned = !_wsAssignments[dsId].assigned;
+      if (!_wsAssignments[dsId].assigned) _projAssignments.delete(dsId);
+      updateScopeCounts();
+      renderWsScope();
+      showToast(_wsAssignments[dsId].assigned ? 'Datasource assigned to workspace.' : 'Datasource removed from workspace.');
+    }
+
+    // Close ws dropdown on outside click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#ws-add-wrapper')) {
+        const dd = document.getElementById('ws-add-dd');
+        if (dd) dd.classList.add('hidden');
+      }
+    });
+
+    // ── Project scope ─────────────────────────────────────────────
+    function renderProjScope() {
+      const wsAssigned = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
+      const projCount  = _projAssignments.size;
+      document.getElementById('proj-summary-chip').textContent = projCount + ' of ' + wsAssigned.length + ' in project';
+
+      // KPI bar (counts only project-assigned datasources)
+      const projList      = _dsList.filter(ds => _projAssignments.has(ds.id));
+      const projConnected = projList.filter(ds => ds.status === 'Connected').length;
+      const projErrors    = projList.filter(ds => ds.status === 'Error').length;
+      const projTables    = projList.reduce((sum, ds) => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        return sum + (a?.tables ? a.tables.length : tblCount);
+      }, 0);
+      document.getElementById('proj-stat-total').textContent     = projList.length;
+      document.getElementById('proj-stat-connected').textContent = projConnected;
+      document.getElementById('proj-stat-error').textContent     = projErrors;
+      document.getElementById('proj-stat-tables').textContent    = projTables;
+
+      const emptyEl = document.getElementById('proj-empty-ws');
+      const listEl  = document.getElementById('proj-assign-list');
+
+      if (wsAssigned.length === 0) {
+        emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
+        listEl.innerHTML = '';
+        return;
+      }
+      emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
+
+      listEl.innerHTML = wsAssigned.map(ds => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        const selCount = a.tables ? a.tables.length : tblCount;
+        const inProj   = _projAssignments.has(ds.id);
+        const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+
+        if (inProj) {
+          return `
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[13px] font-semibold text-gray-900">${ds.name}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-1">
+                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span class="text-[11px] text-gray-500">${selCount} table${selCount !== 1 ? 's' : ''} accessible in this project</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-[11px] font-semibold px-2 py-1 rounded-lg" style="background:#DCFCE7;color:#15803D">In Project</span>
+              <button onclick="toggleProjAssign('${ds.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Remove from project">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>`;
+        } else {
+          return `
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white opacity-70 hover:opacity-100 transition-opacity">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F9FAFB">${connectorIcon(ds.connector, 18)}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[13px] font-semibold text-gray-700">${ds.name}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <p class="text-[11px] text-gray-400 mt-1">${selCount} table${selCount !== 1 ? 's' : ''} available from workspace — not in project</p>
+            </div>
+            <button onclick="toggleProjAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Add to Project
+            </button>
+          </div>`;
+        }
+      }).join('');
+    }
+
+    function toggleProjAssign(dsId) {
+      if (_projAssignments.has(dsId)) { _projAssignments.delete(dsId); showToast('Removed from project.'); }
+      else { _projAssignments.add(dsId); showToast('Added to project.'); }
+      updateScopeCounts();
+      renderProjScope();
+    }
+
+    // ── Table picker modal ────────────────────────────────────────
+    let _tblPickerDsId = null;
+
+    function openTblPicker(dsId) {
+      _tblPickerDsId = dsId;
+      const ds  = _dsList.find(d => d.id === dsId);
+      const a   = _wsAssignments[dsId] || { assigned: true, tables: null };
+      const tbl = (ds?.tables_list || []);
+      const allNames = tbl.length ? tbl.map(t => t.name) : [];
+
+      document.getElementById('tbl-picker-subtitle').textContent = ds?.name || dsId;
+
+      // If no table list, show message
+      if (!allNames.length) {
+        document.getElementById('tbl-picker-list').innerHTML =
+          '<p class="text-[12px] text-gray-400 text-center py-6">No table metadata available for this datasource.</p>';
+        document.getElementById('tbl-picker-all').checked = true;
+        document.getElementById('tbl-picker-count').textContent = 'All tables';
+      } else {
+        const selected = a.tables || allNames;
+        renderTblPickerList(allNames, selected);
+      }
+
+      const bd = document.getElementById('tbl-picker-backdrop');
+      bd.classList.remove('hidden'); bd.classList.add('flex');
+    }
+
+    function renderTblPickerList(allNames, selected) {
+      const selSet = new Set(selected);
+      document.getElementById('tbl-picker-all').checked = selSet.size === allNames.length;
+      document.getElementById('tbl-picker-count').textContent = selSet.size + ' of ' + allNames.length + ' selected';
+      document.getElementById('tbl-picker-list').innerHTML = allNames.map(name => `
+        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-lg cursor-pointer select-none group transition-colors">
+          <input type="checkbox" value="${name}" ${selSet.has(name) ? 'checked' : ''} onchange="onTblPickerCheck()" class="w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer flex-shrink-0" />
+          <div class="flex items-center gap-2 min-w-0">
+            <svg class="w-3.5 h-3.5 text-gray-300 group-hover:text-indigo-300 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            <span class="text-[13px] text-gray-700">${name}</span>
+          </div>
+        </label>`).join('');
+    }
+
+    function onTblPickerCheck() {
+      const boxes = document.querySelectorAll('#tbl-picker-list input[type=checkbox]');
+      const total = boxes.length;
+      const checked = [...boxes].filter(b => b.checked).length;
+      document.getElementById('tbl-picker-all').checked = checked === total;
+      document.getElementById('tbl-picker-count').textContent = checked + ' of ' + total + ' selected';
+    }
+
+    function toggleAllTblPicker(val) {
+      document.querySelectorAll('#tbl-picker-list input[type=checkbox]').forEach(b => b.checked = val);
+      onTblPickerCheck();
+    }
+
+    function saveTblPicker() {
+      const a = _wsAssignments[_tblPickerDsId];
+      const boxes = [...document.querySelectorAll('#tbl-picker-list input[type=checkbox]')];
+      if (!boxes.length) {
+        // no table list — treat as all
+        a.tables = null;
+      } else {
+        const selected = boxes.filter(b => b.checked).map(b => b.value);
+        a.tables = selected.length === boxes.length ? null : selected;
+      }
+      closeTblPicker();
+      renderWsScope();
+      showToast('Table access updated.');
+    }
+
+    function closeTblPicker(e) {
+      if (e && e.target !== document.getElementById('tbl-picker-backdrop')) return;
+      const bd = document.getElementById('tbl-picker-backdrop');
+      bd.classList.add('hidden'); bd.classList.remove('flex');
     }
 
     function showToast(msg) {
@@ -1311,9 +3251,19 @@
 
     // Init
     updateStepIndicator(1);
-    updateSubTopbar('view-add'); // sync sub-topbar to the initially active view
+    updateSubTopbar('view-list');
+    renderDsList();
+    updateScopeCounts();
 
     // ── Sidebar ──────────────────────────────────
+    function toggleBtn(btn) {
+      const on = btn.dataset.on !== 'true';
+      btn.dataset.on = on ? 'true' : 'false';
+      btn.style.background = on ? '#5B63F6' : '#E5E7EB';
+      const knob = btn.querySelector('span');
+      if (knob) knob.style.transform = on ? 'translateX(20px)' : 'translateX(0)';
+    }
+
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
