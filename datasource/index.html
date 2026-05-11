@@ -493,24 +493,21 @@
           <option value="tables">Sort: Tables</option>
           <option value="updated">Sort: Last Sync</option>
         </select>
+        <!-- View toggle -->
+        <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+          <button id="ds-view-list" onclick="setDsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+          </button>
+          <button id="ds-view-grid" onclick="setDsView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+          </button>
+        </div>
       </div>
 
       <!-- Datasource list -->
       <div class="flex-1 overflow-y-auto px-6 py-4 relative">
 
-        <!-- Table header (sticky) -->
-        <div class="sticky top-0 z-10 flex items-center gap-4 px-5 py-3 mb-2 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-          <div class="w-[32px] flex-shrink-0"></div>
-          <div class="w-[280px] flex-shrink-0">Name / Connection</div>
-          <div class="w-[100px] text-center flex-shrink-0">Type</div>
-          <div class="w-[110px] text-center flex-shrink-0">Status</div>
-          <div class="w-[80px] text-center flex-shrink-0">Tables</div>
-          <div class="w-[140px] flex-shrink-0">Last Sync</div>
-          <div class="w-[140px] flex-shrink-0">Owner</div>
-          <div class="w-[90px] flex-shrink-0 text-right">Actions</div>
-        </div>
-
-        <div id="ds-list-body" class="space-y-2"></div>
+        <div id="ds-list-body" class="grid grid-cols-3 gap-4"></div>
 
         <!-- Empty state -->
         <div id="ds-empty" class="hidden flex-col items-center justify-center py-24 gap-4 text-center">
@@ -600,10 +597,20 @@
           <button id="ws-add-cancel" onclick="cancelWsAdd()" class="hidden h-9 px-3 rounded-lg text-[12px] font-medium text-gray-500 hover:bg-gray-100 transition-colors flex-shrink-0">
             Cancel
           </button>
+          <div class="flex-1"></div>
+          <!-- View toggle -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+            <button id="ws-view-list" onclick="setWsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            </button>
+            <button id="ws-view-grid" onclick="setWsView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+            </button>
+          </div>
         </div>
         <!-- Assigned list -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
-          <div id="ws-assign-list" class="space-y-2"></div>
+          <div id="ws-assign-list" class="grid grid-cols-3 gap-4"></div>
           <div id="ws-empty-state" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
               <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
@@ -667,9 +674,22 @@
             </div>
           </div>
         </div>
+        <!-- Toolbar -->
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+          <div class="flex-1"></div>
+          <!-- View toggle -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+            <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            </button>
+            <button id="proj-view-grid" onclick="setProjView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-700" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="Grid view">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+            </button>
+          </div>
+        </div>
         <!-- List -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
-          <div id="proj-assign-list" class="space-y-2"></div>
+          <div id="proj-assign-list" class="grid grid-cols-3 gap-4"></div>
           <!-- Empty state if no ws assignments -->
           <div id="proj-empty-ws" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#F3F4F6">
@@ -1747,6 +1767,29 @@
       return icons[type] || '';
     }
 
+    let _dsView = 'grid';
+    let _wsView  = 'grid';
+    let _projView = 'grid';
+
+    function setDsView(v) {
+      _dsView = v;
+      const btnList = document.getElementById('ds-view-list');
+      const btnGrid = document.getElementById('ds-view-grid');
+      if (btnList && btnGrid) {
+        btnList.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        if (v === 'list') btnList.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'; else btnList.style.boxShadow = '';
+        btnGrid.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'grid' ? 'bg-white text-gray-700' : 'text-gray-400');
+        if (v === 'grid') btnGrid.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'; else btnGrid.style.boxShadow = '';
+      }
+      const body = document.getElementById('ds-list-body');
+      if (v === 'grid') {
+        body.className = 'grid grid-cols-3 gap-4';
+      } else {
+        body.className = 'border border-gray-200 rounded-xl overflow-hidden';
+      }
+      renderDsList();
+    }
+
     function renderDsList() {
       loadDsList();
       const list = getFilteredList();
@@ -1762,34 +1805,60 @@
       empty.classList.add('hidden');
       empty.classList.remove('flex');
 
-      body.innerHTML = list.map(d => `
-        <div class="ds-row flex items-center gap-4 px-5 py-4 rounded-xl border cursor-pointer" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
-          <div class="w-[32px] flex-shrink-0">${connectorIcon(d.connector, 24)}</div>
-          <div class="w-[280px] flex-shrink-0 min-w-0">
-            <p class="text-[14px] font-semibold text-gray-900 truncate leading-snug">${d.name}</p>
-            <p class="text-[12px] text-gray-500 mt-1 truncate">${d.connector}${d.host ? ' · ' + d.host : d.database ? '' : ''}</p>
+      body.innerHTML = _dsView === 'grid' ? list.map(d => `
+        <div class="ds-row group bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-indigo-300 hover:shadow-md" onclick="openDetailPanel('${d.id}')" id="row-${d.id}" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+          <!-- Card header -->
+          <div class="h-28 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">
+            <div style="transform:scale(1.6)">${connectorIcon(d.connector, 24)}</div>
           </div>
-          <div class="w-[100px] text-center flex-shrink-0">
-            <span class="inline-flex items-center justify-center gap-1.5 text-[13px] font-medium text-gray-700">${typeIconHtml(d.type)}<span>${d.type}</span></span>
-          </div>
-          <div class="w-[110px] text-center flex-shrink-0">${statusBadgeHtml(d.status)}</div>
-          <div class="w-[80px] text-center flex-shrink-0 text-[14px] font-semibold text-gray-800">${d.tables}</div>
-          <div class="w-[140px] flex-shrink-0 text-[12px] text-gray-500 flex items-center gap-1.5">
-            ${d.status === 'Syncing' ? '<svg class="w-3 h-3 ds-spin flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>' : ''}
-            <span class="truncate">${d.updated}</span>
-          </div>
-          <div class="w-[140px] flex-shrink-0 min-w-0">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style="background:#3B5BDB">${d.owner[0]}</div>
-              <span class="text-[13px] text-gray-700 font-medium truncate">${d.owner}</span>
+          <!-- Card body -->
+          <div class="px-4 pt-3 pb-3">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
+                <p class="text-[11px] text-gray-400 mt-0.5 truncate">${d.connector}${d.host ? ' · ' + d.host : ''}</p>
+              </div>
+              <button onclick="event.stopPropagation()" class="overflow-btn flex-shrink-0 p-1 rounded-md hover:bg-gray-100 text-gray-400 -mt-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(d.type)}<span>${d.type}</span></span>
+              ${statusBadgeHtml(d.status)}
+            </div>
+            <div class="flex items-center justify-between mt-2.5 pt-2.5 border-t border-gray-100">
+              <div class="flex items-center gap-1.5">
+                <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
+                <span class="text-[11px] text-gray-500 truncate max-w-[80px]">${d.owner}</span>
+              </div>
+              <span class="text-[11px] text-gray-400">${d.tables} tables</span>
             </div>
           </div>
-          <div class="w-[90px] flex-shrink-0 flex items-center justify-end gap-1.5" onclick="event.stopPropagation()">
-            <button onclick="syncDs('${d.id}')" data-tip="Sync now" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+        </div>
+      `).join('') : list.map((d, idx) => `
+        <div class="ds-row group flex items-center cursor-pointer transition-colors hover:bg-gray-50 ${idx < list.length - 1 ? 'border-b border-gray-100' : ''}" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mx-4 my-2.5" style="background:#EEF2FF">${connectorIcon(d.connector, 20)}</div>
+          <div class="flex-1 min-w-0 py-3 pr-4">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(d.type)}<span>${d.type}</span></span>
+              ${statusBadgeHtml(d.status)}
+            </div>
+            <p class="text-[11px] text-gray-400 mt-0.5 truncate">${d.connector}${d.host ? ' · ' + d.host : ''} · ${d.tables} tables · ${d.updated}</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0 pr-4">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
+            <span class="text-[12px] text-gray-500 truncate max-w-[100px]">${d.owner}</span>
+          </div>
+          <div class="flex items-center gap-0.5 flex-shrink-0 pr-3 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
+            <button onclick="syncDs('${d.id}')" title="Sync" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
             </button>
-            <button onclick="deleteDs('${d.id}')" data-tip="Remove" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            <button onclick="deleteDs('${d.id}')" title="Remove" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            </button>
+            <button class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="More">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
             </button>
           </div>
         </div>
@@ -2927,6 +2996,36 @@
     // ── Workspace scope ───────────────────────────────────────────
     let _wsAddPendingId = null;
 
+    function setWsView(v) {
+      _wsView = v;
+      const btnList = document.getElementById('ws-view-list');
+      const btnGrid = document.getElementById('ws-view-grid');
+      if (btnList && btnGrid) {
+        btnList.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnList.style.boxShadow = v === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+        btnGrid.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'grid' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnGrid.style.boxShadow = v === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+      }
+      const listEl = document.getElementById('ws-assign-list');
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-2';
+      renderWsScope();
+    }
+
+    function setProjView(v) {
+      _projView = v;
+      const btnList = document.getElementById('proj-view-list');
+      const btnGrid = document.getElementById('proj-view-grid');
+      if (btnList && btnGrid) {
+        btnList.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnList.style.boxShadow = v === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+        btnGrid.className = 'flex items-center justify-center w-8 h-8 rounded-md ' + (v === 'grid' ? 'bg-white text-gray-700' : 'text-gray-400');
+        btnGrid.style.boxShadow = v === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+      }
+      const listEl = document.getElementById('proj-assign-list');
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-2';
+      renderProjScope();
+    }
+
     function renderWsScope() {
       const assignedList = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
       const assigned = assignedList.length;
@@ -2952,13 +3051,39 @@
         listEl.innerHTML = '';
       } else {
         emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
-        listEl.innerHTML = assignedList.map(ds => {
+        listEl.innerHTML = _wsView === 'grid' ? assignedList.map(ds => {
           const a = _wsAssignments[ds.id];
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
           const selCount = a.tables ? a.tables.length : tblCount;
           const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
           return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+          <div class="assign-row group bg-white border border-gray-200 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md" data-name="${ds.name.toLowerCase()}" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <div class="h-24 rounded-t-xl flex items-center justify-center cursor-pointer" style="background:#EEF2FF" onclick="openDetailPanel('${ds.id}',true)">
+              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+            </div>
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[13px] font-semibold text-gray-900 truncate cursor-pointer hover:text-indigo-700 transition-colors" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-2">
+                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables</span>
+                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:underline ml-0.5">Edit</button>
+              </div>
+              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+                <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('') : assignedList.map(ds => {
+          const a = _wsAssignments[ds.id];
+          const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+          const selCount = a.tables ? a.tables.length : tblCount;
+          const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          return `
+          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white" data-name="${ds.name.toLowerCase()}">
             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer" style="background:#EEF2FF" onclick="openDetailPanel('${ds.id}',true)">${connectorIcon(ds.connector, 18)}</div>
             <div class="flex-1 min-w-0 cursor-pointer" onclick="openDetailPanel('${ds.id}',true)">
               <div class="flex items-center gap-2 flex-wrap">
@@ -2987,7 +3112,7 @@
     function filterWsList() {
       const q = (document.getElementById('ws-search')?.value || '').toLowerCase();
       document.querySelectorAll('#ws-assign-list .assign-row').forEach(row => {
-        const name = row.querySelector('span.font-semibold')?.textContent?.toLowerCase() || '';
+        const name = (row.dataset.name || row.querySelector('[class*="font-semibold"]')?.textContent || '').toLowerCase();
         row.style.display = name.includes(q) ? '' : 'none';
       });
     }
@@ -3110,13 +3235,61 @@
       }
       emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
 
-      listEl.innerHTML = wsAssigned.map(ds => {
+      listEl.innerHTML = _projView === 'grid' ? wsAssigned.map(ds => {
         const a = _wsAssignments[ds.id];
         const tblCount = (ds.tables_list || []).length || ds.tables || 0;
         const selCount = a.tables ? a.tables.length : tblCount;
         const inProj   = _projAssignments.has(ds.id);
         const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
-
+        if (inProj) {
+          return `
+          <div class="assign-row group bg-white border border-green-200 rounded-xl transition-all hover:shadow-md" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <div class="h-24 rounded-t-xl flex items-center justify-center relative" style="background:#DCFCE7">
+              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+              <span class="absolute top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:rgba(255,255,255,0.9);color:#15803D">In Project</span>
+            </div>
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[13px] font-semibold text-gray-900 truncate">${ds.name}</p>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-2">
+                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span class="text-[11px] text-gray-500">${selCount} table${selCount !== 1 ? 's' : ''} accessible</span>
+              </div>
+              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+                <button onclick="toggleProjAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
+              </div>
+            </div>
+          </div>`;
+        } else {
+          return `
+          <div class="assign-row group bg-white border border-gray-200 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md opacity-70 hover:opacity-100" style="box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <div class="h-24 rounded-t-xl flex items-center justify-center" style="background:#F9FAFB">
+              <div style="transform:scale(1.5)">${connectorIcon(ds.connector, 22)}</div>
+            </div>
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[13px] font-semibold text-gray-700 truncate">${ds.name}</p>
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">${typeIconHtml(ds.type)}<span>${ds.type}</span></span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+              </div>
+              <p class="text-[11px] text-gray-400 mt-2">${selCount} table${selCount !== 1 ? 's' : ''} available</p>
+              <div class="flex items-center justify-end mt-2.5 pt-2.5 border-t border-gray-100">
+                <button onclick="toggleProjAssign('${ds.id}')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white px-2.5 py-1 rounded-md hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add
+                </button>
+              </div>
+            </div>
+          </div>`;
+        }
+      }).join('') : wsAssigned.map(ds => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        const selCount = a.tables ? a.tables.length : tblCount;
+        const inProj   = _projAssignments.has(ds.id);
+        const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
         if (inProj) {
           return `
           <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
