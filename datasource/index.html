@@ -149,9 +149,10 @@
     /* Scope flow arrow */
     .scope-arrow { color:#D1D5DB; font-size:11px; margin:0 2px; }
 
-    /* DS assignment rows */
-    .assign-row { transition:background 80ms ease; }
-    .assign-row:hover { background:#FAFBFF; }
+    /* Readonly detail mode — hides edit-only controls */
+    #view-detail.ds-readonly .ds-edit-only { display: none !important; }
+    #view-detail.ds-readonly .ds-readonly-only { display: table-cell !important; }
+    #view-detail.ds-readonly .ds-edit-input { pointer-events: none; }
 
     /* Test connection states */
     .conn-idle, .conn-loading, .conn-success, .conn-error { transition: opacity 150ms ease; }
@@ -390,19 +391,17 @@
     <div id="view-list" class="view active flex-col flex-1 overflow-hidden bg-white">
 
       <!-- ── Scope switcher ── -->
-      <div class="flex-shrink-0 bg-white border-b border-gray-100 px-6 flex items-center gap-1">
+      <div class="flex-shrink-0 bg-white border-b border-gray-100 px-6 flex items-center gap-12">
         <button id="dss-org" onclick="switchDsScope('org')" class="scope-tab scope-active">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
           Organization
           <span id="scope-count-org" class="scope-count">—</span>
         </button>
-        <svg class="scope-arrow w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         <button id="dss-ws" onclick="switchDsScope('ws')" class="scope-tab">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
           Workspace
           <span id="scope-count-ws" class="scope-count">—</span>
         </button>
-        <svg class="scope-arrow w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         <button id="dss-proj" onclick="switchDsScope('proj')" class="scope-tab">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
           Project
@@ -414,30 +413,46 @@
       <div id="scope-org" class="flex flex-col flex-1 overflow-hidden">
 
       <!-- Stats bar -->
-      <div class="flex items-stretch gap-4 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-white">
-        <div class="flex-1 flex flex-col gap-0.5">
-          <span class="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Total Sources</span>
-          <span id="stat-total" class="text-[22px] font-bold text-gray-900">5</span>
+      <div class="grid grid-cols-4 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
+        <!-- Total Sources -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-4.5 h-4.5" style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Sources</p>
+            <p id="stat-total" class="text-[22px] font-bold text-gray-900 leading-none">5</p>
+          </div>
         </div>
-        <div class="w-px bg-gray-100"></div>
-        <div class="flex-1 flex flex-col gap-0.5">
-          <span class="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Connected</span>
-          <span id="stat-connected" class="text-[22px] font-bold" style="color:#16A34A">4</span>
+        <!-- Connected -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+            <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Connected</p>
+            <p id="stat-connected" class="text-[22px] font-bold leading-none" style="color:#16A34A">4</p>
+          </div>
         </div>
-        <div class="w-px bg-gray-100"></div>
-        <div class="flex-1 flex flex-col gap-0.5">
-          <span class="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Errors</span>
-          <span id="stat-error" class="text-[22px] font-bold" style="color:#DC2626">1</span>
+        <!-- Errors -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEE2E2">
+            <svg style="color:#DC2626;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Errors</p>
+            <p id="stat-error" class="text-[22px] font-bold leading-none" style="color:#DC2626">1</p>
+          </div>
         </div>
-        <div class="w-px bg-gray-100"></div>
-        <div class="flex-1 flex flex-col gap-0.5">
-          <span class="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Tables / Objects</span>
-          <span id="stat-tables" class="text-[22px] font-bold text-gray-900">48</span>
-        </div>
-        <div class="w-px bg-gray-100"></div>
-        <div class="flex-1 flex flex-col gap-0.5">
-          <span class="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Last Sync</span>
-          <span class="text-[13px] font-semibold text-gray-700 mt-1">2 min ago</span>
+        <!-- Tables -->
+        <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+            <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
+            <p id="stat-tables" class="text-[22px] font-bold text-gray-900 leading-none">48</p>
+          </div>
         </div>
       </div>
 
@@ -525,8 +540,47 @@
           </div>
           <div id="ws-summary-chip" class="flex-shrink-0 text-[12px] font-semibold px-3 py-1 rounded-lg" style="background:#EEF2FF;color:#5B63F6"></div>
         </div>
-        <!-- Add datasource dropdown bar -->
+        <!-- KPI bar -->
+        <div class="grid grid-cols-3 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
+          <!-- Total Sources -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Sources</p>
+              <p id="ws-stat-total" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+          <!-- Connected -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+              <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Connected</p>
+              <p id="ws-stat-connected" class="text-[22px] font-bold leading-none" style="color:#16A34A">0</p>
+            </div>
+          </div>
+          <!-- Tables -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+              <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
+              <p id="ws-stat-tables" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar: search + add -->
         <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+          <!-- Search -->
+          <div class="relative flex-1 max-w-xs">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+            <input id="ws-search" type="text" placeholder="Search datasources…" oninput="filterWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
+          </div>
           <div class="relative flex-1 max-w-xs" id="ws-add-wrapper">
             <button onclick="toggleWsDropdown()" class="w-full flex items-center gap-2 px-3 h-9 rounded-lg border border-gray-200 bg-white text-[13px] text-gray-500 hover:border-indigo-300 transition-colors" id="ws-add-btn">
               <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -570,6 +624,49 @@
           </div>
           <div id="proj-summary-chip" class="flex-shrink-0 text-[12px] font-semibold px-3 py-1 rounded-lg" style="background:#EEF2FF;color:#5B63F6"></div>
         </div>
+        <!-- KPI bar -->
+        <div class="grid grid-cols-4 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
+          <!-- Total Sources -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+              <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Sources</p>
+              <p id="proj-stat-total" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+          <!-- Connected -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+              <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Connected</p>
+              <p id="proj-stat-connected" class="text-[22px] font-bold leading-none" style="color:#16A34A">0</p>
+            </div>
+          </div>
+          <!-- Errors -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEE2E2">
+              <svg style="color:#DC2626;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Errors</p>
+              <p id="proj-stat-error" class="text-[22px] font-bold leading-none" style="color:#DC2626">0</p>
+            </div>
+          </div>
+          <!-- Tables -->
+          <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+              <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
+              <p id="proj-stat-tables" class="text-[22px] font-bold text-gray-900 leading-none">0</p>
+            </div>
+          </div>
+        </div>
         <!-- List -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
           <div id="proj-assign-list" class="space-y-2"></div>
@@ -610,7 +707,7 @@
               <button onclick="setPanelTab('overview')" id="ptab-overview" class="ds-tab active">Overview</button>
               <button onclick="setPanelTab('tables')"   id="ptab-tables"   class="ds-tab">Tables</button>
               <button onclick="setPanelTab('sync')"     id="ptab-sync"     class="ds-tab">Sync Log</button>
-              <button onclick="setPanelTab('settings')" id="ptab-settings" class="ds-tab">Settings</button>
+              <button onclick="setPanelTab('settings')" id="ptab-settings" class="ds-tab ds-edit-only">Settings</button>
             </div>
           </div>
         </div>
@@ -648,7 +745,7 @@
               <div id="panel-conn-info" class="space-y-1.5 text-[13px]"></div>
             </div>
             <!-- Actions -->
-            <div class="flex justify-end gap-2 pt-1">
+            <div class="flex justify-end gap-2 pt-1 ds-edit-only">
               <button onclick="syncDs(currentDetailId)" class="flex items-center justify-center gap-1.5 px-4 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
                 Sync Now
@@ -682,7 +779,7 @@
                 </div>
                 <div class="flex items-center gap-1.5 pl-0.5">
                   <span id="tbl-detail-desc" class="text-[12px] text-gray-400"></span>
-                  <button onclick="openTblDescModal(document.getElementById('tbl-detail-name').textContent)" class="flex-shrink-0 transition-opacity" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#D1D5DB;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#D1D5DB'" title="Edit description">
+                  <button onclick="openTblDescModal(document.getElementById('tbl-detail-name').textContent)" class="flex-shrink-0 transition-opacity ds-edit-only" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#D1D5DB;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#D1D5DB'" title="Edit description">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
                   </button>
                 </div>
@@ -735,7 +832,7 @@
               <div id="tbl-pane-relations" class="hidden">
                 <div class="flex items-center justify-between mb-3">
                   <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Relationships</span>
-                  <button onclick="openRelModal(null)" class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+                  <button onclick="openRelModal(null)" class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity ds-edit-only" style="background:#5B63F6">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     Add
                   </button>
@@ -1783,10 +1880,14 @@
     // ─── Detail panel ─────────────────────────────────────────
     let currentDetailId = null;
 
-    function openDetailPanel(id) {
+    function openDetailPanel(id, readOnly = false) {
       const ds = _dsList.find(d => d.id === id);
       if (!ds) return;
       currentDetailId = id;
+
+      // Apply readonly mode
+      const detailView = document.getElementById('view-detail');
+      detailView.classList.toggle('ds-readonly', readOnly);
 
       // Header
       document.getElementById('panel-icon').innerHTML = connectorIcon(ds.connector, 20);
@@ -1864,7 +1965,6 @@
               <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4">Description</th>
               <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4 text-right" style="width:7%">Cols</th>
               <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4 text-right" style="width:12%">Rows</th>
-              <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 text-right" style="width:14%">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -1879,7 +1979,7 @@
                 <td class="py-3 pr-4">
                   <div class="flex items-center gap-1.5">
                     <span id="tbl-list-desc-${t.name}" class="text-[12px] ${t.desc ? 'text-gray-500' : 'text-gray-300 italic'} truncate max-w-xs">${t.desc || 'No description'}</span>
-                    <button onclick="event.stopPropagation();openTblDescModal('${t.name}')" class="opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#9CA3AF'" title="Edit description">
+                    <button onclick="event.stopPropagation();openTblDescModal('${t.name}')" class="opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity ds-edit-only" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#9CA3AF'" title="Edit description">
                       <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
                     </button>
                   </div>
@@ -1888,12 +1988,7 @@
                 <td class="py-3 pr-4 text-right">
                   <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background:#EEF2FF;color:#5B63F6">${t.rows}</span>
                 </td>
-                <td class="py-3 text-right" onclick="event.stopPropagation()">
-                  <button onclick="openTblDetail('${t.name}');" class="inline-flex items-center gap-1 px-2.5 h-7 rounded-lg text-[11px] font-semibold border transition-colors" style="border-color:#E2E8F0;color:#5B63F6;background:white" onmouseover="this.style.background='#EEF2FF'" onmouseout="this.style.background='white'">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5"/></svg>
-                    Metadata
-                  </button>
-                </td>
+
               </tr>
             `).join('')}
           </tbody>
@@ -1948,8 +2043,8 @@
             <td style="padding:8px 14px;font-weight:600;color:#111827;white-space:nowrap">${c.name}</td>
             <td style="padding:8px 12px"><code style="font-size:11px;font-family:monospace;background:#F3F4F6;color:#374151;padding:2px 6px;border-radius:4px">${c.type}</code></td>
             <td style="padding:6px 12px">
-              <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white';this.style.cursor='text'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
-            <td style="padding:6px 12px">
+              <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" class="ds-edit-input" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
+            <td style="padding:6px 12px" class="ds-edit-only">
               <select onchange="saveColMeta(${i},'colType',this.value)" style="width:130px;height:28px;padding:0 8px;font-size:11px;font-weight:500;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;cursor:pointer;outline:none">
                 <option value="" ${!colType?'selected':''} style="color:#9CA3AF">Select type</option>
                 <option value="measure"   ${colType==='measure'  ?'selected':''}>Measure</option>
@@ -1957,9 +2052,11 @@
                 <option value="time"      ${colType==='time'     ?'selected':''}>Time</option>
               </select>
             </td>
-            <td style="padding:6px 12px">
+            <td style="padding:6px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${colType||'—'}</td>
+            <td style="padding:6px 12px" class="ds-edit-only">
               <input type="text" value="${unit}" placeholder="e.g. USD, km" onchange="saveColMeta(${i},'unit',this.value)" style="width:90px;height:28px;padding:0 8px;font-size:11px;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;outline:none" onfocus="this.style.borderColor='#5B63F6'" onblur="this.style.borderColor='#E5E7EB'" />
             </td>
+            <td style="padding:6px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${unit||'—'}</td>
           </tr>`;
         }).join('');
       } else {
@@ -1989,7 +2086,7 @@
               <svg width="14" height="14" fill="none" stroke="#5B63F6" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
               <span style="font-size:13px;font-weight:600;color:#111827">${r.with}</span>
               <span style="font-size:10px;font-weight:600;background:#EEF2FF;color:#5B63F6;padding:1px 8px;border-radius:999px">${cardMap[r.type]||r.type}</span>
-              <div style="margin-left:auto;display:flex;gap:4px">
+              <div style="margin-left:auto;display:flex;gap:4px" class="ds-edit-only">
                 <button onclick="openRelModal(${i})" style="width:26px;height:26px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background='#EEF2FF';this.style.color='#5B63F6'" onmouseout="this.style.background='transparent';this.style.color='#9CA3AF'">
                   <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
                 </button>
@@ -2835,6 +2932,18 @@
       const assigned = assignedList.length;
       document.getElementById('ws-summary-chip').textContent = assigned + ' of ' + _dsList.length + ' assigned';
 
+      // KPI bar
+      const wsConnected = assignedList.filter(ds => ds.status === 'Connected').length;
+      const wsErrors    = assignedList.filter(ds => ds.status === 'Error').length;
+      const wsTables    = assignedList.reduce((sum, ds) => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        return sum + (a.tables ? a.tables.length : tblCount);
+      }, 0);
+      document.getElementById('ws-stat-total').textContent     = assigned;
+      document.getElementById('ws-stat-connected').textContent = wsConnected;
+      document.getElementById('ws-stat-tables').textContent    = wsTables;
+
       // Empty state
       const emptyEl = document.getElementById('ws-empty-state');
       const listEl  = document.getElementById('ws-assign-list');
@@ -2850,20 +2959,20 @@
           const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
           return `
           <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
-            <div class="flex-1 min-w-0">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer" style="background:#EEF2FF" onclick="openDetailPanel('${ds.id}',true)">${connectorIcon(ds.connector, 18)}</div>
+            <div class="flex-1 min-w-0 cursor-pointer" onclick="openDetailPanel('${ds.id}',true)">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-semibold text-gray-900">${ds.name}</span>
+                <span class="text-[13px] font-semibold text-gray-900 hover:text-indigo-700 transition-colors">${ds.name}</span>
                 <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
                 <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
               </div>
               <div class="flex items-center gap-2 mt-1">
                 <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                 <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount + ' tables' : 'All ' + tblCount + ' tables'} included</span>
-                <button onclick="openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">Edit tables</button>
+                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">Edit tables</button>
               </div>
             </div>
-            <button onclick="removeWsAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-medium border transition-colors" style="border-color:#E2E8F0;color:#DC2626;background:white" onmouseover="this.style.background='#FEF2F2'" onmouseout="this.style.background='white'">
+            <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-medium border transition-colors" style="border-color:#E2E8F0;color:#DC2626;background:white" onmouseover="this.style.background='#FEF2F2'" onmouseout="this.style.background='white'">
               Remove
             </button>
           </div>`;
@@ -2873,6 +2982,14 @@
       // Rebuild the add-dropdown list (unassigned only)
       refreshWsDropdownList();
       cancelWsAdd();
+    }
+
+    function filterWsList() {
+      const q = (document.getElementById('ws-search')?.value || '').toLowerCase();
+      document.querySelectorAll('#ws-assign-list .assign-row').forEach(row => {
+        const name = row.querySelector('span.font-semibold')?.textContent?.toLowerCase() || '';
+        row.style.display = name.includes(q) ? '' : 'none';
+      });
     }
 
     function refreshWsDropdownList() {
@@ -2968,6 +3085,20 @@
       const wsAssigned = _dsList.filter(ds => _wsAssignments[ds.id]?.assigned);
       const projCount  = _projAssignments.size;
       document.getElementById('proj-summary-chip').textContent = projCount + ' of ' + wsAssigned.length + ' in project';
+
+      // KPI bar (counts only project-assigned datasources)
+      const projList      = _dsList.filter(ds => _projAssignments.has(ds.id));
+      const projConnected = projList.filter(ds => ds.status === 'Connected').length;
+      const projErrors    = projList.filter(ds => ds.status === 'Error').length;
+      const projTables    = projList.reduce((sum, ds) => {
+        const a = _wsAssignments[ds.id];
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        return sum + (a?.tables ? a.tables.length : tblCount);
+      }, 0);
+      document.getElementById('proj-stat-total').textContent     = projList.length;
+      document.getElementById('proj-stat-connected').textContent = projConnected;
+      document.getElementById('proj-stat-error').textContent     = projErrors;
+      document.getElementById('proj-stat-tables').textContent    = projTables;
 
       const emptyEl = document.getElementById('proj-empty-ws');
       const listEl  = document.getElementById('proj-assign-list');
