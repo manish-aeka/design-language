@@ -744,46 +744,46 @@
         <!-- Detail body -->
         <div class="flex-1 overflow-y-auto px-6 py-5">
           <!-- Overview tab -->
-          <div id="panel-overview" class="space-y-4">
-            <!-- Status + Type + Tables + Owner -->
-            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
-              <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-                <span class="text-[12px] font-medium text-gray-400">Status</span>
-                <span id="panel-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-semibold"></span>
-              </div>
-              <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-                <span class="text-[12px] font-medium text-gray-400">Type</span>
-                <span id="panel-type" class="text-[13px] font-semibold text-gray-900"></span>
-              </div>
-              <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-                <span class="text-[12px] font-medium text-gray-400">Tables</span>
-                <span id="panel-tables" class="text-[13px] font-semibold text-gray-900"></span>
-              </div>
-              <div class="flex items-center justify-between px-5 py-3.5">
-                <span class="text-[12px] font-medium text-gray-400">Owner</span>
-                <span id="panel-owner" class="text-[13px] font-semibold text-gray-900"></span>
-              </div>
-            </div>
-            <!-- Sync Schedule -->
-            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
-              <div class="px-5 py-3 border-b border-gray-100">
-                <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Sync Schedule</p>
-              </div>
-              <div class="flex items-center justify-between px-5 py-3.5">
-                <span id="panel-schedule" class="text-[13px] font-semibold text-gray-900">Every 6 hours</span>
-                <span class="text-[12px] font-semibold" style="color:#16A34A">Active</span>
-              </div>
-            </div>
-            <!-- Connection Info -->
-            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 1px 3px rgba(0,0,0,0.05)">
-              <div class="px-5 py-3 border-b border-gray-100">
-                <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Connection Info</p>
-              </div>
-              <div id="panel-conn-info" class="divide-y divide-gray-100 px-5"></div>
-            </div>
+          <div id="panel-overview">
+            <table class="w-full text-left border-collapse mb-4">
+              <thead>
+                <tr style="border-bottom:1.5px solid #E5E7EB">
+                  <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4" style="width:35%">Property</th>
+                  <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-gray-50 hover:bg-indigo-50/40 transition-colors">
+                  <td class="py-3 pr-4 text-[12px] font-semibold text-gray-500">Status</td>
+                  <td class="py-3"><span id="panel-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-semibold"></span></td>
+                </tr>
+                <tr class="border-b border-gray-50 hover:bg-indigo-50/40 transition-colors">
+                  <td class="py-3 pr-4 text-[12px] font-semibold text-gray-500">Type</td>
+                  <td id="panel-type" class="py-3 text-[13px] font-semibold text-gray-800"></td>
+                </tr>
+                <tr class="border-b border-gray-50 hover:bg-indigo-50/40 transition-colors">
+                  <td class="py-3 pr-4 text-[12px] font-semibold text-gray-500">Tables</td>
+                  <td id="panel-tables" class="py-3 text-[13px] font-semibold text-gray-800"></td>
+                </tr>
+                <tr class="border-b border-gray-50 hover:bg-indigo-50/40 transition-colors">
+                  <td class="py-3 pr-4 text-[12px] font-semibold text-gray-500">Owner</td>
+                  <td id="panel-owner" class="py-3 text-[13px] font-semibold text-gray-800"></td>
+                </tr>
+                <tr class="border-b border-gray-50 hover:bg-indigo-50/40 transition-colors">
+                  <td class="py-3 pr-4 text-[12px] font-semibold text-gray-500">Sync Schedule</td>
+                  <td class="py-3">
+                    <div class="flex items-center gap-2">
+                      <span id="panel-schedule" class="text-[13px] font-semibold text-gray-800">Every 6 hours</span>
+                      <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background:#DCFCE7;color:#16A34A">Active</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr id="panel-conn-info"></tr>
+              </tbody>
+            </table>
             <!-- Actions -->
-            <div class="flex justify-end pt-1 ds-edit-only">
-              <button onclick="syncDs(currentDetailId)" class="flex items-center gap-2 px-5 h-10 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+            <div class="flex justify-end ds-edit-only">
+              <button onclick="syncDs(currentDetailId)" class="flex items-center gap-2 px-5 h-9 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
                 Sync Now
               </button>
@@ -2002,14 +2002,22 @@
       document.getElementById('panel-owner').textContent        = ds.owner;
       document.getElementById('panel-schedule').textContent     = ds.schedule;
 
-      // Connection info
+      // Connection info — insert as separate table rows
+      const connInfoEl = document.getElementById('panel-conn-info');
       const infoRows = [];
       if (ds.host)     infoRows.push(['Host', ds.host]);
       if (ds.port)     infoRows.push(['Port', ds.port]);
       if (ds.database) infoRows.push(['Database', ds.database]);
-      document.getElementById('panel-conn-info').innerHTML = infoRows.length
-        ? infoRows.map(([k, v]) => `<div class="flex items-center justify-between py-3"><span class="text-[13px] text-gray-400">${k}</span><span class="text-[13px] font-semibold text-gray-900">${v}</span></div>`).join('')
-        : '<p class="text-[13px] text-gray-400 py-3">No connection details available</p>';
+      if (infoRows.length) {
+        connInfoEl.outerHTML = infoRows.map(([k, v]) =>
+          `<tr class="border-b border-gray-50 hover:bg-indigo-50/40 transition-colors">
+            <td class="py-3 pr-4 text-[12px] font-semibold text-gray-500">${k}</td>
+            <td class="py-3 text-[13px] font-semibold text-gray-800">${v}</td>
+          </tr>`
+        ).join('');
+      } else {
+        connInfoEl.outerHTML = '';
+      }
 
       // Edit name input
       document.getElementById('panel-edit-name').value = ds.name;
