@@ -497,84 +497,86 @@
       </div>
 
       <!-- Toolbar: search + filters + view toggle -->
-      <div class="flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
-        <!-- Workspace filter -->
-        <div class="relative">
-          <button onclick="toggleDsWsDd()" id="ds-ws-dd-btn" class="flex items-center gap-2 h-9 px-3.5 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-50/50 border border-gray-200 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all">
-            <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v14.25A2.25 2.25 0 005.25 19.5h13.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0018.75 4.5H5.25a2.25 2.25 0 00-2.25 2.25z"/></svg>
-            <span id="ds-ws-label" class="max-w-[120px] truncate">All Workspaces</span>
-            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div id="ds-ws-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[220px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-            <div class="px-3 py-1.5 mb-1 border-b border-gray-50">
-              <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Select Workspace</span>
-            </div>
-            <button onclick="setWsFilter('all')" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">
-              <div class="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-gray-400">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
+
+        <!-- Left: WS filter + Type filter + Search (50% width) -->
+        <div class="flex items-center gap-2 w-1/2 min-w-0">
+
+          <!-- Workspace filter -->
+          <div class="relative flex-shrink-0">
+            <button onclick="toggleDsWsDd()" id="ds-ws-dd-btn" class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v14.25A2.25 2.25 0 005.25 19.5h13.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0018.75 4.5H5.25a2.25 2.25 0 00-2.25 2.25z"/></svg>
+              <span id="ds-ws-label" class="max-w-[120px] truncate">All Workspaces</span>
+              <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="ds-ws-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[220px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+              <div class="px-3 py-1.5 mb-1 border-b border-gray-50">
+                <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Select Workspace</span>
               </div>
-              All
+              <button onclick="setWsFilter('all')" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">
+                <div class="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-gray-400">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                </div>
+                All
+              </button>
+              <button onclick="setWsFilter('assigned')" class="w-full flex items-center gap-2.5 px-3 h-10 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <div class="w-5 h-5 rounded bg-indigo-500 flex items-center justify-center text-[9px] text-white font-black shadow-sm">M</div>
+                <span class="truncate">Manish Kumar's Work...</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Type filter -->
+          <div class="relative flex-shrink-0">
+            <button onclick="toggleDsTypeDd()" class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+              <span id="ds-type-label">All Types</span>
+              <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <button onclick="setWsFilter('assigned')" class="w-full flex items-center gap-2.5 px-3 h-10 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
-              <div class="w-5 h-5 rounded bg-indigo-500 flex items-center justify-center text-[9px] text-white font-black shadow-sm">M</div>
-              <span class="truncate">Manish Kumar's Work...</span>
-            </button>
+            <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[160px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+              <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">All</button>
+              <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">Database</button>
+              <button onclick="setDsFilter('File')" id="dsf-File" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">File</button>
+              <button onclick="setDsFilter('API')" id="dsf-API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">API</button>
+            </div>
+          </div>
+
+          <!-- Search -->
+          <div class="relative flex-1 min-w-0">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+            </span>
+            <input id="ds-search" type="text" placeholder="Search datasources…" oninput="filterDsList()"
+              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
           </div>
         </div>
 
-        <!-- Divider -->
-        <div class="h-5 w-px bg-gray-200 mx-1"></div>
+        <!-- Right: Status pills + View toggle -->
+        <div class="flex items-center gap-3">
 
-        <!-- Type filter -->
-        <div class="relative">
-          <button onclick="toggleDsTypeDd()" class="flex items-center gap-2 h-9 px-3.5 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-50/50 border border-gray-200 hover:border-indigo-400 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all">
-            <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-            <span id="ds-type-label">All Types</span>
-            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[160px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-            <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">All</button>
-            <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">Database</button>
-            <button onclick="setDsFilter('File')" id="dsf-File" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">File</button>
-            <button onclick="setDsFilter('API')" id="dsf-API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">API</button>
+          <!-- Status pills -->
+          <div class="flex items-center gap-1 p-1 rounded-full" style="background:#F3F4F6">
+            <button onclick="setDsStatus('all')" id="dss-pill-all" class="ds-spill h-8 px-4 rounded-full text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
+            <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-8 px-4 rounded-full text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Connected
+            </button>
+            <button onclick="setDsStatus('Syncing')" id="dss-pill-Syncing" class="ds-spill h-8 px-4 rounded-full text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:#5B63F6"></span>Syncing
+            </button>
+            <button onclick="setDsStatus('Error')" id="dss-pill-Error" class="ds-spill h-8 px-4 rounded-full text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>Error
+            </button>
           </div>
-        </div>
 
-        <!-- Search -->
-        <div class="relative flex-1 max-w-sm ml-2">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-          <input id="ds-search" type="text" placeholder="Search across all datasources..." oninput="filterDsList()" class="w-full h-9 pl-10 pr-4 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-400 focus:bg-white transition-all shadow-inner-sm" />
-        </div>
-
-        <div class="flex-1"></div>
-
-        <!-- Status pills -->
-        <div class="flex items-center gap-1.5 px-1.5 py-1 bg-gray-50/80 border border-gray-200 rounded-xl shadow-inner-sm">
-          <button onclick="setDsStatus('all')" id="dss-pill-all" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5" style="background:#EEF2FF;color:#5B63F6">
-            All
-          </button>
-          <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide text-gray-400 hover:text-gray-600 hover:bg-white transition-all flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-            Connected
-          </button>
-          <button onclick="setDsStatus('Syncing')" id="dss-pill-Syncing" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide text-gray-400 hover:text-gray-600 hover:bg-white transition-all flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#5B63F6]"></span>
-            Syncing
-          </button>
-          <button onclick="setDsStatus('Error')" id="dss-pill-Error" class="ds-spill h-7 px-3.5 rounded-lg text-[11px] font-bold uppercase tracking-wide text-gray-400 hover:text-gray-600 hover:bg-white transition-all flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-            Error
-          </button>
-        </div>
-
-        <!-- View toggle -->
-        <div class="flex items-center gap-1 p-1 bg-gray-100/80 rounded-lg border border-gray-200/50">
-          <button id="ds-view-list" onclick="setDsView('list')" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
-          </button>
-          <button id="ds-view-grid" onclick="setDsView('grid')" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-indigo-600 shadow-sm transition-all">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
-          </button>
+          <!-- View toggle -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+            <button id="ds-view-list" onclick="setDsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            </button>
+            <button id="ds-view-grid" onclick="setDsView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-indigo-600 shadow-sm transition-all" title="Grid view">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -764,13 +766,12 @@
           </div>
         </div>
         <!-- Toolbar -->
-        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
-          <!-- Search -->
-          <div class="relative flex-1 max-w-xs">
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-3">
+          <!-- Search (50% width) -->
+          <div class="relative w-1/2">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             <input id="proj-search" type="text" placeholder="Search datasources…" oninput="filterProjList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
           </div>
-          <div class="flex-1"></div>
           <!-- View toggle -->
           <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
             <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
@@ -2196,13 +2197,18 @@
       _dsFilterStatus = status;
       document.querySelectorAll('.ds-spill').forEach(btn => {
         const isActive = btn.id === 'dss-pill-' + status;
-        // Apply active styles
         if (isActive) {
-          btn.style.background = '#EEF2FF';
-          btn.style.color      = '#5B63F6';
+          btn.style.background  = 'white';
+          btn.style.color       = '#111827';
+          btn.style.border      = '1px solid #E5E7EB';
+          btn.style.boxShadow   = '0 1px 4px rgba(0,0,0,0.10)';
+          btn.style.fontWeight  = '600';
         } else {
-          btn.style.background = '';
-          btn.style.color      = '';
+          btn.style.background  = '';
+          btn.style.color       = '';
+          btn.style.border      = '';
+          btn.style.boxShadow   = '';
+          btn.style.fontWeight  = '';
         }
       });
       renderDsList();
