@@ -117,7 +117,7 @@ Fixed `44px` (`h-11`) bar with `border-b border-gray-100`. Layout: `flex items-c
 | Unread dot | `id="notif-dot"`, `w-1.5 h-1.5`, `bg-red-500` |
 | Dropdown id | `notif-dropdown` |
 | Width | `320px` (`w-80`) |
-| Radius | `rounded-2xl` |
+| Radius | `rounded-lg` |
 | Shadow | `0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)` |
 
 **5 notification items (project-contextual):**
@@ -227,15 +227,57 @@ Right: search bar + type filter dropdown + view toggle.
 
 ## Create Item Modal (`#create-modal`)
 
-Opened by `openCreateModal(type)`. Backdrop: `rgba(17,24,39,0.45) blur(2px)`. Max-width `448px`, `rounded-2xl`.
+Opened by `openCreateModal(type)`. Backdrop: `rgba(17,24,39,0.45) blur(2px)`. `rounded-lg max-w-md shadow-xl`.
 
+Header: `text-base font-semibold text-gray-900`, close × button.
 Fields:
-- **Name** (required) — validation: red ring if empty
-- **Description** (optional) — 3-row textarea
+- **Name** (required) — `h-9 rounded-lg focus:ring-2 focus:ring-[#5B63F6]`
+- **Description** (optional) — 3-row textarea with same focus style
+
+Footer: `Close` (outlined) + `Create` (`bg:#5B63F6 hover:#4850e4`).
 
 `createItem()` — validates name, builds a new card matching the type from `typeMap`, prepends to `#report-grid`, closes modal.
 
 `typeMap` keys: `dashboard`, `document`, `presentation`, `form`, `chat`.
+
+---
+
+## Workspace Switcher Modal (`#ws-modal-backdrop`)
+
+Opened by `openWsModal()`. Backdrop: `rgba(17,24,39,0.45) backdrop-filter:blur(2px)`. Click backdrop → `closeWsModal(event)`.
+
+```
+#ws-modal  rounded-lg max-w-lg max-height:620px bg-white
+  Header
+    h2  "Switch Workspace"  text-[15px] font-semibold text-gray-900
+    p   "Select a workspace to switch to"  text-[12px] text-gray-400
+    button  "New Workspace"  bg:#5B63F6 hover:#4850e4  → openNewWsModal()
+  Search  #ws-search  oninput="filterWsList()"
+  List    #ws-modal-list  rendered by renderWsModalList(filter)
+```
+
+`wsData` array (6 entries, merged with `localStorage('aibii_workspaces')`):
+
+| `id` | Name | Initial | Color | Current |
+|---|---|---|---|---|
+| `ws-manish` | Manish kumar's Workspace | M | `#3B5BDB` | ✓ |
+| `ws-scg` | Sovereign Capital Gate | S | `#5B63F6` | — |
+| `ws-design` | Design System | D | `#16A34A` | — |
+| `ws-data` | Data Analytics | A | `#F97316` | — |
+| `ws-prod` | Product Research | P | `#8B5CF6` | — |
+| `ws-mkt` | Marketing Hub | H | `#EC4899` | — |
+
+## New Workspace (`#new-ws-modal`, full-screen)
+
+`hidden fixed inset-0 z-[60]`, `background:#F3F4F6` with mini Aibii topbar (close ×).
+Form card: `rounded-lg max-w-lg px-7 py-8`.
+- `#ws-preview-avatar` `w-11 h-11 rounded-xl` → `cycleWsColor()`; hint `"Click avatar to change color"`
+- `#ws-preview-name` live preview
+- `#new-ws-name` → `onWsNameInput(val)`; Enter → `createNewWs()`
+- `#new-ws-desc` textarea (optional)
+- Cancel + Create buttons (Create: `bg:#5B63F6 hover:#4850e4`)
+
+`wsColors` palette (7): `#5B63F6 · #16A34A · #F97316 · #8B5CF6 · #EC4899 · #0EA5E9 · #EAB308`
 
 ---
 
