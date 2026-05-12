@@ -42,30 +42,45 @@
       };
       reader.readAsDataURL(file);
     }
-    function handleOrgLogoUpload(e) {
-      var file = e.target.files && e.target.files[0];
+    function _handleUpload(file, zoneId, inputId) {
       if (!file) return;
       var reader = new FileReader();
       reader.onload = function(ev) {
-        var badge = document.getElementById('org-logo-badge');
-        if (!badge) return;
-        badge.textContent = '';
-        badge.style.background = 'none';
-        badge.style.border = 'none';
-        badge.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover">';
+        var zone = document.getElementById(zoneId);
+        if (!zone) return;
+        zone.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover rounded-lg"/>';
+        zone.classList.remove('border-dashed', 'border-gray-300', 'bg-white');
+        zone.classList.add('border-solid', 'border-gray-200');
+        var rmBtn = document.getElementById(zoneId + '-remove');
+        if (rmBtn) rmBtn.classList.remove('hidden');
       };
       reader.readAsDataURL(file);
     }
-    function handleProfilePicUpload(e) {
-      var file = e.target.files && e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var box = document.querySelector('#section-profile .w-16');
-        if (!box) return;
-        box.innerHTML = '<img src="' + ev.target.result + '" class="w-full h-full object-cover">';
-      };
-      reader.readAsDataURL(file);
+    function _removeUpload(zoneId, placeholder, inputId) {
+      var zone = document.getElementById(zoneId);
+      if (zone) {
+        zone.innerHTML = placeholder;
+        zone.classList.add('border-dashed', 'border-gray-300', 'bg-white');
+        zone.classList.remove('border-solid', 'border-gray-200');
+      }
+      var inp = document.getElementById(inputId);
+      if (inp) inp.value = '';
+      var rmBtn = document.getElementById(zoneId + '-remove');
+      if (rmBtn) rmBtn.classList.add('hidden');
+    }
+    var _profilePlaceholder = '<div class="flex flex-col items-center justify-center gap-2 pointer-events-none"><svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="text-[11px] text-gray-400">Drag and drop or browse files</span></div>';
+    var _wsLogoPlaceholder = '<div class="flex flex-col items-center justify-center gap-2 pointer-events-none"><svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="text-[11px] text-gray-400">Drag and drop or browse files</span></div>';
+    var _orgLogoPlaceholder = '<div class="flex flex-col items-center justify-center gap-2 pointer-events-none"><svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="text-[11px] text-gray-400">Drag and drop or browse files</span></div>';
+    function handleOrgLogoUpload(e) { _handleUpload(e.target.files && e.target.files[0], 'org-upload-zone', 'org-logo-input'); }
+    function handleProfilePicUpload(e) { _handleUpload(e.target.files && e.target.files[0], 'profile-upload-zone', 'profile-pic-input'); }
+    function handleWsLogoUpload(e) { _handleUpload(e.target.files && e.target.files[0], 'ws-upload-zone', 'ws-logo-input'); }
+    function _setupDropZone(zoneId, inputId) {
+      var zone = document.getElementById(zoneId);
+      if (!zone) return;
+      zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.style.borderColor='#5B63F6'; zone.style.background='#EEF2FF'; });
+      zone.addEventListener('dragleave', function(){ zone.style.borderColor=''; zone.style.background=''; });
+      zone.addEventListener('drop', function(e){ e.preventDefault(); zone.style.borderColor=''; zone.style.background=''; var f=e.dataTransfer.files[0]; if(f){ var inp=document.getElementById(inputId); _handleUpload(f, zoneId, inputId); } });
+      zone.addEventListener('click', function(){ document.getElementById(inputId).click(); });
     }
   </script>
 
@@ -104,12 +119,17 @@
     .settings-panel{display:none}
     .settings-panel.active{display:flex;flex-direction:column;flex:1;min-height:0}
     .toggle-knob{transition:transform 150ms ease}
-    .stab{cursor:pointer;border-radius:9999px;padding:0 16px;height:32px;font-size:14px;transition:background-color 120ms,box-shadow 120ms,color 120ms;white-space:nowrap}
+    .stab{cursor:pointer;border-radius:8px;padding:0 16px;height:32px;font-size:14px;transition:background-color 120ms,box-shadow 120ms,color 120ms;white-space:nowrap}
     .stab.active{background:white;color:#111827;font-weight:600;border:1px solid #E5E7EB;box-shadow:0 1px 4px rgba(0,0,0,0.10)}
     .stab:not(.active){color:#6B7280;background:transparent;border:1px solid transparent}
     .stab:not(.active):hover{color:#374151}
     .ws-panel{display:none}
     .ws-panel.active{display:flex;flex-direction:column;flex:1;min-height:0}
+    .billing-scroll::-webkit-scrollbar{width:1px}
+    .billing-scroll::-webkit-scrollbar-track{background:transparent}
+    .billing-scroll::-webkit-scrollbar-thumb{background:#E5E7EB;border-radius:999px}
+    .billing-scroll::-webkit-scrollbar-thumb:hover{background:#D1D5DB}
+    .billing-scroll{scrollbar-width:thin;scrollbar-color:#E5E7EB transparent}
     .ws-utab{cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:0 4px;height:38px;font-size:14px;color:#6B7280;background:transparent;border:none;border-bottom:2px solid transparent;transition:color 120ms,border-color 120ms;white-space:nowrap}
     .ws-utab:hover{color:#374151}
     .ws-utab.active{color:#5B63F6;font-weight:600;border-bottom-color:#5B63F6}
@@ -133,6 +153,9 @@
     .ds-filter-scroll::-webkit-scrollbar { width: 4px; }
     .ds-filter-scroll::-webkit-scrollbar-track { background: transparent; }
     .ds-filter-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+
+    #ws-modal-backdrop { display: none; }
+    #ws-modal-backdrop.open { display: flex; }
     /* View tables modal */
     #view-tables-backdrop { display: none; }
     #view-tables-backdrop.open { display: flex; }
@@ -180,8 +203,8 @@
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
       <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-2">
-        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
-        <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <span id="ws-avatar" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#3B5BDB">M</span>
+        <span id="ws-name" class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
       </button>
     </div>
@@ -277,10 +300,6 @@
 
     <!-- Bottom utility nav -->
     <nav class="px-3 py-2 space-y-0.5">
-      <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
-        Datasources
-      </a>
       <!-- Settings — ACTIVE -->
       <a href="#" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-gray-900" style="background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px;">
         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -289,7 +308,7 @@
     </nav>
 
     <!-- Explore free features banner -->
-    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+    <div class="mx-3 mb-3 mt-1 rounded-lg px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
       <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
         <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
       </div>
@@ -321,7 +340,7 @@
           </button>
 
           <!-- Notification dropdown -->
-          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <!-- Header -->
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
               <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
@@ -363,7 +382,7 @@
         <!-- User avatar -->
         <div class="relative" id="user-menu-wrapper">
           <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB" aria-label="User menu">M</button>
-          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <div class="px-4 py-3 border-b border-gray-100">
               <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
               <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
@@ -394,7 +413,7 @@
       </div>
 
       <!-- ── Tab bar — pill style (same as recent-view) ── -->
-      <div id="settings-tab-bar" class="flex items-center gap-1 p-1 rounded-full mb-7 w-fit flex-shrink-0" style="background:#F3F4F6">
+      <div id="settings-tab-bar" class="flex items-center gap-1 p-1 rounded-lg mb-7 w-fit flex-shrink-0" style="background:#F3F4F6">
         <button id="tab-profile" onclick="setTab('profile')" class="stab active">Profile</button>
         <button id="tab-workspace" onclick="setTab('workspace')" class="stab">Workspace</button>
         <button id="tab-organisation" onclick="setTab('organisation')" class="stab">Organisation</button>
@@ -403,15 +422,6 @@
       <!-- ══ PROFILE ══ -->
       <div id="section-profile" class="settings-panel active">
         <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
-
-          <!-- Picture -->
-          <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
-            <div class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center">
-              <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-            </div>
-            <button onclick="document.getElementById('profile-pic-input').click()" class="px-4 h-9 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload an image</button>
-            <input type="file" id="profile-pic-input" accept="image/*" onchange="handleProfilePicUpload(event)" class="hidden" />
-          </div>
 
           <!-- First / Last name -->
           <div class="grid grid-cols-2 gap-4 mb-4">
@@ -453,17 +463,32 @@
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
             Members
           </button>
+          
         </div>
 
         <!-- Sub-panel: Workspace Info -->
         <div id="wspanel-info" class="ws-panel active">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5 flex flex-col">
-            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
-              <div class="flex-1 min-w-0">
-                <p id="ws-display-name" class="text-[14px] font-semibold text-gray-900 px-1">Manish kumar's Workspace</p>
-                <p class="text-[12px] text-gray-400 mt-0.5 px-1">Created April 2024 · 3 members</p>
+            <div class="mb-4 pb-4 border-b border-gray-100">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0" style="background:#3B5BDB">M</div>
+                <div class="flex-1 min-w-0">
+                  <p id="ws-display-name" class="text-[14px] font-semibold text-gray-900">Manish kumar's Workspace</p>
+                  <p class="text-[12px] text-gray-400 mt-0.5">Created April 2024 · 3 members</p>
+                </div>
               </div>
+              <p class="text-[12px] font-medium text-gray-600 mb-2">Workspace icon</p>
+              <div id="ws-upload-zone" class="relative flex items-center justify-center w-full h-28 rounded-xl border border-dashed border-gray-300 bg-white cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-colors overflow-hidden">
+                <div class="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                  <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                  <span class="text-[11px] text-gray-400">Drag and drop or browse files</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mt-1.5">
+                <p class="text-[11px] text-gray-400">PNG, JPG or SVG · max 2 MB</p>
+                <button id="ws-upload-zone-remove" onclick="_removeUpload('ws-upload-zone',_wsLogoPlaceholder,'ws-logo-input')" class="hidden text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors">Remove</button>
+              </div>
+              <input type="file" id="ws-logo-input" accept="image/*" onchange="handleWsLogoUpload(event)" class="hidden" />
             </div>
             <div class="space-y-3 flex-1">
               <div>
@@ -496,7 +521,7 @@
     <div class="relative flex-shrink-0">
       <button
         onclick="toggleWsRoleDropdown()"
-        class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
+        class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
         style="width:120px;justify-content:space-between;"
       >
         <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6"
@@ -516,22 +541,22 @@
       <!-- Dropdown -->
       <div
         id="ws-role-dropdown"
-        class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[140px] bg-white"
+        class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-lg py-1.5 min-w-[140px] bg-white"
         style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"
       >
-        <button onclick="filterWsRole('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterWsRole('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           All roles
         </button>
 
-        <button onclick="filterWsRole('Admin')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterWsRole('Admin')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           Admin
         </button>
 
-        <button onclick="filterWsRole('Editor')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterWsRole('Editor')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           Editor
         </button>
 
-        <button onclick="filterWsRole('Viewer')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterWsRole('Viewer')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           Viewer
         </button>
       </div>
@@ -635,6 +660,8 @@
 
         </div>
 
+      
+
       </div><!-- /section-workspace -->
 
       <!-- ══ ORGANISATION ══ -->
@@ -650,6 +677,7 @@
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
             Members
           </button>
+          
           <button id="orgtab-billing" onclick="setOrgTab('billing')" class="ws-utab">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
             Billing
@@ -660,10 +688,19 @@
         <div id="orgpanel-info" class="ws-panel active">
           <div class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
 
-            <!-- Logo row — mirrors Profile picture row -->
-            <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
-              <div id="org-logo-badge" class="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center text-gray-400 text-2xl font-bold">A</div>
-              <button onclick="document.getElementById('org-logo-input').click()" class="px-4 h-9 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">Upload a logo</button>
+            <!-- Logo upload -->
+            <div class="mb-5 pb-5 border-b border-gray-100">
+              <p class="text-[12px] font-medium text-gray-600 mb-2">Organisation logo</p>
+              <div id="org-upload-zone" class="relative flex items-center justify-center w-full h-28 rounded-xl border border-dashed border-gray-300 bg-white cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-colors overflow-hidden">
+                <div class="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                  <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                  <span class="text-[11px] text-gray-400">Drag and drop or browse files</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mt-1.5">
+                <p class="text-[11px] text-gray-400">PNG, JPG or SVG · max 2 MB</p>
+                <button id="org-upload-zone-remove" onclick="_removeUpload('org-upload-zone',_orgLogoPlaceholder,'org-logo-input')" class="hidden text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors">Remove</button>
+              </div>
               <input type="file" id="org-logo-input" accept="image/*" onchange="handleOrgLogoUpload(event)" class="hidden" />
             </div>
 
@@ -703,7 +740,7 @@
 
       <button
         onclick="toggleOrgRoleDropdown()"
-        class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
+        class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
         style="width:120px;justify-content:space-between;"
       >
         <svg
@@ -737,18 +774,18 @@
       <!-- Dropdown -->
       <div
         id="org-role-dropdown"
-        class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[130px] bg-white"
+        class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-lg py-1.5 min-w-[130px] bg-white"
         style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"
       >
-        <button onclick="filterOrgRole('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterOrgRole('All')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           All roles
         </button>
 
-        <button onclick="filterOrgRole('Owner')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterOrgRole('Owner')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           Owner
         </button>
 
-        <button onclick="filterOrgRole('User')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+        <button onclick="filterOrgRole('User')" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
           User
         </button>
       </div>
@@ -841,10 +878,12 @@
           </div>
         </div>
 
+        
+
         <!-- Sub-panel: Billing -->
         <div id="orgpanel-billing" class="ws-panel">
-          <div class="bg-white border border-gray-200 rounded-xl shadow-card flex-1 min-h-0 overflow-hidden">
-          <div class="h-full overflow-y-auto p-5">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-card flex-1 min-h-0 flex flex-col overflow-hidden">
+          <div class="billing-scroll overflow-y-auto flex-1 min-h-0 p-5">
 
             <!-- Plan header row -->
             <div class="flex items-start justify-between mb-5 pb-5 border-b border-gray-100">
@@ -859,7 +898,7 @@
                 </div>
                 <p class="text-[12px] text-gray-400 mt-1">Next billing: <span class="font-medium text-gray-600">June 1, 2026</span></p>
               </div>
-              <button class="px-4 h-8 rounded-full border border-gray-200 text-[12px] font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors mt-1">Manage plan</button>
+              <button class="px-4 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 text-[12px] font-medium text-gray-700 transition-colors mt-1">Manage plan</button>
             </div>
 
             <!-- Usage stats -->
@@ -904,14 +943,14 @@
                 <p class="text-[12px] font-medium text-gray-600">Recent invoices</p>
                 <div class="relative flex-shrink-0">
                   <button onclick="toggleBillingYearDropdown()" id="billing-year-btn"
-                    class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                    class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
                     style="width:110px; justify-content:space-between;">
                     <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
                     <span id="billing-year-label">2026</span>
                     <svg class="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                   </button>
                   <div id="billing-year-dropdown"
-                    class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[120px] bg-white ds-filter-scroll"
+                    class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-lg py-1.5 min-w-[120px] bg-white ds-filter-scroll"
                     style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06);">
                     <button onclick="selectBillingYear(2026)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50 font-medium">2026</button>
                     <button onclick="selectBillingYear(2025)" class="w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">2025</button>
@@ -936,7 +975,7 @@
   <!-- ═══ ADD USER TO WORKSPACE MODAL ═══ -->
   <div id="add-user-overlay" onclick="if(event.target===this)closeAddUserModal()"
     style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[92vw]">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-lg shadow-2xl w-[440px] max-w-[92vw]">
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
         <h2 class="text-[17px] font-bold text-gray-900">Add to workspace</h2>
@@ -956,7 +995,7 @@
               class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
           </div>
           <!-- inline results list — part of flow, no absolute overflow -->
-          <div id="au-member-dropdown" class="hidden mt-1.5 rounded-xl border border-gray-200 overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+          <div id="au-member-dropdown" class="hidden mt-1.5 rounded-lg border border-gray-200 overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.08)">
             <div id="au-member-dropdown-inner" class="bg-white py-1.5 overflow-y-auto" style="max-height:172px;scrollbar-width:thin;scrollbar-color:#D1D5DB transparent"></div>
           </div>
           <!-- selected chip -->
@@ -996,7 +1035,7 @@
   <!-- ═══ NEW MEMBER MODAL ═══ -->
   <div id="new-member-overlay" onclick="if(event.target===this)closeNewMemberModal()"
     style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[92vw] overflow-hidden">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-lg shadow-2xl w-[440px] max-w-[92vw] overflow-hidden">
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
         <h2 class="text-[17px] font-bold text-gray-900">New member</h2>
@@ -1040,22 +1079,30 @@
     </div>
   </div>
 
-  <!-- ── Workspace switcher modal ── -->
-  <div id="ws-modal" onclick="if(event.target===this)closeWsModal()" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
-    <div class="bg-white rounded-2xl shadow-2xl w-[520px] max-w-[92vw] overflow-hidden" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
-        <h2 class="text-[17px] font-bold text-gray-900">Switch workspace</h2>
-        <div class="flex items-center gap-2">
-          <button onclick="closeWsModal();window.location.href='../create-workspace/index.html'" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[13px] font-medium text-[#5B63F6] bg-[#EEF2FF] hover:bg-[#E0E7FF] transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            Add workspace
-          </button>
-          <button onclick="closeWsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+  <!-- ════════════════════════════════════════════════════════
+       WORKSPACE SWITCHER MODAL
+  ════════════════════════════════════════════════════════ -->
+  <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
+    <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Select a workspace to switch to</p>
+        </div>
+        <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          New Workspace
+        </button>
+      </div>
+      <div class="px-4 pt-3 pb-2 flex-shrink-0">
+        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
+          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+          <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
         </div>
       </div>
-      <div class="px-4 py-4 space-y-1.5" id="ws-modal-list"></div>
+      <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
+        <div id="ws-modal-list" class="space-y-0.5"></div>
+      </div>
     </div>
   </div>
 
@@ -1121,6 +1168,7 @@
       Syncing:    { bg: '#F0FDF4', color: '#16A34A' },
       Processing: { bg: '#EFF6FF', color: '#2563EB' },
       Review:     { bg: '#FFF7ED', color: '#EA580C' },
+      Pending:    { bg: '#FFFBEB', color: '#D97706' },
     };
     const TYPE_BADGE = {
       Database: { bg:'#EEF2FF', color:'#5B63F6' },
@@ -1183,7 +1231,7 @@
       // placeholder — add modal HTML if needed
     }
 
-    const WS_TABS = ['info','users'];
+    const WS_TABS = ['info','users','datasources'];
     function setWsTab(active) {
       WS_TABS.forEach(t => {
         document.getElementById('wstab-' + t).classList.toggle('active', t === active);
@@ -1433,10 +1481,8 @@
     const ORG_DS_DATA = [
       { name: 'Company CRM',        type: 'Database', connector: 'PostgreSQL',    status: 'Connected',  tables: 18 },
       { name: 'Marketing Sheet',    type: 'File',     connector: 'Google Sheets', status: 'Connected',  tables: 4  },
-      { name: 'Billing API',        type: 'API',      connector: 'REST API',      status: 'Connected',  tables: 6  },
       { name: 'Prod Analytics DB',  type: 'Database', connector: 'Snowflake',     status: 'Syncing',    tables: 31 },
       { name: 'Customer Exports',   type: 'File',     connector: 'CSV',           status: 'Connected',  tables: 9  },
-      { name: 'HR Platform',        type: 'API',      connector: 'REST API',      status: 'Processing', tables: 5  },
       { name: 'Finance Warehouse',  type: 'Database', connector: 'BigQuery',      status: 'Review',     tables: 6  },
     ];
     let orgDsTypeFilter = 'All';
@@ -1451,8 +1497,17 @@
         const matchSearch = d.name.toLowerCase().includes(orgDsSearchTerm) || d.connector.toLowerCase().includes(orgDsSearchTerm);
         return matchConnector && matchSearch;
       });
-      if (!rows.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      if (!rows.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); const b = document.getElementById('org-ds-pending-note'); if (b) b.style.display = 'none'; return; }
       empty.classList.add('hidden');
+      const hasPending = rows.some(d => d.status === 'Pending');
+      const banner = document.getElementById('org-ds-pending-note');
+      if (banner) banner.style.display = hasPending ? 'flex' : 'none';
+      const PRIORITY = { Pending: 0, Review: 1, Processing: 2 };
+      rows.sort((a, b) => {
+        const pa = PRIORITY[a.status] ?? 3;
+        const pb = PRIORITY[b.status] ?? 3;
+        return pa - pb;
+      });
       tbody.innerHTML = rows.map(d => {
         const ss = STATUS_STYLE[d.status] || STATUS_STYLE.Connected;
         const tb = TYPE_BADGE[d.type] || { bg:'#F3F4F6', color:'#6B7280' };
@@ -1460,17 +1515,35 @@
           <td class="px-4 py-3"><span class="font-medium text-gray-900">${d.name}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${tb.bg};color:${tb.color}">${d.connector}</span></td>
           <td class="px-4 py-3"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:${ss.bg};color:${ss.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${d.status}</span></td>
-          <td class="px-4 py-3 text-gray-500 text-[13px]">${(ORG_DS_MOCK[d.name]?.tables.length ?? d.tables)}</td>
-          <td class="px-4 py-3 text-right">
-            ${d.status === 'Processing'
-              ? `<button disabled class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-gray-400 border border-gray-200 bg-gray-50 cursor-not-allowed" title="Descriptions are still being generated">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              View Tables
-            </button>`
-              : `<button onclick="openOrgDsTables('${d.name}', '${d.type}', '${d.status}')" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-[12px] font-medium text-indigo-600 border border-indigo-100 hover:bg-indigo-50 transition-colors">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              View Tables
-            </button>`}
+          <td class="px-4 py-3 text-gray-500 text-[13px]">${d.status === 'Pending' ? '—' : (ORG_DS_MOCK[d.name]?.tables.length ?? d.tables)}</td>
+          <td class="px-4 py-3">
+            ${(() => {
+              const eyeIcon = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+              const viewBtn = `<button onclick="openOrgDsTables('${d.name}','${d.type}','${d.status}')" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium transition-colors" style="color:#5B63F6;border:1px solid #C7D2FE;background:#EEF2FF" onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">${eyeIcon} View Tables</button>`;
+              if (d.status === 'Pending') return `
+                <div class="flex items-center gap-2">
+                  <button onclick="openCompleteIntegration('${d.name}','${d.type}')" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-semibold transition-colors" style="color:#92400E;border:1px solid #FCD34D;background:#FFFBEB" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#FFFBEB'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Select Tables
+                  </button>
+                </div>`;
+              if (d.status === 'Processing') return `
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium" style="color:#2563EB;background:#EFF6FF">
+                    <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                    Processing…
+                  </span>
+                  ${viewBtn}
+                </div>`;
+              if (d.status === 'Review') return `
+                <div class="flex items-center gap-2">
+                  <button onclick="openOrgDsTables('${d.name}','${d.type}','${d.status}')" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-semibold transition-colors" style="color:#9A3412;border:1px solid #FDBA74;background:#FFF7ED" onmouseover="this.style.background='#FFEDD5'" onmouseout="this.style.background='#FFF7ED'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.042.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.042-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>
+                    Review Now
+                  </button>
+                </div>`;
+              return `<div class="flex items-center gap-2">${viewBtn}</div>`;
+            })()}
           </td>
         </tr>`;
       }).join('');
@@ -1687,8 +1760,24 @@
       if (!data) return;
       _orgDsStatus = dsStatus || 'Connected';
       _orgDsCurrentName = dsName;
-      document.getElementById('org-ds-modal-title').textContent = dsName + ' — Tables';
-      document.getElementById('org-ds-modal-sub').textContent = data.tables.length + ' table' + (data.tables.length !== 1 ? 's' : '') + ' · ' + dsType;
+      // Build heading like "Organisation / Datasource"
+      const isOrg = document.getElementById('tab-organisation').classList.contains('active');
+      const rootLabel = isOrg ? 'Organisation' : 'Workspace';
+      document.getElementById('org-ds-modal-title').innerHTML =
+        rootLabel + ' / Datasource / <span style="color:#5B63F6">' + dsName + '</span>';
+      const tableCount = data.tables.length;
+      document.getElementById('org-ds-modal-sub').innerHTML =
+        `<span class="inline-flex items-center gap-1.5 text-[13px] text-gray-500">
+          <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>
+          <span class="font-medium">${tableCount} ${tableCount === 1 ? 'table' : 'tables'}</span>
+        </span>
+        <span class="text-gray-200 text-[13px]">·</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">${dsType}</span>`;
+      // Status badge on its own row
+      const ss = { Connected:{bg:'#F0FDF4',color:'#16A34A'}, Error:{bg:'#FEF2F2',color:'#DC2626'}, Syncing:{bg:'#F0FDF4',color:'#16A34A'}, Processing:{bg:'#EFF6FF',color:'#2563EB'}, Review:{bg:'#FFF7ED',color:'#EA580C'}, Pending:{bg:'#FFFBEB',color:'#D97706'} };
+      const s = ss[_orgDsStatus] || ss.Connected;
+      const badge = document.getElementById('org-ds-modal-status-badge');
+      if (badge) badge.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold" style="background:${s.bg};color:${s.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${_orgDsStatus}</span>`;
       _orgDsActiveTab = 0;
       renderOrgDsModalTabs(data, 0);
       // Reset attach button — hide when already Connected
@@ -1699,11 +1788,14 @@
         } else {
           btn.style.display = '';
           btn.disabled = false; btn.style.opacity = '1';
-          btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg> Attach to Workspace`;
+          btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg> Attach to Organisation`;
         }
       }
-      const bd = document.getElementById('org-ds-modal-backdrop');
-      bd.style.display = 'flex';
+      // Show full-screen inline view
+      const iv = document.getElementById('org-ds-inline-view');
+      iv.style.display = 'flex';
+      const tabSearch = document.getElementById('org-ds-tab-search');
+      if (tabSearch) tabSearch.value = '';
     }
 
     function attachToWorkspace() {
@@ -1719,9 +1811,9 @@
         renderOrgDsTable();
         showAttachToast(_orgDsCurrentName);
         if (btn) btn.style.display = 'none';
-        // Close modal after a brief moment so user sees the toast
+        // Close inline view after a brief moment so user sees the toast
         setTimeout(() => {
-          document.getElementById('org-ds-modal-backdrop').style.display = 'none';
+          closeOrgDsInline();
         }, 1200);
       }, 900);
     }
@@ -1741,11 +1833,12 @@
 
     function renderOrgDsModalTabs(data, activeIdx) {
       const bar = document.getElementById('org-ds-tab-bar');
-      const content = document.getElementById('org-ds-tab-content');
+      // Store full table list on the bar for filtering
+      bar._allTables = data.tables;
       bar.innerHTML = data.tables.map((t, i) =>
         `<button onclick="selectOrgDsTab(${i})"
-          class="flex items-center gap-1.5 px-4 py-3 text-[13px] font-medium whitespace-nowrap border-b-2 transition-colors ${i === activeIdx ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}"
-          id="org-ds-tab-btn-${i}">
+          class="ws-utab ${i === activeIdx ? 'active' : ''}"
+          id="org-ds-tab-btn-${i}" data-idx="${i}" data-name="${t.name.toLowerCase()}">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>
           ${t.name}
         </button>`
@@ -1753,14 +1846,19 @@
       renderOrgDsTabContent(data.tables[activeIdx]);
     }
 
+    function filterOrgDsTabs(q) {
+      const term = q.trim().toLowerCase();
+      document.querySelectorAll('[id^="org-ds-tab-btn-"]').forEach(btn => {
+        btn.style.display = !term || btn.dataset.name.includes(term) ? '' : 'none';
+      });
+    }
+
     function selectOrgDsTab(idx) {
-      const data = ORG_DS_MOCK[document.getElementById('org-ds-modal-title').textContent.replace(' \u2014 Tables', '')];
+      const data = ORG_DS_MOCK[_orgDsCurrentName];
       if (!data) return;
       _orgDsActiveTab = idx;
       document.querySelectorAll('[id^="org-ds-tab-btn-"]').forEach((btn, i) => {
-        btn.className = btn.className.replace(/border-indigo-500 text-indigo-600|border-transparent text-gray-500 hover:text-gray-700/g, '');
-        if (i === idx) btn.classList.add('border-indigo-500', 'text-indigo-600');
-        else btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700');
+        btn.classList.toggle('active', i === idx);
       });
       renderOrgDsTabContent(data.tables[idx]);
     }
@@ -1810,8 +1908,8 @@
       const ds = ORG_DS_DATA.find(d => d.name === _orgDsCurrentName);
       if (ds) ds.status = 'Processing';
       renderOrgDsTable();
-      // Close modal
-      document.getElementById('org-ds-modal-backdrop').style.display = 'none';
+      // Close inline view
+      closeOrgDsInline();
       console.log('Review Again submitted with comments:', comments);
     }
 
@@ -1868,26 +1966,25 @@
       const reviewAgainBtn = isReview ? `
         <div class="mt-4 flex justify-end">
           <button id="review-again-btn" onclick="reviewAgain()"
-            class="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-colors"
+            class="inline-flex items-center gap-2 px-4 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors"
             style="background:#EA580C">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
             Review Again
           </button>
         </div>` : '';
 
-      const reviewSearch = isReview ? `
-        <div class="relative mb-3">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
-          <input id="review-col-search" type="text" placeholder="Search columns…" oninput="filterReviewCols(this.value)"
-            class="w-full h-8 pl-8 pr-3 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-orange-400 transition-colors"/>
-        </div>` : '';
-
       content.innerHTML = `
         ${processingBanner}
-        <p class="text-[13px] text-gray-500 mb-4 px-1">${table.desc}</p>
-        ${reviewSearch}
+        <div class="flex items-center justify-between mb-4 gap-4">
+          <p class="text-[13px] text-gray-500">${table.desc}</p>
+          <div class="relative flex-shrink-0 w-56">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
+            <input id="review-col-search" type="text" placeholder="Search columns…" oninput="filterReviewCols(this.value)"
+              class="w-full h-8 pl-8 pr-3 rounded-lg text-[13px] text-gray-700 border border-gray-200 bg-white outline-none focus:border-indigo-400 transition-colors"/>
+          </div>
+        </div>
         <div class="rounded-xl border border-gray-200 overflow-hidden bg-white" id="review-col-table">
-          <div class="flex items-center gap-4 px-5 py-2.5 bg-gray-50 border-b border-gray-200">
+          <div class="flex items-center gap-4 px-5 py-2.5 bg-white border-b border-gray-200">
             <span class="w-[190px] flex-shrink-0 text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Column</span>
             <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">Description</span>
             ${commentHeader}
@@ -1896,7 +1993,132 @@
           <div id="review-no-results" style="display:none" class="px-5 py-8 text-center text-[13px] text-gray-400">No columns match your search.</div>
         </div>
         ${reviewAgainBtn}
-        <p class="mt-3 text-[11px] text-gray-400 px-1">${table.cols.length} columns</p>`;
+        <p class="mt-3 text-[11px] text-gray-400">${table.cols.length} columns</p>`;
+    }
+
+    function closeOrgDsInline() {
+      document.getElementById('org-ds-inline-view').style.display = 'none';
+      renderOrgDsTable();
+    }
+
+    // ── Complete Integration inline view ─────────────────────────────
+    let _ciDsName = '';
+    let _ciAllTables = [];
+    let _ciSelected = new Set();
+
+    function _ciMockRows(name) {
+      let h = 0;
+      for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xfffff;
+      return 1000 + (h % 49000);
+    }
+
+    function openCompleteIntegration(dsName, dsType) {
+      _ciDsName = dsName;
+      const mock = ORG_DS_MOCK[dsName];
+      if (mock) {
+        _ciAllTables = mock.tables.map(t => ({ name: t.name, cols: t.cols.length, rows: _ciMockRows(t.name) }));
+      } else {
+        const base = dsType === 'File'
+          ? [{name:'Sheet1',cols:6},{name:'Sheet2',cols:4},{name:'Sheet3',cols:5}]
+          : dsType === 'API'
+          ? [{name:'/records',cols:8},{name:'/users',cols:5},{name:'/events',cols:7},{name:'/health',cols:3}]
+          : [{name:'records',cols:7},{name:'metadata',cols:3},{name:'logs',cols:6},{name:'settings',cols:3}];
+        _ciAllTables = base.map(t => ({ name: t.name, cols: t.cols, rows: _ciMockRows(t.name) }));
+      }
+      _ciSelected = new Set(_ciAllTables.map((_, i) => i));
+      // Heading — same style as View Tables
+      const isOrg = document.getElementById('tab-organisation').classList.contains('active');
+      const rootLabel = isOrg ? 'Organisation' : 'Workspace';
+      document.getElementById('ci-title').innerHTML =
+        rootLabel + ' / Datasource / <span style="color:#5B63F6">' + dsName + '</span>';
+      const tableCount = _ciAllTables.length;
+      document.getElementById('ci-sub').innerHTML =
+        `<span class="inline-flex items-center gap-1.5 text-[13px] text-gray-500">
+          <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>
+          <span class="font-medium">${tableCount} ${tableCount === 1 ? 'table' : 'tables'}</span>
+        </span>
+        <span class="text-gray-200 text-[13px]">·</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">${dsType}</span>`;
+      const ss = { Connected:{bg:'#F0FDF4',color:'#16A34A'}, Error:{bg:'#FEF2F2',color:'#DC2626'}, Syncing:{bg:'#F0FDF4',color:'#16A34A'}, Processing:{bg:'#EFF6FF',color:'#2563EB'}, Review:{bg:'#FFF7ED',color:'#EA580C'}, Pending:{bg:'#FFFBEB',color:'#D97706'} };
+      const dsObj = ORG_DS_DATA.find(d => d.name === dsName);
+      const dsStatus = dsObj ? dsObj.status : 'Pending';
+      const s = ss[dsStatus] || ss.Pending;
+      document.getElementById('ci-status-badge').innerHTML =
+        `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold" style="background:${s.bg};color:${s.color}"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>${dsStatus}</span>`;
+      document.getElementById('ci-search').value = '';
+      renderIntegrationTables('');
+      document.getElementById('complete-integration-view').style.display = 'flex';
+    }
+
+    function closeCompleteIntegration() {
+      document.getElementById('complete-integration-view').style.display = 'none';
+    }
+
+    function renderIntegrationTables(q) {
+      const tbody = document.getElementById('ci-tbody');
+      if (!tbody) return;
+      const term = q.toLowerCase();
+      const filtered = _ciAllTables
+        .map((t, i) => ({ ...t, idx: i }))
+        .filter(t => !term || t.name.toLowerCase().includes(term));
+      const ciEmpty = document.getElementById('ci-empty');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        if (ciEmpty) ciEmpty.classList.remove('hidden');
+      } else {
+        if (ciEmpty) ciEmpty.classList.add('hidden');
+        tbody.innerHTML = filtered.map(t => `
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3">
+              <input type="checkbox" data-idx="${t.idx}" ${_ciSelected.has(t.idx) ? 'checked' : ''}
+                onclick="toggleIntegrationTable(${t.idx}, this.checked)"
+                class="w-4 h-4 rounded border-gray-300 cursor-pointer" style="accent-color:#5B63F6"/>
+            </td>
+            <td class="px-4 py-3 font-medium text-gray-800">${t.name}</td>
+            <td class="px-4 py-3 text-gray-500">${t.cols}</td>
+            <td class="px-4 py-3 text-gray-500">${t.rows.toLocaleString()}</td>
+          </tr>`).join('');
+      }
+      const all = filtered.length > 0 && filtered.every(t => _ciSelected.has(t.idx));
+      const none = filtered.every(t => !_ciSelected.has(t.idx));
+      const ca = document.getElementById('ci-check-all');
+      if (ca) { ca.checked = all; ca.indeterminate = !all && !none; }
+      updateCiSelectionCount();
+    }
+
+    function toggleIntegrationTable(idx, checked) {
+      if (checked) _ciSelected.add(idx); else _ciSelected.delete(idx);
+      const q = document.getElementById('ci-search').value.toLowerCase();
+      const filtered = _ciAllTables.map((t, i) => ({ ...t, idx: i })).filter(t => !q || t.name.toLowerCase().includes(q));
+      const all = filtered.length > 0 && filtered.every(t => _ciSelected.has(t.idx));
+      const none = filtered.every(t => !_ciSelected.has(t.idx));
+      const ca = document.getElementById('ci-check-all');
+      if (ca) { ca.checked = all; ca.indeterminate = !all && !none; }
+      updateCiSelectionCount();
+    }
+
+    function toggleAllIntegrationTables(checked) {
+      const q = document.getElementById('ci-search').value.toLowerCase();
+      _ciAllTables.forEach((t, i) => {
+        if (!q || t.name.toLowerCase().includes(q)) {
+          if (checked) _ciSelected.add(i); else _ciSelected.delete(i);
+        }
+      });
+      renderIntegrationTables(document.getElementById('ci-search').value);
+    }
+
+    function updateCiSelectionCount() {
+      const el = document.getElementById('ci-selection-count');
+      if (el) el.textContent = `${_ciSelected.size} of ${_ciAllTables.length} table${_ciAllTables.length !== 1 ? 's' : ''} selected`;
+    }
+
+    function filterIntegrationTables(q) { renderIntegrationTables(q); }
+
+    function confirmIntegration() {
+      const ds = ORG_DS_DATA.find(d => d.name === _ciDsName);
+      if (ds) { ds.status = 'Processing'; ds.tables = _ciSelected.size; }
+      document.getElementById('complete-integration-view').style.display = 'none';
+      renderOrgDsTable();
     }
 
     function closeOrgDsTables(e) {
@@ -2006,9 +2228,39 @@
     document.addEventListener('DOMContentLoaded', () => {
       buildDsConnectorDropdown('settings-ds-type-dropdown', 'filterSettingDsType');
       buildDsConnectorDropdown('org-ds-type-dropdown',      'filterOrgDsType');
+      renderBillingInvoices(2026);
+
+      // ── Load datasources added from the Add Datasource page ──
+      try {
+        const added = JSON.parse(localStorage.getItem('aibii_added_datasources') || '[]');
+        added.forEach(ds => {
+          if (ORG_DS_DATA.find(d => d.name === ds.name)) return;
+          const dbMock = { tables: [
+            { name: 'records',  desc: 'Primary data table from this connection.',   cols: ['id','name','value','created_at'],    colDescs: ['Unique record ID.','Record name.','Record value.','Creation timestamp.'],            rows: [] },
+            { name: 'metadata', desc: 'Metadata and configuration entries.',         cols: ['key','value','updated_at'],           colDescs: ['Metadata key.','Metadata value.','Last updated timestamp.'],                       rows: [] },
+            { name: 'logs',     desc: 'Activity and audit log entries.',              cols: ['id','action','user','ts'],            colDescs: ['Log entry ID.','Action performed.','User who acted.','Event timestamp.'],           rows: [] },
+            { name: 'settings', desc: 'Connection-level configuration settings.',    cols: ['key','value','description'],          colDescs: ['Setting key.','Setting value.','Description of this setting.'],                      rows: [] },
+          ]};
+          const fileMock = { tables: [
+            { name: 'Sheet1',   desc: 'Primary data sheet.',                          cols: ['row','name','value','category'],      colDescs: ['Row index.','Record name.','Value.','Category.'],                                     rows: [] },
+          ]};
+          const apiMock = { tables: [
+            { name: '/data',    desc: 'Primary API resource endpoint.',               cols: ['id','endpoint','method','status_code','latency_ms'], colDescs: ['Record ID.','API endpoint path.','HTTP method.','Response status code.','Latency ms.'], rows: [] },
+            { name: '/health',  desc: 'API health and status check.',                 cols: ['status','version','uptime_s'],        colDescs: ['Service status.','API version.','Uptime in seconds.'],                               rows: [] },
+          ]};
+          const mock     = ds.type === 'File' ? fileMock : ds.type === 'API' ? apiMock : dbMock;
+          ds.tables      = mock.tables.length;
+          ORG_DS_DATA.unshift(ds);
+          ORG_DS_MOCK[ds.name] = mock;
+        });
+      } catch(e) {}
+
       renderSettingDsTable();
       renderOrgDsTable();
       renderBillingInvoices(2026);
+      _setupDropZone('profile-upload-zone', 'profile-pic-input');
+      _setupDropZone('ws-upload-zone', 'ws-logo-input');
+      _setupDropZone('org-upload-zone', 'org-logo-input');
     });
 
     document.addEventListener('click', e => {
@@ -2038,41 +2290,71 @@
     // ── Workspace switcher modal ──────────────────────────────────────────
     var wsData = [
       { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
-      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false }
+      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
+      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
+      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
+      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
+      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
     ];
-    function renderWsModalList() {
-      var list = document.getElementById('ws-modal-list');
-      if (!list) return;
-      list.innerHTML = wsData.map(function(ws) {
-        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-4 px-4 h-16 rounded-xl text-sm hover:bg-gray-50 transition-colors text-left' + (ws.current ? ' bg-[#EEF2FF]' : '') + '">'
-          + '<span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
-          + '<span class="flex-1 min-w-0">'
-          + '<p class="text-[13px] font-semibold text-gray-900 truncate' + (ws.current ? '' : '') + '">' + ws.name + '</p>'
-          + '<p class="text-[11px] text-gray-400">' + (ws.current ? 'Current workspace' : 'Switch to this') + '</p>'
-          + '</span>'
-          + (ws.current ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
-          + '</button>';
+    try { var _saved=JSON.parse(localStorage.getItem('aibii_workspaces')||'[]'); _saved.forEach(function(ws){ if(!wsData.find(function(w){return w.id===ws.id;}))wsData.push({id:ws.id,name:ws.name,initial:ws.initial,color:ws.color,current:false}); }); } catch(e) {}
+    function renderWsModalList(filter) {
+      var list=document.getElementById('ws-modal-list'); if(!list)return;
+      var q=(filter||'').toLowerCase();
+      var items=wsData.filter(function(ws){return !q||ws.name.toLowerCase().includes(q);});
+      var container=list.parentElement; var ROW_H=44,SHOWN=5;
+      container.style.maxHeight=(items.length>SHOWN?ROW_H*SHOWN+12:'')+'px';
+      container.style.overflowY=items.length>SHOWN?'auto':'visible';
+      if(!items.length){list.innerHTML='<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>';return;}
+      list.innerHTML=items.map(function(ws){
+        var c=ws.current;
+        return '<button onclick="selectWorkspace(\''+ws.id+'\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors '+(c?'bg-indigo-50':'hover:bg-gray-50')+'">'+'<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:'+ws.color+'">'+ws.initial+'</span>'+'<span class="flex-1 text-[13px] '+(c?'font-semibold text-gray-900':'font-medium text-gray-700')+' truncate">'+ws.name+'</span>'+(c?'<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>':'')+'</button>';
       }).join('');
     }
+    function filterWsList() { renderWsModalList(document.getElementById('ws-search').value); }
     function openWsModal() {
-      renderWsModalList();
-      var m = document.getElementById('ws-modal');
-      m.style.display = 'flex';
+      var input=document.getElementById('ws-search'); if(input)input.value='';
+      renderWsModalList('');
+      document.getElementById('ws-modal-backdrop').classList.add('open');
     }
-    function closeWsModal() {
-      document.getElementById('ws-modal').style.display = 'none';
+    function closeWsModal(e) {
+      if(!e||e.target===document.getElementById('ws-modal-backdrop'))
+        document.getElementById('ws-modal-backdrop').classList.remove('open');
     }
     function selectWorkspace(id) {
-      wsData.forEach(function(ws) { ws.current = ws.id === id; });
-      var ws = wsData.find(function(ws) { return ws.id === id; });
-      if (ws) {
-        var wrap = document.getElementById('ws-switcher-wrapper');
-        var nameEl = wrap ? wrap.querySelector('.truncate') : null;
-        var avatarEl = wrap ? wrap.querySelector('.rounded-full') : null;
-        if (nameEl) nameEl.textContent = ws.name.length > 22 ? ws.name.slice(0, 22) + '...' : ws.name;
-        if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
+      wsData.forEach(function(ws){ws.current=ws.id===id;});
+      var ws=wsData.find(function(ws){return ws.id===id;});
+      if(ws){
+        var nameEl=document.getElementById('ws-name'); var avatarEl=document.getElementById('ws-avatar');
+        if(nameEl)nameEl.textContent=ws.name.length>24?ws.name.slice(0,24)+'...':ws.name;
+        if(avatarEl){avatarEl.textContent=ws.initial;avatarEl.style.background=ws.color;}
       }
-      closeWsModal();
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+    function openNewWsModal() {
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+      document.getElementById('new-ws-modal').classList.remove('hidden');
+      document.getElementById('new-ws-name').value='';
+      document.getElementById('new-ws-desc').value='';
+      wsNewColor='#5B63F6'; wsColorIndex=0; onWsNameInput('');
+      setTimeout(function(){document.getElementById('new-ws-name').focus();},80);
+    }
+    function closeNewWsModal() { document.getElementById('new-ws-modal').classList.add('hidden'); }
+    var wsColors=['#5B63F6','#16A34A','#F97316','#8B5CF6','#EC4899','#0EA5E9','#EAB308'];
+    var wsNewColor='#5B63F6', wsColorIndex=0;
+    function cycleWsColor() {
+      wsColorIndex=(wsColorIndex+1)%wsColors.length; wsNewColor=wsColors[wsColorIndex];
+      var el=document.getElementById('ws-preview-avatar'); if(el)el.style.background=wsNewColor;
+    }
+    function onWsNameInput(val) {
+      var p=document.getElementById('ws-preview-name'); var a=document.getElementById('ws-preview-avatar');
+      if(p)p.textContent=val.trim()||'Your workspace';
+      if(a)a.textContent=val.trim()?val.trim()[0].toUpperCase():'A';
+    }
+    function createNewWs() {
+      var name=document.getElementById('new-ws-name').value.trim();
+      if(!name){document.getElementById('new-ws-name').focus();return;}
+      var newWs={id:'ws-dyn-'+Date.now(),name:name,initial:name[0].toUpperCase(),color:wsNewColor,current:false};
+      wsData.push(newWs); closeNewWsModal(); selectWorkspace(newWs.id);
     }
   </script>
 
@@ -2137,7 +2419,7 @@
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div id="cb-cat-dropdown"
-              class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[160px] bg-white"
+              class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-lg py-1.5 min-w-[160px] bg-white"
               style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               <button onclick="cbSetCat('all','All')" class="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50">
                 <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5"/></svg>
@@ -2181,35 +2463,74 @@
   <!-- Floating column description tooltip -->
   <div id="col-tip-float" style="display:none;position:fixed;z-index:9999;background:#1E293B;color:#fff;font-size:11px;font-weight:500;line-height:1.45;padding:6px 10px;border-radius:8px;max-width:240px;white-space:normal;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);"></div>
 
+  <!-- Full-screen inline table view -->
+  <div id="org-ds-inline-view" style="display:none;position:fixed;top:44px;right:0;bottom:0;left:220px;z-index:60;background:#fff;flex-direction:column;">
+    <!-- Slim nav row with back button — sits just below the topbar -->
+    <div class="flex items-center gap-2 px-5 h-10 border-b border-gray-100 flex-shrink-0 bg-white">
+      <button onclick="closeOrgDsInline()" class="inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-400 hover:text-indigo-500 transition-colors">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Back to Datasources
+      </button>
+    </div>
+    <!-- Page-heading — matches py-6 of other settings pages -->
+    <div class="px-6 pt-6 pb-4 flex-shrink-0 bg-white">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex flex-col gap-3">
+          <h1 id="org-ds-modal-title" class="text-[28px] font-extrabold text-gray-900 leading-tight"></h1>
+          <div id="org-ds-modal-sub" class="flex items-center gap-2 flex-wrap"></div>
+          <div id="org-ds-modal-status-badge"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Table search bar -->
+    <div class="px-8 py-3 border-b border-gray-100 flex-shrink-0 bg-white">
+      <div class="relative w-full">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
+        <input id="org-ds-tab-search" type="text" placeholder="Search tables…" oninput="filterOrgDsTabs(this.value)"
+          class="w-full h-9 pl-10 pr-4 rounded-xl text-[13px] text-gray-700 border border-gray-200 bg-gray-50 outline-none focus:border-indigo-400 focus:bg-white transition-colors"/>
+      </div>
+    </div>
+    <!-- Tab bar -->
+    <div class="flex items-stretch border-b border-gray-200 px-8 flex-shrink-0 bg-white">
+      <div id="org-ds-tab-bar" class="flex gap-3 flex-1 min-w-0" style="overflow-x:auto;scrollbar-width:none;"></div>
+    </div>
+    <!-- Tab content -->
+    <div id="org-ds-tab-content" class="flex-1 overflow-auto px-8 py-6"></div>
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-8 py-4 border-t border-gray-200 flex-shrink-0 bg-white">
+      <p class="text-[12px] text-gray-400">Attaching makes this datasource available across your organisation and selected workspace.</p>
+      <button id="attach-ws-btn" onclick="attachToWorkspace()"
+        class="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-colors"
+        style="background:#5B63F6">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+        Attach to Organisation
+      </button>
+    </div>
+  </div>
+
   <div id="org-ds-modal-backdrop"
     style="display:none;position:fixed;inset:0;z-index:70;background:rgba(15,23,42,0.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;"
     onclick="closeOrgDsTables(event)">
     <div onclick="event.stopPropagation()"
-      class="bg-white rounded-2xl w-full mx-4 flex flex-col"
+      class="bg-white rounded-lg w-full mx-4 flex flex-col"
       style="max-width:1080px;max-height:82vh;box-shadow:0 24px 80px rgba(0,0,0,0.22)">
-      <!-- Modal header -->
+      <!-- Modal header (legacy — now using inline view) -->
       <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
         <div>
-          <h3 id="org-ds-modal-title" class="text-[15px] font-semibold text-gray-900">Tables</h3>
-          <p id="org-ds-modal-sub" class="text-[12px] text-gray-400 mt-0.5"></p>
+          <h3 class="text-[15px] font-semibold text-gray-900">Tables</h3>
+          <p class="text-[12px] text-gray-400 mt-0.5"></p>
         </div>
         <button onclick="closeOrgDsTables()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <!-- Table tabs -->
-      <div id="org-ds-tab-bar" class="flex gap-0 border-b border-gray-100 px-6 flex-shrink-0" style="overflow-x:auto;scrollbar-width:thin;scrollbar-color:#E5E7EB transparent;"></div>
-      <!-- Tab content -->
-      <div id="org-ds-tab-content" class="flex-1 overflow-auto p-5"></div>
-      <!-- Modal footer -->
+      <!-- Tab bar (legacy) -->
+      <div class="flex gap-0 border-b border-gray-100 px-6 flex-shrink-0" style="overflow-x:auto;"></div>
+      <!-- Tab content (legacy) -->
+      <div class="flex-1 overflow-auto p-5"></div>
+      <!-- Modal footer (legacy) -->
       <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100 flex-shrink-0 bg-gray-50/60 rounded-b-2xl">
         <p class="text-[12px] text-gray-400">Attaching makes this datasource available across your organisation and selected workspace.</p>
-        <button id="attach-ws-btn" onclick="attachToWorkspace()"
-          class="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-colors"
-          style="background:#5B63F6">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
-          Attach to Workspace
-        </button>
       </div>
     </div>
   </div>
@@ -2952,6 +3273,32 @@
     let _vtDsName = '';
 
     function openViewTablesModal(dsName) {
+      // Find workspace datasource record
+      const settingDs = SETTING_DS_DATA.find(d => d.name === dsName);
+      if (!settingDs) return;
+      // Convert VIEW_DS_SCHEMAS entry to ORG_DS_MOCK format so openOrgDsTables can render it
+      const schema = VIEW_DS_SCHEMAS[dsName];
+      if (schema) {
+        ORG_DS_MOCK[dsName] = {
+          tables: schema.tables.map(t => ({
+            name: t.name,
+            desc: t.description || '',
+            cols: t.columns.map(c => c.name),
+            colDescs: t.columns.map(c => c.desc || ''),
+            rows: []
+          }))
+        };
+      } else if (!ORG_DS_MOCK[dsName]) {
+        // Build basic fallback if no schema defined
+        ORG_DS_MOCK[dsName] = {
+          tables: [{ name: 'data', desc: '', cols: ['id','name','created_at'], colDescs: ['Unique identifier','Name','Created date'], rows: [] }]
+        };
+      }
+      // Open the same full-screen inline view used by org datasources
+      openOrgDsTables(dsName, settingDs.type, settingDs.status);
+    }
+
+    function _openViewTablesModal_old(dsName) {
       const schema = VIEW_DS_SCHEMAS[dsName];
       if (!schema) return;
       _vtDsName = dsName;
@@ -3245,7 +3592,7 @@
   <div id="view-tables-backdrop"
        class="fixed inset-0 z-50 items-center justify-center"
        style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
-    <div class="bg-white rounded-2xl w-full mx-4 flex flex-col overflow-hidden" style="max-width:1080px;max-height:82vh;box-shadow:0 24px 80px rgba(0,0,0,0.22)">
+    <div class="bg-white rounded-lg w-full mx-4 flex flex-col overflow-hidden" style="max-width:1080px;max-height:82vh;box-shadow:0 24px 80px rgba(0,0,0,0.22)">
 
       <!-- Header -->
       <div class="px-6 pt-5 pb-4 flex-shrink-0">
@@ -3290,7 +3637,7 @@
   <div id="link-ds-modal-backdrop"
        class="fixed inset-0 z-50 items-center justify-center"
        style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
-    <div class="bg-white rounded-2xl w-full mx-4 overflow-hidden flex flex-col" style="max-width:520px;max-height:580px;box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+    <div class="bg-white rounded-lg w-full mx-4 overflow-hidden flex flex-col" style="max-width:520px;max-height:580px;box-shadow:0 20px 60px rgba(0,0,0,0.18)">
 
       <!-- Header -->
       <div class="px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
@@ -3371,6 +3718,105 @@
             style="background:#5B63F6;opacity:0.4;cursor:not-allowed">
             Link to workspace
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complete Integration inline view -->
+  <div id="complete-integration-view" style="display:none;position:fixed;top:44px;right:0;bottom:0;left:220px;z-index:65;background:#fff;flex-direction:column;">
+    <!-- Back row -->
+    <div class="flex items-center gap-2 px-5 h-10 border-b border-gray-100 flex-shrink-0 bg-white">
+      <button onclick="closeCompleteIntegration()" class="inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-400 hover:text-indigo-500 transition-colors">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Back to Datasources
+      </button>
+    </div>
+    <!-- Heading -->
+    <div class="px-6 pt-6 pb-4 flex-shrink-0 bg-white">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex flex-col gap-3">
+          <h1 id="ci-title" class="text-[28px] font-extrabold text-gray-900 leading-tight"></h1>
+          <div id="ci-sub" class="flex items-center gap-2 flex-wrap"></div>
+          <div id="ci-status-badge"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Search bar -->
+    <div class="px-8 pb-3 flex-shrink-0 bg-white">
+      <div class="relative w-full">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
+        <input id="ci-search" type="text" placeholder="Search tables…" oninput="filterIntegrationTables(this.value)"
+          class="w-full h-9 pl-10 pr-4 rounded-xl text-[13px] text-gray-700 border border-gray-200 bg-gray-50 outline-none focus:border-indigo-400 focus:bg-white transition-colors"/>
+      </div>
+    </div>
+    <!-- Table -->
+    <div class="flex-1 min-h-0 overflow-auto px-8 pt-3 pb-6">
+      <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <table class="w-full text-[13px] table-fixed">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="text-left px-4 py-3" style="width:44px">
+                <input type="checkbox" id="ci-check-all" onclick="toggleAllIntegrationTables(this.checked)"
+                  class="w-4 h-4 rounded border-gray-300 cursor-pointer" style="accent-color:#5B63F6"/>
+              </th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide">Table Name</th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:18%">Total Columns</th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wide" style="width:18%">Total Rows</th>
+            </tr>
+          </thead>
+          <tbody id="ci-tbody"></tbody>
+        </table>
+        <div id="ci-empty" class="hidden py-10 text-center text-[13px] text-gray-400">No tables found</div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-8 py-4 border-t border-gray-200 flex-shrink-0 bg-white">
+      <p id="ci-selection-count" class="text-[12px] text-gray-400">0 tables selected</p>
+      <button onclick="confirmIntegration()" class="inline-flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Start Processing
+      </button>
+    </div>
+  </div>
+
+  <!-- New Workspace full-screen -->
+  <div id="new-ws-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background:#F3F4F6">
+    <div class="flex items-center justify-between px-6 h-11 bg-white border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:#5B63F6">A</span>
+        <span class="text-[13px] font-semibold text-gray-800">Aibii</span>
+      </div>
+      <button onclick="closeNewWsModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
+      <div class="bg-white rounded-lg w-full max-w-lg mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
+        <div class="mb-6">
+          <h2 class="text-[17px] font-bold text-gray-900">New workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-1">A shared space for your team's work.</p>
+        </div>
+        <div class="flex items-center gap-3 mb-5">
+          <div id="ws-preview-avatar" class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all" style="background:#5B63F6" onclick="cycleWsColor()" title="Click to change color">A</div>
+          <div class="flex-1 min-w-0">
+            <p id="ws-preview-name" class="text-[13px] font-semibold text-gray-800 truncate">Your workspace</p>
+            <p class="text-[11px] text-gray-400">Click avatar to change color</p>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Name <span class="text-red-400">*</span></label>
+            <input id="new-ws-name" type="text" placeholder="e.g. Design Team" autocomplete="off" maxlength="48" class="w-full h-9 px-3 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400" oninput="onWsNameInput(this.value)" onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'" onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''" onkeydown="if(event.key==='Enter')createNewWs()">
+          </div>
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Description <span class="text-gray-400 font-normal">optional</span></label>
+            <textarea id="new-ws-desc" rows="2" placeholder="What is this workspace for?" class="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400" onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'" onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"></textarea>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-5">
+          <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="createNewWs()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
         </div>
       </div>
     </div>
