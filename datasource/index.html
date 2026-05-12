@@ -668,12 +668,14 @@
             </div>
           </div>
           <!-- Confirm button, shown after selection -->
-          <button id="ws-add-confirm" onclick="confirmWsAdd()" class="hidden items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity flex-shrink-0" style="background:#5B63F6">
-            Add &amp; configure tables
-          </button>
-          <button id="ws-add-cancel" onclick="cancelWsAdd()" class="hidden h-9 px-3 rounded-lg text-[12px] font-medium text-gray-500 hover:bg-gray-100 transition-colors flex-shrink-0">
-            Cancel
-          </button>
+          <div id="ws-add-actions" class="hidden items-center gap-1.5 flex-shrink-0">
+            <button id="ws-add-confirm" onclick="confirmWsAdd()" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+               Add &amp; configure tables
+            </button>
+            <button id="ws-add-cancel" onclick="cancelWsAdd()" class="h-9 px-3 rounded-lg text-[12px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+          </div>
           <div class="flex-1"></div>
           <!-- View toggle -->
           <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
@@ -1555,13 +1557,19 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <!-- Select all bar -->
-      <div class="flex items-center justify-between px-6 py-2.5 border-b border-gray-100 bg-gray-50/50">
-        <label class="flex items-center gap-2 cursor-pointer select-none">
-          <input id="tbl-picker-all" type="checkbox" onchange="toggleAllTblPicker(this.checked)" class="w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer" />
-          <span class="text-[12px] font-semibold text-gray-700">All tables</span>
-        </label>
-        <span id="tbl-picker-count" class="text-[11px] text-gray-400 font-medium"></span>
+      <!-- Search & Select all bar -->
+      <div class="px-6 py-3 border-b border-gray-100 bg-gray-50/30 flex flex-col gap-3">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="tbl-picker-search" type="text" placeholder="Search tables..." oninput="filterTblPickerList(this.value)" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors" />
+        </div>
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input id="tbl-picker-all" type="checkbox" onchange="toggleAllTblPicker(this.checked)" class="w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer" />
+            <span class="text-[12px] font-semibold text-gray-700">All tables</span>
+          </label>
+          <span id="tbl-picker-count" class="text-[11px] text-gray-400 font-medium"></span>
+        </div>
       </div>
       <!-- Table list -->
       <div id="tbl-picker-list" class="flex-1 overflow-y-auto divide-y divide-gray-50 px-2 py-1"></div>
@@ -1798,7 +1806,9 @@
         ],
         tables_list: [
           { name:'Sheet1 – Revenue', rows:'365', cols:8 }, { name:'Sheet2 – Expenses', rows:'284', cols:5 },
-          { name:'Sheet3 – Summary', rows:'12', cols:10 }, { name:'Sheet4 – Forecast', rows:'24', cols:7 },
+          { name:' Sheet3 – Summary', rows:'12', cols:10 }, { name:'Sheet4 – Forecast', rows:'24', cols:7 },
+          { name:'Sheet5 – Customers', rows:'1,200', cols:15 }, { name:'Sheet6 – Vendors', rows:'850', cols:12 },
+          { name:'Sheet7 – Inventory', rows:'4,500', cols:9 }, { name:'Sheet8 – Logs', rows:'12,400', cols:6 },
         ],
       },
       {
@@ -1814,6 +1824,8 @@
         tables_list: [
           { name:'contacts', rows:'28,400', cols:16 }, { name:'leads', rows:'7,200', cols:14 },
           { name:'deals', rows:'3,100', cols:20 }, { name:'activities', rows:'95,000', cols:9 },
+          { name:'tasks', rows:'45,200', cols:8 }, { name:'notes', rows:'120,000', cols:5 },
+          { name:'campaigns', rows:'450', cols:12 }, { name:'accounts', rows:'8,400', cols:15 },
         ],
       },
       {
@@ -1839,6 +1851,9 @@
         ],
         tables_list: [
           { name:'customers.csv', rows:'4,210', cols:9 },
+          { name:'transactions_may.csv', rows:'1,500', cols:14 },
+          { name:'web_traffic_june.csv', rows:'42,000', cols:8 },
+          { name:'marketing_spend.csv', rows:'850', cols:12 },
         ],
       },
     ];
@@ -3715,7 +3730,7 @@
     }
 
     function refreshWsDropdownList() {
-      const unassigned = _dsList.filter(ds => !_wsAssignments[ds.id]?.assigned);
+      const unassigned = _dsList.filter(ds => ds.status !== 'Pending' && !_wsAssignments[ds.id]?.assigned);
       const ddList  = document.getElementById('ws-add-dd-list');
       const ddEmpty = document.getElementById('ws-add-dd-empty');
       if (!unassigned.length) {
@@ -3749,32 +3764,34 @@
       const ds = _dsList.find(d => d.id === dsId);
       document.getElementById('ws-add-label').textContent = ds?.name || dsId;
       document.getElementById('ws-add-dd').classList.add('hidden');
-      document.getElementById('ws-add-confirm').classList.remove('hidden');
-      document.getElementById('ws-add-confirm').classList.add('flex');
-      document.getElementById('ws-add-cancel').classList.remove('hidden');
-      document.getElementById('ws-add-cancel').classList.add('flex');
+      document.getElementById('ws-add-actions').classList.remove('hidden');
+      document.getElementById('ws-add-actions').classList.add('flex');
     }
 
     function cancelWsAdd() {
       _wsAddPendingId = null;
       document.getElementById('ws-add-label').textContent = 'Add datasource…';
       document.getElementById('ws-add-dd').classList.add('hidden');
-      document.getElementById('ws-add-confirm').classList.add('hidden');
-      document.getElementById('ws-add-confirm').classList.remove('flex');
-      document.getElementById('ws-add-cancel').classList.add('hidden');
-      document.getElementById('ws-add-cancel').classList.remove('flex');
+      document.getElementById('ws-add-actions').classList.add('hidden');
+      document.getElementById('ws-add-actions').classList.remove('flex');
     }
 
     function confirmWsAdd() {
       if (!_wsAddPendingId) return;
-      const dsId = _wsAddPendingId; // capture before renderWsScope resets it
-      if (!_wsAssignments[dsId]) _wsAssignments[dsId] = { assigned: false, tables: null };
-      _wsAssignments[dsId].assigned = true;
-      updateScopeCounts();
-      renderWsScope();
-      // Open table picker immediately
-      openTblPicker(dsId);
-      showToast('Datasource added to workspace.');
+      const dsId = _wsAddPendingId; 
+      
+      // We don't mark it as assigned yet. We only do that in saveTblPicker.
+      
+      // Reset the pending selector UI
+      _wsAddPendingId = null;
+      document.getElementById('ws-add-label').textContent = 'Add datasource…';
+      document.getElementById('ws-add-actions').classList.add('hidden');
+      document.getElementById('ws-add-actions').classList.remove('flex');
+
+      // Open table picker immediately for a friendly flow
+      setTimeout(() => {
+        openTblPicker(dsId);
+      }, 100);
     }
 
     function removeWsAssign(dsId) {
@@ -3938,6 +3955,10 @@
 
       document.getElementById('tbl-picker-subtitle').textContent = ds?.name || dsId;
 
+      // Reset search if exists
+      const searchInput = document.getElementById('tbl-picker-search');
+      if (searchInput) searchInput.value = '';
+
       // If no table list, show message
       if (!allNames.length) {
         document.getElementById('tbl-picker-list').innerHTML =
@@ -3968,19 +3989,45 @@
     }
 
     function onTblPickerCheck() {
-      const boxes = document.querySelectorAll('#tbl-picker-list input[type=checkbox]');
+      const boxes = document.querySelectorAll('#tbl-picker-list label:not(.hidden) input[type=checkbox]');
+      const allBoxes = document.querySelectorAll('#tbl-picker-list input[type=checkbox]');
       const total = boxes.length;
       const checked = [...boxes].filter(b => b.checked).length;
-      document.getElementById('tbl-picker-all').checked = checked === total;
-      document.getElementById('tbl-picker-count').textContent = checked + ' of ' + total + ' selected';
+      
+      const allChecked = [...allBoxes].filter(b => b.checked).length;
+      const allTotal = allBoxes.length;
+
+      document.getElementById('tbl-picker-all').checked = checked === total && total > 0;
+      document.getElementById('tbl-picker-count').textContent = allChecked + ' of ' + allTotal + ' selected';
     }
 
     function toggleAllTblPicker(val) {
-      document.querySelectorAll('#tbl-picker-list input[type=checkbox]').forEach(b => b.checked = val);
+      document.querySelectorAll('#tbl-picker-list label:not(.hidden) input[type=checkbox]').forEach(b => b.checked = val);
+      onTblPickerCheck();
+    }
+
+    function filterTblPickerList(q) {
+      const query = q.toLowerCase();
+      const rows = document.querySelectorAll('#tbl-picker-list label');
+      rows.forEach(row => {
+        const text = row.querySelector('span').textContent.toLowerCase();
+        if (text.includes(query)) {
+          row.classList.remove('hidden');
+        } else {
+          row.classList.add('hidden');
+        }
+      });
       onTblPickerCheck();
     }
 
     function saveTblPicker() {
+      // Mark as assigned now that tables are selected
+      if (!_wsAssignments[_tblPickerDsId]) {
+        _wsAssignments[_tblPickerDsId] = { assigned: true, tables: null };
+      } else {
+        _wsAssignments[_tblPickerDsId].assigned = true;
+      }
+
       const a = _wsAssignments[_tblPickerDsId];
       const boxes = [...document.querySelectorAll('#tbl-picker-list input[type=checkbox]')];
       if (!boxes.length) {
