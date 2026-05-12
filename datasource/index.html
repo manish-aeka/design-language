@@ -774,10 +774,13 @@
               </button>
               
               <div id="proj-picker-dd" class="hidden absolute top-full right-0 mt-2 z-50 bg-white border border-gray-200 rounded-2xl py-2 min-w-[280px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden">
-                <div class="px-4 py-2 border-b border-gray-50 bg-gray-50/50 mb-1">
-                  <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Select Project</span>
+                <div class="px-3 pt-2 pb-2 border-b border-gray-100">
+                  <div class="relative">
+                    <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+                    <input id="proj-picker-search" type="text" placeholder="Search projects…" oninput="filterProjPicker()" onclick="event.stopPropagation()" class="w-full h-8 pl-8 pr-3 text-[12px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" />
+                  </div>
                 </div>
-                <div id="proj-picker-list" class="max-height-[320px] overflow-y-auto"></div>
+                <div id="proj-picker-list" class="max-h-[300px] overflow-y-auto"></div>
               </div>
             </div>
           </div>
@@ -3804,12 +3807,27 @@
     function toggleProjPicker() {
       const dd = document.getElementById('proj-picker-dd');
       if (dd.classList.contains('hidden')) {
-        // populate
-        const list = document.getElementById('proj-picker-list');
-        list.innerHTML = PROJECTS.map(p => {
-          const active = p.id === _currentProjectId;
-          const sourcesList = (p.sources || []).slice(0, 2).join(', ') + ((p.sources || []).length > 2 ? '...' : '');
-          return `<button onclick="selectProject('${p.id}')" class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-indigo-50/50 transition-all ${active ? 'bg-indigo-50/80' : ''}">
+        renderProjPickerList('');
+        dd.classList.remove('hidden');
+        // clear and focus search
+        const search = document.getElementById('proj-picker-search');
+        if (search) { search.value = ''; search.focus(); }
+      } else {
+        dd.classList.add('hidden');
+      }
+    }
+
+    function renderProjPickerList(q) {
+      const list = document.getElementById('proj-picker-list');
+      const filtered = PROJECTS.filter(p => !q || p.name.toLowerCase().includes(q.toLowerCase()));
+      if (!filtered.length) {
+        list.innerHTML = '<p class="text-[12px] text-gray-400 text-center py-4">No projects found</p>';
+        return;
+      }
+      list.innerHTML = filtered.map(p => {
+        const active = p.id === _currentProjectId;
+        const sourcesList = (p.sources || []).slice(0, 2).join(', ') + ((p.sources || []).length > 2 ? '...' : '');
+        return `<button onclick="selectProject('${p.id}')" class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-indigo-50/50 transition-all ${active ? 'bg-indigo-50/80' : ''}">
             <div class="relative flex-shrink-0">
               <span class="w-3.5 h-3.5 rounded-full block border-2 border-white shadow-sm" style="background:${p.color}"></span>
               ${active ? '<span class="absolute -inset-1 rounded-full bg-indigo-400/20 animate-ping"></span>' : ''}
@@ -3822,11 +3840,12 @@
                <p class="text-[11px] text-gray-500 truncate mt-0.5">${sourcesList || 'No sources'}</p>
             </div>
           </button>`;
-        }).join('');
-        dd.classList.remove('hidden');
-      } else {
-        dd.classList.add('hidden');
-      }
+      }).join('');
+    }
+
+    function filterProjPicker() {
+      const q = document.getElementById('proj-picker-search')?.value || '';
+      renderProjPickerList(q);
     }
 
     function selectProject(id) {
