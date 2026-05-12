@@ -929,15 +929,15 @@
     <div id="view-detail" class="view flex-col flex-1 overflow-hidden bg-white">
         <!-- Detail header -->
         <div class="flex-shrink-0">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div class="flex items-center justify-between px-6 h-[72px] border-b border-gray-100">
             <div class="flex items-center gap-3 min-w-0">
-              <button onclick="closeDetailPanel()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 flex-shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              <button onclick="closeDetailPanel()" class="w-7 h-7 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition-colors flex-shrink-0">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               </button>
               <div id="panel-icon" class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"></div>
               <div class="min-w-0">
-                <h3 id="panel-name" class="text-[15px] font-bold text-gray-900 leading-tight truncate"></h3>
-                <p id="panel-connector" class="text-[12px] text-gray-400 mt-0.5"></p>
+                <h2 id="panel-name" class="text-[28px] font-extrabold text-[#111827] leading-tight truncate"></h2>
+                <p id="panel-connector" class="text-[14px] text-[#6B7280] leading-relaxed mt-0.5"></p>
               </div>
             </div>
           </div>
@@ -1060,7 +1060,6 @@
               <div class="flex items-center gap-1 p-1 rounded-xl mb-4" style="background:#F3F4F6">
                 <button id="tdtab-preview"   onclick="switchTblTab('preview')"   class="ds-tab active">Preview</button>
                 <button id="tdtab-columns"   onclick="switchTblTab('columns')"   class="ds-tab">Metadata</button>
-                <button id="tdtab-relations" onclick="switchTblTab('relations')" class="ds-tab">Relationships</button>
               </div>
 
               <!-- Preview pane -->
@@ -1099,18 +1098,7 @@
                 <div id="tbl-no-cols" class="hidden text-center py-8"><p class="text-[13px] text-gray-400">No column metadata available.</p></div>
               </div>
 
-              <!-- Relationships pane -->
-              <div id="tbl-pane-relations" class="hidden">
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Relationships</span>
-                  <button onclick="openRelModal(null)" class="flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity ds-edit-only" style="background:#5B63F6">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    Add
-                  </button>
-                </div>
-                <div id="tbl-rels-list" class="space-y-2"></div>
-                <div id="tbl-no-rels" class="hidden text-center py-8"><p class="text-[13px] text-gray-400">No relationships defined for this table.</p></div>
-              </div>
+
             </div>
           </div><!-- /panel-tables-tab -->
           <!-- Sync Log tab -->
@@ -1143,6 +1131,114 @@
       </div>
 
     </div><!-- /view-detail -->
+
+    <!-- ─── VIEW: Relationships ─── -->
+    <div id="view-create-relation" class="view flex-col flex-1 overflow-hidden bg-white">
+
+      <!-- Toolbar row 1: ds info + add button -->
+      <div class="flex-shrink-0 flex items-center gap-4 px-6 pt-4 pb-3 bg-white border-b border-gray-100">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div id="cr-ds-icon" class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF"></div>
+          <div class="min-w-0">
+            <p id="cr-ds-label" class="text-[15px] font-bold text-gray-900 truncate"></p>
+            <p class="text-[11px] font-medium text-gray-400">Datasource Relationships</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[13px] font-medium text-gray-500">Total</span>
+            <span id="cr-rel-count" class="inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-[11px] font-bold text-indigo-700" style="background:#EEF2FF">0</span>
+          </div>
+          <button onclick="openCrModal()" class="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Relationship
+          </button>
+        </div>
+      </div>
+      <!-- Toolbar row 2: search + view toggle -->
+      <div class="flex-shrink-0 flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100">
+        <div class="relative flex-1 max-w-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+          <input id="cr-search" type="text" placeholder="Search by table name…" autocomplete="off"
+            class="w-full h-9 pl-9 pr-3 text-[13px] border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:border-indigo-400 transition-colors"
+            oninput="renderCrRelList()" />
+        </div>
+        <div class="flex items-center gap-1 p-1 rounded-xl flex-shrink-0 ml-auto" style="background:#F3F4F6">
+          <button id="cr-view-list-btn" onclick="setCrRelView('list')"
+            class="flex items-center justify-center w-8 h-7 rounded-lg bg-white text-gray-700 transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="List view">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+          </button>
+          <button id="cr-view-card-btn" onclick="setCrRelView('card')"
+            class="flex items-center justify-center w-8 h-7 rounded-lg text-gray-400 transition-all" title="Card view">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="flex-1 overflow-y-auto p-6">
+        <div id="cr-relations-list"></div>
+      </div>
+
+      <!-- Add / Edit modal -->
+      <div id="cr-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center" style="background:rgba(15,23,42,0.45)" onclick="if(event.target===this)closeCrModal()">
+        <div class="bg-white rounded-2xl w-full max-w-lg mx-4 flex flex-col" style="box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh">
+          <div class="flex-shrink-0 flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <h3 id="cr-modal-title" class="text-[16px] font-bold text-gray-900">Add Relationship</h3>
+            <button onclick="closeCrModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+            <div>
+              <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Source Table <span class="text-red-400">*</span></label>
+              <div class="relative" id="cr-from-wrapper">
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg></div>
+                <input id="cr-from" type="text" placeholder="Select source table…" autocomplete="off"
+                  class="w-full h-11 pl-10 pr-3 text-[14px] border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors"
+                  oninput="filterCrTableDd('cr-from','cr-from-dd')" onfocus="openCrTableDd('cr-from','cr-from-dd')" onclick="event.stopPropagation();openCrTableDd('cr-from','cr-from-dd')" />
+                <div id="cr-from-dd" class="hidden absolute left-0 top-full mt-1.5 w-full z-[300] bg-white border border-gray-200 rounded-xl overflow-y-auto" style="box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:180px"><div id="cr-from-dd-list"></div></div>
+              </div>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Cardinality</label>
+              <div class="grid grid-cols-4 gap-2">
+                <button onclick="setCrCardinality('one-to-many')" id="cr-card-one-to-many" class="cr-card-btn flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 border-indigo-400 text-indigo-700 bg-indigo-50 transition-all"><span class="text-[14px] font-black">1 → N</span><span class="text-[10px] font-semibold">One to Many</span></button>
+                <button onclick="setCrCardinality('many-to-one')" id="cr-card-many-to-one" class="cr-card-btn flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 border-gray-200 text-gray-600 bg-white transition-all hover:border-indigo-200"><span class="text-[14px] font-black">N → 1</span><span class="text-[10px] font-semibold">Many to One</span></button>
+                <button onclick="setCrCardinality('one-to-one')" id="cr-card-one-to-one" class="cr-card-btn flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 border-gray-200 text-gray-600 bg-white transition-all hover:border-indigo-200"><span class="text-[14px] font-black">1 → 1</span><span class="text-[10px] font-semibold">One to One</span></button>
+                <button onclick="setCrCardinality('many-to-many')" id="cr-card-many-to-many" class="cr-card-btn flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 border-gray-200 text-gray-600 bg-white transition-all hover:border-indigo-200"><span class="text-[14px] font-black">N → N</span><span class="text-[10px] font-semibold">Many to Many</span></button>
+              </div>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Target Table <span class="text-red-400">*</span></label>
+              <div class="relative" id="cr-with-wrapper">
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg></div>
+                <input id="cr-with" type="text" placeholder="Select target table…" autocomplete="off"
+                  class="w-full h-11 pl-10 pr-3 text-[14px] border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors"
+                  oninput="filterCrTableDd('cr-with','cr-with-dd')" onfocus="openCrTableDd('cr-with','cr-with-dd')" onclick="event.stopPropagation();openCrTableDd('cr-with','cr-with-dd')" />
+                <div id="cr-with-dd" class="hidden absolute left-0 top-full mt-1.5 w-full z-[300] bg-white border border-gray-200 rounded-xl overflow-y-auto" style="box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:180px"><div id="cr-with-dd-list"></div></div>
+              </div>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Join Condition <span class="text-red-400">*</span></label>
+              <input id="cr-on" type="text" placeholder="e.g. users.id = orders.user_id"
+                class="w-full h-11 px-4 text-[13px] font-mono border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors" />
+              <p class="text-[11px] text-gray-400 mt-1.5">Use table.column = table.column format</p>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Description <span class="text-gray-400 font-normal">(optional)</span></label>
+              <input id="cr-desc" type="text" placeholder="Describe the relationship…"
+                class="w-full h-11 px-4 text-[14px] border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors" />
+            </div>
+          </div>
+          <div class="flex-shrink-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100" style="background:#FAFAFA">
+            <button onclick="closeCrModal()" class="h-10 px-5 rounded-xl text-[13px] font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button onclick="saveCreateRelation()" class="h-10 px-7 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save Relationship</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /view-create-relation -->
 
     <!-- ─── VIEW 2: Add Datasource (connector picker) ─── -->
     <div id="view-add" class="view flex-col flex-1 overflow-hidden">
@@ -1913,6 +2009,7 @@
       'view-link-ws':        { title: 'Link Datasource',        desc: 'Select a datasource to add to this workspace',  back: 'view-list' },
       'view-link-ws-tables': { title: 'Configure Table Access', desc: 'Choose which tables to expose in this workspace', back: 'view-link-ws' },
       'view-link-proj':      { title: 'Link Datasource',        desc: 'Add an org datasource to this project',           back: 'view-list' },
+      'view-create-relation': { title: 'Relationship',            desc: 'Define a relationship between two tables',         back: 'view-list' },
       'view-wizard':  { title: null,                    desc: null,                                            back: 'view-add' },
     };
     let _subTopbarBack = null;
@@ -3925,24 +4022,25 @@
 
       if (isWsOrProj) {
         menu.innerHTML = `
+          <button onclick="event.stopPropagation();openDsRelations('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+            Relationship
+          </button>
+          <div class="my-1 border-t border-gray-100"></div>
           ${isWs ? `
-          <button onclick="event.stopPropagation();removeWsAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+          <button onclick="event.stopPropagation();removeWsAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
             Remove from Workspace
           </button>` : ''}
           ${isProj ? `
-          <button onclick="event.stopPropagation();toggleProjAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+          <button onclick="event.stopPropagation();toggleProjAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
             Remove from Project
           </button>` : ''}
         `;
       } else {
         menu.innerHTML = `
-          <button onclick="syncDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
-            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-            Sync Now
-          </button>
-          <button onclick="openDetailPanel('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">
+          <button onclick="openDetailPanel('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
             <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
             Edit Connection
           </button>
@@ -3957,6 +4055,264 @@
     function closeDsCardMenus() {
       const m = document.getElementById('ds-card-menu-portal');
       if (m) m.remove();
+    }
+
+    function openDsRelations(id) {
+      const ds = _dsList.find(d => d.id === id);
+      if (!ds) return;
+      _crDsId = id;
+      document.getElementById('cr-ds-icon').innerHTML = connectorIcon(ds.connector, 18);
+      document.getElementById('cr-ds-label').textContent = ds.name + ' · ' + ds.connector;
+      const searchEl = document.getElementById('cr-search');
+      if (searchEl) searchEl.value = '';
+      _crRelView = 'list';
+      setCrRelView('list');
+      showView('view-create-relation');
+    }
+
+    function renderCrRelList() {
+      const ds = _dsList.find(d => d.id === _crDsId);
+      const tables = ds?.tables_list || [];
+      const q = (document.getElementById('cr-search')?.value || '').toLowerCase().trim();
+      const all = [];
+      tables.forEach(tbl => {
+        (tbl.relations || []).forEach((rel, ri) => {
+          if (!q || tbl.name.toLowerCase().includes(q) || rel.with.toLowerCase().includes(q)) {
+            all.push({ from: tbl.name, to: rel.with, type: rel.type, on: rel.on, desc: rel.desc, tblName: tbl.name, ri });
+          }
+        });
+      });
+      // update total count (always unfiltered)
+      const totalCount = tables.reduce((s, t) => s + (t.relations?.length || 0), 0);
+      const countEl = document.getElementById('cr-rel-count');
+      if (countEl) countEl.textContent = totalCount;
+      const container = document.getElementById('cr-relations-list');
+      if (!container) return;
+      const CR_LABELS = { 'one-to-many':'1 \u2192 N', 'many-to-one':'N \u2192 1', 'one-to-one':'1 \u2192 1', 'many-to-many':'N \u2192 N' };
+      const tblIcon = `<svg class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>`;
+      const editBtn = (r) => `<button onclick="openCrModal('${r.tblName}',${r.ri})" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>Edit</button>`;
+      const delBtn  = (r) => `<button onclick="deleteCrRelation('${r.tblName}',${r.ri})" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>Delete</button>`;
+
+      if (!all.length) {
+        container.innerHTML = totalCount === 0 ? `
+          <div class="flex flex-col items-center justify-center h-[360px] text-center">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style="background:#EEF2FF">
+              <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+            </div>
+            <p class="text-[16px] font-bold text-gray-700 mb-1">No relationships yet</p>
+            <p class="text-[13px] text-gray-400 mb-6">Define how tables relate to each other</p>
+            <button onclick="openCrModal()" class="flex items-center gap-1.5 h-9 px-5 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add First Relationship
+            </button>
+          </div>` :
+          `<div class="flex flex-col items-center justify-center h-48 text-center">
+            <p class="text-[14px] font-semibold text-gray-500 mb-1">No matches for "${q}"</p>
+            <p class="text-[12px] text-gray-400">Try a different table name</p>
+          </div>`;
+        return;
+      }
+
+      if (_crRelView === 'card') {
+        container.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">` +
+          all.map((r) => `
+            <div class="flex flex-col bg-white rounded-2xl border border-gray-100 p-5 hover:border-indigo-200 hover:shadow-sm transition-all">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="flex items-center gap-2 flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-50">${tblIcon}<span class="text-[13px] font-semibold text-gray-800 truncate">${r.from}</span></div>
+                <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black text-indigo-700" style="background:#EEF2FF">${CR_LABELS[r.type] || r.type}</span>
+                <div class="flex items-center gap-2 flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-50">${tblIcon}<span class="text-[13px] font-semibold text-gray-800 truncate">${r.to}</span></div>
+              </div>
+              ${r.on ? `<p class="text-[12px] font-mono text-gray-500 px-1 mb-1 truncate">${r.on}</p>` : ''}
+              ${r.desc ? `<p class="text-[12px] text-gray-400 px-1">${r.desc}</p>` : ''}
+              <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                ${editBtn(r)}${delBtn(r)}
+              </div>
+            </div>`).join('') + `</div>`;
+      } else {
+        // list view — flat rows matching org tab style
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">` +
+          all.map((r, i) => `
+            <div class="flex items-center hover:bg-gray-50 transition-colors ${i < all.length - 1 ? 'border-b border-gray-100' : ''}">
+              <div class="flex items-center gap-2 flex-1 min-w-0 px-4 py-3">
+                <div class="flex items-center gap-1.5 flex-shrink-0">${tblIcon}<span class="text-[13px] font-semibold text-gray-800">${r.from}</span></div>
+                <span class="flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-black text-indigo-700 mx-1" style="background:#EEF2FF">${CR_LABELS[r.type] || r.type}</span>
+                <div class="flex items-center gap-1.5 flex-shrink-0">${tblIcon}<span class="text-[13px] font-semibold text-gray-800">${r.to}</span></div>
+              </div>
+              <div class="flex-1 min-w-0 px-2 py-3 hidden md:block">
+                ${r.on ? `<span class="text-[12px] font-mono text-gray-500 truncate block">${r.on}</span>` : ''}
+                ${r.desc ? `<span class="text-[12px] text-gray-400 truncate block">${r.desc}</span>` : ''}
+              </div>
+              <div class="flex items-center gap-1 flex-shrink-0 pr-4">
+                ${editBtn(r)}${delBtn(r)}
+              </div>
+            </div>`).join('') + `
+          </div>`;
+      }
+    }
+
+    let _crRelView = 'list';
+    function setCrRelView(v) {
+      _crRelView = v;
+      const listBtn = document.getElementById('cr-view-list-btn');
+      const cardBtn = document.getElementById('cr-view-card-btn');
+      if (listBtn && cardBtn) {
+        listBtn.className = 'flex items-center justify-center w-8 h-7 rounded-lg transition-all ' + (v === 'list' ? 'bg-white text-gray-700' : 'text-gray-400');
+        listBtn.style.boxShadow = v === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+        cardBtn.className = 'flex items-center justify-center w-8 h-7 rounded-lg transition-all ' + (v === 'card' ? 'bg-white text-gray-700' : 'text-gray-400');
+        cardBtn.style.boxShadow = v === 'card' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
+      }
+      renderCrRelList();
+    }
+    function openCrModal(tblName, relIdx) {
+      _crEditTbl = (tblName !== undefined) ? tblName : null;
+      _crEditIdx = (relIdx !== undefined) ? Number(relIdx) : -1;
+      const ds = _dsList.find(d => d.id === _crDsId);
+      const tables = ds?.tables_list || [];
+      renderCrTableDdList('cr-from-dd-list', tables, '');
+      renderCrTableDdList('cr-with-dd-list', tables, '');
+      const titleEl = document.getElementById('cr-modal-title');
+      if (_crEditTbl !== null && _crEditIdx >= 0) {
+        const tbl = tables.find(t => t.name === _crEditTbl);
+        const rel = tbl?.relations?.[_crEditIdx];
+        if (titleEl) titleEl.textContent = 'Edit Relationship';
+        document.getElementById('cr-from').value = _crEditTbl;
+        document.getElementById('cr-with').value = rel?.with || '';
+        document.getElementById('cr-on').value   = rel?.on   || '';
+        document.getElementById('cr-desc').value = rel?.desc || '';
+        setCrCardinality(rel?.type || 'one-to-many');
+      } else {
+        if (titleEl) titleEl.textContent = 'Add Relationship';
+        document.getElementById('cr-from').value = '';
+        document.getElementById('cr-with').value = '';
+        document.getElementById('cr-on').value   = '';
+        document.getElementById('cr-desc').value = '';
+        setCrCardinality('one-to-many');
+      }
+      ['cr-from','cr-with','cr-on'].forEach(id => { document.getElementById(id).style.borderColor = ''; });
+      document.getElementById('cr-modal').classList.remove('hidden');
+    }
+
+    function closeCrModal() {
+      document.getElementById('cr-modal').classList.add('hidden');
+      document.getElementById('cr-from-dd')?.classList.add('hidden');
+      document.getElementById('cr-with-dd')?.classList.add('hidden');
+    }
+
+    function deleteCrRelation(tblName, relIdx) {
+      const ds = _dsList.find(d => d.id === _crDsId);
+      const tbl = ds?.tables_list?.find(t => t.name === tblName);
+      if (tbl?.relations) {
+        tbl.relations.splice(relIdx, 1);
+        renderCrRelList();
+      }
+    }
+
+    let _crDsId = null;
+    let _crCardinality = 'one-to-many';
+    let _crEditTbl = null;
+    let _crEditIdx = -1;
+
+    function setCrCardinality(val) {
+      _crCardinality = val;
+      document.querySelectorAll('.cr-card-btn').forEach(btn => {
+        const active = btn.id === 'cr-card-' + val;
+        if (active) {
+          btn.classList.add('border-indigo-400', 'text-indigo-700', 'bg-indigo-50');
+          btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-white');
+        } else {
+          btn.classList.remove('border-indigo-400', 'text-indigo-700', 'bg-indigo-50');
+          btn.classList.add('border-gray-200', 'text-gray-600', 'bg-white');
+        }
+      });
+    }
+
+    function renderCrTableDdList(listId, tables, q) {
+      const lq = (q || '').toLowerCase();
+      const filtered = tables.filter(t => !lq || t.name.toLowerCase().includes(lq));
+      document.getElementById(listId).innerHTML = filtered.length
+        ? filtered.map(t => `
+          <button type="button" onclick="selectCrTable('${listId}','${t.name}')" class="w-full flex items-center gap-2.5 px-3 h-9 text-left hover:bg-indigo-50 transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+            <span class="text-[13px] text-gray-800">${t.name}</span>
+          </button>`).join('')
+        : '<p class="px-3 py-2.5 text-[12px] text-gray-400">No tables found</p>';
+    }
+
+    function openCrTableDd(inputId, ddId) {
+      const q = document.getElementById(inputId).value;
+      const ds = _dsList.find(d => d.id === _crDsId);
+      renderCrTableDdList(ddId + '-list', ds?.tables_list || [], q);
+      document.getElementById(ddId).classList.remove('hidden');
+    }
+
+    function filterCrTableDd(inputId, ddId) {
+      const q = document.getElementById(inputId).value;
+      const ds = _dsList.find(d => d.id === _crDsId);
+      renderCrTableDdList(ddId + '-list', ds?.tables_list || [], q);
+      document.getElementById(ddId).classList.remove('hidden');
+    }
+
+    function selectCrTable(listId, name) {
+      // listId is like "cr-from-dd-list" → inputId is "cr-from", ddId is "cr-from-dd"
+      const inputId = listId.replace('-dd-list', '');
+      const ddId    = listId.replace('-list', '');
+      document.getElementById(inputId).value = name;
+      document.getElementById(inputId).style.borderColor = '';
+      document.getElementById(ddId).classList.add('hidden');
+      // Auto-fill join condition hint if both tables set
+      autofillCrOn();
+    }
+
+    function autofillCrOn() {
+      const from = document.getElementById('cr-from').value.trim();
+      const to   = document.getElementById('cr-with').value.trim();
+      const onEl = document.getElementById('cr-on');
+      if (from && to && !onEl.value.trim()) {
+        onEl.value = from + '.id = ' + to + '.' + from + '_id';
+      }
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#cr-from-wrapper')) document.getElementById('cr-from-dd')?.classList.add('hidden');
+      if (!e.target.closest('#cr-with-wrapper')) document.getElementById('cr-with-dd')?.classList.add('hidden');
+    });
+
+    function saveCreateRelation() {
+      const fromVal = document.getElementById('cr-from').value.trim();
+      const withVal = document.getElementById('cr-with').value.trim();
+      const onVal   = document.getElementById('cr-on').value.trim();
+      let valid = true;
+      ['cr-from','cr-with','cr-on'].forEach(id => { document.getElementById(id).style.borderColor = ''; });
+      if (!fromVal) { document.getElementById('cr-from').style.borderColor = '#EF4444'; valid = false; }
+      if (!withVal) { document.getElementById('cr-with').style.borderColor = '#EF4444'; valid = false; }
+      if (!onVal)   { document.getElementById('cr-on').style.borderColor   = '#EF4444'; valid = false; }
+      if (!valid) return;
+
+      const ds = _dsList.find(d => d.id === _crDsId);
+      const tables = ds?.tables_list || [];
+      const descVal = document.getElementById('cr-desc').value.trim();
+
+      if (_crEditTbl !== null && _crEditIdx >= 0) {
+        const oldTbl = tables.find(t => t.name === _crEditTbl);
+        if (oldTbl?.relations) oldTbl.relations.splice(_crEditIdx, 1);
+        const newTbl = tables.find(t => t.name === fromVal);
+        if (newTbl) {
+          if (!newTbl.relations) newTbl.relations = [];
+          newTbl.relations.push({ with: withVal, type: _crCardinality, on: onVal, desc: descVal });
+        }
+      } else {
+        const fromTbl = tables.find(t => t.name === fromVal);
+        if (fromTbl) {
+          if (!fromTbl.relations) fromTbl.relations = [];
+          fromTbl.relations.push({ with: withVal, type: _crCardinality, on: onVal, desc: descVal });
+        }
+      }
+      const wasEdit = _crEditIdx >= 0;
+      _crEditTbl = null;
+      _crEditIdx = -1;
+      closeCrModal();
+      renderCrRelList();
+      showToast(wasEdit ? 'Relationship updated!' : 'Relationship created!');
     }
     document.addEventListener('click', closeDsCardMenus);
 
