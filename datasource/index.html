@@ -685,19 +685,6 @@
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             <input id="ws-search" type="text" placeholder="Search datasources…" oninput="filterWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
           </div>
-          <div class="relative flex-1 max-w-xs" id="ws-add-wrapper">
-            <button onclick="toggleWsDropdown()" class="w-full flex items-center gap-2 px-3 h-9 rounded-lg border border-gray-200 bg-white text-[13px] text-gray-500 hover:border-indigo-300 transition-colors" id="ws-add-btn">
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              <span id="ws-add-label" class="flex-1 text-left truncate">Link datasource…</span>
-              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-            </button>
-            <!-- Dropdown list -->
-            <div id="ws-add-dd" class="hidden absolute top-full left-0 mt-1 w-full z-50 bg-white border border-gray-200 rounded-xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12)">
-              <div id="ws-add-dd-list"></div>
-              <div id="ws-add-dd-empty" class="hidden px-4 py-3 text-[12px] text-gray-400 text-center">All datasources already assigned</div>
-            </div>
-          </div>
-          <!-- Confirm button, shown after selection -->
           <div id="ws-add-actions" class="hidden items-center gap-1.5 flex-shrink-0">
             <button id="ws-add-confirm" onclick="confirmWsAdd()" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
                Add &amp; configure tables
@@ -707,6 +694,15 @@
             </button>
           </div>
           <div class="flex-1"></div>
+          <div id="ws-add-wrapper" class="flex-shrink-0">
+            <button onclick="showView('view-link-ws')" id="ws-add-btn" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+              Link Datasource
+            </button>
+            <!-- Hidden elements kept for JS compatibility -->
+            <div id="ws-add-dd" class="hidden"><div id="ws-add-dd-list"></div><div id="ws-add-dd-empty"></div></div>
+            <span id="ws-add-label" class="hidden"></span>
+          </div>
           <!-- View toggle -->
           <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
             <button id="ws-view-list" onclick="setWsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
@@ -796,12 +792,65 @@
         </div>
         <!-- Toolbar -->
         <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center justify-between gap-3">
-          <!-- Type pills -->
-          <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
-            <button onclick="setProjTypeFilter('all')" id="proj-pill-all" class="proj-tpill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
-            <button onclick="setProjTypeFilter('artifact')" id="proj-pill-artifact" class="proj-tpill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">Artifact</button>
-            <button onclick="setProjTypeFilter('datasource')" id="proj-pill-datasource" class="proj-tpill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">Datasource</button>
+
+          <!-- Left: Category filter + Status pills (mirrors Org scope) -->
+          <div class="flex items-center gap-2 flex-shrink-0">
+
+            <!-- Category dropdown -->
+            <div class="relative flex-shrink-0">
+              <button onclick="toggleProjCatDd()" id="proj-cat-dd-btn" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
+                <span id="proj-cat-label">Category</span>
+                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div id="proj-cat-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[180px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+                <button onclick="setProjCatFilter('all')" id="pdsf-all" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] bg-indigo-50 text-indigo-600 transition-colors text-left font-bold">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                  All
+                </button>
+                <button onclick="setProjCatFilter('Postgres')" id="pdsf-Postgres" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><ellipse cx="32" cy="24" rx="18" ry="18" fill="#336791" opacity="0.15"/><path d="M20 20 C18 14 22 8 30 8 C38 8 44 14 44 22 C44 30 38 36 32 38 C28 39 26 42 26 46 L30 46" stroke="#336791" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="38" cy="12" r="4" fill="#336791" opacity="0.5"/><path d="M32 24 C32 28 35 32 32 36" stroke="#336791" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                  Postgres
+                </button>
+                <button onclick="setProjCatFilter('MySQL')" id="pdsf-MySQL" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><path d="M12 44 C12 40 16 36 20 32 L24 20 L28 32 L36 16 L40 32 L44 24 L52 44" stroke="#00758F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 20 C55 18 56 22 54 24" stroke="#F29111" stroke-width="2" stroke-linecap="round"/></svg>
+                  MySQL
+                </button>
+                <button onclick="setProjCatFilter('MongoDB')" id="pdsf-MongoDB" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><path d="M32 8 C32 8 44 18 44 32 C44 42 38 50 32 54 C26 50 20 42 20 32 C20 18 32 8 32 8Z" fill="#4FAE41" opacity="0.85"/><path d="M32 10 L32 52" stroke="#3D8C36" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+                  MongoDB
+                </button>
+                <button onclick="setProjCatFilter('SQL Server')" id="pdsf-SQL Server" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><ellipse cx="32" cy="20" rx="18" ry="7" fill="#CC2927" opacity="0.15" stroke="#CC2927" stroke-width="1.5"/><path d="M14 20 L14 44 C14 48 22 51 32 51 C42 51 50 48 50 44 L50 20" stroke="#CC2927" stroke-width="1.5"/><path d="M14 32 C14 36 22 39 32 39 C42 39 50 36 50 32" stroke="#CC2927" stroke-width="1.2"/></svg>
+                  SQL Server
+                </button>
+                <button onclick="setProjCatFilter('Excel')" id="pdsf-Excel" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><rect x="4" y="4" width="24" height="40" rx="3" fill="#1D6F42"/><rect x="20" y="4" width="24" height="40" rx="3" fill="#217346"/><path d="M12 16 L20 28 M20 16 L12 28" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+                  Excel
+                </button>
+                <button onclick="setProjCatFilter('CSV')" id="pdsf-CSV" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><rect x="4" y="4" width="40" height="40" rx="4" fill="#1A7A4A" opacity="0.12"/><rect x="4" y="4" width="40" height="40" rx="4" stroke="#1A7A4A" stroke-width="1.5"/><text x="24" y="22" font-size="9" font-family="Inter,sans-serif" font-weight="700" fill="#1A7A4A" text-anchor="middle">CSV</text><line x1="10" y1="28" x2="38" y2="28" stroke="#1A7A4A" stroke-width="1.2" opacity="0.4"/><line x1="10" y1="34" x2="38" y2="34" stroke="#1A7A4A" stroke-width="1.2" opacity="0.4"/></svg>
+                  CSV
+                </button>
+                <button onclick="setProjCatFilter('REST API')" id="pdsf-REST API" class="proj-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                  <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><rect x="8" y="8" width="32" height="32" rx="4" stroke="#374151" stroke-width="1.5"/><path d="M14 20 L18 24 L14 28" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="20" y1="28" x2="34" y2="28" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  REST API
+                </button>
+              </div>
+            </div>
+
+            <!-- Status pills -->
+            <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
+              <button onclick="setProjStatus('all')" id="proj-spill-all" class="proj-spill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
+              <button onclick="setProjStatus('Connected')" id="proj-spill-Connected" class="proj-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Connected
+              </button>
+              <button onclick="setProjStatus('Error')" id="proj-spill-Error" class="proj-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>Error
+              </button>
+            </div>
           </div>
+
           <!-- Search -->
           <div class="relative flex-1 min-w-0">
             <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -1298,6 +1347,76 @@
     </div><!-- /view-add -->
 
 
+    <!-- ─── VIEW: Link Datasource to Workspace ─── -->
+    <div id="view-link-ws" class="view flex-col flex-1 overflow-hidden">
+      <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center gap-3">
+        <div class="relative flex-1 max-w-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="link-ws-search" type="text" placeholder="Search datasources…" oninput="filterLinkWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" />
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto px-6 py-4 bg-gray-50/40">
+        <div id="link-ws-list" class="flex flex-col gap-2"></div>
+        <div id="link-ws-empty" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-100">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+          </div>
+          <p class="text-[13px] font-semibold text-gray-700">All datasources already linked</p>
+          <p class="text-[12px] text-gray-400">Every available datasource is already assigned to this workspace.</p>
+        </div>
+      </div>
+    </div><!-- /view-link-ws -->
+
+
+    <!-- ─── VIEW: Link WS – Table Selector ─── -->
+    <div id="view-link-ws-tables" class="view flex-col flex-1 overflow-hidden">
+      <!-- Toolbar -->
+      <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center gap-3">
+        <div class="relative flex-1 max-w-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="lwtbl-search" type="text" placeholder="Search tables…" oninput="filterLwTblList(this.value)" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" />
+        </div>
+        <label class="flex items-center gap-2 cursor-pointer select-none flex-shrink-0">
+          <input id="lwtbl-all" type="checkbox" onchange="toggleAllLwTbl(this.checked)" class="w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer" />
+          <span class="text-[13px] font-semibold text-gray-700">Select all</span>
+        </label>
+        <span id="lwtbl-count" class="text-[12px] text-gray-400 font-medium flex-shrink-0"></span>
+        <div class="flex-1"></div>
+        <button onclick="showView('view-link-ws')" class="h-9 px-4 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0">Cancel</button>
+        <button onclick="saveLwTblPicker()" class="h-9 px-5 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity flex-shrink-0" style="background:#3B5BDB">Save &amp; Link</button>
+      </div>
+      <!-- Table list -->
+      <div class="flex-1 overflow-y-auto px-6 py-4 bg-gray-50/40">
+        <div id="lwtbl-list" class="flex flex-col gap-1"></div>
+        <div id="lwtbl-empty" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
+          <p class="text-[13px] font-semibold text-gray-700">No tables available</p>
+          <p class="text-[12px] text-gray-400">This datasource has no table metadata.</p>
+        </div>
+      </div>
+    </div><!-- /view-link-ws-tables -->
+
+
+    <!-- ─── VIEW: Link Datasource to Project ─── -->
+    <div id="view-link-proj" class="view flex-col flex-1 overflow-hidden">
+      <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center gap-3">
+        <div class="relative flex-1 max-w-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+          <input id="link-proj-search" type="text" placeholder="Search datasources…" oninput="filterLinkProjList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" />
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto px-6 py-4 bg-gray-50/40">
+        <div id="link-proj-list" class="flex flex-col gap-2"></div>
+        <div id="link-proj-empty" class="hidden flex-col items-center justify-center py-20 gap-3 text-center">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-100">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+          </div>
+          <p class="text-[13px] font-semibold text-gray-700">All datasources already in project</p>
+          <p class="text-[12px] text-gray-400">Every available org datasource is already linked to this project.</p>
+        </div>
+      </div>
+    </div><!-- /view-link-proj -->
+
+
     <!-- ─── VIEW 3: Connector Wizard ─── -->
     <div id="view-wizard" class="view flex-col flex-1 overflow-hidden">
 
@@ -1705,6 +1824,9 @@
       'view-list':    { title: 'Datasources',           desc: 'Manage and monitor all connected data sources', back: null },
       'view-detail':  { title: '',                        desc: '',                                              back: 'view-list' },
       'view-add':     { title: 'Link Datasource',        desc: 'Choose a connector to connect more data',       back: 'view-list' },
+      'view-link-ws':        { title: 'Link Datasource',        desc: 'Select a datasource to add to this workspace',  back: 'view-list' },
+      'view-link-ws-tables': { title: 'Configure Table Access', desc: 'Choose which tables to expose in this workspace', back: 'view-link-ws' },
+      'view-link-proj':      { title: 'Link Datasource',        desc: 'Add an org datasource to this project',           back: 'view-list' },
       'view-wizard':  { title: null,                    desc: null,                                            back: 'view-add' },
     };
     let _subTopbarBack = null;
@@ -1740,6 +1862,9 @@
       document.getElementById(id).classList.add('active');
       updateSubTopbar(id);
       if (id === 'view-list') { renderDsList(); updateScopeCounts(); }
+      if (id === 'view-link-ws') { renderLinkWsView(); }
+      if (id === 'view-link-proj') { renderLinkProjView(); }
+      if (id === 'view-link-ws-tables') { /* populated by openTblPickerView */ }
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -1765,7 +1890,7 @@
     const DEFAULT_DS = [
       {
         id: 'ds-1', name: 'Production Analytics DB', connector: 'Postgres', type: 'Database',
-        status: 'Connected', tables: 18, host: 'prod-db.internal.com', port: '5432',
+        status: 'Connected', tables: 20, host: 'prod-db.internal.com', port: '5432',
         database: 'analytics_prod', updated: '2 min ago', updatedMs: Date.now() - 2*60*1000,
         owner: 'Manish K.', schedule: 'Every 6 hours', health: 98,
         syncLog: [
@@ -1804,10 +1929,20 @@
               { with:'invoices', type:'one-to-one',  on:'orders.id = invoices.order_id', desc:'Invoice' },
             ],
           },
-          { name:'products', rows:'3,847', cols:9, desc:'Product catalog' },
-          { name:'analytics_events', rows:'8,421,033', cols:7, desc:'Raw event stream' },
-          { name:'sessions', rows:'512,400', cols:6, desc:'User session records' },
-          { name:'invoices', rows:'84,200', cols:14, desc:'Invoice and billing records' },
+          { name:'products',          rows:'3,847',      cols:9,  desc:'Product catalog' },
+          { name:'analytics_events',  rows:'8,421,033',  cols:7,  desc:'Raw event stream' },
+          { name:'sessions',          rows:'512,400',    cols:6,  desc:'User session records' },
+          { name:'invoices',          rows:'84,200',     cols:14, desc:'Invoice and billing records' },
+          { name:'categories',        rows:'248',        cols:5,  desc:'Product category hierarchy' },
+          { name:'subscriptions',     rows:'18,920',     cols:11, desc:'Active subscription plans' },
+          { name:'payments',          rows:'1,102,340',  cols:9,  desc:'Payment transaction log' },
+          { name:'refunds',           rows:'24,810',     cols:8,  desc:'Refund and chargeback records' },
+          { name:'notifications',     rows:'3,812,000',  cols:7,  desc:'Push and email notification log' },
+          { name:'audit_logs',        rows:'9,540,200',  cols:6,  desc:'System-wide audit trail' },
+          { name:'roles',             rows:'12',         cols:4,  desc:'User role definitions' },
+          { name:'permissions',       rows:'84',         cols:5,  desc:'Role-permission mapping' },
+          { name:'feature_flags',     rows:'62',         cols:6,  desc:'Feature toggle configuration' },
+          { name:'api_tokens',        rows:'8,104',      cols:7,  desc:'API access token registry' },
         ],
       },
       {
@@ -1880,16 +2015,31 @@
     function loadDsList() {
       let extra = [];
       try { extra = JSON.parse(localStorage.getItem('aibii_added_datasources') || '[]'); } catch(e){}
+      const defaultTables = {
+        'Postgres':   ['users','orders','products','sessions','invoices','analytics_events','audit_logs','payments'],
+        'MySQL':      ['customers','leads','deals','contacts','activities','tasks','campaigns','accounts'],
+        'MongoDB':    ['documents','users','events','logs','sessions','configs','metrics','exports'],
+        'SQL Server': ['dbo_users','dbo_orders','dbo_products','dbo_inventory','dbo_reports','dbo_audit'],
+        'Excel':      ['Sheet1 – Data','Sheet2 – Summary','Sheet3 – Charts','Sheet4 – Forecast'],
+        'CSV':        ['data.csv','records.csv','export.csv'],
+        'JSON / JSONL':['events.jsonl','logs.jsonl','records.json'],
+        'REST API':   ['/users','/orders','/products','/events','/reports','/webhooks'],
+        'GraphQL':    ['query_users','query_orders','query_products','mutation_create','mutation_update'],
+        'MCP':        ['context','memory','tools','sessions'],
+      };
       _dsList = [
         ...DEFAULT_DS,
-        ...extra.map((d, i) => ({
-          id: 'ds-extra-' + i, name: d.name, connector: d.connector, type: d.type,
-          status: d.status || 'Connected', tables: d.tables || 0,
-          updated: 'Just added', updatedMs: Date.now(),
-          owner: 'Manish K.', schedule: 'Every 6 hours', health: 100,
-          syncLog: [{ ts: new Date().toLocaleString(), status: 'success', msg: 'Datasource connected' }],
-          tables_list: [],
-        }))
+        ...extra.map((d, i) => {
+          const tblNames = defaultTables[d.connector] || ['table_1','table_2','table_3'];
+          return {
+            id: 'ds-extra-' + i, name: d.name, connector: d.connector, type: d.type,
+            status: d.status || 'Connected', tables: tblNames.length,
+            updated: 'Just added', updatedMs: Date.now(),
+            owner: 'Manish K.', schedule: 'Every 6 hours', health: 100,
+            syncLog: [{ ts: new Date().toLocaleString(), status: 'success', msg: 'Datasource connected' }],
+            tables_list: tblNames.map(name => ({ name, rows: '—', cols: 0, desc: '' })),
+          };
+        })
       ];
     }
 
@@ -3184,7 +3334,25 @@
         deduped.push(newDs);
         localStorage.setItem('aibii_added_datasources', JSON.stringify(deduped));
       } catch(e) {}
+
+      // Refresh _dsList so we can find the newly created datasource's generated ID
+      loadDsList();
+      const added = _dsList.find(d => d.name === connName);
+      if (added) {
+        // Always assign to workspace so it shows up in org AND workspace scopes
+        if (!_wsAssignments[added.id]) _wsAssignments[added.id] = { assigned: true, tables: null };
+        else _wsAssignments[added.id].assigned = true;
+        // If created from the Project scope, also auto-assign to the current project
+        if (_currentScope === 'proj') {
+          if (!_allProjAssignments[_currentProjectId]) _allProjAssignments[_currentProjectId] = new Set();
+          _allProjAssignments[_currentProjectId].add(added.id);
+        }
+      }
+
+      const returnScope = _currentScope;
       showView('view-list');
+      // Return to whichever scope triggered the wizard
+      if (returnScope === 'proj') switchDsScope('proj');
       showToast('Datasource connected successfully!');
     }
 
@@ -3623,10 +3791,9 @@
       if (la) la.style.display = (scope === 'org' || scope === 'proj') ? 'flex' : 'none';
       // Render relevant scope
       updateScopeCounts();
+      if (scope === 'org')  renderDsList();
       if (scope === 'ws')   renderWsScope();
-      if (scope === 'proj') {
-        renderProjScope();
-      }
+      if (scope === 'proj') renderProjScope();
     }
 
     function updateScopeCounts() {
@@ -3706,12 +3873,7 @@
     }
 
     function filterProjList() {
-      const q = (document.getElementById('proj-search')?.value || '').toLowerCase();
-      // Grid view uses .report-card, List view uses .assign-row
-      document.querySelectorAll('#proj-assign-list .report-card, #proj-assign-list .assign-row').forEach(row => {
-        const name = (row.dataset.name || '').toLowerCase();
-        row.style.display = name.includes(q) ? '' : 'none';
-      });
+      renderProjScope();
     }
 
     function setProjView(v) {
@@ -3860,6 +4022,103 @@
       dd.classList.toggle('hidden');
     }
 
+    function renderLinkWsView() {
+      const q = (document.getElementById('link-ws-search')?.value || '').toLowerCase();
+      const unassigned = _dsList.filter(ds => ds.status !== 'Pending' && !_wsAssignments[ds.id]?.assigned);
+      const listEl  = document.getElementById('link-ws-list');
+      const emptyEl = document.getElementById('link-ws-empty');
+      if (!listEl) return;
+      if (!unassigned.length) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        emptyEl.classList.add('flex');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+      emptyEl.classList.remove('flex');
+      const pal = { Connected:'#16A34A', Error:'#DC2626', Pending:'#D97706' };
+      listEl.innerHTML = unassigned.map(ds => {
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        const dot = pal[ds.status] || '#9CA3AF';
+        return `
+        <div class="link-ws-row flex items-center gap-4 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:border-indigo-200 hover:shadow-sm transition-all" data-name="${ds.name.toLowerCase()}">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3F4F6">${connectorIcon(ds.connector, 20)}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[14px] font-semibold text-gray-900 truncate">${ds.name}</p>
+            <p class="text-[12px] text-gray-400 mt-0.5">${ds.connector} &middot; ${tblCount} table${tblCount !== 1 ? 's' : ''}</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <span class="inline-block w-1.5 h-1.5 rounded-full" style="background:${dot}"></span>
+            <span class="text-[12px] font-medium" style="color:${dot}">${ds.status}</span>
+          </div>
+          <button onclick="linkWsDs('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-4 h-8 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+            Link
+          </button>
+        </div>`;
+      }).join('');
+    }
+
+    function filterLinkWsList() {
+      const q = (document.getElementById('link-ws-search')?.value || '').toLowerCase();
+      document.querySelectorAll('#link-ws-list .link-ws-row').forEach(row => {
+        row.style.display = (row.dataset.name || '').includes(q) ? '' : 'none';
+      });
+    }
+
+    function renderLinkProjView() {
+      const available = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Syncing' && !_projAssignments.has(ds.id));
+      const listEl  = document.getElementById('link-proj-list');
+      const emptyEl = document.getElementById('link-proj-empty');
+      if (!listEl) return;
+      if (!available.length) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
+        return;
+      }
+      emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
+      const pal = { Connected:'#16A34A', Error:'#DC2626', Pending:'#D97706' };
+      listEl.innerHTML = available.map(ds => {
+        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+        const dot = pal[ds.status] || '#9CA3AF';
+        return `
+        <div class="link-proj-row flex items-center gap-4 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:border-indigo-200 hover:shadow-sm transition-all" data-name="${ds.name.toLowerCase()}">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3F4F6">${connectorIcon(ds.connector, 20)}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[14px] font-semibold text-gray-900 truncate">${ds.name}</p>
+            <p class="text-[12px] text-gray-400 mt-0.5">${ds.connector} &middot; ${tblCount} table${tblCount !== 1 ? 's' : ''}</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <span class="inline-block w-1.5 h-1.5 rounded-full" style="background:${dot}"></span>
+            <span class="text-[12px] font-medium" style="color:${dot}">${ds.status}</span>
+          </div>
+          <button onclick="linkProjDs('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-4 h-8 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+            Link
+          </button>
+        </div>`;
+      }).join('');
+    }
+
+    function filterLinkProjList() {
+      const q = (document.getElementById('link-proj-search')?.value || '').toLowerCase();
+      document.querySelectorAll('#link-proj-list .link-proj-row').forEach(row => {
+        row.style.display = (row.dataset.name || '').includes(q) ? '' : 'none';
+      });
+    }
+
+    function linkProjDs(dsId) {
+      _projAssignments.add(dsId);
+      updateScopeCounts();
+      showView('view-list');
+      switchDsScope('proj');
+      showToast('Datasource linked to project.');
+    }
+
+    function linkWsDs(dsId) {
+      openTblPickerView(dsId);
+    }
+
     function selectWsAdd(dsId) {
       _wsAddPendingId = dsId;
       const ds = _dsList.find(d => d.id === dsId);
@@ -3921,18 +4180,43 @@
       if (!e.target.closest('#ds-cat-dd-btn') && !e.target.closest('#ds-cat-dd')) {
         document.getElementById('ds-cat-dd')?.classList.add('hidden');
       }
+      if (!e.target.closest('#proj-cat-dd-btn') && !e.target.closest('#proj-cat-dd')) {
+        document.getElementById('proj-cat-dd')?.classList.add('hidden');
+      }
       if (!e.target.closest('#ds-ws-dd-btn') && !e.target.closest('#ds-ws-dd')) {
         document.getElementById('ds-ws-dd')?.classList.add('hidden');
       }
     });
 
     // ── Project scope ─────────────────────────────────────────────
-    let _projTypeFilter = 'all';
+    let _projCatFilter    = 'all';
+    let _projStatusFilter = 'all';
 
-    function setProjTypeFilter(val) {
-      _projTypeFilter = val;
-      document.querySelectorAll('.proj-tpill').forEach(btn => {
-        const isActive = btn.id === 'proj-pill-' + val;
+    function toggleProjCatDd() {
+      document.getElementById('proj-cat-dd').classList.toggle('hidden');
+    }
+
+    function setProjCatFilter(type) {
+      _projCatFilter = type;
+      document.getElementById('proj-cat-label').textContent = type === 'all' ? 'Category' : type;
+      document.querySelectorAll('.proj-fpill').forEach(btn => {
+        const isActive = btn.id === 'pdsf-' + type;
+        if (isActive) {
+          btn.classList.add('bg-indigo-50', 'text-indigo-600', 'font-bold');
+          btn.classList.remove('text-gray-700');
+        } else {
+          btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'font-bold');
+          btn.classList.add('text-gray-700');
+        }
+      });
+      document.getElementById('proj-cat-dd').classList.add('hidden');
+      renderProjScope();
+    }
+
+    function setProjStatus(status) {
+      _projStatusFilter = status;
+      document.querySelectorAll('.proj-spill').forEach(btn => {
+        const isActive = btn.id === 'proj-spill-' + status;
         if (isActive) {
           btn.classList.add('bg-white', 'text-gray-900', 'border', 'border-gray-200', 'font-semibold');
           btn.classList.remove('text-gray-500', 'font-medium');
@@ -3979,8 +4263,13 @@
 
       // --- Datasource cards ---
       let dsHtml = '';
-      if (_projTypeFilter !== 'artifact') {
-        const filteredDs = wsAssigned.filter(ds => !q || ds.name.toLowerCase().includes(q));
+      {
+        const filteredDs = wsAssigned.filter(ds => {
+          if (q && !ds.name.toLowerCase().includes(q)) return false;
+          if (_projCatFilter !== 'all' && ds.connector !== _projCatFilter) return false;
+          if (_projStatusFilter !== 'all' && ds.status !== _projStatusFilter) return false;
+          return true;
+        });
         if (_projView === 'grid') {
           dsHtml = filteredDs.map(ds => {
             const a = _wsAssignments[ds.id];
@@ -4052,7 +4341,7 @@
 
       // --- Artifact cards ---
       let artHtml = '';
-      if (_projTypeFilter !== 'datasource') {
+      {
         const filteredArt = artifacts.filter(a => !q || a.name.toLowerCase().includes(q));
         if (_projView === 'grid') {
           artHtml = filteredArt.map(art => `
@@ -4102,6 +4391,90 @@
     // ── Table picker modal ────────────────────────────────────────
     let _tblPickerDsId = null;
 
+    function openTblPickerView(dsId) {
+      _tblPickerDsId = dsId;
+      const ds  = _dsList.find(d => d.id === dsId);
+      const a   = _wsAssignments[dsId] || { assigned: false, tables: null };
+      const tbl = ds?.tables_list || [];
+      const allNames = tbl.map(t => t.name);
+
+      // Update sub-topbar subtitle with datasource name
+      const meta = VIEW_META['view-link-ws-tables'];
+      VIEW_META['view-link-ws-tables'].desc = ds?.name || '';
+
+      const searchInput = document.getElementById('lwtbl-search');
+      if (searchInput) searchInput.value = '';
+
+      const listEl  = document.getElementById('lwtbl-list');
+      const emptyEl = document.getElementById('lwtbl-empty');
+
+      if (!allNames.length) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
+        document.getElementById('lwtbl-all').checked = true;
+        document.getElementById('lwtbl-count').textContent = 'All tables';
+      } else {
+        emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
+        const selected = a.tables || allNames;
+        renderLwTblList(allNames, selected);
+      }
+
+      showView('view-link-ws-tables');
+    }
+
+    function renderLwTblList(allNames, selected) {
+      const selSet = new Set(selected);
+      document.getElementById('lwtbl-all').checked = selSet.size === allNames.length;
+      document.getElementById('lwtbl-count').textContent = selSet.size + ' of ' + allNames.length + ' selected';
+      document.getElementById('lwtbl-list').innerHTML = allNames.map(name => `
+        <label class="lwtbl-row flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:border-indigo-200 cursor-pointer select-none transition-all" data-name="${name.toLowerCase()}">
+          <input type="checkbox" value="${name}" ${selSet.has(name) ? 'checked' : ''} onchange="onLwTblCheck()" class="w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer flex-shrink-0" />
+          <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+          <span class="text-[13px] font-medium text-gray-800">${name}</span>
+        </label>`).join('');
+    }
+
+    function onLwTblCheck() {
+      const visible = document.querySelectorAll('#lwtbl-list .lwtbl-row:not([style*="none"]) input[type=checkbox]');
+      const all     = document.querySelectorAll('#lwtbl-list input[type=checkbox]');
+      const checked = [...all].filter(b => b.checked).length;
+      document.getElementById('lwtbl-all').checked = checked === all.length && all.length > 0;
+      document.getElementById('lwtbl-count').textContent = checked + ' of ' + all.length + ' selected';
+    }
+
+    function toggleAllLwTbl(val) {
+      document.querySelectorAll('#lwtbl-list .lwtbl-row:not([style*="none"]) input[type=checkbox]').forEach(b => b.checked = val);
+      onLwTblCheck();
+    }
+
+    function filterLwTblList(q) {
+      const query = q.toLowerCase();
+      document.querySelectorAll('#lwtbl-list .lwtbl-row').forEach(row => {
+        row.style.display = (row.dataset.name || '').includes(query) ? '' : 'none';
+      });
+      onLwTblCheck();
+    }
+
+    function saveLwTblPicker() {
+      if (!_tblPickerDsId) return;
+      if (!_wsAssignments[_tblPickerDsId]) _wsAssignments[_tblPickerDsId] = { assigned: true, tables: null };
+      else _wsAssignments[_tblPickerDsId].assigned = true;
+
+      const a = _wsAssignments[_tblPickerDsId];
+      const boxes = [...document.querySelectorAll('#lwtbl-list input[type=checkbox]')];
+      if (!boxes.length) {
+        a.tables = null;
+      } else {
+        const selected = boxes.filter(b => b.checked).map(b => b.value);
+        a.tables = selected.length === boxes.length ? null : selected;
+      }
+      _tblPickerDsId = null;
+      updateScopeCounts();
+      renderWsScope();
+      showView('view-list');
+      showToast('Datasource linked to workspace.');
+    }
+
     function openTblPicker(dsId) {
       _tblPickerDsId = dsId;
       const ds  = _dsList.find(d => d.id === dsId);
@@ -4111,11 +4484,9 @@
 
       document.getElementById('tbl-picker-subtitle').textContent = ds?.name || dsId;
 
-      // Reset search if exists
       const searchInput = document.getElementById('tbl-picker-search');
       if (searchInput) searchInput.value = '';
 
-      // If no table list, show message
       if (!allNames.length) {
         document.getElementById('tbl-picker-list').innerHTML =
           '<p class="text-[12px] text-gray-400 text-center py-6">No table metadata available for this datasource.</p>';
