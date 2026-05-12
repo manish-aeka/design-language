@@ -422,7 +422,7 @@
       <div id="list-actions" class="flex items-center gap-2">
         <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[14px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-          Add Datasource
+          Link Datasource
         </button>
       </div>
     </div>
@@ -496,8 +496,8 @@
       <!-- Toolbar: search + filters + view toggle -->
       <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
 
-        <!-- Left: WS filter + Type filter + Search (50% width) -->
-        <div class="flex items-center gap-2 w-1/2 min-w-0">
+        <!-- Left: WS filter + Type filter + Status pills -->
+        <div class="flex items-center gap-2 flex-shrink-0">
 
           <!-- Workspace filter -->
           <div class="relative flex-shrink-0">
@@ -526,58 +526,85 @@
           <!-- Divider -->
           <div class="w-px h-5 bg-gray-200 mx-1"></div>
 
-          <!-- Type filter -->
+          <!-- Category dropdown -->
           <div class="relative flex-shrink-0">
-            <button onclick="toggleDsTypeDd()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
+            <button onclick="toggleDsCatDd()" id="ds-cat-dd-btn" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-              <span id="ds-type-label">Type of Type</span>
+              <span id="ds-cat-label">Category</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[160px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-              <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] bg-indigo-50 text-indigo-600 transition-colors text-left uppercase font-bold tracking-tight">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <div id="ds-cat-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[180px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+              <button onclick="setDsFilter('all')" id="dsf-all" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] bg-indigo-50 text-indigo-600 transition-colors text-left font-bold">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 All
               </button>
-              <button onclick="setDsFilter('Database')" id="dsf-Database" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
-                Database
+              <button onclick="setDsFilter('Postgres')" id="dsf-Postgres" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><ellipse cx="32" cy="24" rx="18" ry="18" fill="#336791" opacity="0.15"/><path d="M20 20 C18 14 22 8 30 8 C38 8 44 14 44 22 C44 30 38 36 32 38 C28 39 26 42 26 46 L30 46" stroke="#336791" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="38" cy="12" r="4" fill="#336791" opacity="0.5"/><path d="M32 24 C32 28 35 32 32 36" stroke="#336791" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                Postgres
               </button>
-              <button onclick="setDsFilter('File')" id="dsf-File" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                File
+              <button onclick="setDsFilter('MySQL')" id="dsf-MySQL" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><path d="M12 44 C12 40 16 36 20 32 L24 20 L28 32 L36 16 L40 32 L44 24 L52 44" stroke="#00758F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 20 C55 18 56 22 54 24" stroke="#F29111" stroke-width="2" stroke-linecap="round"/></svg>
+                MySQL
               </button>
-              <button onclick="setDsFilter('API')" id="dsf-API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
-                API
+              <button onclick="setDsFilter('MongoDB')" id="dsf-MongoDB" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><path d="M32 8 C32 8 44 18 44 32 C44 42 38 50 32 54 C26 50 20 42 20 32 C20 18 32 8 32 8Z" fill="#4FAE41" opacity="0.85"/><path d="M32 10 L32 52" stroke="#3D8C36" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+                MongoDB
+              </button>
+              <button onclick="setDsFilter('SQL Server')" id="dsf-SQL Server" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 64 64" width="16" height="16" fill="none" class="flex-shrink-0"><ellipse cx="32" cy="20" rx="18" ry="7" fill="#CC2927" opacity="0.15" stroke="#CC2927" stroke-width="1.5"/><path d="M14 20 L14 44 C14 48 22 51 32 51 C42 51 50 48 50 44 L50 20" stroke="#CC2927" stroke-width="1.5"/><path d="M14 32 C14 36 22 39 32 39 C42 39 50 36 50 32" stroke="#CC2927" stroke-width="1.2"/></svg>
+                SQL Server
+              </button>
+              <button onclick="setDsFilter('Excel')" id="dsf-Excel" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><rect x="4" y="4" width="24" height="40" rx="3" fill="#1D6F42"/><rect x="20" y="4" width="24" height="40" rx="3" fill="#217346"/><path d="M12 16 L20 28 M20 16 L12 28" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+                Excel
+              </button>
+              <button onclick="setDsFilter('CSV')" id="dsf-CSV" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><rect x="4" y="4" width="40" height="40" rx="4" fill="#1A7A4A" opacity="0.12"/><rect x="4" y="4" width="40" height="40" rx="4" stroke="#1A7A4A" stroke-width="1.5"/><text x="24" y="22" font-size="9" font-family="Inter,sans-serif" font-weight="700" fill="#1A7A4A" text-anchor="middle">CSV</text><line x1="10" y1="28" x2="38" y2="28" stroke="#1A7A4A" stroke-width="1.2" opacity="0.4"/><line x1="10" y1="34" x2="38" y2="34" stroke="#1A7A4A" stroke-width="1.2" opacity="0.4"/></svg>
+                CSV
+              </button>
+              <button onclick="setDsFilter('JSON / JSONL')" id="dsf-JSON / JSONL" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6B7280" stroke-width="1.8" class="flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg>
+                JSON / JSONL
+              </button>
+              <button onclick="setDsFilter('MCP')" id="dsf-MCP" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6B7280" stroke-width="1.8" class="flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+                MCP
+              </button>
+              <button onclick="setDsFilter('REST API')" id="dsf-REST API" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><rect x="8" y="8" width="32" height="32" rx="4" stroke="#374151" stroke-width="1.5"/><path d="M14 20 L18 24 L14 28" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="20" y1="28" x2="34" y2="28" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/></svg>
+                REST API
+              </button>
+              <button onclick="setDsFilter('GraphQL')" id="dsf-GraphQL" class="ds-fpill w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-left">
+                <svg viewBox="0 0 48 48" width="16" height="16" fill="none" class="flex-shrink-0"><circle cx="24" cy="8" r="3.5" fill="#E10098"/><circle cx="24" cy="40" r="3.5" fill="#E10098"/><circle cx="8" cy="16" r="3.5" fill="#E10098"/><circle cx="40" cy="16" r="3.5" fill="#E10098"/><circle cx="8" cy="32" r="3.5" fill="#E10098"/><circle cx="40" cy="32" r="3.5" fill="#E10098"/><line x1="24" y1="8" x2="8" y2="16" stroke="#E10098" stroke-width="1.5"/><line x1="24" y1="8" x2="40" y2="16" stroke="#E10098" stroke-width="1.5"/><line x1="8" y1="16" x2="8" y2="32" stroke="#E10098" stroke-width="1.5"/><line x1="40" y1="16" x2="40" y2="32" stroke="#E10098" stroke-width="1.5"/><line x1="8" y1="32" x2="24" y2="40" stroke="#E10098" stroke-width="1.5"/><line x1="40" y1="32" x2="24" y2="40" stroke="#E10098" stroke-width="1.5"/></svg>
+                GraphQL
               </button>
             </div>
           </div>
+          <!-- Divider -->
+          <!-- <div class="w-px h-5 bg-gray-200 mx-1"></div> -->
+
+          <!-- Status pills -->
+          <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
+            <button onclick="setDsStatus('all')" id="dss-pill-all" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
+            <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Connected
+            </button>
+            <button onclick="setDsStatus('Error')" id="dss-pill-Error" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>Error
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Search + View toggle -->
+        <div class="flex items-center gap-3 flex-shrink-0">
 
           <!-- Search -->
-          <div class="relative flex-1 min-w-0">
+          <div class="relative w-56">
             <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             </span>
             <input id="ds-search" type="text" placeholder="Search datasources…" oninput="filterDsList()"
               class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
-          </div>
-        </div>
-
-        <!-- Right: Status pills + View toggle -->
-        <div class="flex items-center gap-3">
-
-          <!-- Status pills -->
-          <div class="flex items-center gap-1 p-1 rounded-lg" style="background:#F3F4F6">
-            <button onclick="setDsStatus('all')" id="dss-pill-all" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
-            <button onclick="setDsStatus('Connected')" id="dss-pill-Connected" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Connected
-            </button>
-            <button onclick="setDsStatus('Syncing')" id="dss-pill-Syncing" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
-              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:#5B63F6"></span>Syncing
-            </button>
-            <button onclick="setDsStatus('Error')" id="dss-pill-Error" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>Error
-            </button>
           </div>
 
           <!-- View toggle -->
@@ -608,7 +635,7 @@
             <p class="text-[14px] font-semibold text-gray-800">No datasources found</p>
             <p class="text-[13px] text-gray-400 mt-1">Try adjusting your filters or add a new datasource.</p>
           </div>
-          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#3B5BDB">Add Datasource</button>
+          <button onclick="showView('view-add')" class="mt-1 px-4 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#3B5BDB">Link Datasource</button>
         </div>
 
       </div>
@@ -661,7 +688,7 @@
           <div class="relative flex-1 max-w-xs" id="ws-add-wrapper">
             <button onclick="toggleWsDropdown()" class="w-full flex items-center gap-2 px-3 h-9 rounded-lg border border-gray-200 bg-white text-[13px] text-gray-500 hover:border-indigo-300 transition-colors" id="ws-add-btn">
               <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              <span id="ws-add-label" class="flex-1 text-left truncate">Add datasource…</span>
+              <span id="ws-add-label" class="flex-1 text-left truncate">Link datasource…</span>
               <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <!-- Dropdown list -->
@@ -769,6 +796,12 @@
         </div>
         <!-- Toolbar -->
         <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center justify-between gap-3">
+          <!-- Type pills -->
+          <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
+            <button onclick="setProjTypeFilter('all')" id="proj-pill-all" class="proj-tpill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
+            <button onclick="setProjTypeFilter('artifact')" id="proj-pill-artifact" class="proj-tpill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">Artifact</button>
+            <button onclick="setProjTypeFilter('datasource')" id="proj-pill-datasource" class="proj-tpill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">Datasource</button>
+          </div>
           <!-- Search -->
           <div class="relative flex-1 min-w-0">
             <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -876,13 +909,6 @@
               </div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex justify-end mt-6 ds-edit-only">
-              <button onclick="syncDs(currentDetailId)" class="flex items-center gap-2 px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-                Sync Now
-              </button>
-            </div>
           </div>
           <!-- Tables tab -->
           <div id="panel-tables-tab" style="display:none">
@@ -1010,25 +1036,7 @@
               <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Display Name</label>
               <input type="text" id="panel-edit-name" class="w-full h-10 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
             </div>
-            <div>
-              <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Sync Frequency</label>
-              <select class="w-full h-10 px-3 text-[13px] border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400">
-                <option>Every 1 hour</option>
-                <option selected>Every 6 hours</option>
-                <option>Every 12 hours</option>
-                <option>Daily</option>
-                <option>Manual only</option>
-              </select>
-            </div>
-            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl border border-gray-100">
-              <div>
-                <p class="text-[13px] font-semibold text-gray-800">Auto-sync</p>
-                <p class="text-[11px] text-gray-400 mt-0.5">Automatically sync on schedule</p>
-              </div>
-              <button onclick="toggleBtn(this)" data-on="true" class="relative w-10 h-5 rounded-full transition-colors flex-shrink-0" style="background:#5B63F6" id="autosync-toggle">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform" style="transform:translateX(20px)"></span>
-              </button>
-            </div>
+
             <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl border border-gray-100">
               <div>
                 <p class="text-[13px] font-semibold text-gray-800">Alert on failure</p>
@@ -1419,7 +1427,7 @@
                 <div class="flex items-center justify-between">
                   <button id="retest-btn" onclick="resetConnTest()" class="px-4 h-10 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Re-test</button>
                   <button onclick="finishWizard()" class="flex items-center gap-2 px-5 h-10 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
-                    Add Datasource
+                    Link Datasource
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                   </button>
                 </div>
@@ -1696,7 +1704,7 @@
     const VIEW_META = {
       'view-list':    { title: 'Datasources',           desc: 'Manage and monitor all connected data sources', back: null },
       'view-detail':  { title: '',                        desc: '',                                              back: 'view-list' },
-      'view-add':     { title: 'Add Datasource',        desc: 'Choose a connector to connect more data',       back: 'view-list' },
+      'view-add':     { title: 'Link Datasource',        desc: 'Choose a connector to connect more data',       back: 'view-list' },
       'view-wizard':  { title: null,                    desc: null,                                            back: 'view-add' },
     };
     let _subTopbarBack = null;
@@ -1889,8 +1897,8 @@
       const q = (document.getElementById('ds-search')?.value || '').toLowerCase().trim();
       const sort = document.getElementById('ds-sort')?.value || 'name';
       let list = _dsList.filter(d => {
-        if (d.status === 'Pending') return false;
-        const matchType   = _dsFilterType   === 'all' || d.type      === _dsFilterType;
+        if (d.status === 'Pending' || d.status === 'Syncing') return false;
+        const matchType   = _dsFilterType === 'all' || d.connector === _dsFilterType || d.type === _dsFilterType;
         const matchStatus = _dsFilterStatus === 'all' || d.status    === _dsFilterStatus;
         const matchWs     = _dsFilterWs     === 'all' || (_wsAssignments[d.id]?.assigned === true);
         const matchQ      = !q || d.name.toLowerCase().includes(q) || d.connector.toLowerCase().includes(q);
@@ -2201,22 +2209,28 @@
       typeDd?.classList.toggle('hidden');
     }
 
+    function toggleDsCatDd() {
+      document.getElementById('ds-ws-dd')?.classList.add('hidden');
+      document.getElementById('ds-cat-dd').classList.toggle('hidden');
+    }
+
     function setDsFilter(type) {
       _dsFilterType = type;
-      document.getElementById('ds-type-label').textContent = type === 'all' ? 'Type of Type' : type;
-      
-      // Update UI highlights
+      document.getElementById('ds-cat-label').textContent = type === 'all' ? 'Category' : type;
+
+      // Update active highlight in dropdown
       document.querySelectorAll('.ds-fpill').forEach(btn => {
-        if (btn.id === 'dsf-' + type) {
-          btn.classList.add('bg-indigo-50', 'text-indigo-600');
+        const isActive = btn.id === 'dsf-' + type;
+        if (isActive) {
+          btn.classList.add('bg-indigo-50', 'text-indigo-600', 'font-bold');
           btn.classList.remove('text-gray-700');
         } else {
-          btn.classList.remove('bg-indigo-50', 'text-indigo-600');
+          btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'font-bold');
           btn.classList.add('text-gray-700');
         }
       });
 
-      document.getElementById('ds-type-dd').classList.add('hidden');
+      document.getElementById('ds-cat-dd').classList.add('hidden');
       renderDsList();
     }
 
@@ -2238,9 +2252,9 @@
     }
 
     function toggleDsWsDd() {
-      const typeDd = document.getElementById('ds-type-dd');
+      const catDd  = document.getElementById('ds-cat-dd');
       const wsDd   = document.getElementById('ds-ws-dd');
-      typeDd?.classList.add('hidden');
+      catDd?.classList.add('hidden');
       wsDd?.classList.toggle('hidden');
     }
 
@@ -3481,6 +3495,39 @@
       { id: 'p-4', name: 'Finance Overview',     color: '#10B981', sources: ['Q2 Revenue Sheet', 'Accounting API'] },
       { id: 'p-5', name: 'Product Metrics',      color: '#8B5CF6', sources: ['Production Analytics DB', 'Product Metrics S3'] },
     ];
+
+    // Per-project mock artifacts
+    const PROJECT_ARTIFACTS = {
+      'p-1': [
+        { id: 'a-1-1', name: 'Revenue Trend Dashboard', type: 'Dashboard', updated: '2 hrs ago', icon: 'dashboard' },
+        { id: 'a-1-2', name: 'Monthly KPI Report',      type: 'Report',    updated: 'Yesterday',  icon: 'report' },
+        { id: 'a-1-3', name: 'Funnel Breakdown Chart',  type: 'Chart',     updated: '3 days ago', icon: 'chart' },
+      ],
+      'p-2': [
+        { id: 'a-2-1', name: 'Sales Pipeline Overview', type: 'Dashboard', updated: '1 hr ago',   icon: 'dashboard' },
+        { id: 'a-2-2', name: 'Lead Conversion Report',  type: 'Report',    updated: '2 days ago', icon: 'report' },
+      ],
+      'p-3': [
+        { id: 'a-3-1', name: 'Campaign Performance',    type: 'Dashboard', updated: '5 hrs ago',  icon: 'dashboard' },
+        { id: 'a-3-2', name: 'Q2 Marketing Summary',    type: 'Report',    updated: '1 day ago',  icon: 'report' },
+        { id: 'a-3-3', name: 'Channel Attribution',     type: 'Chart',     updated: '3 days ago', icon: 'chart' },
+      ],
+      'p-4': [
+        { id: 'a-4-1', name: 'Finance Summary Board',   type: 'Dashboard', updated: '30 min ago', icon: 'dashboard' },
+        { id: 'a-4-2', name: 'Budget vs Actuals',       type: 'Report',    updated: 'Yesterday',  icon: 'report' },
+      ],
+      'p-5': [
+        { id: 'a-5-1', name: 'Product Metrics Board',   type: 'Dashboard', updated: '1 hr ago',   icon: 'dashboard' },
+        { id: 'a-5-2', name: 'Retention Analysis',      type: 'Report',    updated: '2 days ago', icon: 'report' },
+        { id: 'a-5-3', name: 'Cohort Chart',            type: 'Chart',     updated: '4 days ago', icon: 'chart' },
+      ],
+    };
+
+    function artifactIconHtml(icon, color) {
+      if (icon === 'dashboard') return `<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="${color}" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>`;
+      if (icon === 'report')    return `<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="${color}" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
+      return `<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="${color}" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>`;
+    }
     // Per-project assignments: { projectId: Set<dsId> }
     const _allProjAssignments = {
       'p-1': new Set(['ds-1', 'ds-2', 'ds-3']),
@@ -3571,9 +3618,9 @@
       const m = SCOPE_META[scope];
       document.getElementById('sub-title').textContent = m.title;
       document.getElementById('sub-desc').textContent  = m.desc;
-      // "Add Datasource" button only on org scope
+      // "Add Datasource" button on org and proj scope
       const la = document.getElementById('list-actions');
-      if (la) la.style.display = scope === 'org' ? 'flex' : 'none';
+      if (la) la.style.display = (scope === 'org' || scope === 'proj') ? 'flex' : 'none';
       // Render relevant scope
       updateScopeCounts();
       if (scope === 'ws')   renderWsScope();
@@ -3824,7 +3871,7 @@
 
     function cancelWsAdd() {
       _wsAddPendingId = null;
-      document.getElementById('ws-add-label').textContent = 'Add datasource…';
+      document.getElementById('ws-add-label').textContent = 'Link datasource…';
       document.getElementById('ws-add-dd').classList.add('hidden');
       document.getElementById('ws-add-actions').classList.add('hidden');
       document.getElementById('ws-add-actions').classList.remove('flex');
@@ -3838,7 +3885,7 @@
       
       // Reset the pending selector UI
       _wsAddPendingId = null;
-      document.getElementById('ws-add-label').textContent = 'Add datasource…';
+      document.getElementById('ws-add-label').textContent = 'Link datasource…';
       document.getElementById('ws-add-actions').classList.add('hidden');
       document.getElementById('ws-add-actions').classList.remove('flex');
 
@@ -3871,123 +3918,178 @@
         const dd = document.getElementById('ws-add-dd');
         if (dd) dd.classList.add('hidden');
       }
+      if (!e.target.closest('#ds-cat-dd-btn') && !e.target.closest('#ds-cat-dd')) {
+        document.getElementById('ds-cat-dd')?.classList.add('hidden');
+      }
+      if (!e.target.closest('#ds-ws-dd-btn') && !e.target.closest('#ds-ws-dd')) {
+        document.getElementById('ds-ws-dd')?.classList.add('hidden');
+      }
     });
 
     // ── Project scope ─────────────────────────────────────────────
-    function renderProjScope() {
-      // Re-read assignments to be sure
-      const wsAssigned = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _wsAssignments[ds.id]?.assigned);
-      const projCount  = _projAssignments.size;
+    let _projTypeFilter = 'all';
 
-      // KPI bar (counts only project-assigned datasources)
-      const projList      = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _projAssignments.has(ds.id));
-      const projConnected = projList.filter(ds => ds.status === 'Connected').length;
-      const projErrors    = 0; // Filtered out
-      const projTables    = projList.reduce((sum, ds) => {
+    function setProjTypeFilter(val) {
+      _projTypeFilter = val;
+      document.querySelectorAll('.proj-tpill').forEach(btn => {
+        const isActive = btn.id === 'proj-pill-' + val;
+        if (isActive) {
+          btn.classList.add('bg-white', 'text-gray-900', 'border', 'border-gray-200', 'font-semibold');
+          btn.classList.remove('text-gray-500', 'font-medium');
+          btn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.10)';
+        } else {
+          btn.classList.remove('bg-white', 'text-gray-900', 'border', 'border-gray-200', 'font-semibold');
+          btn.classList.add('text-gray-500', 'font-medium');
+          btn.style.boxShadow = '';
+        }
+      });
+      renderProjScope();
+    }
+
+    function renderProjScope() {
+      const wsAssigned = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _wsAssignments[ds.id]?.assigned);
+      const artifacts  = PROJECT_ARTIFACTS[_currentProjectId] || [];
+      const projDsList = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _projAssignments.has(ds.id));
+
+      // KPI bar
+      document.getElementById('proj-stat-total').textContent     = projDsList.length + artifacts.length;
+      document.getElementById('proj-stat-connected').textContent = projDsList.filter(ds => ds.status === 'Connected').length;
+      document.getElementById('proj-stat-error').textContent     = 0;
+      document.getElementById('proj-stat-tables').textContent    = projDsList.reduce((sum, ds) => {
         const a = _wsAssignments[ds.id];
         const tblCount = (ds.tables_list || []).length || ds.tables || 0;
         return sum + (a?.tables ? a.tables.length : tblCount);
       }, 0);
-      document.getElementById('proj-stat-total').textContent     = projList.length;
-      document.getElementById('proj-stat-connected').textContent = projConnected;
-      document.getElementById('proj-stat-error').textContent     = 0;
-      document.getElementById('proj-stat-tables').textContent    = projTables;
 
       const emptyEl = document.getElementById('proj-empty-ws');
       const listEl  = document.getElementById('proj-assign-list');
 
-      // The key is to show BOTH assigned and unassigned (but workspace-available) sources
-      // so the user can actually see what's available to add to the project.
-      if (wsAssigned.length === 0) {
+      const hasAny = wsAssigned.length > 0 || artifacts.length > 0;
+      if (!hasAny) {
         emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
         listEl.innerHTML = '';
         return;
       }
       emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
 
-      listEl.innerHTML = _projView === 'grid' ? wsAssigned.map(ds => {
-        const a = _wsAssignments[ds.id];
-        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
-        const selCount = a.tables ? a.tables.length : tblCount;
-        const inProj   = _projAssignments.has(ds.id);
-        const pal = connectorPalette(ds.connector);
-        
-        return `
-          <div class="report-card bg-white border ${inProj ? 'border-indigo-100' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-85 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
-            <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
-              <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
-              ${inProj ? '<div class="absolute top-2.5 right-2.5 flex items-center gap-1.5"><span class="text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm bg-white/95 text-indigo-600 border border-indigo-100">Project Active</span></div>' : ''}
-            </div>
-            <div class="px-3 pt-2.5 pb-3">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
-                  <div class="flex items-center gap-2 flex-wrap mt-1">
-                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
-                      ${connectorIcon(ds.connector, 10)}
-                      ${ds.connector}
-                    </span>
-                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
-                      <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
-                      ${selCount} tables
-                    </span>
-                    ${statusBadgeHtml(ds.status)}
+      const q = (document.getElementById('proj-search')?.value || '').toLowerCase().trim();
+
+      const artTypeBg    = { Dashboard: '#EEF2FF', Report: '#F0FDF4', Chart: '#FFF7ED' };
+      const artTypeColor = { Dashboard: '#5B63F6', Report: '#16A34A', Chart: '#F97316' };
+
+      // --- Datasource cards ---
+      let dsHtml = '';
+      if (_projTypeFilter !== 'artifact') {
+        const filteredDs = wsAssigned.filter(ds => !q || ds.name.toLowerCase().includes(q));
+        if (_projView === 'grid') {
+          dsHtml = filteredDs.map(ds => {
+            const a = _wsAssignments[ds.id];
+            const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+            const selCount = a.tables ? a.tables.length : tblCount;
+            const inProj   = _projAssignments.has(ds.id);
+            const pal = connectorPalette(ds.connector);
+            return `
+            <div class="report-card bg-white border ${inProj ? 'border-indigo-100' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-85 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
+              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
+                <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
+              </div>
+              <div class="px-3 pt-2.5 pb-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                    <div class="flex items-center gap-2 flex-wrap mt-1">
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
+                        ${connectorIcon(ds.connector, 10)}
+                        ${ds.connector}
+                      </span>
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
+                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+                        ${selCount} tables
+                      </span>
+                      ${statusBadgeHtml(ds.status)}
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
                   </div>
-                <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
+                  <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                  </button>
                 </div>
-                <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                </button>
               </div>
-            </div>
-          </div>`;
-      }).join('') : wsAssigned.map(ds => {
-        const a = _wsAssignments[ds.id];
-        const tblCount = (ds.tables_list || []).length || ds.tables || 0;
-        const selCount = a.tables ? a.tables.length : tblCount;
-        const inProj   = _projAssignments.has(ds.id);
-        const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
-        if (inProj) {
-          return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white" data-name="${ds.name}">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-semibold text-gray-900">${ds.name}</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+            </div>`;
+          }).join('');
+        } else {
+          dsHtml = filteredDs.map(ds => {
+            const a = _wsAssignments[ds.id];
+            const tblCount = (ds.tables_list || []).length || ds.tables || 0;
+            const selCount = a.tables ? a.tables.length : tblCount;
+            const inProj   = _projAssignments.has(ds.id);
+            return inProj ? `
+            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-[13px] font-semibold text-gray-900">${ds.name}</span>
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:#EEF2FF;color:#5B63F6">Datasource</span>
+                  ${statusBadgeHtml(ds.status)}
+                </div>
+                <p class="text-[11px] text-gray-400 mt-0.5">${selCount} tables · Updated ${ds.updated || 'Recently'}</p>
               </div>
-              <div class="flex items-center gap-1.5 mt-1">
-                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                <span class="text-[11px] text-gray-500">${selCount} table${selCount !== 1 ? 's' : ''} accessible in this project</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-[11px] font-semibold px-2 py-1 rounded-lg" style="background:#DCFCE7;color:#15803D">In Project</span>
-              <button onclick="toggleProjAssign('${ds.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Remove from project">
+              <button onclick="toggleProjAssign('${ds.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Remove">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
-            </div>
-          </div>`;
-        } else {
-          return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white opacity-70 hover:opacity-100 transition-opacity" data-name="${ds.name}">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F9FAFB">${connectorIcon(ds.connector, 18)}</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-semibold text-gray-700">${ds.name}</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
+            </div>` : `
+            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-dashed border-gray-200 bg-gray-50/40 opacity-70 hover:opacity-100 transition-opacity">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F3F4F6">${connectorIcon(ds.connector, 18)}</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2"><span class="text-[13px] font-semibold text-gray-600">${ds.name}</span></div>
+                <p class="text-[11px] text-gray-400 mt-0.5">Not added to project</p>
               </div>
-              <p class="text-[11px] text-gray-400 mt-1">${selCount} table${selCount !== 1 ? 's' : ''} available from workspace — not in project</p>
-            </div>
-            <button onclick="toggleProjAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Add to Project
-            </button>
-          </div>`;
+              <button onclick="toggleProjAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90" style="background:#5B63F6">+ Add</button>
+            </div>`;
+          }).join('');
         }
-      }).join('');
+      }
+
+      // --- Artifact cards ---
+      let artHtml = '';
+      if (_projTypeFilter !== 'datasource') {
+        const filteredArt = artifacts.filter(a => !q || a.name.toLowerCase().includes(q));
+        if (_projView === 'grid') {
+          artHtml = filteredArt.map(art => `
+            <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer">
+              <div class="h-36 rounded-t-xl flex items-center justify-center relative" style="background:${artTypeBg[art.type] || '#F3F4F6'}">
+                ${artifactIconHtml(art.icon, artTypeColor[art.type] || '#6B7280')}
+                <span class="absolute top-2 left-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:${artTypeBg[art.type]};color:${artTypeColor[art.type]}">${art.type}</span>
+              </div>
+              <div class="px-3 pt-2.5 pb-3">
+                <div class="flex items-start justify-between">
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate max-w-[160px]">${art.name}</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Updated ${art.updated}</p>
+                  </div>
+                  <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>`).join('');
+        } else {
+          artHtml = filteredArt.map(art => `
+            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:${artTypeBg[art.type] || '#F3F4F6'}">${artifactIconHtml(art.icon, artTypeColor[art.type] || '#6B7280')}</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] font-semibold text-gray-900">${art.name}</span>
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:${artTypeBg[art.type]};color:${artTypeColor[art.type]}">${art.type}</span>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-0.5">Updated ${art.updated}</p>
+              </div>
+            </div>`).join('');
+        }
+      }
+
+      listEl.className = _projView === 'grid' ? 'grid grid-cols-4 gap-4' : 'flex flex-col gap-2';
+      listEl.innerHTML = dsHtml + artHtml;
     }
 
     function toggleProjAssign(dsId) {
