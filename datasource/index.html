@@ -420,7 +420,7 @@
       </div>
       <!-- Actions shown only on list view -->
       <div id="list-actions" class="flex items-center gap-2">
-        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[14px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+        <button onclick="showView('view-add')" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[14px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
           Add Datasource
         </button>
@@ -530,7 +530,7 @@
           <div class="relative flex-shrink-0">
             <button onclick="toggleDsTypeDd()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-              <span id="ds-type-label">Type</span>
+              <span id="ds-type-label">Type of Type</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div id="ds-type-dd" class="hidden absolute top-full left-0 mt-2 z-[60] bg-white border border-gray-200 rounded-xl py-1.5 min-w-[160px] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
@@ -832,7 +832,7 @@
           </div>
         </div>
         <!-- Detail body -->
-        <div class="flex-1 overflow-y-auto px-6 py-5">
+        <div id="panel-body" class="flex-1 overflow-y-auto px-6 py-5">
           <!-- Overview tab -->
           <div id="panel-overview">
             <div class="grid grid-cols-2 gap-4">
@@ -878,7 +878,7 @@
 
             <!-- Actions -->
             <div class="flex justify-end mt-6 ds-edit-only">
-              <button onclick="syncDs(currentDetailId)" class="flex items-center gap-2 px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+              <button onclick="syncDs(currentDetailId)" class="flex items-center gap-2 px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
                 Sync Now
               </button>
@@ -893,12 +893,34 @@
                   <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
                   <input type="text" placeholder="Search tables..." class="w-full h-8 pl-9 pr-3 text-[12px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" oninput="filterPanelTables(this.value)" />
                 </div>
-                <button onclick="openAddTableModal()" class="ds-edit-only flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-semibold text-white flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB">
+                <!-- Only visible when opened from Workspace scope -->
+                <button id="inline-add-tbl-btn" onclick="enterAddTableMode()" class="hidden items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-semibold text-white flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                   Add Table
                 </button>
               </div>
-              <div id="panel-tables-list"></div>
+              <div id="panel-tables-list" class="overflow-y-auto" style="height: calc(100vh - 300px);"></div>
+            </div>
+
+            <!-- Inline Add Tables view (Replaces modal) -->
+            <div id="tbl-add-mode-view" class="hidden">
+              <div class="flex items-center justify-between gap-3 mb-4">
+                <button onclick="exitAddTableMode()" class="flex items-center gap-1.5 text-[12px] font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                  Back to tables
+                </button>
+                <div class="flex items-center gap-2">
+                   <p id="inline-add-tbl-count" class="text-[11px] font-medium text-gray-400">0 selected</p>
+                   <button onclick="confirmInlineAddTables()" class="px-3 h-8 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">
+                     Confirm Addition
+                   </button>
+                </div>
+              </div>
+              <div class="relative mb-3">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+                <input id="inline-add-tbl-search" type="text" placeholder="Search tables..." class="w-full h-8 pl-9 pr-3 text-[12px] bg-gray-50 border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-colors" oninput="filterInlineAddList(this.value)" />
+              </div>
+              <div id="inline-add-tbl-list" class="space-y-1 overflow-y-auto" style="height: calc(100vh - 350px); min-height: 400px;"></div>
             </div>
 
             <!-- Inline table detail view -->
@@ -977,20 +999,20 @@
                 <div id="tbl-no-rels" class="hidden text-center py-8"><p class="text-[13px] text-gray-400">No relationships defined for this table.</p></div>
               </div>
             </div>
-          </div>
+          </div><!-- /panel-tables-tab -->
           <!-- Sync Log tab -->
           <div id="panel-sync-tab" style="display:none" class="space-y-2">
             <div id="panel-sync-log" class="space-y-2"></div>
           </div>
           <!-- Settings tab -->
-          <div id="panel-settings-tab" style="display:none" class="space-y-4">
+          <div id="panel-settings-tab" style="display:none" class="p-4 space-y-4">
             <div>
               <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Display Name</label>
-              <input type="text" id="panel-edit-name" class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
+              <input type="text" id="panel-edit-name" class="w-full h-10 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
             </div>
             <div>
               <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Sync Frequency</label>
-              <select class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400">
+              <select class="w-full h-10 px-3 text-[13px] border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-indigo-400">
                 <option>Every 1 hour</option>
                 <option selected>Every 6 hours</option>
                 <option>Every 12 hours</option>
@@ -998,28 +1020,28 @@
                 <option>Manual only</option>
               </select>
             </div>
-            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl border border-gray-100">
               <div>
                 <p class="text-[13px] font-semibold text-gray-800">Auto-sync</p>
                 <p class="text-[11px] text-gray-400 mt-0.5">Automatically sync on schedule</p>
               </div>
-              <button onclick="toggleBtn(this)" data-on="true" class="relative w-10 h-5 rounded-full transition-colors" style="background:#5B63F6" id="autosync-toggle">
+              <button onclick="toggleBtn(this)" data-on="true" class="relative w-10 h-5 rounded-full transition-colors flex-shrink-0" style="background:#5B63F6" id="autosync-toggle">
                 <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform" style="transform:translateX(20px)"></span>
               </button>
             </div>
-            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl border border-gray-100">
               <div>
                 <p class="text-[13px] font-semibold text-gray-800">Alert on failure</p>
                 <p class="text-[11px] text-gray-400 mt-0.5">Email notification on sync error</p>
               </div>
-              <button onclick="toggleBtn(this)" data-on="false" class="relative w-10 h-5 rounded-full transition-colors" style="background:#E5E7EB" id="alert-toggle">
+              <button onclick="toggleBtn(this)" data-on="false" class="relative w-10 h-5 rounded-full transition-colors flex-shrink-0" style="background:#E5E7EB" id="alert-toggle">
                 <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"></span>
               </button>
             </div>
             
-            <div class="flex items-center justify-end gap-3 mt-4">
-              <button onclick="deleteDs(currentDetailId)" class="h-9 px-5 rounded-lg text-[13px] font-semibold text-red-500 border border-red-200 hover:bg-red-50 transition-colors">Remove Datasource</button>
-              <button class="h-9 px-6 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save Settings</button>
+            <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+              <button onclick="deleteDs(currentDetailId)" class="h-9 px-4 rounded-lg text-[13px] font-semibold text-red-500 border border-red-200 hover:bg-red-50 transition-colors">Remove Datasource</button>
+              <button class="h-9 px-6 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">Save Settings</button>
             </div>
           </div>
         </div>
@@ -1610,7 +1632,7 @@
           <div class="relative" id="rel-with-wrapper">
             <input id="rel-with" type="text" placeholder="e.g. orders" autocomplete="off"
               class="w-full h-9 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400"
-              oninput="filterRelTableDd(this.value)" onfocus="openRelTableDd()" onclick="event.stopPropagation()" />
+              oninput="filterRelTableDd(this.value)" onfocus="openRelTableDd()" onclick="event.stopPropagation();openRelTableDd()" />
             <div id="rel-with-dd" class="hidden absolute left-0 top-full mt-1 w-full z-[80] bg-white border border-gray-200 rounded-xl overflow-y-auto" style="box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:176px">
               <div id="rel-with-dd-list"></div>
             </div>
@@ -1637,36 +1659,6 @@
       <div class="flex gap-2 mt-5">
         <button onclick="closeRelModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
         <button onclick="saveRel()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════ ADD TABLE MODAL ═══════════════════ -->
-  <div id="add-table-backdrop" class="fixed inset-0 z-[70] hidden items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeAddTableModal(event)">
-    <div class="bg-white rounded-2xl w-full max-w-md mx-4 flex flex-col" style="max-height:560px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
-        <div>
-          <h3 class="text-[15px] font-semibold text-gray-900">Add tables</h3>
-          <p class="text-[12px] text-gray-400 mt-0.5">Select tables from the schema to include</p>
-        </div>
-        <button onclick="closeAddTableModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="px-6 py-3 border-b border-gray-100 flex-shrink-0">
-        <div class="relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-          <input id="add-tbl-search" type="text" placeholder="Search available tables..." oninput="filterAddTableList(this.value)"
-            class="w-full h-9 pl-9 pr-3 text-[13px] bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 transition-colors" />
-        </div>
-      </div>
-      <div id="add-tbl-list" class="flex-1 overflow-y-auto px-2 py-2"></div>
-      <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100 flex-shrink-0">
-        <span id="add-tbl-count" class="text-[12px] text-gray-400">0 selected</span>
-        <div class="flex gap-2">
-          <button onclick="closeAddTableModal()" class="h-9 px-4 rounded-xl text-[13px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
-          <button onclick="confirmAddTables()" class="h-9 px-4 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">Add Selected</button>
-        </div>
       </div>
     </div>
   </div>
@@ -2157,7 +2149,7 @@
               <p class="text-[11px] text-gray-400 mt-1">Updated ${d.updated}</p>
             </div>
             <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${d.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+              <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
             </button>
           </div>
         </div>`; }).join('') : list.map((d, idx) => `
@@ -2211,7 +2203,7 @@
 
     function setDsFilter(type) {
       _dsFilterType = type;
-      document.getElementById('ds-type-label').textContent = type === 'all' ? 'Type' : type;
+      document.getElementById('ds-type-label').textContent = type === 'all' ? 'Type of Type' : type;
       
       // Update UI highlights
       document.querySelectorAll('.ds-fpill').forEach(btn => {
@@ -2375,6 +2367,28 @@
       // Set tab to overview
       setPanelTab('overview');
 
+      // Sync Log tab visibility: only if status is Syncing
+      const syncTabBtn = document.getElementById('ptab-sync');
+      if (syncTabBtn) {
+        if (ds.status === 'Syncing') {
+          syncTabBtn.classList.remove('hidden');
+        } else {
+          syncTabBtn.classList.add('hidden');
+        }
+      }
+
+      // Controlled visibility for 'Add Table' button in tables tab
+      const addTblBtn = document.getElementById('inline-add-tbl-btn');
+      if (addTblBtn) {
+        if (readOnly) {
+          addTblBtn.classList.remove('hidden');
+          addTblBtn.classList.add('flex');
+        } else {
+          addTblBtn.classList.add('hidden');
+          addTblBtn.classList.remove('flex');
+        }
+      }
+
       // Show detail view
       showView('view-detail');
     }
@@ -2387,6 +2401,9 @@
     let _panelTab = 'overview';
     function setPanelTab(tab) {
       _panelTab = tab;
+      // Reset scroll position so content always starts at top
+      const panelBody = document.getElementById('panel-body');
+      if (panelBody) panelBody.scrollTop = 0;
       ['overview', 'tables', 'sync', 'settings'].forEach(t => {
         document.getElementById('ptab-' + t)?.classList.toggle('active', t === tab);
       });
@@ -2394,6 +2411,12 @@
       document.getElementById('panel-tables-tab').style.display       = tab === 'tables'   ? 'block' : 'none';
       document.getElementById('panel-sync-tab').style.display         = tab === 'sync'     ? 'block' : 'none';
       document.getElementById('panel-settings-tab').style.display     = tab === 'settings' ? 'block' : 'none';
+
+      // Always hide table sub-views when not on the tables tab
+      if (tab !== 'tables') {
+        document.getElementById('tbl-detail-view')?.classList.add('hidden');
+        document.getElementById('tbl-add-mode-view')?.classList.add('hidden');
+      }
 
       if (tab === 'tables') {
         // Reset to list view when switching to tables tab
@@ -3317,49 +3340,56 @@
     let _addTblSelected = new Set();
     let _addTblAvailable = [];
 
-    function openAddTableModal() {
+    function enterAddTableMode() {
       const ds = _dsList.find(d => d.id === currentDetailId);
       if (!ds) return;
       const existing = new Set((ds.tables_list || []).map(t => t.name));
       const pool = _SCHEMA_POOL[ds.type] || _SCHEMA_POOL.Database;
       _addTblAvailable = pool.filter(n => !existing.has(n));
       _addTblSelected = new Set();
-      document.getElementById('add-tbl-search').value = '';
-      document.getElementById('add-tbl-count').textContent = '0 selected';
-      _renderAddTableList(_addTblAvailable);
-      const bd = document.getElementById('add-table-backdrop');
-      bd.classList.remove('hidden');
-      bd.classList.add('flex');
+      
+      document.getElementById('inline-add-tbl-search').value = '';
+      document.getElementById('inline-add-tbl-count').textContent = '0 selected';
+      
+      _renderInlineAddList(_addTblAvailable);
+      
+      document.getElementById('tbl-list-view').classList.add('hidden');
+      document.getElementById('tbl-add-mode-view').classList.remove('hidden');
     }
 
-    function _renderAddTableList(items) {
-      const container = document.getElementById('add-tbl-list');
+    function exitAddTableMode() {
+      document.getElementById('tbl-add-mode-view').classList.add('hidden');
+      document.getElementById('tbl-list-view').classList.remove('hidden');
+    }
+
+    function _renderInlineAddList(items) {
+      const container = document.getElementById('inline-add-tbl-list');
       if (!items.length) {
         container.innerHTML = '<p class="text-center text-[13px] text-gray-400 py-8">All schema tables are already added</p>';
         return;
       }
       container.innerHTML = items.map(name => `
         <label class="add-tbl-row flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition-colors select-none" data-name="${name.toLowerCase()}">
-          <input type="checkbox" value="${name}" ${_addTblSelected.has(name) ? 'checked' : ''} onchange="toggleAddTableRow('${name}',this.checked)"
+          <input type="checkbox" value="${name}" ${_addTblSelected.has(name) ? 'checked' : ''} onchange="toggleInlineAddRow('${name}',this.checked)"
             class="w-4 h-4 rounded border-gray-300 accent-indigo-600 flex-shrink-0 cursor-pointer" />
           <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
           <span class="text-[13px] text-gray-800">${name}</span>
         </label>`).join('');
     }
 
-    function toggleAddTableRow(name, checked) {
-      if (checked) _addTblSelected.add(name); else _addTblSelected.delete(name);
-      const n = _addTblSelected.size;
-      document.getElementById('add-tbl-count').textContent = n === 0 ? '0 selected' : `${n} table${n > 1 ? 's' : ''} selected`;
+    function toggleInlineAddRow(name, checked) {
+      if (checked) _addTblSelected.add(name);
+      else _addTblSelected.delete(name);
+      document.getElementById('inline-add-tbl-count').textContent = `${_addTblSelected.size} selected`;
     }
 
-    function filterAddTableList(q) {
-      document.querySelectorAll('#add-tbl-list .add-tbl-row').forEach(row => {
+    function filterInlineAddList(q) {
+      document.querySelectorAll('#inline-add-tbl-list .add-tbl-row').forEach(row => {
         row.style.display = row.dataset.name.includes(q.toLowerCase()) ? '' : 'none';
       });
     }
 
-    function confirmAddTables() {
+    function confirmInlineAddTables() {
       if (_addTblSelected.size === 0) return;
       const ds = _dsList.find(d => d.id === currentDetailId);
       if (!ds) return;
@@ -3369,17 +3399,15 @@
       ds.tables = ds.tables_list.length;
       document.getElementById('panel-tables').textContent = ds.tables + ' objects';
       const n = _addTblSelected.size;
-      closeAddTableModal();
+      exitAddTableMode();
       renderPanelTables();
       showToast(`${n} table${n > 1 ? 's' : ''} added successfully`);
     }
 
-    function closeAddTableModal(e) {
-      if (e && e.target !== document.getElementById('add-table-backdrop')) return;
-      const bd = document.getElementById('add-table-backdrop');
-      bd.classList.add('hidden');
-      bd.classList.remove('flex');
-    }
+    function openAddTableModal() {}
+    function closeAddTableModal() {}
+    function filterAddTableList() {}
+    function confirmAddTables() {}
 
     // ─── Column description modal ─────────────────────────────
     let _colDescIdx = null;
@@ -3581,12 +3609,7 @@
       if (isWsOrProj) {
         menu.innerHTML = `
           ${isWs ? `
-          <button onclick="event.stopPropagation();openTblPicker('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
-            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"/></svg>
-            Edit Tables
-          </button>
-          <div class="my-1 border-t border-gray-100"></div>
-          <button onclick="event.stopPropagation();removeWsAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
+          <button onclick="event.stopPropagation();removeWsAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-xl transition-colors">
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
             Remove from Workspace
           </button>` : ''}
@@ -3694,7 +3717,8 @@
             <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
               <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
             </div>
-            <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+            <div class="px-3 pt-2.5 pb-3">
+            <div class="flex items-start justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
                 <div class="flex items-center gap-2 flex-wrap mt-1">
@@ -3708,13 +3732,14 @@
                   </span>
                   ${statusBadgeHtml(ds.status)}
                 </div>
-                <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
               </div>
               <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75 12a.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
               </button>
             </div>
-          </div>`;
+            <p class="text-[11px] text-gray-400 mt-2.5">Updated ${ds.updated || 'Recently'}</p>
+          </div>
+        </div>`;
         }).join('') : assignedList.map(ds => {
           const a = _wsAssignments[ds.id];
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
@@ -3732,12 +3757,15 @@
               <div class="flex items-center gap-2 mt-1">
                 <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                 <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount + ' tables' : 'All ' + tblCount + ' tables'} included</span>
+                <span class="text-gray-300 mx-1">|</span>
                 <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">Edit tables</button>
               </div>
             </div>
-            <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-medium border transition-colors" style="border-color:#E2E8F0;color:#DC2626;background:white" onmouseover="this.style.background='#FEF2F2'" onmouseout="this.style.background='white'">
-              Remove
-            </button>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium border transition-colors bg-white border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-100 hover:bg-red-50">
+                Remove
+              </button>
+            </div>
           </div>`;
         }).join('');
       }
@@ -3908,7 +3936,7 @@
                 <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
                 </div>
                 <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                 </button>
               </div>
             </div>
