@@ -48,6 +48,9 @@
 
     textarea { resize: none !important; }
 
+    #ws-modal-backdrop { display: none; }
+    #ws-modal-backdrop.open { display: flex; }
+
     @keyframes dotBounce {
       0%, 100% { transform: translateY(0); opacity: 0.4; }
       50%       { transform: translateY(-5px); opacity: 1; }
@@ -193,8 +196,8 @@
     <!-- Workspace switcher -->
     <div class="border-b border-gray-100" id="ws-switcher-wrapper">
       <button onclick="openWsModal()" class="flex items-center gap-2 w-full text-left px-4 py-2">
-        <span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
-        <span class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
+        <span id="ws-avatar" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+        <span id="ws-name" class="text-sm font-semibold text-gray-900 truncate flex-1">Manish kumar's Work...</span>
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
       </button>
     </div>
@@ -304,7 +307,7 @@
       </a>
     </nav>
 
-    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+    <div class="mx-3 mb-3 mt-1 rounded-lg px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
       <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
         <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
       </div>
@@ -336,7 +339,7 @@
           </button>
 
           <!-- Notification dropdown -->
-          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
               <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
               <button onclick="markAllRead()" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Mark all as read</button>
@@ -375,7 +378,7 @@
         <!-- User avatar -->
         <div class="relative" id="user-menu-wrapper">
           <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB" aria-label="User menu">M</button>
-          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <div class="px-4 py-3 border-b border-gray-100">
               <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
               <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
@@ -799,8 +802,75 @@
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
 
-    /* ── Workspace modal (stub) ── */
-    function openWsModal() { /* workspace switcher modal */ }
+    /* ── Workspace modal ── */
+    var wsData = [
+      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
+      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
+      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
+      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
+      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
+      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
+    ];
+    try { var _saved=JSON.parse(localStorage.getItem('aibii_workspaces')||'[]'); _saved.forEach(function(ws){ if(!wsData.find(function(w){return w.id===ws.id;}))wsData.push({id:ws.id,name:ws.name,initial:ws.initial,color:ws.color,current:false}); }); } catch(e) {}
+    function renderWsModalList(filter) {
+      var list=document.getElementById('ws-modal-list'); if(!list)return;
+      var q=(filter||'').toLowerCase();
+      var items=wsData.filter(function(ws){return !q||ws.name.toLowerCase().includes(q);});
+      var container=list.parentElement; var ROW_H=44,SHOWN=5;
+      container.style.maxHeight=(items.length>SHOWN?ROW_H*SHOWN+12:'')+'px';
+      container.style.overflowY=items.length>SHOWN?'auto':'visible';
+      if(!items.length){list.innerHTML='<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>';return;}
+      list.innerHTML=items.map(function(ws){
+        var c=ws.current;
+        return '<button onclick="selectWorkspace(\''+ws.id+'\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors '+(c?'bg-indigo-50':'hover:bg-gray-50')+'">'+'<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:'+ws.color+'">'+ws.initial+'</span>'+'<span class="flex-1 text-[13px] '+(c?'font-semibold text-gray-900':'font-medium text-gray-700')+' truncate">'+ws.name+'</span>'+(c?'<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>':'')+'</button>';
+      }).join('');
+    }
+    function filterWsList() { renderWsModalList(document.getElementById('ws-search').value); }
+    function openWsModal() {
+      var input=document.getElementById('ws-search'); if(input)input.value='';
+      renderWsModalList('');
+      document.getElementById('ws-modal-backdrop').classList.add('open');
+    }
+    function closeWsModal(e) {
+      if(!e||e.target===document.getElementById('ws-modal-backdrop'))
+        document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+    function selectWorkspace(id) {
+      wsData.forEach(function(ws){ws.current=ws.id===id;});
+      var ws=wsData.find(function(ws){return ws.id===id;});
+      if(ws){
+        var nameEl=document.getElementById('ws-name'); var avatarEl=document.getElementById('ws-avatar');
+        if(nameEl)nameEl.textContent=ws.name.length>24?ws.name.slice(0,24)+'...':ws.name;
+        if(avatarEl){avatarEl.textContent=ws.initial;avatarEl.style.background=ws.color;}
+      }
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+    function openNewWsModal() {
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+      document.getElementById('new-ws-modal').classList.remove('hidden');
+      document.getElementById('new-ws-name').value='';
+      document.getElementById('new-ws-desc').value='';
+      wsNewColor='#5B63F6'; wsColorIndex=0; onWsNameInput('');
+      setTimeout(function(){document.getElementById('new-ws-name').focus();},80);
+    }
+    function closeNewWsModal() { document.getElementById('new-ws-modal').classList.add('hidden'); }
+    var wsColors=['#5B63F6','#16A34A','#F97316','#8B5CF6','#EC4899','#0EA5E9','#EAB308'];
+    var wsNewColor='#5B63F6', wsColorIndex=0;
+    function cycleWsColor() {
+      wsColorIndex=(wsColorIndex+1)%wsColors.length; wsNewColor=wsColors[wsColorIndex];
+      var el=document.getElementById('ws-preview-avatar'); if(el)el.style.background=wsNewColor;
+    }
+    function onWsNameInput(val) {
+      var p=document.getElementById('ws-preview-name'); var a=document.getElementById('ws-preview-avatar');
+      if(p)p.textContent=val.trim()||'Your workspace';
+      if(a)a.textContent=val.trim()?val.trim()[0].toUpperCase():'A';
+    }
+    function createNewWs() {
+      var name=document.getElementById('new-ws-name').value.trim();
+      if(!name){document.getElementById('new-ws-name').focus();return;}
+      var newWs={id:'ws-dyn-'+Date.now(),name:name,initial:name[0].toUpperCase(),color:wsNewColor,current:false};
+      wsData.push(newWs); closeNewWsModal(); selectWorkspace(newWs.id);
+    }
 
     /* ── Notifications ── */
     function toggleNotifications() {
@@ -1014,6 +1084,75 @@
     <!-- Accordion list (rendered dynamically by renderSourcesDrawer) -->
     <div id="src-drawer-list" class="flex-1 overflow-y-auto px-4 space-y-2" style="padding-top:12px;padding-bottom:32px"></div>
   </div><!-- end sources-drawer -->
+
+  <!-- ═══════════════════════════════════════════
+       WORKSPACE SWITCHER MODAL
+  ════════════════════════════════════════════ -->
+  <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
+    <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Select a workspace to switch to</p>
+        </div>
+        <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          New Workspace
+        </button>
+      </div>
+      <div class="px-4 pt-3 pb-2 flex-shrink-0">
+        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
+          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+          <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
+        </div>
+      </div>
+      <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
+        <div id="ws-modal-list" class="space-y-0.5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Workspace full-screen -->
+  <div id="new-ws-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background:#F3F4F6">
+    <div class="flex items-center justify-between px-6 h-11 bg-white border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:#5B63F6">A</span>
+        <span class="text-[13px] font-semibold text-gray-800">Aibii</span>
+      </div>
+      <button onclick="closeNewWsModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
+      <div class="bg-white rounded-lg w-full max-w-lg mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
+        <div class="mb-6">
+          <h2 class="text-[17px] font-bold text-gray-900">New workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-1">A shared space for your team's work.</p>
+        </div>
+        <div class="flex items-center gap-3 mb-5">
+          <div id="ws-preview-avatar" class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all" style="background:#5B63F6" onclick="cycleWsColor()" title="Click to change color">A</div>
+          <div class="flex-1 min-w-0">
+            <p id="ws-preview-name" class="text-[13px] font-semibold text-gray-800 truncate">Your workspace</p>
+            <p class="text-[11px] text-gray-400">Click avatar to change color</p>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Name <span class="text-red-400">*</span></label>
+            <input id="new-ws-name" type="text" placeholder="e.g. Design Team" autocomplete="off" maxlength="48" class="w-full h-9 px-3 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400" oninput="onWsNameInput(this.value)" onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'" onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''" onkeydown="if(event.key==='Enter')createNewWs()">
+          </div>
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Description <span class="text-gray-400 font-normal">optional</span></label>
+            <textarea id="new-ws-desc" rows="2" placeholder="What is this workspace for?" class="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400" onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'" onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"></textarea>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-5">
+          <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="createNewWs()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
