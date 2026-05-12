@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -96,7 +96,7 @@
 
     /* ── Tone / count pills ── */
     .tone-pill {
-      height: 28px; padding: 0 12px; border-radius: 9999px;
+      height: 28px; padding: 0 12px; border-radius: 8px;
       border: 1px solid #E5E7EB; background: #fff;
       font-size: 12px; font-weight: 500; color: #374151;
       cursor: pointer; transition: all 100ms ease; white-space: nowrap;
@@ -219,6 +219,23 @@
 
     /* ── contenteditable placeholder ── */
     .ppt-ai-input:empty::before { content: attr(data-placeholder); color: #9CA3AF; pointer-events: none; }
+
+    /* ── Google-Slides thumbnail panel ── */
+    .thumb-outer { cursor: pointer; user-select: none; }
+    .thumb-label { font-size: 9px; font-weight: 600; color: #80868B; text-align: center; margin-bottom: 3px; letter-spacing: 0.01em; }
+    .thumb-preview { width: 144px; height: 81px; border-radius: 3px; border: 1.5px solid transparent; overflow: hidden; position: relative; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.22), 0 0 0 0.5px rgba(0,0,0,0.08); transition: border-color 80ms ease; }
+    .thumb-preview.active { border-color: #1A73E8 !important; box-shadow: 0 0 0 1.5px #1A73E8, 0 1px 4px rgba(0,0,0,0.22) !important; }
+    .thumb-preview:hover:not(.active) { border-color: #AECBFA; }
+    .thumb-inner { position: absolute; top: 0; left: 0; width: 480px; height: 270px; transform: scale(0.3); transform-origin: top left; }
+
+    /* ── Slide pages inside main frame ── */
+    .slide-page { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+    .slide-page.active { display: block; }
+
+    /* ── Canvas nav arrows ── */
+    .canvas-nav { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.07); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; transition: background 100ms ease; flex-shrink: 0; }
+    .canvas-nav:hover { background: rgba(0,0,0,0.13); }
+    .canvas-nav:disabled { opacity: 0.25; cursor: not-allowed; }
   </style>
 </head>
 
@@ -340,6 +357,10 @@
 
     <!-- Bottom nav -->
     <nav class="px-3 py-2 space-y-0.5">
+      <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+        Datasources
+      </a>
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
@@ -347,7 +368,7 @@
     </nav>
 
     <!-- Upgrade banner -->
-    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+    <div class="mx-3 mb-3 mt-1 rounded-lg px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
       <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
         <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
       </div>
@@ -379,7 +400,7 @@
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
             <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500"></span>
           </button>
-          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-72 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-72 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
               <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
               <button class="text-[11px] font-medium text-indigo-500">Mark all read</button>
@@ -389,7 +410,7 @@
         </div>
         <div class="relative" id="user-menu-wrapper">
           <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB">M</button>
-          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-52 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-52 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <div class="px-4 py-3 border-b border-gray-100">
               <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
               <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
@@ -407,380 +428,461 @@
 
     
 
-    <!-- ── Sub-bar: title + step stepper + actions (always visible, matches document-builder) ── -->
-    <div id="ppt-name-bar" class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0 relative">
-      <!-- Left: icon + title + draft badge — identical to document builder title bar -->
+    <!-- ─── CONTENT ROW ─── -->
+    <div class="flex-1 flex overflow-hidden">
+
+    <!-- ─── EDITOR COLUMN ─── -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Title bar -->
+      <div id="ppt-name-bar" class="flex items-center justify-between px-5 h-12 border-b border-gray-200 bg-white flex-shrink-0">
+      <!-- Left: icon + title -->
       <div class="flex items-center gap-3 ml-2">
         <div class="flex items-center gap-2">
-          
           <svg class="w-[15px] h-[15px] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
           <h1 id="subbar-title" class="text-[15px] font-bold text-gray-900 leading-none">Investor Pitch</h1>
         </div>
-        
       </div>
-      <!-- Center: step stepper (absolutely centered; hidden when editor state) -->
-      <div id="ppt-steps" class="absolute flex items-center gap-2.5" style="left:50%;transform:translateX(-50%);">
-        <div class="flex items-center gap-1.5">
-          <div id="step1-dot" class="step-dot act">1</div>
-          <span id="step1-lbl" class="text-[11px] font-semibold" style="color:#5B63F6;">Prompt</span>
-        </div>
-        <div class="w-5 h-px bg-gray-200 flex-shrink-0"></div>
-        <div class="flex items-center gap-1.5">
-          <div id="step2-dot" class="step-dot todo">2</div>
-          <span id="step2-lbl" class="text-[11px] font-medium" style="color:#D1D5DB;">Outline</span>
-        </div>
-        <div class="w-5 h-px bg-gray-200 flex-shrink-0"></div>
-        <div class="flex items-center gap-1.5">
-          <div id="step3-dot" class="step-dot todo">3</div>
-          <span id="step3-lbl" class="text-[11px] font-medium" style="color:#D1D5DB;">Slides</span>
-        </div>
-      </div>
-      <!-- Right: state-specific actions -->
-      <div class="flex items-center gap-1.5">
-        <!-- Outline state: (Generate slides button removed) -->
-        <!-- Editor state: simplified toolbar -->
-        <div id="sb-actions-editor" style="display:none;" class="flex items-center gap-1.5">
-          <button onclick="toggleSourcesDrawer()" id="sources-topbar-btn" class="toolbar-btn sources-btn" title="Sources">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-            Sources
-          </button>
-          <button class="toolbar-btn">
-            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
-            Present
-          </button>
-          <button class="toolbar-btn">
-            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-            Export
-          </button>
-          <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
-            Share
-          </button>
-        </div>
+      <!-- Right: toolbar buttons (pr-[340px] keeps these aligned with doc-builder's content-column right edge) -->
+      <div id="sb-actions-editor" class="flex items-center gap-1.5">
+        <button onclick="toggleSourcesDrawer()" id="sources-topbar-btn" class="toolbar-btn sources-btn" title="Sources">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          Sources
+        </button>
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+          Present
+        </button>
+        <button class="toolbar-btn">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          Export
+        </button>
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+        <button class="flex items-center gap-1.5 px-3 h-[30px] rounded-lg text-[12px] font-semibold text-white transition-colors hover:opacity-90" style="background:#3B5BDB;">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          Share
+        </button>
       </div>
     </div>
 
-    <!-- ════════════════════════════════════
-         STATE 1 — CREATE
-    ═════════════════════════════════════ -->
-    <div id="state-create" class="ppt-state active flex-1 overflow-y-auto items-center justify-center">
-      <div class="w-full max-w-[560px] px-6 py-12 flex flex-col gap-5">
+      <!-- Google-Slides-style editor -->
+      <div id="state-editor" class="flex flex-1 min-h-0 overflow-hidden">
 
-        <!-- Heading -->
-        <div class="text-center">
-          <div class="w-[72px] h-[72px] rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:#EEF2FF; border:1.5px solid #C7D2FE; box-shadow:0 1px 3px rgba(91,99,246,0.10);">
-            <svg class="w-8 h-8" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
-          </div>
-          <h1 class="text-[22px] font-bold text-gray-900 leading-snug">What are you presenting?</h1>
-          <p class="text-[13px] text-gray-500 mt-1">Describe your topic — AI will build the outline and slides for you.</p>
-        </div>
+        <!-- Slides filmstrip (Google Slides left panel) -->
+        <div id="slides-panel" class="hidden flex-col overflow-y-auto flex-shrink-0 py-3" style="width:168px;background:#E8EAED;border-right:1px solid #DADCE0;">
+          <p class="text-[9.5px] font-semibold uppercase tracking-widest px-4 mb-2" style="color:#80868B;">Slides</p>
+          <div class="flex flex-col gap-3 px-3" id="thumb-list">
 
-        <!-- Prompt box -->
-        <div class="input-wrapper">
-          <textarea id="prompt-input" rows="3" placeholder="e.g. A 6-slide investor pitch for a B2B SaaS startup in HR tech…" class="w-full px-4 pt-3.5 pb-2 text-[13px] text-gray-800 border-none outline-none resize-none bg-transparent leading-relaxed placeholder-gray-400 font-sans"></textarea>
-          <div class="flex items-center justify-between px-3 py-2 border-t border-gray-100" style="background:#FAFAFA;">
-            <div class="flex items-center gap-2">
-              <button id="type-slides" onclick="selectType('slides')" class="flex items-center gap-1.5 h-[26px] px-2.5 rounded-full border text-[11px] font-500 transition-all" style="background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; font-weight:600;">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5"/><line x1="5" y1="7" x2="11" y2="7"/><line x1="5" y1="9.5" x2="9" y2="9.5"/></svg>
-                Slides
-              </button>
-              <button id="type-import" onclick="selectType('import')" class="flex items-center gap-1.5 h-[26px] px-2.5 rounded-full border border-gray-200 text-[11px] text-gray-600 font-medium hover:bg-gray-50 transition-all">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-                Import
-              </button>
-            </div>
-            <button onclick="goToOutline()" class="flex items-center gap-1.5 h-8 px-4 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              Generate outline
-            </button>
-          </div>
-        </div>
-
-        <!-- Tone + Slides count row -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Tone</p>
-            <div class="flex gap-2 flex-wrap">
-              <button class="tone-pill active" onclick="selectTone(this)">Professional</button>
-              <button class="tone-pill" onclick="selectTone(this)">Casual</button>
-              <button class="tone-pill" onclick="selectTone(this)">Bold</button>
-            </div>
-          </div>
-          <div>
-            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Slides</p>
-            <div class="flex gap-1.5">
-              <div class="count-box" onclick="selectCount(this)">5</div>
-              <div class="count-box active" onclick="selectCount(this)">8</div>
-              <div class="count-box" onclick="selectCount(this)">10</div>
-              <div class="count-box" onclick="selectCount(this)">12</div>
-              <div class="count-box" onclick="selectCount(this)" style="font-size:10px;color:#9CA3AF;width:42px;">Auto</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Example chip -->
-        <div>
-          <p class="text-[11px] font-semibold uppercase tracking-widest mb-2.5" style="color:#C4C9D4; letter-spacing:0.08em;">Try an example</p>
-          <button class="sugg-chip w-full" onclick="fillPrompt('Investor pitch deck for a B2B SaaS startup in HR tech, 8 slides')">
-            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
-            Investor pitch deck
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- ════════════════════════════════════
-         STATE 2 — OUTLINE
-    ═════════════════════════════════════ -->
-    <div id="state-outline" class="ppt-state flex-1 min-h-0 overflow-hidden flex-col">
-
-      <!-- Body -->
-      <div class="flex flex-1 min-h-0 overflow-hidden">
-
-        <!-- LEFT: outline list -->
-        <div class="flex-1 flex flex-col min-h-0 px-8 py-6">
-          <div class="max-w-[600px] w-full mx-auto flex flex-col gap-4 h-full min-h-0">
-
-            <div class="flex-shrink-0">
-              <h2 class="text-[18px] font-bold text-gray-900 leading-snug">Review your outline</h2>
-              <p class="text-[13px] text-gray-500 mt-1">Edit slide titles and descriptions before generating. Drag to reorder.</p>
-            </div>
-
-            <!-- Scrollable outline container -->
-            <div class="flex-1 min-h-0 rounded-xl border border-gray-200 bg-white" style="box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04); overflow:hidden">
-              <div id="outline-list" class="flex flex-col gap-2 p-3 overflow-y-auto h-full">
-                <!-- Will be populated by JS based on totalSlides -->
+            <!-- Thumb 1: Title (dark) -->
+            <div class="thumb-outer" onclick="selectSlide(1)">
+              <p class="thumb-label">1</p>
+              <div class="thumb-preview active" id="tp-1">
+                <div class="thumb-inner" style="background:#0F172A;">
+                  <div style="padding:40px 44px;display:flex;flex-direction:column;justify-content:center;height:100%;box-sizing:border-box;">
+                    <div style="font-size:10px;color:#818CF8;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;">INVESTOR PITCH</div>
+                    <div style="font-size:34px;font-weight:900;color:white;line-height:1.1;margin-bottom:12px;">Sovereign<br>Capital Gate</div>
+                    <div style="font-size:13px;color:#94A3B8;line-height:1.5;">AI-powered investment intelligence</div>
+                    <div style="width:48px;height:5px;background:#5B63F6;border-radius:3px;margin-top:20px;"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Generate button — always visible outside the scroll area -->
-            <div class="flex-shrink-0 pt-1">
-              <button onclick="goToEditor()" id="generate-slides-btn" class="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6;">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                <span id="generate-slides-text">Generate 8 slides</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- RIGHT: AiBii AI panel -->
-        <div class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
-
-          <!-- Panel topbar -->
-          <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
-                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              </div>
-              <span class="text-[13px] font-semibold text-gray-800">AiBii AI</span>
-            </div>
-          </div>
-
-          <!-- Scroll body -->
-          <div id="outline-ai-scroll" class="flex-1 overflow-y-auto">
-
-            <!-- Welcome state -->
-            <div id="outline-ai-welcome" class="flex flex-col items-center justify-center px-6 py-10 text-center h-full">
-              <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0" style="background:#EEF2FF">
-                <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              </div>
-              <p class="text-[15px] font-bold text-gray-900 leading-snug">Add or edit slides.</p>
-              <p class="text-[13px] text-gray-500 mt-2 leading-relaxed">Ask me to add new slides, reorder your outline, or improve the flow of your deck.</p>
-            </div>
-
-            <!-- Chat messages -->
-            <div id="outline-ai-messages" class="hidden px-4 py-4 space-y-3"></div>
-
-          </div>
-
-          <!-- Suggested actions -->
-          <div class="px-4 pb-3 flex-shrink-0">
-            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Suggested</p>
-            <div class="space-y-1.5">
-              <button onclick="sendOutlineSuggestion('Add a problem and solution slide')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                Add a problem slide
-              </button>
-              <button onclick="sendOutlineSuggestion('Add a team and advisors slide')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                Add a team slide
-              </button>
-              <button onclick="sendOutlineSuggestion('Reorder slides for a better narrative flow')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
-                Reorder for narrative
-              </button>
-            </div>
-          </div>
-
-          <!-- Input area -->
-          <div class="px-4 pb-4 pt-2 flex-shrink-0 border-t border-gray-100">
-            <input type="file" id="outline-ai-file" class="hidden" multiple />
-            <div class="flex flex-col rounded-xl border border-gray-200 bg-white" style="box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-              <div class="px-3 pt-2.5 pb-1">
-                <div
-                  id="outline-ai-input"
-                  contenteditable="true"
-                  data-placeholder="Ask AiBii AI to add or edit slides…"
-                  class="ppt-ai-input text-[13px] text-gray-800 focus:outline-none leading-relaxed"
-                  style="min-height:22px; max-height:120px; overflow-y:auto;"
-                  onkeydown="handleOutlineAiKey(event)"
-                ></div>
-              </div>
-              <div class="flex items-center justify-between px-2.5 pb-2 pt-1">
-                <div class="flex items-center gap-1">
-                  <button onclick="document.getElementById('outline-ai-file').click()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors" title="Attach file">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/></svg>
-                  </button>
-                  <div class="relative">
-                    <button onclick="toggleOutlineModeMenu(event)" class="flex items-center gap-1 px-2 h-6 rounded-lg text-[11px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
-                      <span id="outline-mode-icon" class="flex items-center">
-                        <svg class="w-3 h-3 mr-0.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                      </span>
-                      <span id="outline-mode-label">Agent</span>
-                      <svg class="w-2.5 h-2.5 ml-0.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div id="outline-mode-menu" class="hidden absolute bottom-full left-0 mb-1 z-[200] bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-36">
-                      <button onclick="selectOutlineMode('Agent')" class="w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left">
-                        <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-                        Agent
-                        <svg id="outline-mode-check-Agent" class="w-3 h-3 ml-auto flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                      </button>
-                      <button onclick="selectOutlineMode('Ask')" class="w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left">
-                        <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
-                        Ask
-                        <svg id="outline-mode-check-Ask" class="w-3 h-3 ml-auto flex-shrink-0 hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                      </button>
+            <!-- Thumb 2: Problem -->
+            <div class="thumb-outer" onclick="selectSlide(2)">
+              <p class="thumb-label">2</p>
+              <div class="thumb-preview" id="tp-2">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;">
+                      <div style="width:5px;height:30px;background:#EF4444;border-radius:3px;"></div>
+                      <div style="font-size:22px;font-weight:800;color:#0F172A;">The Problem</div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:14px;">
+                      <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">&#10060;</div><div><div style="font-size:14px;font-weight:700;color:#111827;">Fragmented data sources</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Analysts waste hours consolidating reports.</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">&#9200;</div><div><div style="font-size:14px;font-weight:700;color:#111827;">Slow investment decisions</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Manual analysis delays critical calls.</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">&#128202;</div><div><div style="font-size:14px;font-weight:700;color:#111827;">No unified intelligence</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Insights scattered across tools.</div></div></div>
                     </div>
                   </div>
                 </div>
-                <button onclick="sendOutlineAi()" class="w-7 h-7 flex items-center justify-center rounded-lg text-white transition-all" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
-                </button>
               </div>
             </div>
-          </div>
 
-        </div>
-      </div>
-    </div>
+            <!-- Thumb 3: Solution -->
+            <div class="thumb-outer" onclick="selectSlide(3)">
+              <p class="thumb-label">3</p>
+              <div class="thumb-preview" id="tp-3">
+                <div class="thumb-inner" style="background:#F0F4FF;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;">
+                      <div style="width:5px;height:30px;background:#5B63F6;border-radius:3px;"></div>
+                      <div style="font-size:22px;font-weight:800;color:#0F172A;">Our Solution</div>
+                    </div>
+                    <div style="display:flex;gap:12px;">
+                      <div style="flex:1;background:white;border-radius:10px;padding:14px;"><div style="font-size:16px;margin-bottom:6px;">&#9889;</div><div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">Unified AI</div><div style="font-size:10px;color:#6B7280;">All data in one place</div></div>
+                      <div style="flex:1;background:white;border-radius:10px;padding:14px;"><div style="font-size:16px;margin-bottom:6px;">&#128269;</div><div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">Instant Insights</div><div style="font-size:10px;color:#6B7280;">Any source, seconds</div></div>
+                      <div style="flex:1;background:white;border-radius:10px;padding:14px;"><div style="font-size:16px;margin-bottom:6px;">&#128200;</div><div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">10x Faster</div><div style="font-size:10px;color:#6B7280;">Days to minutes</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
+            <!-- Thumb 4: Market -->
+            <div class="thumb-outer" onclick="selectSlide(4)">
+              <p class="thumb-label">4</p>
+              <div class="thumb-preview" id="tp-4">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:18px;">Market Opportunity</div>
+                    <div style="display:flex;align-items:center;justify-content:space-around;flex:1;gap:8px;">
+                      <div style="text-align:center;"><div style="width:120px;height:120px;border-radius:50%;background:#EEF2FF;border:3px solid #5B63F6;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:22px;font-weight:900;color:#5B63F6;">$47B</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">TAM</div></div></div>
+                      <div style="text-align:center;"><div style="width:90px;height:90px;border-radius:50%;background:#E0E7FF;border:3px solid #818CF8;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:18px;font-weight:900;color:#5B63F6;">$8B</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">SAM</div></div></div>
+                      <div style="text-align:center;"><div style="width:65px;height:65px;border-radius:50%;background:#C7D2FE;border:3px solid #4338CA;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:13px;font-weight:900;color:#3730A3;">$800M</div><div style="font-size:9px;color:#3730A3;margin-top:2px;">SOM</div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    <!-- ════════════════════════════════════
-         STATE 3 — EDITOR
-    ═════════════════════════════════════ -->
-    <div id="state-editor" class="ppt-state flex-col flex-1 min-h-0 overflow-hidden">
+            <!-- Thumb 5: Product -->
+            <div class="thumb-outer" onclick="selectSlide(5)">
+              <p class="thumb-label">5</p>
+              <div class="thumb-preview" id="tp-5">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:18px;">The Product</div>
+                    <div style="display:flex;gap:18px;flex:1;">
+                      <div style="flex:1.2;background:#F8F9FC;border-radius:10px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:32px;margin-bottom:6px;">&#128187;</div><div style="font-size:10px;color:#9CA3AF;">Dashboard Preview</div></div></div>
+                      <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">AI-driven insights</div></div>
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">Real-time data sync</div></div>
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">Portfolio monitoring</div></div>
+                        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#5B63F6;flex-shrink:0;"></div><div style="font-size:12px;font-weight:600;color:#111827;">Auto-generated reports</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      <!-- Editor body: slides strip + canvas + right panel -->
-      <div class="flex flex-1 min-h-0 overflow-hidden">
+            <!-- Thumb 6: Traction -->
+            <div class="thumb-outer" onclick="selectSlide(6)">
+              <p class="thumb-label">6</p>
+              <div class="thumb-preview" id="tp-6">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:6px;">We're Growing Fast</div>
+                    <div style="font-size:11px;color:#6B7280;margin-bottom:16px;">Key metrics Q4 2024</div>
+                    <div style="display:flex;gap:12px;flex:1;">
+                      <div style="flex:1;background:#F8F9FC;border-radius:10px;padding:14px;"><div style="font-size:24px;font-weight:900;color:#111827;">$1.2M</div><div style="font-size:10px;color:#6B7280;margin-top:3px;">ARR</div><div style="font-size:10px;color:#16A34A;font-weight:700;margin-top:5px;">&#8593; 3.2x YoY</div></div>
+                      <div style="flex:1;background:#F8F9FC;border-radius:10px;padding:14px;"><div style="font-size:24px;font-weight:900;color:#111827;">120</div><div style="font-size:10px;color:#6B7280;margin-top:3px;">Customers</div><div style="font-size:10px;color:#16A34A;font-weight:700;margin-top:5px;">&#8593; 2.8x YoY</div></div>
+                      <div style="flex:1;background:#F8F9FC;border-radius:10px;padding:14px;"><div style="font-size:24px;font-weight:900;color:#111827;">94%</div><div style="font-size:10px;color:#6B7280;margin-top:3px;">NRR</div><div style="font-size:10px;color:#16A34A;font-weight:700;margin-top:5px;">&#8593; from 88%</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <!-- Slide strip 136px -->
-        <div id="slides-strip" class="w-[136px] min-w-[136px] flex flex-col  border-r border-gray-100 py-3 px-2 gap-2 overflow-y-auto transition-all">
-          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-1 pb-1">Slides</p>
-          <!-- Thumb 1 -->
-          <div class="sthumb" onclick="selectSlide(this,1)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-4/5 bg-gray-100"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">01</span>
-          </div>
-          <!-- Thumb 2 — active -->
-          <div class="sthumb active" onclick="selectSlide(this,2)">
-            <div class="h-[3px] rounded-sm w-3/4" style="background:#C7D2FE;"></div>
-            <div class="h-[2px] rounded-sm w-full mt-1" style="background:#EEF2FF;"></div>
-            <div class="h-[2px] rounded-sm w-4/5" style="background:#EEF2FF;"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold" style="color:#5B63F6;">02</span>
-          </div>
-          <!-- Thumb 3 -->
-          <div class="sthumb" onclick="selectSlide(this,3)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-3/5 bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">03</span>
-          </div>
-          <!-- Thumb 4 -->
-          <div class="sthumb" onclick="selectSlide(this,4)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-4/5 bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">04</span>
-          </div>
-          <!-- Thumb 5 -->
-          <div class="sthumb" onclick="selectSlide(this,5)">
-            <div class="h-[3px] rounded-sm w-3/4 bg-gray-200"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100 mt-1"></div>
-            <div class="h-[2px] rounded-sm w-full bg-gray-100"></div>
-            <span class="absolute bottom-1 right-1.5 text-[9px] font-semibold text-gray-300">05</span>
-          </div>
-          <!-- Add -->
-          <button class="border-[1.5px] border-dashed border-gray-200 rounded-lg h-7 flex items-center justify-center text-gray-400 hover:border-brand-primary hover:text-brand-primary transition-colors text-sm">+</button>
-        </div>
+            <!-- Thumb 7: Team -->
+            <div class="thumb-outer" onclick="selectSlide(7)">
+              <p class="thumb-label">7</p>
+              <div class="thumb-preview" id="tp-7">
+                <div class="thumb-inner" style="background:#fff;">
+                  <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+                    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:24px;">The Team</div>
+                    <div style="display:flex;gap:16px;justify-content:center;flex:1;">
+                      <div style="text-align:center;flex:1;"><div style="width:52px;height:52px;border-radius:50%;background:#EEF2FF;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#5B63F6;">A</div><div style="font-size:13px;font-weight:700;color:#111827;">Aryan Shah</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">CEO &amp; Founder</div></div>
+                      <div style="text-align:center;flex:1;"><div style="width:52px;height:52px;border-radius:50%;background:#F0FDF4;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#16A34A;">P</div><div style="font-size:13px;font-weight:700;color:#111827;">Priya Mehta</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">CTO</div></div>
+                      <div style="text-align:center;flex:1;"><div style="width:52px;height:52px;border-radius:50%;background:#FFF7ED;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#F97316;">R</div><div style="font-size:13px;font-weight:700;color:#111827;">Rahul Verma</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">Head of Sales</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <!-- Canvas -->
-        <div id="canvas-area" class="flex-1 canvas-grid flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden relative">
+            <!-- Thumb 8: Ask (brand purple) -->
+            <div class="thumb-outer" onclick="selectSlide(8)">
+              <p class="thumb-label">8</p>
+              <div class="thumb-preview" id="tp-8">
+                <div class="thumb-inner" style="background:#5B63F6;">
+                  <div style="padding:38px 44px;display:flex;flex-direction:column;justify-content:center;height:100%;box-sizing:border-box;">
+                    <div style="font-size:10px;color:#C7D2FE;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">THE ASK</div>
+                    <div style="font-size:34px;font-weight:900;color:white;line-height:1.1;margin-bottom:12px;">Raising<br>$3M Seed</div>
+                    <div style="font-size:12px;color:#E0E7FF;line-height:1.5;margin-bottom:18px;">Join us in redefining investment intelligence.</div>
+                    <div style="display:flex;gap:10px;">
+                      <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;"><div style="font-size:13px;font-weight:700;color:white;">$1.5M</div><div style="font-size:9px;color:#C7D2FE;margin-top:2px;">Product dev</div></div>
+                      <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;"><div style="font-size:13px;font-weight:700;color:white;">$900K</div><div style="font-size:9px;color:#C7D2FE;margin-top:2px;">Sales &amp; mktg</div></div>
+                      <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;"><div style="font-size:13px;font-weight:700;color:white;">$600K</div><div style="font-size:9px;color:#C7D2FE;margin-top:2px;">Operations</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end thumb-list -->
+        </div><!-- end slides-panel -->
+
+        <!-- Canvas (dark background like Google Slides) -->
+        <div class="flex-1 flex flex-col overflow-hidden relative" style="">
 
           <!-- Generating overlay -->
-          <div id="generating-overlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10" style="background:rgba(244,245,248,0.75); backdrop-filter:blur(1px);">
+          <div id="generating-overlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10" style="display:none;background:rgba(241,243,244,0.88);backdrop-filter:blur(2px);">
             <div class="flex gap-2">
-              <span class="gen-dot" style="animation: dotBounce 1s ease-in-out infinite; animation-delay:0s;"></span>
-              <span class="gen-dot" style="animation: dotBounce 1s ease-in-out infinite; animation-delay:0.15s;"></span>
-              <span class="gen-dot" style="animation: dotBounce 1s ease-in-out infinite; animation-delay:0.30s;"></span>
+              <span class="gen-dot" style="animation:dotBounce 1s ease-in-out infinite;animation-delay:0s;"></span>
+              <span class="gen-dot" style="animation:dotBounce 1s ease-in-out infinite;animation-delay:0.15s;"></span>
+              <span class="gen-dot" style="animation:dotBounce 1s ease-in-out infinite;animation-delay:0.30s;"></span>
             </div>
-            <p class="text-[13px] font-medium text-gray-500">Generating your slides…</p>
+            <p class="text-[13px] font-medium text-gray-500">Generating your slides...</p>
           </div>
 
-          <!-- Slide card (shown after generate) -->
-          <div id="slide-display" class="hidden w-full max-w-[820px] mx-8">
-            <div class="slide-card" style="aspect-ratio:16/9; display:flex; flex-direction:column; overflow:hidden;">
-              <div class="px-10 pt-9 pb-0">
-                <div class="inline-flex items-center gap-1.5 h-6 px-2.5 rounded text-[11px] font-semibold mb-4" style="background:#EEF2FF; color:#5B63F6;">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                  Traction
-                </div>
-                <h2 class="text-[28px] font-extrabold text-gray-900 leading-tight tracking-tight">We're growing fast</h2>
-                <p class="text-[14px] text-gray-400 mt-2">Key metrics as of Q4 2024</p>
-              </div>
-              <div class="flex-1 grid grid-cols-3 gap-4 px-10 py-6 items-start">
-                <div class="bg-[#F8F9FC] rounded-xl p-5">
-                  <p class="text-[24px] font-extrabold text-gray-900">$1.2M</p>
-                  <p class="text-[11px] font-medium text-gray-400 mt-1 leading-tight">Annual Recurring Revenue</p>
-                  <p class="text-[11px] font-semibold mt-2" style="color:#16A34A;">↑ 3.2× YoY</p>
-                </div>
-                <div class="bg-[#F8F9FC] rounded-xl p-5">
-                  <p class="text-[24px] font-extrabold text-gray-900">120</p>
-                  <p class="text-[11px] font-medium text-gray-400 mt-1 leading-tight">Paying customers</p>
-                  <p class="text-[11px] font-semibold mt-2" style="color:#16A34A;">↑ 2.8× YoY</p>
-                </div>
-                <div class="bg-[#F8F9FC] rounded-xl p-5">
-                  <p class="text-[24px] font-extrabold text-gray-900">94%</p>
-                  <p class="text-[11px] font-medium text-gray-400 mt-1 leading-tight">Net retention rate</p>
-                  <p class="text-[11px] font-semibold mt-2" style="color:#16A34A;">↑ from 88%</p>
-                </div>
-              </div>
+          <!-- Empty state -->
+          <div id="canvas-empty-state" class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:#E5E7EB;">
+              <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M3.75 3h16.5M12 16.5v4.5m-3 0h6"/></svg>
             </div>
+            <div>
+              <p class="text-[15px] font-semibold text-gray-400">Your presentation will appear here</p>
+              <p class="text-[13px] mt-1.5 text-gray-300">Describe what you want in the chat</p>
+            </div>
+          </div>
 
-            <!-- Slide nav -->
-            <div class="flex items-center justify-center gap-2.5 mt-5">
-              <button id="prev-btn" onclick="prevSlide()" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          <!-- Slide view (shown after generation) -->
+          <div id="slide-display" class="hidden flex-col flex-1 items-center justify-center overflow-auto" style="padding:20px 16px;">
+            <div style="display:flex;align-items:center;gap:14px;width:100%;max-width:900px;margin:auto;">
+              <button id="prev-btn" onclick="prevSlide()" class="canvas-nav" disabled>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               </button>
-              <span id="slide-counter" class="text-[13px] font-semibold text-gray-500 tabular-nums px-2">2 / 8</span>
-              <button id="next-btn" onclick="nextSlide()" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 transition-colors">
+
+              <!-- Main 16:9 slide frame -->
+              <div id="main-slide-frame" style="flex:1;aspect-ratio:16/9;position:relative;overflow:hidden;background:white;box-shadow:0 4px 24px rgba(0,0,0,0.14),0 1px 4px rgba(0,0,0,0.08);border-radius:2px;border:1px solid #E0E0E0;">
+
+                <!-- Slide 1: Title -->
+                <div id="slide-page-1" class="slide-page active" style="background:#0F172A;">
+                  <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;padding:5% 7%;box-sizing:border-box;position:relative;overflow:hidden;">
+                    <div style="font-size:1vw;color:#818CF8;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1.5%;">INVESTOR PITCH &middot; 2026</div>
+                    <div style="font-size:4vw;font-weight:900;color:white;line-height:1.1;margin-bottom:2%;">Sovereign<br>Capital Gate</div>
+                    <div style="font-size:1.2vw;color:#94A3B8;line-height:1.6;max-width:42%;">AI-powered investment intelligence platform for modern fund managers.</div>
+                    <div style="width:3.5%;height:4px;background:#5B63F6;border-radius:2px;margin-top:3%;"></div>
+                    <div style="display:flex;gap:1.5%;margin-top:3.5%;">
+                      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:0.6% 1.8%;"><span style="font-size:0.85vw;color:#C7D2FE;font-weight:500;">Series Seed &middot; $3M</span></div>
+                      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:0.6% 1.8%;"><span style="font-size:0.85vw;color:#C7D2FE;font-weight:500;">B2B SaaS</span></div>
+                      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:0.6% 1.8%;"><span style="font-size:0.85vw;color:#C7D2FE;font-weight:500;">YC W24</span></div>
+                    </div>
+                    <div style="position:absolute;right:-8%;top:-25%;width:55%;height:150%;background:linear-gradient(135deg,#5B63F6,#7C6FF7);opacity:0.12;border-radius:50% 0 0 50%;pointer-events:none;"></div>
+                  </div>
+                </div>
+
+                <!-- Slide 2: Problem -->
+                <div id="slide-page-2" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:2.5%;">
+                    <div style="width:5px;height:2.6vw;background:#EF4444;border-radius:3px;flex-shrink:0;"></div>
+                    <div style="font-size:2.2vw;font-weight:800;color:#0F172A;">The Problem</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2%;height:62%;">
+                    <div style="background:#FEF2F2;border-radius:12px;padding:5%;display:flex;flex-direction:column;">
+                      <div style="font-size:1.8vw;margin-bottom:5%;">&#10060;</div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Fragmented data</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Analysts waste hours consolidating reports from 12+ different sources every week.</div>
+                    </div>
+                    <div style="background:#FEF2F2;border-radius:12px;padding:5%;display:flex;flex-direction:column;">
+                      <div style="font-size:1.8vw;margin-bottom:5%;">&#9203;</div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Slow decisions</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Manual analysis delays critical investment decisions by days, not hours.</div>
+                    </div>
+                    <div style="background:#FEF2F2;border-radius:12px;padding:5%;display:flex;flex-direction:column;">
+                      <div style="font-size:1.8vw;margin-bottom:5%;">&#128202;</div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">No unified view</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Insights are scattered across spreadsheets, PDFs, and legacy tools.</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2.5%;font-size:0.85vw;color:#9CA3AF;font-style:italic;border-left:3px solid #EF4444;padding-left:1%;">82% of fund managers cite data overload as their #1 operational challenge &mdash; 2024 Investment Technology Survey</div>
+                </div>
+
+                <!-- Slide 3: Solution -->
+                <div id="slide-page-3" class="slide-page" style="background:#F0F4FF;padding:4% 6%;box-sizing:border-box;">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:2.5%;">
+                    <div style="width:5px;height:2.6vw;background:#5B63F6;border-radius:3px;flex-shrink:0;"></div>
+                    <div style="font-size:2.2vw;font-weight:800;color:#0F172A;">Our Solution</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2%;height:58%;">
+                    <div style="background:white;border-radius:14px;padding:5%;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(91,99,246,0.09);">
+                      <div style="width:2.8vw;height:2.8vw;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;">
+                        <svg style="width:1.4vw;height:1.4vw;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+                      </div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Unified AI Hub</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Connect all data sources and get instant AI-driven analysis in one place.</div>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:5%;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(91,99,246,0.09);">
+                      <div style="width:2.8vw;height:2.8vw;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;">
+                        <svg style="width:1.4vw;height:1.4vw;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                      </div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">Instant Insights</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Ask natural language questions, get answers from your entire portfolio in seconds.</div>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:5%;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(91,99,246,0.09);">
+                      <div style="width:2.8vw;height:2.8vw;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;">
+                        <svg style="width:1.4vw;height:1.4vw;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+                      </div>
+                      <div style="font-size:1.2vw;font-weight:700;color:#111827;margin-bottom:2.5%;">10x Faster</div>
+                      <div style="font-size:0.9vw;color:#6B7280;line-height:1.55;flex:1;">Investment analysis that took days now completes in minutes with one click.</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2.5%;background:#5B63F6;border-radius:10px;padding:1.5% 3%;display:inline-flex;align-items:center;gap:1%;">
+                    <span style="font-size:0.9vw;font-weight:600;color:white;">&#10022; &nbsp;Teams report 10x faster deal evaluation from day one</span>
+                  </div>
+                </div>
+
+                <!-- Slide 4: Market -->
+                <div id="slide-page-4" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="font-size:2.2vw;font-weight:800;color:#0F172A;margin-bottom:0.5%;">Market Opportunity</div>
+                  <div style="font-size:0.95vw;color:#6B7280;margin-bottom:3%;">A massive, growing, and underserved market</div>
+                  <div style="display:flex;align-items:center;gap:3%;height:62%;">
+                    <div style="flex:1.4;position:relative;height:100%;display:flex;align-items:center;">
+                      <div style="width:16vw;height:16vw;border-radius:50%;background:#EEF2FF;border:3px solid #5B63F6;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;left:0;">
+                        <div style="font-size:2.1vw;font-weight:900;color:#5B63F6;">$47B</div>
+                        <div style="font-size:0.72vw;color:#6B7280;font-weight:600;margin-top:2px;text-align:center;">Total Addressable Market</div>
+                      </div>
+                      <div style="width:12vw;height:12vw;border-radius:50%;background:#E0E7FF;border:3px solid #818CF8;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;left:12vw;">
+                        <div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">$8B</div>
+                        <div style="font-size:0.72vw;color:#6B7280;font-weight:600;margin-top:2px;">SAM</div>
+                      </div>
+                      <div style="width:8vw;height:8vw;border-radius:50%;background:#C7D2FE;border:3px solid #4338CA;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;left:22vw;">
+                        <div style="font-size:1.2vw;font-weight:900;color:#3730A3;">$800M</div>
+                        <div style="font-size:0.72vw;color:#3730A3;font-weight:600;margin-top:2px;">SOM</div>
+                      </div>
+                    </div>
+                    <div style="flex:0.8;display:flex;flex-direction:column;gap:4%;justify-content:center;height:100%;">
+                      <div style="border-left:3px solid #5B63F6;padding-left:4%;"><div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">18.5%</div><div style="font-size:0.9vw;color:#374151;font-weight:500;margin-top:1%;">CAGR through 2030</div></div>
+                      <div style="border-left:3px solid #5B63F6;padding-left:4%;"><div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">6,000+</div><div style="font-size:0.9vw;color:#374151;font-weight:500;margin-top:1%;">VC &amp; PE firms globally</div></div>
+                      <div style="border-left:3px solid #5B63F6;padding-left:4%;"><div style="font-size:1.7vw;font-weight:900;color:#5B63F6;">$12K</div><div style="font-size:0.9vw;color:#374151;font-weight:500;margin-top:1%;">Avg. annual spend per analyst</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide 5: Product -->
+                <div id="slide-page-5" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="font-size:2.2vw;font-weight:800;color:#0F172A;margin-bottom:2%;">The Product</div>
+                  <div style="display:flex;gap:3%;height:72%;">
+                    <div style="flex:1.3;background:#F8F9FC;border-radius:14px;border:1px solid #E5E7EB;display:flex;flex-direction:column;overflow:hidden;">
+                      <div style="height:9%;background:#EDEEF0;display:flex;align-items:center;gap:5px;padding:0 10px;">
+                        <div style="width:8px;height:8px;border-radius:50%;background:#EF4444;"></div>
+                        <div style="width:8px;height:8px;border-radius:50%;background:#F59E0B;"></div>
+                        <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
+                        <div style="font-size:0.6vw;color:#9CA3AF;margin-left:6px;">aibii.com/dashboard</div>
+                      </div>
+                      <div style="flex:1;padding:8px;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:5px;">
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">ARR</div><div style="font-size:1.1vw;font-weight:800;color:#5B63F6;">$1.2M</div></div>
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">Customers</div><div style="font-size:1.1vw;font-weight:800;color:#16A34A;">120</div></div>
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">NRR</div><div style="font-size:1.1vw;font-weight:800;color:#F97316;">94%</div></div>
+                        <div style="background:#5B63F6;border-radius:6px;padding:5px;grid-column:span 2;"><div style="font-size:0.6vw;color:rgba(255,255,255,0.7);">AI Chat</div><div style="font-size:0.75vw;color:white;margin-top:3px;">What's the top performing fund this quarter?</div></div>
+                        <div style="background:white;border-radius:6px;padding:5px;"><div style="font-size:0.6vw;color:#6B7280;">MRR Growth</div><div style="font-size:1.1vw;font-weight:800;color:#5B63F6;">32%</div></div>
+                      </div>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:4%;justify-content:center;">
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">AI-driven portfolio insights</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">Natural language Q&amp;A across all your data</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">Real-time data connectors</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">50+ integrations: Excel, Bloomberg &amp; more</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">Auto-generated reports</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">IC memos &amp; LP updates in seconds</div></div></div>
+                      <div style="display:flex;align-items:flex-start;gap:3%;"><div style="width:2vw;height:2vw;border-radius:7px;background:#EEF2FF;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><div style="width:0.65vw;height:0.65vw;border-radius:50%;background:#5B63F6;"></div></div><div><div style="font-size:1vw;font-weight:700;color:#111827;">Collaborative workspaces</div><div style="font-size:0.8vw;color:#6B7280;margin-top:2px;">Share, comment, and act together</div></div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide 6: Traction -->
+                <div id="slide-page-6" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="display:flex;align-items:center;gap:2%;margin-bottom:0.5%;">
+                    <div style="font-size:2.2vw;font-weight:800;color:#0F172A;">We're Growing Fast</div>
+                    <div style="font-size:0.8vw;background:#DCFCE7;color:#16A34A;padding:0.25% 0.9%;border-radius:999px;font-weight:700;">All-Time High Q4 2024</div>
+                  </div>
+                  <div style="font-size:0.95vw;color:#6B7280;margin-bottom:2.5%;">Key metrics as of Q4 2024</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2%;height:52%;">
+                    <div style="background:#F8F9FC;border-radius:14px;padding:5%;display:flex;flex-direction:column;justify-content:space-between;">
+                      <div><div style="font-size:2.6vw;font-weight:900;color:#111827;">$1.2M</div><div style="font-size:0.9vw;color:#6B7280;margin-top:1.5%;line-height:1.4;">Annual Recurring Revenue</div></div>
+                      <div style="font-size:1vw;font-weight:700;color:#16A34A;">&#8593; 3.2x YoY</div>
+                    </div>
+                    <div style="background:#F8F9FC;border-radius:14px;padding:5%;display:flex;flex-direction:column;justify-content:space-between;">
+                      <div><div style="font-size:2.6vw;font-weight:900;color:#111827;">120</div><div style="font-size:0.9vw;color:#6B7280;margin-top:1.5%;line-height:1.4;">Paying customers</div></div>
+                      <div style="font-size:1vw;font-weight:700;color:#16A34A;">&#8593; 2.8x YoY</div>
+                    </div>
+                    <div style="background:#F8F9FC;border-radius:14px;padding:5%;display:flex;flex-direction:column;justify-content:space-between;">
+                      <div><div style="font-size:2.6vw;font-weight:900;color:#111827;">94%</div><div style="font-size:0.9vw;color:#6B7280;margin-top:1.5%;line-height:1.4;">Net retention rate</div></div>
+                      <div style="font-size:1vw;font-weight:700;color:#16A34A;">&#8593; from 88%</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2%;display:grid;grid-template-columns:1fr 1fr;gap:2%;height:17%;">
+                    <div style="background:#F0FDF4;border-radius:10px;padding:2%;display:flex;align-items:center;gap:3%;"><div style="font-size:2.2vw;font-weight:900;color:#16A34A;">18</div><div style="font-size:0.8vw;color:#374151;font-weight:500;">New customers added<br>this quarter</div></div>
+                    <div style="background:#EEF2FF;border-radius:10px;padding:2%;display:flex;align-items:center;gap:3%;"><div style="font-size:2.2vw;font-weight:900;color:#5B63F6;">8.9</div><div style="font-size:0.8vw;color:#374151;font-weight:500;">Average NPS from<br>enterprise clients</div></div>
+                  </div>
+                </div>
+
+                <!-- Slide 7: Team -->
+                <div id="slide-page-7" class="slide-page" style="background:#fff;padding:4% 6%;box-sizing:border-box;">
+                  <div style="font-size:2.2vw;font-weight:800;color:#0F172A;margin-bottom:0.5%;">The Team</div>
+                  <div style="font-size:0.95vw;color:#6B7280;margin-bottom:3.5%;">World-class experience in finance, AI, and enterprise software</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5%;height:60%;">
+                    <div style="border:1.5px solid #E5E7EB;border-radius:16px;padding:5%;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                      <div style="width:4.2vw;height:4.2vw;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;margin-bottom:4%;font-size:1.8vw;font-weight:900;color:#5B63F6;">A</div>
+                      <div style="font-size:1.1vw;font-weight:700;color:#111827;margin-bottom:1%;">Aryan Shah</div>
+                      <div style="font-size:0.85vw;color:#5B63F6;font-weight:600;margin-bottom:2.5%;">CEO &amp; Founder</div>
+                      <div style="font-size:0.8vw;color:#6B7280;line-height:1.55;">Ex-Goldman Sachs. 10+ yrs in finance &amp; software. MBA Wharton.</div>
+                    </div>
+                    <div style="border:1.5px solid #E5E7EB;border-radius:16px;padding:5%;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                      <div style="width:4.2vw;height:4.2vw;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;margin-bottom:4%;font-size:1.8vw;font-weight:900;color:#16A34A;">P</div>
+                      <div style="font-size:1.1vw;font-weight:700;color:#111827;margin-bottom:1%;">Priya Mehta</div>
+                      <div style="font-size:0.85vw;color:#16A34A;font-weight:600;margin-bottom:2.5%;">CTO</div>
+                      <div style="font-size:0.8vw;color:#6B7280;line-height:1.55;">Ex-Google AI. PhD ML Stanford. Led teams of 40+ engineers.</div>
+                    </div>
+                    <div style="border:1.5px solid #E5E7EB;border-radius:16px;padding:5%;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                      <div style="width:4.2vw;height:4.2vw;border-radius:50%;background:#FFF7ED;display:flex;align-items:center;justify-content:center;margin-bottom:4%;font-size:1.8vw;font-weight:900;color:#F97316;">R</div>
+                      <div style="font-size:1.1vw;font-weight:700;color:#111827;margin-bottom:1%;">Rahul Verma</div>
+                      <div style="font-size:0.85vw;color:#F97316;font-weight:600;margin-bottom:2.5%;">Head of Sales</div>
+                      <div style="font-size:0.8vw;color:#6B7280;line-height:1.55;">Ex-Sequoia. Closed $50M+ in enterprise deals across Asia &amp; EU.</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:2.5%;display:flex;gap:1.5%;align-items:center;">
+                    <div style="background:#F8F9FC;border-radius:8px;padding:1% 2%;"><span style="font-size:0.8vw;color:#374151;font-weight:500;">&#127942; YC W24</span></div>
+                    <div style="background:#F8F9FC;border-radius:8px;padding:1% 2%;"><span style="font-size:0.8vw;color:#374151;font-weight:500;">&#127891; Advisors: ex-CXOs from Blackstone, KKR, Apollo</span></div>
+                  </div>
+                </div>
+
+                <!-- Slide 8: The Ask -->
+                <div id="slide-page-8" class="slide-page" style="background:#5B63F6;padding:5% 7%;box-sizing:border-box;position:relative;overflow:hidden;">
+                  <div style="font-size:0.9vw;color:#C7D2FE;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1.5%;">THE ASK</div>
+                  <div style="font-size:3.8vw;font-weight:900;color:white;line-height:1.1;margin-bottom:2%;">Raising $3M<br>Seed Round</div>
+                  <div style="font-size:1.1vw;color:#E0E7FF;line-height:1.6;max-width:48%;margin-bottom:3.5%;">Join us in redefining investment intelligence for the next generation of fund managers.</div>
+                  <div style="display:flex;gap:1.5%;margin-bottom:3%;">
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:2% 3%;flex:1;"><div style="font-size:1.7vw;font-weight:900;color:white;">$1.5M</div><div style="font-size:0.8vw;color:#C7D2FE;margin-top:1.5%;">Product &amp; Engineering</div></div>
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:2% 3%;flex:1;"><div style="font-size:1.7vw;font-weight:900;color:white;">$900K</div><div style="font-size:0.8vw;color:#C7D2FE;margin-top:1.5%;">Sales &amp; Marketing</div></div>
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:2% 3%;flex:1;"><div style="font-size:1.7vw;font-weight:900;color:white;">$600K</div><div style="font-size:0.8vw;color:#C7D2FE;margin-top:1.5%;">Operations &amp; Hiring</div></div>
+                  </div>
+                  <div style="display:inline-flex;align-items:center;gap:2%;background:rgba(255,255,255,0.12);border-radius:10px;padding:1.5% 2.5%;">
+                    <svg style="width:1.2vw;height:1.2vw;color:white;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                    <div style="font-size:0.85vw;color:rgba(255,255,255,0.9);font-weight:500;">aryan@sovereigncapitalgate.com &nbsp;&middot;&nbsp; sovereigncapitalgate.com</div>
+                  </div>
+                  <div style="position:absolute;right:-10%;bottom:-30%;width:55%;height:140%;background:rgba(255,255,255,0.05);border-radius:50% 0 0 50%;pointer-events:none;"></div>
+                </div>
+
+              </div><!-- end main-slide-frame -->
+
+              <button id="next-btn" onclick="nextSlide()" class="canvas-nav">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
               </button>
-            </div>
-          </div>
+            </div><!-- end flex row -->
+          </div><!-- end slide-display -->
 
-        </div>
+        </div><!-- end canvas column -->
 
-        <!-- Right panel: AiBii AI -->
-        <div class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+      </div><!-- end state-editor -->
+    </div><!-- end editor column -->
+
+    <!-- ─── AI PANEL (right) ─── -->
+    <div class="w-[320px] min-w-[320px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
 
           <!-- Panel topbar -->
-          <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
+          <div class="flex items-center justify-between px-4 h-11 border-b border-gray-100 flex-shrink-0">
             <div class="flex items-center gap-2">
               <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
                 <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
@@ -797,9 +899,8 @@
               <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0" style="background:#EEF2FF">
                 <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
               </div>
-              <p class="text-[15px] font-bold text-gray-900 leading-snug">I'm AiBii AI.</p>
-              <p class="text-[15px] font-bold text-gray-900 leading-snug">Ask me anything.</p>
-              <p class="text-[13px] text-gray-400 mt-2">Or try the suggested actions below.</p>
+              <p class="text-[15px] font-bold text-gray-900 leading-snug">Describe your presentation.</p>
+              <p class="text-[13px] text-gray-400 mt-2 leading-relaxed">Tell me what to create and I'll generate your slides instantly.</p>
             </div>
 
             <!-- Chat messages -->
@@ -811,17 +912,17 @@
           <div class="px-4 pb-3 flex-shrink-0">
             <p class="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Suggested</p>
             <div class="space-y-1.5">
-              <button onclick="sendRpSuggestion('Make this slide more concise')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
-                Make this concise
+              <button onclick="sendRpSuggestion('Investor pitch deck for a B2B SaaS startup, 8 slides')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
+                Investor pitch deck
               </button>
-              <button onclick="sendRpSuggestion('Rewrite the title to be more impactful')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                Rewrite the title
+              <button onclick="sendRpSuggestion('Product launch presentation for a new mobile app, 6 slides')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
+                Product launch deck
               </button>
-              <button onclick="sendRpSuggestion('Add a key statistic or data point')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
-                <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-                Add a statistic
+              <button onclick="sendRpSuggestion('Quarterly business review presentation, 10 slides')" class="suggest-btn flex items-center gap-2.5 w-full px-3 h-9 rounded-xl text-[13px] text-gray-700 text-left bg-gray-50 border border-gray-100 transition-colors">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#5B63F6;"></span>
+                Quarterly review
               </button>
             </div>
           </div>
@@ -834,7 +935,7 @@
                 <div
                   id="rp-ai-input"
                   contenteditable="true"
-                  data-placeholder="Ask AiBii AI about this slide…"
+                  data-placeholder="Describe your presentation… or ask me to edit a slide"
                   class="ppt-ai-input text-[13px] text-gray-800 focus:outline-none leading-relaxed"
                   style="min-height:22px; max-height:120px; overflow-y:auto;"
                   onkeydown="handleRpAiKey(event)"
@@ -853,7 +954,7 @@
                       <span id="rp-mode-label">Agent</span>
                       <svg class="w-2.5 h-2.5 ml-0.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="rp-mode-menu" class="hidden absolute bottom-full left-0 mb-1 z-[200] bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-36">
+                    <div id="rp-mode-menu" class="hidden absolute bottom-full left-0 mb-1 z-[200] bg-white rounded-lg shadow-lg border border-gray-100 py-1 w-36">
                       <button onclick="selectRpMode('Agent')" class="w-full flex items-center gap-2 px-3 h-8 text-[12px] text-gray-700 hover:bg-gray-50 text-left">
                         <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
                         Agent
@@ -879,10 +980,9 @@
             </div>
           </div>
 
-        </div>
+    </div><!-- end AI panel -->
 
-      </div>
-    </div>
+    </div><!-- end content row -->
 
   </main>
 
@@ -891,26 +991,25 @@
        WORKSPACE SWITCHER MODAL
   ════════════════════════════════════════════════════════ -->
   <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45); backdrop-filter:blur(2px);" onclick="closeWsModal(event)">
-    <div id="ws-modal" class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden flex flex-col" style="max-height:480px; box-shadow:0 20px 60px rgba(0,0,0,0.18);" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100">
-        <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
-        <button onclick="closeWsModal(event)" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Select a workspace to switch to</p>
+        </div>
+        <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          New Workspace
         </button>
       </div>
-      <div class="flex-1 px-3 pb-3 pt-2 overflow-y-auto space-y-1">
-        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
-          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
-          <div><p class="text-[13px] font-medium text-gray-900">My Private Project</p><p class="text-[11px] text-gray-400">Personal</p></div>
-        </button>
-        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
-          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#16A34A">S</span>
-          <div><p class="text-[13px] font-medium text-gray-900">Sovereign Capital Gate</p><p class="text-[11px] text-gray-400">Team</p></div>
-        </button>
-        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
-          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">M</span>
-          <div><p class="text-[13px] font-medium text-gray-900">Marketing Analytics</p><p class="text-[11px] text-gray-400">Team</p></div>
-        </button>
+      <div class="px-4 pt-3 pb-2 flex-shrink-0">
+        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
+          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
+          <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
+        </div>
+      </div>
+      <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
+        <div id="ws-modal-list" class="space-y-0.5"></div>
       </div>
     </div>
   </div>
@@ -931,13 +1030,73 @@
       btn.classList.toggle('open');
     }
     function openWsModal() {
+      var input=document.getElementById('ws-search'); if(input)input.value='';
+      renderWsModalList('');
       document.getElementById('ws-modal-backdrop').classList.add('open');
     }
     function closeWsModal(e) {
+      if(!e||e.target===document.getElementById('ws-modal-backdrop'))
+        document.getElementById('ws-modal-backdrop').classList.remove('open');
+    }
+    var wsData = [
+      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
+      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
+      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
+      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
+      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
+      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
+    ];
+    try { var _saved=JSON.parse(localStorage.getItem('aibii_workspaces')||'[]'); _saved.forEach(function(ws){ if(!wsData.find(function(w){return w.id===ws.id;}))wsData.push({id:ws.id,name:ws.name,initial:ws.initial,color:ws.color,current:false}); }); } catch(e) {}
+    function renderWsModalList(filter) {
+      var list=document.getElementById('ws-modal-list'); if(!list)return;
+      var q=(filter||'').toLowerCase();
+      var items=wsData.filter(function(ws){return !q||ws.name.toLowerCase().includes(q);});
+      var container=list.parentElement; var ROW_H=44,SHOWN=5;
+      container.style.maxHeight=(items.length>SHOWN?ROW_H*SHOWN+12:'')+'px';
+      container.style.overflowY=items.length>SHOWN?'auto':'visible';
+      if(!items.length){list.innerHTML='<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>';return;}
+      list.innerHTML=items.map(function(ws){
+        var c=ws.current;
+        return '<button onclick="selectWorkspace(\''+ws.id+'\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors '+(c?'bg-indigo-50':'hover:bg-gray-50')+'">'+'<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:'+ws.color+'">'+ws.initial+'</span>'+'<span class="flex-1 text-[13px] '+(c?'font-semibold text-gray-900':'font-medium text-gray-700')+' truncate">'+ws.name+'</span>'+(c?'<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>':'')+'</button>';
+      }).join('');
+    }
+    function filterWsList() { renderWsModalList(document.getElementById('ws-search').value); }
+    function selectWorkspace(id) {
+      wsData.forEach(function(ws){ws.current=ws.id===id;});
+      var ws=wsData.find(function(ws){return ws.id===id;});
+      if(ws){
+        var nameEl=document.getElementById('ws-name'); var avatarEl=document.getElementById('ws-avatar');
+        if(nameEl)nameEl.textContent=ws.name.length>24?ws.name.slice(0,24)+'...':ws.name;
+        if(avatarEl){avatarEl.textContent=ws.initial;avatarEl.style.background=ws.color;}
+      }
       document.getElementById('ws-modal-backdrop').classList.remove('open');
     }
-
-    // ── Notifications & user menu ──
+    function openNewWsModal() {
+      document.getElementById('ws-modal-backdrop').classList.remove('open');
+      document.getElementById('new-ws-modal').classList.remove('hidden');
+      document.getElementById('new-ws-name').value='';
+      document.getElementById('new-ws-desc').value='';
+      wsNewColor='#5B63F6'; wsColorIndex=0; onWsNameInput('');
+      setTimeout(function(){document.getElementById('new-ws-name').focus();},80);
+    }
+    function closeNewWsModal() { document.getElementById('new-ws-modal').classList.add('hidden'); }
+    var wsColors=['#5B63F6','#16A34A','#F97316','#8B5CF6','#EC4899','#0EA5E9','#EAB308'];
+    var wsNewColor='#5B63F6', wsColorIndex=0;
+    function cycleWsColor() {
+      wsColorIndex=(wsColorIndex+1)%wsColors.length; wsNewColor=wsColors[wsColorIndex];
+      var el=document.getElementById('ws-preview-avatar'); if(el)el.style.background=wsNewColor;
+    }
+    function onWsNameInput(val) {
+      var p=document.getElementById('ws-preview-name'); var a=document.getElementById('ws-preview-avatar');
+      if(p)p.textContent=val.trim()||'Your workspace';
+      if(a)a.textContent=val.trim()?val.trim()[0].toUpperCase():'A';
+    }
+    function createNewWs() {
+      var name=document.getElementById('new-ws-name').value.trim();
+      if(!name){document.getElementById('new-ws-name').focus();return;}
+      var newWs={id:'ws-dyn-'+Date.now(),name:name,initial:name[0].toUpperCase(),color:wsNewColor,current:false};
+      wsData.push(newWs); closeNewWsModal(); selectWorkspace(newWs.id);
+    }
     function toggleNotifications() {
       document.getElementById('notif-dropdown').classList.toggle('hidden');
       document.getElementById('user-dropdown').classList.add('hidden');
@@ -953,236 +1112,67 @@
 
 
     // ════════════════════════════════════════
-    //  STATE MACHINE: create → outline → editor
+    //  SLIDE GENERATION
     // ════════════════════════════════════════
-    var currentState = 'create';
-    var slideIndex = 2;
+    var slideIndex = 1;
     var totalSlides = 8;
+    var _slidesGenerated = false;
 
-    function setState(s) {
-      currentState = s;
-      ['create','outline','editor'].forEach(function(id) {
-        document.getElementById('state-' + id).classList.remove('active');
-      });
-      document.getElementById('state-' + s).classList.add('active');
-      // Step indicators: always visible
-      document.getElementById('ppt-steps').style.display = 'flex';
-      // Update step dots based on state
-      if (s === 'create') {
-        setStepDot('step1', 'act', '1');
-        setStepDot('step2', 'todo', '2');
-        setStepDot('step3', 'todo', '3');
-        // Step 1 is not clickable in create state
-        document.getElementById('step1-dot').onclick = null;
-        document.getElementById('step1-dot').style.cursor = 'default';
-        document.getElementById('step2-dot').onclick = null;
-        document.getElementById('step2-dot').style.cursor = 'default';
-      } else if (s === 'outline') {
-        setStepDot('step1', 'done', '');
-        setStepDot('step2', 'act', '2');
-        setStepDot('step3', 'todo', '3');
-        // Step 1 is clickable in outline state
-        document.getElementById('step1-dot').onclick = function() { setState('create'); };
-        document.getElementById('step1-dot').style.cursor = 'pointer';
-        document.getElementById('step2-dot').onclick = null;
-        document.getElementById('step2-dot').style.cursor = 'default';
-      } else {
-        setStepDot('step1', 'done', '');
-        setStepDot('step2', 'done', '');
-        setStepDot('step3', 'act', '3');
-        // Both step 1 and 2 are clickable in editor state
-        document.getElementById('step1-dot').onclick = function() { setState('create'); };
-        document.getElementById('step1-dot').style.cursor = 'pointer';
-        document.getElementById('step2-dot').onclick = function() { setState('outline'); };
-        document.getElementById('step2-dot').style.cursor = 'pointer';
-      }
-      // Show editor toolbar only in editor state
-      var editorActions = document.getElementById('sb-actions-editor');
-      if (editorActions) {
-        editorActions.style.display = s === 'editor' ? 'flex' : 'none';
-      }
-      // Keep title static
-      document.getElementById('subbar-title').textContent = 'Investor Pitch';
-    }
-
-    function setStepDot(step, state, num) {
-      var dot = document.getElementById(step + '-dot');
-      var lbl = document.getElementById(step + '-lbl');
-      dot.className = 'step-dot ' + state;
-      if (state === 'done') {
-        dot.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>';
-        lbl.style.color = '#22C55E'; lbl.style.fontWeight = '500';
-      } else if (state === 'act') {
-        dot.textContent = num;
-        lbl.style.color = '#5B63F6'; lbl.style.fontWeight = '600';
-      } else {
-        dot.textContent = num;
-        lbl.style.color = '#D1D5DB'; lbl.style.fontWeight = '500';
-      }
-    }
-
-    function truncateTitle(str) {
-      return str.length > 36 ? str.slice(0, 34) + '…' : str;
-    }
-
-    function goToOutline() {
-      setState('outline');
-      generateOutlineItems();
-      updateGenerateButtonText();
-    }
-
-    function goToEditor() {
-      setState('editor');
-      var slideEl = document.getElementById('slide-display');
+    function generateSlides() {
+      if (_slidesGenerated) return;
+      _slidesGenerated = true;
+      var slideEl   = document.getElementById('slide-display');
       var overlayEl = document.getElementById('generating-overlay');
-      // Reset animation and hide slide
-      slideEl.classList.remove('fade-up');
-      slideEl.classList.add('hidden');
-      // Show generating overlay
+      var emptyEl   = document.getElementById('canvas-empty-state');
+      var panelEl   = document.getElementById('slides-panel');
+      if (emptyEl) { emptyEl.style.display = 'none'; }
       overlayEl.style.display = 'flex';
-      // After 2s: hide overlay and show slide with animation
       setTimeout(function() {
         overlayEl.style.display = 'none';
+        panelEl.classList.remove('hidden');
+        panelEl.classList.add('flex');
         slideEl.classList.remove('hidden');
-        // Trigger reflow to ensure animation plays
-        void slideEl.offsetWidth;
-        slideEl.classList.add('fade-up');
+        slideEl.classList.add('flex');
+        selectSlide(1);
       }, 2000);
     }
 
-
-    // ════════════════════════════════════════
-    //  CREATE STATE helpers
-    // ════════════════════════════════════════
-    function fillPrompt(text) {
-      document.getElementById('prompt-input').value = text;
-      document.getElementById('prompt-input').focus();
-    }
-
-    function selectTone(btn) {
-      document.querySelectorAll('.tone-pill').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-    }
-
-    function selectCount(el) {
-      document.querySelectorAll('.count-box').forEach(function(b) { b.classList.remove('active'); });
-      el.classList.add('active');
-      // update button label in outline
-      var count = el.textContent.trim() === 'Auto' ? 8 : parseInt(el.textContent);
-      totalSlides = count || 8;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
-      updateGenerateButtonText();
-    }
-
-    var _selectedType = 'slides';
-    function selectType(type) {
-      _selectedType = type;
-      var slidesBtn  = document.getElementById('type-slides');
-      var importBtn  = document.getElementById('type-import');
-      if (type === 'slides') {
-        slidesBtn.style.cssText = 'background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; font-weight:600;';
-        importBtn.style.cssText = 'background:#fff; border-color:#E5E7EB; color:#374151; font-weight:500;';
-      } else {
-        importBtn.style.cssText = 'background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; font-weight:600;';
-        slidesBtn.style.cssText = 'background:#fff; border-color:#E5E7EB; color:#374151; font-weight:500;';
-      }
-    }
-
-
-    // ════════════════════════════════════════
-    //  OUTLINE STATE helpers
-    // ════════════════════════════════════════
-    var outlineData = [
-      { title: 'The Problem We Solve', desc: 'HR teams spend 70% of time on admin. We cut that to 20%.' },
-      { title: 'Our Solution', desc: 'AI-native HR platform — automates onboarding, payroll, and compliance.' },
-      { title: 'Market Size', desc: '$42B global HR tech market, growing at 11% CAGR.' },
-      { title: 'Traction & Metrics', desc: '120 customers, $1.2M ARR, 94% retention rate.' },
-      { title: 'Business Model', desc: 'SaaS subscription, $299–$999/mo per seat. 14-day free trial.' },
-      { title: 'Competitive Advantage', desc: 'Only AI-native solution with 95% automation rate.' },
-      { title: 'Go-to-Market Strategy', desc: 'Product-led growth with enterprise sales team.' },
-      { title: 'Financial Projections', desc: '$10M ARR by 2027, 40% net margin.' },
-      { title: 'Team & Advisors', desc: '3 repeat founders, backed by top-tier VCs.' },
-      { title: 'The Ask', desc: 'Raising $5M Series A to scale sales and product.' },
-      { title: 'Vision & Roadmap', desc: 'Building the future of work, one automation at a time.' },
-      { title: 'Closing Slide', desc: 'Thank you. Questions?' }
-    ];
-
-    function generateOutlineItems() {
-      var container = document.getElementById('outline-list');
-      if (!container) return;
-      container.innerHTML = '';
-      for (var i = 0; i < totalSlides && i < outlineData.length; i++) {
-        var item = document.createElement('div');
-        item.className = 'outline-item' + (i === 2 ? ' active' : '');
-        item.innerHTML = 
-          '<div class="w-[22px] h-[22px] rounded-[6px] flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5" style="background:#EEF2FF; color:#5B63F6;">' + (i + 1) + '</div>' +
-          '<div class="flex-1 min-w-0">' +
-            '<p class="text-[13px] font-semibold text-gray-900">' + outlineData[i].title + '</p>' +
-            '<p class="text-[11px] text-gray-500 mt-0.5 leading-snug">' + outlineData[i].desc + '</p>' +
-          '</div>' +
-          '<button class="w-6 h-6 rounded-md flex items-center justify-center text-gray-300 hover:bg-gray-100 hover:text-gray-500 transition-colors flex-shrink-0 border-none bg-transparent">' +
-            '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
-          '</button>';
-        container.appendChild(item);
-      }
-    }
-
-    function updateGenerateButtonText() {
-      var btn = document.getElementById('generate-slides-text');
-      if (btn) {
-        btn.textContent = 'Generate ' + totalSlides + ' slides';
-      }
-    }
-
-    function addSlideFromPrompt() {
-      var input = document.getElementById('add-slide-input');
-      var text = input.value.trim();
-      if (!text) return;
-      // Add new slide to outline
-      if (totalSlides < 12) {
-        totalSlides++;
-        generateOutlineItems();
-        updateGenerateButtonText();
-        input.value = '';
-      }
-    }
-
-    function selectLayout(opt) {
-      document.querySelectorAll('.layout-opt').forEach(function(o) { o.classList.remove('active'); });
-      opt.classList.add('active');
-    }
-
-
-    // ════════════════════════════════════════
-    //  EDITOR STATE helpers
-    // ════════════════════════════════════════
-    function selectSlide(thumb, num) {
-      document.querySelectorAll('.sthumb').forEach(function(t) { t.classList.remove('active'); });
-      thumb.classList.add('active');
+    function selectSlide(num) {
+      // Update thumbnail active state
+      document.querySelectorAll('.thumb-preview').forEach(function(tp) {
+        tp.classList.remove('active');
+      });
+      var tp = document.getElementById('tp-' + num);
+      if (tp) tp.classList.add('active');
+      // Show correct slide page
+      document.querySelectorAll('.slide-page').forEach(function(sp) {
+        sp.classList.remove('active');
+      });
+      var sp = document.getElementById('slide-page-' + num);
+      if (sp) sp.classList.add('active');
       slideIndex = num;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
+      var counter = document.getElementById('slide-counter');
+      if (counter) counter.textContent = slideIndex + ' / ' + totalSlides;
       updateNavButtons();
+      // Scroll thumbnail into view
+      if (tp) tp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function prevSlide() {
       if (slideIndex <= 1) return;
-      slideIndex--;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
-      updateNavButtons();
+      selectSlide(slideIndex - 1);
     }
 
     function nextSlide() {
       if (slideIndex >= totalSlides) return;
-      slideIndex++;
-      document.getElementById('slide-counter').textContent = slideIndex + ' / ' + totalSlides;
-      updateNavButtons();
+      selectSlide(slideIndex + 1);
     }
 
     function updateNavButtons() {
       var prev = document.getElementById('prev-btn');
       var next = document.getElementById('next-btn');
-      prev.disabled = slideIndex <= 1;
-      next.disabled = slideIndex >= totalSlides;
+      if (prev) prev.disabled = slideIndex <= 1;
+      if (next) next.disabled = slideIndex >= totalSlides;
     }
 
     // ════════════════════════════════════════
@@ -1207,68 +1197,15 @@
         + '</div>';
     }
 
-    // ── Outline AI panel (step 2) ──
-    var _outlineMode = 'Agent';
+    // ── Outline AI panel stubs (kept for safety) ──
+    function toggleOutlineModeMenu(e) { e.stopPropagation(); }
+    function selectOutlineMode(mode) {}
+    function handleOutlineAiKey(e) {}
+    function sendOutlineSuggestion(text) {}
+    function sendOutlineAi() {}
+    function _sendOutlineMessage(text) {}
 
-    function toggleOutlineModeMenu(e) {
-      e.stopPropagation();
-      document.getElementById('outline-mode-menu').classList.toggle('hidden');
-    }
-
-    function selectOutlineMode(mode) {
-      _outlineMode = mode;
-      document.getElementById('outline-mode-label').textContent = mode;
-      ['Agent','Ask'].forEach(function(m) {
-        var el = document.getElementById('outline-mode-check-' + m);
-        if (el) el.classList.toggle('hidden', m !== mode);
-      });
-      document.getElementById('outline-mode-menu').classList.add('hidden');
-    }
-
-    function handleOutlineAiKey(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendOutlineAi(); }
-    }
-
-    function sendOutlineSuggestion(text) {
-      _sendOutlineMessage(text);
-    }
-
-    function sendOutlineAi() {
-      var input = document.getElementById('outline-ai-input');
-      var text = (input.innerText || '').trim();
-      if (!text) return;
-      input.innerText = '';
-      _sendOutlineMessage(text);
-    }
-
-    function _sendOutlineMessage(text) {
-      var welcome = document.getElementById('outline-ai-welcome');
-      var msgs    = document.getElementById('outline-ai-messages');
-      var scroll  = document.getElementById('outline-ai-scroll');
-      welcome.classList.add('hidden');
-      msgs.classList.remove('hidden');
-
-      var userDiv = document.createElement('div');
-      userDiv.innerHTML = _pptUserBubble(text);
-      msgs.appendChild(userDiv);
-      scroll.scrollTop = scroll.scrollHeight;
-
-      var replies = {
-        'Add a problem and solution slide': 'Added a "Problem & Solution" slide to your outline — feel free to edit the description above.',
-        'Add a team and advisors slide': 'Added a "Team & Advisors" slide to your outline — you can edit it above.',
-        'Reorder slides for a better narrative flow': 'Slides reordered: Problem → Solution → Market → Traction → Team → Ask — classic narrative arc.',
-      };
-      var reply = replies[text] || 'Got it! Updating your outline now…';
-
-      setTimeout(function() {
-        var botDiv = document.createElement('div');
-        botDiv.innerHTML = _pptBotBubble(reply);
-        msgs.appendChild(botDiv);
-        scroll.scrollTop = scroll.scrollHeight;
-      }, 500);
-    }
-
-    // ── Right-panel AI (step 3) ──
+    // ── Right-panel AI ──
     var _rpMode = 'Agent';
 
     function toggleRpModeMenu(e) {
@@ -1303,6 +1240,8 @@
     }
 
     function _sendRpMessage(text) {
+      var wasGenerated = _slidesGenerated;
+      generateSlides();
       var welcome = document.getElementById('rp-ai-welcome');
       var msgs    = document.getElementById('rp-ai-messages');
       var scroll  = document.getElementById('rp-ai-scroll');
@@ -1315,18 +1254,22 @@
       scroll.scrollTop = scroll.scrollHeight;
 
       var replies = {
+        'Investor pitch deck for a B2B SaaS startup, 8 slides': 'Building your investor pitch deck with 8 slides — traction, market size, team & more.',
+        'Product launch presentation for a new mobile app, 6 slides': 'Creating a 6-slide product launch deck — highlights, features, roadmap & CTA.',
+        'Quarterly business review presentation, 10 slides': 'Generating your 10-slide QBR — metrics, wins, challenges, and next quarter plan.',
         'Make this slide more concise':           'Done! I\'ve shortened the content while keeping the key message clear.',
         'Rewrite the title to be more impactful': 'Title updated: "We\'re Accelerating Fast" — more dynamic and engaging.',
         'Add a key statistic or data point':      'Added: "3.2× YoY growth" — this statistic strengthens your message.',
       };
-      var reply = replies[text] || 'Got it! Applying your instruction to this slide now…';
+      var reply = replies[text] || (wasGenerated ? 'Got it! Applying your instruction to this slide now…' : 'On it! Generating your slides now…');
+      var delay = wasGenerated ? 500 : 2300;
 
       setTimeout(function() {
         var botDiv = document.createElement('div');
         botDiv.innerHTML = _pptBotBubble(reply);
         msgs.appendChild(botDiv);
         scroll.scrollTop = scroll.scrollHeight;
-      }, 500);
+      }, delay);
     }
 
     // close mode menus on outside click
@@ -1342,9 +1285,6 @@
     //  INIT
     // ════════════════════════════════════════
     updateNavButtons();
-    setState('create');
-
-    // Hide both generating overlay and slide-display initially
     document.getElementById('generating-overlay').style.display = 'none';
     document.getElementById('slide-display').classList.add('hidden');
 
@@ -1586,6 +1526,48 @@
 
     </div><!-- end accordion list -->
   </div><!-- end sources-drawer -->
+
+  <!-- New Workspace full-screen -->
+  <div id="new-ws-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background:#F3F4F6">
+    <div class="flex items-center justify-between px-6 h-11 bg-white border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:#5B63F6">A</span>
+        <span class="text-[13px] font-semibold text-gray-800">Aibii</span>
+      </div>
+      <button onclick="closeNewWsModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
+      <div class="bg-white rounded-lg w-full max-w-lg mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
+        <div class="mb-6">
+          <h2 class="text-[17px] font-bold text-gray-900">New workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-1">A shared space for your team's work.</p>
+        </div>
+        <div class="flex items-center gap-3 mb-5">
+          <div id="ws-preview-avatar" class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all" style="background:#5B63F6" onclick="cycleWsColor()" title="Click to change color">A</div>
+          <div class="flex-1 min-w-0">
+            <p id="ws-preview-name" class="text-[13px] font-semibold text-gray-800 truncate">Your workspace</p>
+            <p class="text-[11px] text-gray-400">Click avatar to change color</p>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Name <span class="text-red-400">*</span></label>
+            <input id="new-ws-name" type="text" placeholder="e.g. Design Team" autocomplete="off" maxlength="48" class="w-full h-9 px-3 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400" oninput="onWsNameInput(this.value)" onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'" onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''" onkeydown="if(event.key==='Enter')createNewWs()">
+          </div>
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1">Description <span class="text-gray-400 font-normal">optional</span></label>
+            <textarea id="new-ws-desc" rows="2" placeholder="What is this workspace for?" class="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400" onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'" onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"></textarea>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-5">
+          <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="createNewWs()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

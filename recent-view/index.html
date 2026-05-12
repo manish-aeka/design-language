@@ -425,6 +425,10 @@
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
         Shared with me
       </a> -->
+      <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
+        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+        Datasources
+      </a>
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
@@ -432,7 +436,7 @@
     </nav>
 
     <!-- Explore free features banner -->
-    <div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+    <div class="mx-3 mb-3 mt-1 rounded-lg px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
       <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#C7D2FE">
         <svg class="w-4 h-4" style="color:#4F6EF7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
       </div>
@@ -451,7 +455,7 @@
        WORKSPACE SWITCHER MODAL
   ════════════════════════════════════════════ -->
   <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
-    <div id="ws-modal" class="bg-white rounded-2xl w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+    <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
       <!-- Modal header -->
       <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
         <div>
@@ -492,7 +496,7 @@
 
     <!-- Body -->
     <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
-      <div class="bg-white rounded-2xl w-full max-w-sm mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
+      <div class="bg-white rounded-lg w-full max-w-lg mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
 
         <!-- Header -->
         <div class="mb-6">
@@ -567,7 +571,7 @@
           </button>
 
           <!-- Notification dropdown -->
-          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="notif-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-80 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <!-- Header -->
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
               <span class="text-[13px] font-semibold text-gray-900">Notifications</span>
@@ -637,7 +641,7 @@
         <!-- User avatar -->
         <div class="relative" id="user-menu-wrapper">
           <button onclick="toggleUserMenu()" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 hover:opacity-90 transition-opacity" style="background:#3B5BDB" aria-label="User menu">M</button>
-          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
+          <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+6px)] z-50 w-56 bg-white border border-gray-200 rounded-lg overflow-hidden" style="box-shadow:0 8px 24px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06)">
             <div class="px-4 py-3 border-b border-gray-100">
               <p class="text-[13px] font-semibold text-gray-900">Manish Kumar</p>
               <p class="text-[12px] text-gray-400 mt-0.5">manish@aibii.com</p>
@@ -721,6 +725,17 @@
           </div>
         </button>
 
+        <!-- Card: Add Artifact -->
+        <button onclick="openAddArtifactModal()" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
+            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">Add Artifact</p>
+            <p class="text-[13px] text-gray-500">Attach your files,images and CSVs.</p>
+          </div>
+        </button>
+
         <!-- Card: Add Datasource -->
         <!--
         <button onclick="openCreateModal('Add Datasource')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
@@ -740,22 +755,22 @@
       <div class="flex items-center justify-between mb-6">
 
         <!-- Pill tabs -->
-        <div class="flex items-center gap-1 p-1 rounded-full" style="background:#F3F4F6">
+        <div class="flex items-center gap-1 p-1 rounded-lg" style="background:#F3F4F6">
           <button id="tab-me" onclick="setTab('me')"
-            class="filter-tab h-8 px-4 rounded-full text-sm font-medium bg-white text-gray-900 border border-gray-200"
+            class="filter-tab h-8 px-4 rounded-lg text-sm font-medium bg-white text-gray-900 border border-gray-200"
             style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">
             By me
           </button>
           <button id="tab-everyone" onclick="setTab('everyone')"
-            class="filter-tab h-8 px-4 rounded-full text-sm font-medium text-gray-500">
+            class="filter-tab h-8 px-4 rounded-lg text-sm font-medium text-gray-500">
             By everyone
           </button>
           <button id="tab-shared" onclick="setTab('shared')"
-            class="filter-tab h-8 px-4 rounded-full text-sm font-medium text-gray-500">
+            class="filter-tab h-8 px-4 rounded-lg text-sm font-medium text-gray-500">
             Shared with me
           </button>
           <button id="tab-everything" onclick="setTab('everything')"
-            class="filter-tab h-8 px-4 rounded-full text-sm font-medium text-gray-500">
+            class="filter-tab h-8 px-4 rounded-lg text-sm font-medium text-gray-500">
             Everything
           </button>
         </div>
@@ -776,14 +791,13 @@
           <!-- Type filter -->
           <div class="relative">
             <button onclick="toggleTypeFilter()"
-              class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700"
-              style="background:#F1F3F4; border:1px solid #E5E7EB">
+              class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
               <span id="type-filter-label">Type</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <div id="type-dropdown"
-              class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-xl py-1.5 min-w-[180px] bg-white"
+              class="type-dropdown absolute right-0 top-full mt-1.5 z-50 rounded-lg py-1.5 min-w-[180px] bg-white"
               style="border:1px solid #E5E7EB; box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)">
               <!-- All Type -->
               <div class="type-item flex items-center gap-2.5 px-3 h-9 cursor-pointer rounded-lg mx-1" style="background:#EEF2FF" onclick="setTypeFilter('everything', this)">
@@ -1607,11 +1621,132 @@
       closeNewWsModal();
       selectWorkspace(newWs.id);
     }
+
+    // ── Add Artifact Modal ──────────────────────────────────────
+    var _artifactFiles = [];
+
+    function openAddArtifactModal() {
+      _artifactFiles = [];
+      document.getElementById('artifact-name').value = '';
+      document.getElementById('artifact-desc').value = '';
+      document.getElementById('artifact-project').value = 'ws2';
+      _renderArtifactFiles();
+      document.getElementById('artifact-s1').classList.remove('hidden');
+      document.getElementById('artifact-s2').classList.add('hidden');
+      document.getElementById('add-artifact-modal').classList.remove('hidden');
+      setTimeout(function() { document.getElementById('artifact-name').focus(); }, 60);
+    }
+    function closeAddArtifactModal() {
+      document.getElementById('add-artifact-modal').classList.add('hidden');
+    }
+    function goArtifactStep2() {
+      var name = document.getElementById('artifact-name').value.trim();
+      if (!name) {
+        var inp = document.getElementById('artifact-name');
+        inp.focus();
+        inp.style.borderColor = '#F87171'; inp.style.boxShadow = '0 0 0 2px rgba(248,113,113,0.25)';
+        setTimeout(function() { inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 1200);
+        return;
+      }
+      var sel = document.getElementById('artifact-project');
+      var projLabel = sel.options[sel.selectedIndex].text;
+      document.getElementById('artifact-step2-proj').textContent = projLabel;
+      document.getElementById('artifact-s1').classList.add('hidden');
+      document.getElementById('artifact-s2').classList.remove('hidden');
+    }
+    function goArtifactStep1() {
+      document.getElementById('artifact-s2').classList.add('hidden');
+      document.getElementById('artifact-s1').classList.remove('hidden');
+    }
+    function artifactDropZoneClick() {
+      document.getElementById('artifact-file-input').click();
+    }
+    function artifactFilesChosen(input) {
+      Array.from(input.files).forEach(function(f) { _artifactFiles.push(f); });
+      input.value = '';
+      _renderArtifactFiles();
+    }
+    function artifactDrop(e) {
+      e.preventDefault();
+      document.getElementById('artifact-drop-zone').style.borderColor = '';
+      Array.from(e.dataTransfer.files).forEach(function(f) { _artifactFiles.push(f); });
+      _renderArtifactFiles();
+    }
+    function artifactDragOver(e) {
+      e.preventDefault();
+      document.getElementById('artifact-drop-zone').style.borderColor = '#5B63F6';
+    }
+    function artifactDragLeave() {
+      document.getElementById('artifact-drop-zone').style.borderColor = '';
+    }
+    function removeArtifactFile(i) {
+      _artifactFiles.splice(i, 1);
+      _renderArtifactFiles();
+    }
+    function _artifactFileIcon(name) {
+      var ext = name.split('.').pop().toLowerCase();
+      if (ext === 'pdf') return { icon: 'PDF', bg: '#FEF2F2', color: '#DC2626' };
+      if (ext === 'csv') return { icon: 'CSV', bg: '#F0FDF4', color: '#16A34A' };
+      if (ext === 'xlsx' || ext === 'xls') return { icon: 'XLS', bg: '#F0FDF4', color: '#16A34A' };
+      if (ext === 'docx' || ext === 'doc') return { icon: 'DOC', bg: '#EFF6FF', color: '#2563EB' };
+      if (ext === 'pptx' || ext === 'ppt') return { icon: 'PPT', bg: '#FFF7ED', color: '#F97316' };
+      if (ext === 'png' || ext === 'jpg' || ext === 'jpeg' || ext === 'webp') return { icon: 'IMG', bg: '#F5F3FF', color: '#7C3AED' };
+      return { icon: ext.toUpperCase().slice(0,3) || 'FILE', bg: '#F3F4F6', color: '#6B7280' };
+    }
+    function _renderArtifactFiles() {
+      var list = document.getElementById('artifact-file-list');
+      if (!list) return;
+      if (_artifactFiles.length === 0) { list.innerHTML = ''; return; }
+      list.innerHTML = _artifactFiles.map(function(f, i) {
+        var ic = _artifactFileIcon(f.name);
+        var kb = f.size < 1024*1024 ? Math.round(f.size/1024) + ' KB' : (f.size/1048576).toFixed(1) + ' MB';
+        return '<div class="flex items-center gap-2.5 py-2 border-b border-gray-100 last:border-0">'
+          + '<span class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0" style="background:' + ic.bg + ';color:' + ic.color + '">' + ic.icon + '</span>'
+          + '<div class="flex-1 min-w-0"><p class="text-[13px] font-medium text-gray-800 truncate">' + f.name + '</p><p class="text-[11px] text-gray-400">' + kb + '</p></div>'
+          + '<button onclick="removeArtifactFile(' + i + ')" class="w-6 h-6 flex items-center justify-center rounded text-gray-300 hover:text-red-400 hover:bg-red-50 flex-shrink-0 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>'
+          + '</div>';
+      }).join('');
+    }
+    function handleCreateArtifact() {
+      var name = document.getElementById('artifact-name').value.trim();
+      var desc = document.getElementById('artifact-desc').value.trim();
+      var sel  = document.getElementById('artifact-project');
+      var projectName = sel.options[sel.selectedIndex].text;
+      var grid = document.getElementById('report-grid');
+      if (grid) {
+        var card = document.createElement('div');
+        card.className = 'report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer';
+        card.setAttribute('data-type', 'document');
+        var fileCount = _artifactFiles.length;
+        card.innerHTML =
+          '<div class="h-40 rounded-t-xl flex items-center justify-center" style="background:#EEF2FF">'
+          + '<svg class="w-10 h-10" style="color:#818CF8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>'
+          + '</div>'
+          + '<div class="px-3 pt-2.5 pb-3 flex items-start justify-between"><div>'
+          + '<p class="text-sm font-medium text-gray-900">' + name + '</p>'
+          + '<span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">Artifact' + (fileCount ? ' · ' + fileCount + ' file' + (fileCount>1?'s':'') : '') + '</span>'
+          + '<p class="text-[11px] text-gray-400 mt-1">Just now · ' + projectName + '</p>'
+          + '</div>'
+          + '<button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg></button>'
+          + '</div>';
+        grid.insertBefore(card, grid.firstChild);
+      }
+      var toast = document.getElementById('artifact-toast');
+      if (toast) {
+        document.getElementById('artifact-toast-msg').textContent = '\u201c' + name + '\u201d added to ' + projectName;
+        toast.classList.remove('hidden');
+        setTimeout(function() { toast.classList.add('hidden'); }, 2600);
+      }
+      closeAddArtifactModal();
+    }
+    document.addEventListener('click', function(e) {
+      if (e.target === document.getElementById('add-artifact-modal')) closeAddArtifactModal();
+    });
   </script>
 
   <!-- Create Modal -->
   <div id="create-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
       <!-- Modal header -->
       <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
         <h2 id="modal-title" class="text-base font-semibold text-gray-900">Create Dashboard</h2>
@@ -1657,7 +1792,7 @@
 
   <!-- New Project Modal -->
   <div id="new-project-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
         <h2 class="text-base font-semibold text-gray-900">Create Project</h2>
@@ -1689,7 +1824,7 @@
 
   <!-- Datasource Import Modal -->
   <div id="datasource-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
-    <div class="bg-white rounded-2xl shadow-2xl w-full mx-4" style="max-width:520px">
+    <div class="bg-white rounded-lg shadow-2xl w-full mx-4" style="max-width:520px">
       <!-- Header -->
       <div class="flex items-start justify-between px-7 pt-7 pb-5">
         <div>
@@ -1785,6 +1920,123 @@
     <div class="card-menu-item" onclick="cardMenuAction('edit')">
       <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"/></svg>
       Edit
+    </div>
+  </div>
+
+  <!-- ══ ADD ARTIFACT MODAL ══════════════════════════════════════════════ -->
+  <div id="add-artifact-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+
+      <!-- ── STEP 1: Name + Project (same as create-modal) ───────────── -->
+      <div id="artifact-s1">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+          <h2 class="text-base font-semibold text-gray-900">Add Artifact</h2>
+          <button onclick="closeAddArtifactModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="px-6 py-5 space-y-4">
+          <div>
+            <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Name <span class="text-red-400">*</span></label>
+            <input id="artifact-name" type="text" placeholder="Enter a name…"
+              class="w-full h-9 px-3 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all"
+              onkeydown="if(event.key==='Enter') goArtifactStep2()" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Description <span class="text-gray-400 font-normal">(optional)</span></label>
+            <textarea id="artifact-desc" placeholder="Add a short description…" rows="3"
+              class="w-full px-3 py-2 text-sm text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all"></textarea>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Select project</label>
+            <div class="relative">
+              <select id="artifact-project" class="w-full h-9 pl-3 pr-8 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all">
+                <option value="ws2" selected>My Private Project</option>
+                <option value="ws1">Sovereign Capital Gate</option>
+              </select>
+              <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-2 px-6 pb-6">
+          <button onclick="closeAddArtifactModal()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Close</button>
+          <button onclick="goArtifactStep2()" class="h-9 px-5 text-sm font-medium text-white rounded-lg flex items-center gap-1.5 transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+            Next
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Add Attachments ──────────────────────────────────── -->
+      <div id="artifact-s2" class="hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+          <div>
+            <h2 class="text-base font-semibold text-gray-900">Add Attachments</h2>
+            <p class="text-[12px] text-gray-400 mt-0.5">Adding to <span id="artifact-step2-proj" class="font-medium text-gray-600">My Private Project</span></p>
+          </div>
+          <button onclick="closeAddArtifactModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="px-6 py-5">
+          <!-- Accepted types -->
+          <div class="flex items-center flex-wrap gap-1.5 mb-4">
+            <span class="text-[11px] text-gray-400 mr-0.5">Accepts:</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:#FEF2F2;color:#DC2626">PDF</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:#F0FDF4;color:#16A34A">CSV</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:#F0FDF4;color:#16A34A">Excel</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:#EFF6FF;color:#2563EB">Word</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:#FFF7ED;color:#F97316">PowerPoint</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:#F5F3FF;color:#7C3AED">Images</span>
+          </div>
+          <!-- Drop zone -->
+          <div id="artifact-drop-zone"
+            onclick="artifactDropZoneClick()"
+            ondrop="artifactDrop(event)"
+            ondragover="artifactDragOver(event)"
+            ondragleave="artifactDragLeave()"
+            class="flex flex-col items-center justify-center gap-2 py-7 rounded-xl border-2 border-dashed cursor-pointer transition-colors select-none"
+            style="border-color:#D1D5DB">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background:#EEF2FF">
+              <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+            </div>
+            <p class="text-[13px] font-medium text-gray-700">Drag &amp; drop files here</p>
+            <p class="text-[12px] text-gray-400">or <span class="text-[#5B63F6] font-medium">click to browse</span></p>
+            <input id="artifact-file-input" type="file" multiple class="hidden"
+              accept=".pdf,.csv,.xlsx,.xls,.docx,.doc,.pptx,.ppt,.png,.jpg,.jpeg,.webp,.txt,.md"
+              onchange="artifactFilesChosen(this)" />
+          </div>
+          <!-- File list -->
+          <div id="artifact-file-list" class="mt-3"></div>
+        </div>
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-2 px-6 pb-6">
+          <button onclick="goArtifactStep1()" class="h-9 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <svg class="w-3.5 h-3.5 inline -mt-px mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+            Back
+          </button>
+          <button onclick="handleCreateArtifact()" class="h-9 px-5 text-sm font-medium text-white rounded-lg flex items-center gap-1.5 transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Create Artifact
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Artifact toast -->
+  <div id="artifact-toast" class="hidden fixed bottom-6 right-6 z-[70] pointer-events-none">
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-[13px] text-white" style="background:#111827">
+      <svg class="w-4 h-4 flex-shrink-0" style="color:#10B981" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span id="artifact-toast-msg"></span>
     </div>
   </div>
 

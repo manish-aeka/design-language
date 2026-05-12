@@ -1,0 +1,69 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
+  },
+  "layout": {
+    "sidebarWidth":           { "value": "220px",  "comment": "Fixed sidebar width" },
+    "sourcesDrawerWidth":     { "value": "320px",  "comment": "Sources drawer width when open" },
+    "topbarHeight":           { "value": "44px",   "comment": "h-11 topbar strip" }
+  },
+  "sidebar": {
+    "paddingX":               { "value": "12px",   "comment": "px-3 nav section horizontal padding" },
+    "paddingY":               { "value": "8px",    "comment": "py-2 nav section vertical padding" },
+    "navItemHeight":          { "value": "36px",   "comment": "h-9 primary nav item height" },
+    "navItemGap":             { "value": "10px",   "comment": "gap-2.5 icon-to-label gap" },
+    "navItemPaddingX":        { "value": "12px",   "comment": "px-3 inside each nav item" },
+    "subItemHeight":          { "value": "32px",   "comment": "h-8 sub-item row height" },
+    "subItemGap":             { "value": "8px",    "comment": "gap-2 icon-to-label in sub-items" },
+    "subItemIndent":          { "value": "16px",   "comment": "pl-4 indent for sub-item block" },
+    "dividerMarginX":         { "value": "12px",   "comment": "mx-3 horizontal margin on divider" },
+    "sectionLabelHeight":     { "value": "28px",   "comment": "h-7 PROJECTS section label row" }
+  },
+  "chat": {
+    "paddingX":               { "value": "16px",   "comment": "px-4 horizontal padding inside message list" },
+    "paddingY":               { "value": "16px",   "comment": "py-4 vertical padding on message list" },
+    "messageGap":             { "value": "16px",   "comment": "space-y-4 between message groups" },
+    "bubbleMaxWidth":         { "value": "70%",    "comment": "max-w of message bubbles" },
+    "bubblePadding":          { "value": "10px 14px", "comment": "padding inside user / AI bubbles" },
+    "avatarSize":             { "value": "28px",   "comment": "w-7 h-7 AI and user avatar size" },
+    "avatarGap":              { "value": "8px",    "comment": "gap-2 between avatar and bubble" },
+    "typingDotSize":          { "value": "6px",    "comment": "w/h of each typing dot" },
+    "typingDotGap":           { "value": "4px",    "comment": "gap between typing dots" }
+  },
+  "inputArea": {
+    "paddingX":               { "value": "16px",   "comment": "px-4 horizontal padding on input area" },
+    "paddingBottom":          { "value": "16px",   "comment": "pb-4 below input wrapper" },
+    "wrapperBorderWidth":     { "value": "1.5px",  "comment": "border on input wrapper (slightly heavier than card borders)" },
+    "textareaMaxHeight":      { "value": "160px",  "comment": "max-height before scroll kicks in on textarea" },
+    "toolbarPaddingX":        { "value": "10px",   "comment": "px-2.5 toolbar row inner padding" },
+    "toolbarPaddingY":        { "value": "8px",    "comment": "py-2 toolbar row vertical padding" }
+  },
+  "chip": {
+    "padding":                { "value": "6px 12px", "comment": "padding inside suggestion chips" },
+    "gap":                    { "value": "8px",    "comment": "gap-2 between chip icon and text" },
+    "borderWidth":            { "value": "1px",    "comment": "chip border" }
+  },
+  "sourcePill": {
+    "padding":                { "value": "2px 8px", "comment": "px-2 py-0.5 on source reference pill" },
+    "gap":                    { "value": "4px",    "comment": "gap-1 between icon and label" },
+    "iconSize":               { "value": "12px",   "comment": "w-3 h-3 icon inside pill" }
+  },
+  "sourcesDrawer": {
+    "paddingX":               { "value": "16px",   "comment": "px-4 inside sources drawer" },
+    "accordionTransition":    { "value": "260ms cubic-bezier(0.4,0,0.2,1)", "comment": "max-height animation on accordion body" },
+    "drawerTransition":       { "value": "280ms cubic-bezier(0.4,0,0.2,1)", "comment": "width transition on drawer open/close" }
+  },
+  "borderRadius": {
+    "sm":                     { "value": "4px",    "comment": "Tight badges and small controls" },
+    "md":                     { "value": "8px",    "comment": "Buttons, model option rows" },
+    "lg":                     { "value": "12px",   "comment": "Input wrapper, panel containers" },
+    "xl":                     { "value": "16px",   "comment": "Modals, sources drawer panel" },
+    "navItem":                { "value": "8px",    "comment": "rounded-lg on nav items" },
+    "chip":                   { "value": "9999px", "comment": "Fully rounded suggestion chips" },
+    "bubbleUser":             { "value": "18px 18px 4px 18px", "comment": "User bubble — flat bottom-right" },
+    "bubbleAI":               { "value": "18px 18px 18px 4px", "comment": "AI bubble — flat bottom-left" },
+    "avatar":                 { "value": "50%",    "comment": "Circular user/workspace avatars" },
+    "aiAvatar":               { "value": "8px",    "comment": "AI avatar — square with rounded corners" },
+    "dropdown":               { "value": "12px",   "comment": "Model / context dropdown panel" }
+  }
+}

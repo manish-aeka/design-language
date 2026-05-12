@@ -1,0 +1,64 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
+  },
+  "layout": {
+    "sidebarWidth":           { "value": "220px",  "comment": "Fixed sidebar width" },
+    "topbarHeight":           { "value": "44px",   "comment": "h-11 topbar strip" },
+    "canvasPaddingX":         { "value": "24px",   "comment": "Horizontal padding on the canvas area (px-6)" },
+    "canvasPaddingY":         { "value": "20px",   "comment": "Vertical padding on the canvas area (py-5)" },
+    "sidebarTransition":      { "value": "width 220ms ease, min-width 220ms ease, opacity 180ms ease", "comment": "Sidebar collapse / expand animation" }
+  },
+  "sidebar": {
+    "paddingX":               { "value": "12px",   "comment": "px-3 nav section horizontal padding" },
+    "paddingY":               { "value": "8px",    "comment": "py-2 nav section vertical padding" },
+    "navItemHeight":          { "value": "36px",   "comment": "h-9 primary nav row height" },
+    "navItemGap":             { "value": "10px",   "comment": "gap-2.5 icon-to-label gap" },
+    "navItemPaddingX":        { "value": "12px",   "comment": "px-3 inside each nav item" },
+    "subItemHeight":          { "value": "32px",   "comment": "h-8 sub-item row height" },
+    "subItemIndent":          { "value": "16px",   "comment": "pl-4 indent for sub-item block" },
+    "dividerMarginX":         { "value": "12px",   "comment": "mx-3 on dividers" }
+  },
+  "toolbar": {
+    "height":                 { "value": "44px",   "comment": "h-11 toolbar strip height" },
+    "paddingX":               { "value": "16px",   "comment": "px-4 inside toolbar" },
+    "buttonHeight":           { "value": "30px",   "comment": "h-[30px] toolbar button height" },
+    "buttonPaddingX":         { "value": "10px",   "comment": "px-[10px] inside toolbar button" },
+    "buttonGap":              { "value": "6px",    "comment": "gap-1.5 between toolbar button icon and label" },
+    "buttonGroupGap":         { "value": "6px",    "comment": "gap-1.5 between toolbar button groups" }
+  },
+  "chartCard": {
+    "padding":                { "value": "14px 16px", "comment": "p-4-ish — chart card inner padding" },
+    "gap":                    { "value": "16px",   "comment": "gap-4 between cards in the grid" },
+    "borderWidth":            { "value": "1px",    "comment": "Chart card border width" },
+    "titleMarginBottom":      { "value": "4px",    "comment": "mb-1 below chart card title" },
+    "metaMarginBottom":       { "value": "12px",   "comment": "mb-3 below meta / subtitle" }
+  },
+  "kpiCard": {
+    "padding":                { "value": "14px 16px", "comment": "Same as chart card" },
+    "valueFontSize":          { "value": "28px",   "comment": "text-2xl KPI number" },
+    "trendBadgePaddingX":     { "value": "6px",    "comment": "px-1.5 trend badge" },
+    "trendBadgePaddingY":     { "value": "2px",    "comment": "py-0.5 trend badge" }
+  },
+  "filterPanel": {
+    "width":                  { "value": "300px",  "comment": "Fixed width of the right filter/AI panel" },
+    "paddingX":               { "value": "16px",   "comment": "px-4 inside filter panel" },
+    "paddingY":               { "value": "16px",   "comment": "py-4 inside filter panel" }
+  },
+  "tab": {
+    "containerPaddingX":      { "value": "4px",    "comment": "p-1 container inset padding" },
+    "containerPaddingY":      { "value": "4px",    "comment": "p-1 container inset padding" },
+    "pillPaddingX":           { "value": "12px",   "comment": "px-3 active tab pill" },
+    "pillPaddingY":           { "value": "4px",    "comment": "py-1 active tab pill" }
+  },
+  "borderRadius": {
+    "sm":                     { "value": "4px",    "comment": "Small badges and pills" },
+    "md":                     { "value": "8px",    "comment": "Toolbar buttons, KPI trend badges" },
+    "lg":                     { "value": "12px",   "comment": "Chart cards, KPI cards" },
+    "xl":                     { "value": "16px",   "comment": "Filter panel, modals" },
+    "navItem":                { "value": "8px",    "comment": "rounded-lg on nav items" },
+    "avatar":                 { "value": "50%",    "comment": "Circular avatars" },
+    "tab":                    { "value": "6px",    "comment": "Tab pill radius" },
+    "tabContainer":           { "value": "8px",    "comment": "Tab container outer radius" }
+  }
+}

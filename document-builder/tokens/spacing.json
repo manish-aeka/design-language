@@ -1,0 +1,61 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
+  },
+  "layout": {
+    "sidebarWidth":           { "value": "220px",  "comment": "Fixed sidebar width" },
+    "aiPanelWidth":           { "value": "300px",  "comment": "Right AI panel width when open" },
+    "topbarHeight":           { "value": "44px",   "comment": "h-11 topbar strip" },
+    "sidebarTransition":      { "value": "width 220ms ease, min-width 220ms ease, opacity 180ms ease", "comment": "Sidebar collapse / expand animation" },
+    "aiPanelTransition":      { "value": "width 220ms ease, min-width 220ms ease, opacity 180ms ease", "comment": "AI panel collapse / expand animation" }
+  },
+  "sidebar": {
+    "paddingX":               { "value": "12px",   "comment": "px-3 nav section horizontal padding" },
+    "paddingY":               { "value": "8px",    "comment": "py-2 nav section vertical padding" },
+    "navItemHeight":          { "value": "36px",   "comment": "h-9 primary nav row height" },
+    "navItemGap":             { "value": "10px",   "comment": "gap-2.5 icon-to-label gap" },
+    "navItemPaddingX":        { "value": "12px",   "comment": "px-3 inside each nav item" },
+    "subItemHeight":          { "value": "32px",   "comment": "h-8 sub-item row height" },
+    "subItemIndent":          { "value": "16px",   "comment": "pl-4 indent for sub-item block" }
+  },
+  "toolbar": {
+    "height":                 { "value": "44px",   "comment": "h-11 document toolbar strip" },
+    "paddingX":               { "value": "12px",   "comment": "px-3 inside toolbar" },
+    "buttonHeight":           { "value": "30px",   "comment": "h-[30px] toolbar button" },
+    "buttonPaddingX":         { "value": "10px",   "comment": "px-[10px] toolbar button" },
+    "buttonGap":              { "value": "6px",    "comment": "gap-1.5 icon-to-label inside button" }
+  },
+  "formatToolbar": {
+    "height":                 { "value": "36px",   "comment": "h-9 format toolbar row" },
+    "paddingX":               { "value": "12px",   "comment": "px-3 format toolbar" },
+    "btnSize":                { "value": "28px",   "comment": "w-7 h-7 format button (Bold, Italic, etc.)" },
+    "btnGap":                 { "value": "2px",    "comment": "gap-0.5 between format buttons" }
+  },
+  "editor": {
+    "paddingX":               { "value": "80px",   "comment": "Horizontal padding on the document editor area" },
+    "paddingY":               { "value": "48px",   "comment": "Vertical padding on the document editor area" },
+    "maxWidth":               { "value": "720px",  "comment": "Max width of the editable document body" },
+    "lineHeight":             { "value": "1.75",   "comment": "line-height on #doc-body" }
+  },
+  "aiPanel": {
+    "paddingX":               { "value": "16px",   "comment": "px-4 inside AI panel" },
+    "paddingY":               { "value": "16px",   "comment": "py-4 inside AI panel" },
+    "inputMaxHeight":         { "value": "120px",  "comment": "max-height on #ai-input textarea" },
+    "orbSize":                { "value": "88px",   "comment": "w/h of the AI orb circle in empty state" },
+    "suggestBtnHeight":       { "value": "32px",   "comment": "h-8 suggest action button row" },
+    "suggestBtnPaddingX":     { "value": "12px",   "comment": "px-3 suggest button" }
+  },
+  "sourcesDrawer": {
+    "transition":             { "value": "transform 280ms cubic-bezier(0.4,0,0.2,1)", "comment": "Sources drawer slide-in animation" },
+    "paddingX":               { "value": "16px",   "comment": "px-4 inside sources drawer" }
+  },
+  "borderRadius": {
+    "sm":                     { "value": "4px",    "comment": "Small badges" },
+    "md":                     { "value": "8px",    "comment": "Toolbar buttons, format buttons" },
+    "lg":                     { "value": "12px",   "comment": "AI input wrapper, modal panels" },
+    "xl":                     { "value": "16px",   "comment": "Modals, sources drawer" },
+    "navItem":                { "value": "8px",    "comment": "rounded-lg on nav items" },
+    "avatar":                 { "value": "50%",    "comment": "Circular avatars" },
+    "aiOrb":                  { "value": "50%",    "comment": "Circular AI orb" }
+  }
+}

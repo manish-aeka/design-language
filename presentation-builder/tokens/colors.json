@@ -1,0 +1,90 @@
+{
+  "color": {
+    "brand": {
+      "primary":              { "value": "#5B63F6", "comment": "Active nav border, focus ring, primary action buttons, active slide outline" },
+      "secondary":            { "value": "#7C6FF7", "comment": "Secondary brand — gradient end for AI elements" },
+      "workspace":            { "value": "#3B5BDB", "comment": "Workspace switcher avatar background" }
+    },
+    "surface": {
+      "page":                 { "value": "#FFFFFF", "comment": "Page / sidebar background" },
+      "sidebar":              { "value": "#F8F9FC", "comment": "Left sidebar background" },
+      "canvas":               { "value": "#F3F4F6", "comment": "Slide canvas / stage area background (gray-100)" },
+      "panel":                { "value": "#FAFAFA", "comment": "Suggestions/properties panel background" }
+    },
+    "nav": {
+      "item.text":            { "value": "#374151", "comment": "Primary nav text (gray-700)" },
+      "item.hover.bg":        { "value": "#EEF2FF", "comment": "Nav item hover background (indigo-50)" },
+      "item.active.bg":       { "value": "#EEF2FF", "comment": "Active nav item background" },
+      "item.active.border":   { "value": "#5B63F6", "comment": "Active nav item left border (2px)" },
+      "sub.text":             { "value": "#6B7280", "comment": "Sub-item text (gray-500)" },
+      "sidebar.border":       { "value": "#F3F4F6", "comment": "Sidebar right border and dividers (gray-100)" },
+      "sectionLabel":         { "value": "#9CA3AF", "comment": "PROJECTS section label (gray-400)" }
+    },
+    "input": {
+      "border":               { "value": "#E5E7EB", "comment": "Input wrapper border at rest (1.5px, gray-200)" },
+      "border.focus":         { "value": "#5B63F6", "comment": "Input wrapper border on focus" },
+      "shadow.focus":         { "value": "0 0 0 3px rgba(91,99,246,0.09)", "comment": "Focus glow" },
+      "bg":                   { "value": "#FFFFFF", "comment": "Input area background" },
+      "placeholder":          { "value": "#9CA3AF", "comment": "Textarea placeholder (gray-400)" }
+    },
+    "suggChip": {
+      "bg":                   { "value": "#FAFAFA", "comment": "Suggestion chip background at rest" },
+      "bg.hover":             { "value": "#EEF2FF", "comment": "Suggestion chip hover background (indigo-50)" },
+      "border":               { "value": "#E5E7EB", "comment": "Chip border at rest (gray-200)" },
+      "border.hover":         { "value": "#C7D2FE", "comment": "Chip border on hover (indigo-200)" },
+      "text":                 { "value": "#4B5563", "comment": "Chip label text (gray-600)" },
+      "text.hover":           { "value": "#4338CA", "comment": "Chip label text on hover (indigo-700)" }
+    },
+    "tonePill": {
+      "bg":                   { "value": "#FFFFFF", "comment": "Tone / count pill background at rest" },
+      "bg.selected":          { "value": "#EEF2FF", "comment": "Selected tone pill background (indigo-50)" },
+      "border":               { "value": "#E5E7EB", "comment": "Pill border at rest (gray-200)" },
+      "border.selected":      { "value": "#C7D2FE", "comment": "Selected pill border (indigo-200)" },
+      "text":                 { "value": "#6B7280", "comment": "Pill label (gray-500)" },
+      "text.selected":        { "value": "#4338CA", "comment": "Selected pill label (indigo-700)" }
+    },
+    "toolbar": {
+      "btn.bg":               { "value": "#FFFFFF", "comment": "Toolbar button background at rest" },
+      "btn.bg.hover":         { "value": "#F9FAFB", "comment": "Toolbar button hover (gray-50)" },
+      "btn.border":           { "value": "#E5E7EB", "comment": "Toolbar button border (gray-200)" },
+      "btn.text":             { "value": "#374151", "comment": "Toolbar button text (gray-700)" }
+    },
+    "slide": {
+      "bg":                   { "value": "#FFFFFF", "comment": "Individual slide background" },
+      "border":               { "value": "#E5E7EB", "comment": "Slide thumbnail border" },
+      "border.active":        { "value": "#5B63F6", "comment": "Active / selected slide border" },
+      "shadow":               { "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "comment": "Slide thumbnail shadow" },
+      "shadow.hover":         { "value": "0 4px 14px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05)", "comment": "Slide thumbnail hover shadow" }
+    },
+    "modal": {
+      "backdrop":             { "value": "rgba(0,0,0,0.40)", "comment": "Workspace switcher modal backdrop" },
+      "bg":                   { "value": "#FFFFFF", "comment": "Modal panel background" }
+    },
+    "freeBanner": {
+      "bg":               { "value": "#E8EEFF", "comment": "'Explore free features' sidebar banner background" },
+      "icon.bg":          { "value": "#C7D2FE", "comment": "Banner sparkle icon circle bg (indigo-200)" },
+      "icon.color":       { "value": "#4F6EF7", "comment": "Banner sparkle icon colour" },
+      "title":            { "value": "#3B4ECC", "comment": "Banner title text" },
+      "credit":           { "value": "#6B7ADE", "comment": "'Credit left: 15' text" }
+    },
+    "notifDropdown": {
+      "bg":               { "value": "#FFFFFF", "comment": "#notif-dropdown background" },
+      "border":           { "value": "#E5E7EB", "comment": "Dropdown border (gray-200)" },
+      "shadow":           { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "Dropdown shadow" },
+      "unread.bg":        { "value": "rgba(238,242,255,0.40)", "comment": "Unread notification row (indigo-50/40)" },
+      "unread.hover":     { "value": "#EEF2FF", "comment": "Unread row hover (indigo-50)" },
+      "unread.dot":       { "value": "#6366F1", "comment": "Unread indicator dot (indigo-500)" },
+      "bell.dot":         { "value": "#EF4444", "comment": "Red notification dot on bell (red-500)" }
+    },
+    "userMenu": {
+      "bg":               { "value": "#FFFFFF", "comment": "#user-dropdown background" },
+      "border":           { "value": "#E5E7EB", "comment": "User menu border (gray-200)" },
+      "shadow":           { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "User menu shadow" },
+      "logout.text":      { "value": "#EF4444", "comment": "Log out option text (red-500)" },
+      "logout.hover.bg":  { "value": "#FEF2F2", "comment": "Log out hover background (red-50)" }
+    },
+    "scrollbar": {
+      "thumb":                { "value": "#CBD5E1", "comment": "Scrollbar thumb — narrower (3px) on this screen" }
+    }
+  }
+}

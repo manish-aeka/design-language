@@ -1,0 +1,74 @@
+{
+  "color": {
+    "brand": {
+      "primary":              { "value": "#5B63F6", "comment": "Active nav border, focus underline on form fields, drag-over outline, active toggle" },
+      "secondary":            { "value": "#7C6FF7", "comment": "Secondary brand — gradient end for AI elements" },
+      "workspace":            { "value": "#3B5BDB", "comment": "Workspace switcher avatar background" }
+    },
+    "surface": {
+      "page":                 { "value": "#FFFFFF", "comment": "Page / sidebar / card background" },
+      "canvas":               { "value": "#FFFFFF", "comment": "Form canvas scroll area background" },
+      "sidebar":              { "value": "#F8F9FC", "comment": "Sidebar background" }
+    },
+    "nav": {
+      "item.text":            { "value": "#374151", "comment": "Primary nav text (gray-700)" },
+      "item.hover.bg":        { "value": "#EEF2FF", "comment": "Nav item hover background (indigo-50)" },
+      "item.active.bg":       { "value": "#EEF2FF", "comment": "Active nav item background" },
+      "item.active.border":   { "value": "#5B63F6", "comment": "Active nav item left border (2px)" },
+      "sub.text":             { "value": "#6B7280", "comment": "Sidebar sub-item text (gray-500)" },
+      "sidebar.border":       { "value": "#F3F4F6", "comment": "Sidebar right border and dividers (gray-100)" },
+      "sectionLabel":         { "value": "#9CA3AF", "comment": "PROJECTS section label (gray-400)" }
+    },
+    "card": {
+      "bg":                   { "value": "#FFFFFF", "comment": "Question card background" },
+      "border":               { "value": "#E5E7EB", "comment": "Question card border at rest (gray-200)" },
+      "shadow":               { "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "comment": "Question card resting shadow" },
+      "shadow.hover":         { "value": "0 2px 12px rgba(0,0,0,0.10)", "comment": "Question card elevated shadow on hover" },
+      "dragging.opacity":     { "value": "0.35", "comment": "Opacity of card being dragged (.is-dragging)" },
+      "dragOver.outline":     { "value": "#5B63F6", "comment": "2px outline color on drag-over card (.drag-over)" }
+    },
+    "formField": {
+      "border":               { "value": "#dadce0", "comment": "Form input underline border at rest" },
+      "border.focus":         { "value": "#1a73e8", "comment": "Form input underline border on focus (Google-style blue)" },
+      "text":                 { "value": "#202124", "comment": "Input value text (near-black)" },
+      "disabled.text":        { "value": "#80868b", "comment": "Disabled input text (gray)" },
+      "label":                { "value": "#202124", "comment": "Question label text (.q-label)" },
+      "required":             { "value": "#d93025", "comment": "Required asterisk colour (.req-star)" },
+      "optionText":           { "value": "#374151", "comment": "Radio / checkbox option label" }
+    },
+    "dragHandle": {
+      "icon":                 { "value": "#CBD5E1", "comment": "Drag handle icon colour (slate-300)" }
+    },
+    "modal": {
+      "backdrop":             { "value": "rgba(0,0,0,0.40)", "comment": "Modal overlay backdrop" },
+      "bg":                   { "value": "#FFFFFF", "comment": "Modal panel background" },
+      "shadow":               { "value": "0 20px 60px rgba(0,0,0,0.18)", "comment": "Modal drop-shadow" }
+    },
+    "freeBanner": {
+      "bg":               { "value": "#E8EEFF", "comment": "'Explore free features' sidebar banner background" },
+      "icon.bg":          { "value": "#C7D2FE", "comment": "Banner sparkle icon circle bg (indigo-200)" },
+      "icon.color":       { "value": "#4F6EF7", "comment": "Banner sparkle icon colour" },
+      "title":            { "value": "#3B4ECC", "comment": "Banner title text" },
+      "credit":           { "value": "#6B7ADE", "comment": "'Credit left: 15' text" }
+    },
+    "notifDropdown": {
+      "bg":               { "value": "#FFFFFF", "comment": "#notif-dropdown background" },
+      "border":           { "value": "#E5E7EB", "comment": "Dropdown border (gray-200)" },
+      "shadow":           { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "Dropdown shadow" },
+      "unread.bg":        { "value": "rgba(238,242,255,0.40)", "comment": "Unread notification row (indigo-50/40)" },
+      "unread.hover":     { "value": "#EEF2FF", "comment": "Unread row hover (indigo-50)" },
+      "unread.dot":       { "value": "#6366F1", "comment": "Unread indicator dot (indigo-500)" },
+      "bell.dot":         { "value": "#EF4444", "comment": "Red notification dot on bell (red-500)" }
+    },
+    "userMenu": {
+      "bg":               { "value": "#FFFFFF", "comment": "#user-dropdown background" },
+      "border":           { "value": "#E5E7EB", "comment": "User menu border (gray-200)" },
+      "shadow":           { "value": "0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)", "comment": "User menu shadow" },
+      "logout.text":      { "value": "#EF4444", "comment": "Log out option text (red-500)" },
+      "logout.hover.bg":  { "value": "#FEF2F2", "comment": "Log out hover background (red-50)" }
+    },
+    "scrollbar": {
+      "thumb":                { "value": "#CBD5E1", "comment": "Scrollbar thumb (slate-300)" }
+    }
+  }
+}

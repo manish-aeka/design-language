@@ -1,0 +1,52 @@
+{
+  "spacing": {
+    "base": { "value": "4px", "comment": "Base unit — all spacing is a multiple of this" }
+  },
+  "layout": {
+    "sidebarWidth":           { "value": "220px",  "comment": "Fixed sidebar width" },
+    "topbarHeight":           { "value": "44px",   "comment": "h-11 topbar strip" },
+    "canvasPaddingX":         { "value": "32px",   "comment": "Horizontal padding wrapping the form canvas (px-8)" },
+    "canvasPaddingY":         { "value": "32px",   "comment": "Vertical padding wrapping the form canvas (py-8)" }
+  },
+  "sidebar": {
+    "paddingX":               { "value": "12px",   "comment": "px-3 nav section horizontal padding" },
+    "paddingY":               { "value": "8px",    "comment": "py-2 nav section vertical padding" },
+    "navItemHeight":          { "value": "36px",   "comment": "h-9 primary nav row height" },
+    "navItemGap":             { "value": "10px",   "comment": "gap-2.5 icon-to-label gap" },
+    "navItemPaddingX":        { "value": "12px",   "comment": "px-3 inside each nav item" },
+    "subItemHeight":          { "value": "32px",   "comment": "h-8 sub-item row height" },
+    "subItemIndent":          { "value": "16px",   "comment": "pl-4 indent for sub-item block" }
+  },
+  "questionCard": {
+    "padding":                { "value": "20px 24px", "comment": "px-6 py-5 question card inner padding" },
+    "gap":                    { "value": "16px",   "comment": "space-y-4 between question cards in canvas" },
+    "maxWidth":               { "value": "680px",  "comment": "max-w of the form canvas column" },
+    "borderWidth":            { "value": "1px",    "comment": "Question card border width" },
+    "dragHandleSize":         { "value": "20px",   "comment": "w-5 h-5 drag handle icon area" },
+    "labelGap":               { "value": "12px",   "comment": "mb-3 gap between label and field below" }
+  },
+  "formField": {
+    "paddingTop":             { "value": "10px",   "comment": "padding-top on .f-input / .f-textarea" },
+    "paddingBottom":          { "value": "6px",    "comment": "padding-bottom at rest; 5px on focus" },
+    "borderWidth.focus":      { "value": "2px",    "comment": "Underline width on focus (was 1px)" },
+    "optionRowGap":           { "value": "12px",   "comment": "Vertical gap between radio/checkbox option rows" },
+    "radioSize":              { "value": "16px",   "comment": "w-4 h-4 radio/checkbox control" }
+  },
+  "headerCard": {
+    "padding":                { "value": "24px",   "comment": "p-6 on the form header card" },
+    "titleBorderWidth":       { "value": "3px",    "comment": "Bottom border width of form title input (brand accent)" }
+  },
+  "modal": {
+    "maxWidth":               { "value": "480px",  "comment": "max-w of the add-question modal" },
+    "paddingX":               { "value": "24px",   "comment": "px-6 inside modal" },
+    "paddingY":               { "value": "20px",   "comment": "py-5 inside modal" },
+    "gap":                    { "value": "12px",   "comment": "space-y-3 between question-type option rows in modal" }
+  },
+  "borderRadius": {
+    "sm":                     { "value": "4px",    "comment": "Small badges and controls" },
+    "md":                     { "value": "8px",    "comment": "Toolbar buttons, inline controls" },
+    "lg":                     { "value": "12px",   "comment": "Question cards, modal panel" },
+    "navItem":                { "value": "8px",    "comment": "rounded-lg on nav items" },
+    "avatar":                 { "value": "50%",    "comment": "Circular avatars" }
+  }
+}

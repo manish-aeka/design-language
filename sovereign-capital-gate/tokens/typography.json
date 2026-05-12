@@ -7,32 +7,38 @@
       }
     },
     "size": {
-      "display":    { "value": "28px", "comment": "Page / workspace title" },
-      "headingLg":  { "value": "20px", "comment": "Section headings" },
-      "headingMd":  { "value": "16px", "comment": "Card titles, dialog headings" },
-      "bodyLg":     { "value": "15px", "comment": "Navigation labels, body copy" },
-      "bodyMd":     { "value": "14px", "comment": "Action card labels, general body" },
-      "bodySm":     { "value": "13px", "comment": "Action card descriptions, meta text" },
-      "label":      { "value": "12px", "comment": "Timestamps, section labels" },
-      "caption":    { "value": "11px", "comment": "Helper text, fine print" }
+      "navPrimary":           { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Primary nav labels (text-sm)" },
+      "navActive":            { "value": "14px",   "weight": "500", "color": "#111827", "comment": "Active nav item label (font-medium)" },
+      "navSub":               { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sub-item labels" },
+      "sectionLabel":         { "value": "11px",   "weight": "500", "color": "#9CA3AF", "comment": "PROJECTS uppercase section label (tracking-widest)" },
+      "workspaceName":        { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Workspace switcher name (font-semibold)" },
+      "pageTitle":            { "value": "22px",   "weight": "700", "color": "#111827", "comment": "Workspace / project page heading" },
+      "pageSubtitle":         { "value": "14px",   "weight": "400", "color": "#6B7280", "comment": "Supporting subtitle below heading" },
+      "cardTitle":            { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Document card title in grid view" },
+      "cardTitleList":        { "value": "13px",   "weight": "500", "color": "#111827", "comment": "Document title in list view row" },
+      "cardTimestamp":        { "value": "12px",   "weight": "400", "color": "#6B7280", "comment": "Timestamp on card" },
+      "actionCardLabel":      { "value": "14px",   "weight": "500", "color": "#111827", "comment": "Action shortcut card label" },
+      "actionCardDesc":       { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Action shortcut card description" },
+      "tabLabel":             { "value": "13px",   "weight": "500", "color": "#6B7280", "comment": "Inactive filter tab label" },
+      "tabLabelActive":       { "value": "13px",   "weight": "600", "color": "#111827", "comment": "Active filter tab label" },
+      "typeBadge":            { "value": "11px",   "weight": "500", "color": "varies",  "comment": "Content-type badge label" },
+      "contextMenuItem":      { "value": "13px",   "weight": "400", "color": "#374151", "comment": ".card-menu-item label" },
+      "memberCount":          { "value": "12px",   "weight": "500", "color": "#6B7280", "comment": "Member count label beside avatar stack" }
     },
     "weight": {
-      "regular":    { "value": "400" },
-      "medium":     { "value": "500" },
-      "semiBold":   { "value": "600" },
-      "bold":       { "value": "700" },
-      "extraBold":  { "value": "800" }
+      "regular":              { "value": "400" },
+      "medium":               { "value": "500" },
+      "semiBold":             { "value": "600" },
+      "bold":                 { "value": "700" },
+      "extraBold":            { "value": "800" }
     },
     "lineHeight": {
-      "tight":      { "value": "1.2", "comment": "Display headings" },
-      "snug":       { "value": "1.3", "comment": "Subheadings, labels" },
-      "normal":     { "value": "1.4", "comment": "Body small, captions" },
-      "relaxed":    { "value": "1.5", "comment": "Body text, nav labels" }
+      "tight":                { "value": "1.2",  "comment": "Page title" },
+      "normal":               { "value": "1.5",  "comment": "Card titles, nav items, tab labels" },
+      "relaxed":              { "value": "1.65", "comment": "Descriptions, subtitles" }
     },
     "letterSpacing": {
-      "tight":      { "value": "-0.01em", "comment": "Display / large headings" },
-      "normal":     { "value": "0",        "comment": "Body copy" },
-      "wide":       { "value": "0.05em",   "comment": "Section label headers (uppercase)" }
+      "wide":                 { "value": "0.08em", "comment": "PROJECTS section label (uppercase tracking-widest)" }
     }
   }
 }

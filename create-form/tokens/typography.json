@@ -1,0 +1,42 @@
+{
+  "font": {
+    "family": {
+      "base": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "comment": "Loaded from Google Fonts at weights 400/500/600/700/800"
+      }
+    },
+    "size": {
+      "navPrimary":           { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Primary nav labels (text-sm)" },
+      "navSub":               { "value": "13px",   "weight": "400", "color": "#6B7280", "comment": "Sub-item labels" },
+      "sectionLabel":         { "value": "11px",   "weight": "500", "color": "#9CA3AF", "comment": "PROJECTS uppercase section label" },
+      "workspaceName":        { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Workspace switcher name" },
+      "topbarTitle":          { "value": "14px",   "weight": "600", "color": "#111827", "comment": "Topbar form title" },
+      "formTitle":            { "value": "22px",   "weight": "700", "color": "#202124", "comment": "Form header card title (h1 equivalent)" },
+      "formDescription":      { "value": "14px",   "weight": "400", "color": "#5F6368", "comment": "Form description below title" },
+      "questionLabel":        { "value": "15px",   "weight": "600", "color": "#202124", "comment": ".q-label — question text (.q-label)" },
+      "requiredStar":         { "value": "15px",   "weight": "400", "color": "#d93025", "comment": "Required asterisk (.req-star)" },
+      "fieldInput":           { "value": "14px",   "weight": "400", "color": "#202124", "comment": ".f-input / .f-textarea value text" },
+      "fieldDisabled":        { "value": "14px",   "weight": "400", "color": "#80868b", "comment": "Disabled field text" },
+      "optionLabel":          { "value": "14px",   "weight": "400", "color": "#374151", "comment": "Radio / checkbox option labels" },
+      "toolbarBtn":           { "value": "12px",   "weight": "500", "color": "#374151", "comment": "Toolbar button labels (e.g., Add Question)" },
+      "modalSectionTitle":    { "value": "11px",   "weight": "600", "color": "#9CA3AF", "comment": "Section title inside add-question modal" },
+      "modalOptionLabel":     { "value": "13px",   "weight": "500", "color": "#374151", "comment": "Question type option label in modal" }
+    },
+    "weight": {
+      "regular":              { "value": "400" },
+      "medium":               { "value": "500" },
+      "semiBold":             { "value": "600" },
+      "bold":                 { "value": "700" },
+      "extraBold":            { "value": "800" }
+    },
+    "lineHeight": {
+      "tight":                { "value": "1.25", "comment": "Headings, button labels" },
+      "normal":               { "value": "1.5",  "comment": "Nav items, field values, option labels" },
+      "relaxed":              { "value": "1.65", "comment": "Question labels and descriptions" }
+    },
+    "letterSpacing": {
+      "wide":                 { "value": "0.08em", "comment": "PROJECTS section label uppercase" }
+    }
+  }
+}
