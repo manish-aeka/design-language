@@ -605,13 +605,6 @@
 
       <!-- ── Workspace scope ── -->
       <div id="scope-ws" class="hidden flex-col flex-1 overflow-hidden">
-        <!-- Header -->
-        <div class="flex-shrink-0 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <div>
-            <p class="text-[13px] font-semibold text-gray-800">Workspace datasources</p>
-            <p class="text-[12px] text-gray-400 mt-0.5">Datasources assigned to this workspace. Select tables to control what's accessible.</p>
-          </div>
-        </div>
         <!-- KPI bar -->
         <div class="grid grid-cols-3 gap-3 px-6 py-4 flex-shrink-0 border-b border-gray-100 bg-gray-50/60">
           <!-- Total Sources -->
@@ -2115,21 +2108,22 @@
         const pal = connectorPalette(d.connector);
         return `
         <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
-          <div class="h-40 rounded-t-xl flex items-center justify-center p-6" style="background:${pal.bg}">
+          <div class="h-40 rounded-t-xl flex items-center justify-center p-6 relative" style="background:${pal.bg}">
             ${connectorIconLarge(d.connector, 40)}
           </div>
           <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-gray-900">${d.name}</p>
-              <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+              <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${d.id}')">${d.name}</p>
+              <div class="flex items-center gap-2 flex-wrap mt-1">
                 <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
                   ${connectorIcon(d.connector, 10)}
                   ${d.connector}
                 </span>
                 <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
-                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H18a2.25 2.25 0 01-2.25-2.25v-2.25z"/></svg>
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
                   ${d.tables} tables
                 </span>
+                ${statusBadgeHtml(d.status)}
               </div>
               <p class="text-[11px] text-gray-400 mt-1">Updated ${d.updated}</p>
             </div>
@@ -2142,7 +2136,7 @@
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mx-4 my-2.5" style="background:#EEF2FF">${connectorIcon(d.connector, 20)}</div>
           <div class="flex-1 min-w-0 py-3 pr-4">
             <div class="flex items-center gap-2 flex-wrap">
-              <p class="text-[14px] font-bold text-[#111827] truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
+              <p class="text-sm font-medium text-[#111827] truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
               <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0" style="background:#F3F4F6;color:#4B5563">${typeIconHtml(d.type)}<span>${d.type}</span></span>
               ${statusBadgeHtml(d.status)}
             </div>
@@ -3532,16 +3526,45 @@
       menu.dataset.dsId = id;
       menu.className = 'fixed z-[9999] bg-white border border-gray-200 rounded-xl py-1 min-w-[170px]';
       menu.style.cssText = 'box-shadow:0 8px 24px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.08);top:' + (rect.bottom + 6) + 'px;right:' + (window.innerWidth - rect.right) + 'px';
-      menu.innerHTML = `
-        <button onclick="syncDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl">
-          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-          Sync now
-        </button>
-        <div class="my-1 border-t border-gray-100"></div>
-        <button onclick="deleteDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl">
-          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
-          Delete datasource
-        </button>`;
+
+      const isWsOrProj = _currentScope === 'ws' || _currentScope === 'proj';
+      const isWs = _currentScope === 'ws';
+      const isProj = _currentScope === 'proj';
+
+      if (isWsOrProj) {
+        menu.innerHTML = `
+          ${isWs ? `
+          <button onclick="event.stopPropagation();openTblPicker('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"/></svg>
+            Edit Tables
+          </button>
+          <div class="my-1 border-t border-gray-100"></div>
+          <button onclick="event.stopPropagation();removeWsAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            Remove from Workspace
+          </button>` : ''}
+          ${isProj ? `
+          <button onclick="event.stopPropagation();toggleProjAssign('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            Remove from Project
+          </button>` : ''}
+        `;
+      } else {
+        menu.innerHTML = `
+          <button onclick="syncDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+            Sync Now
+          </button>
+          <button onclick="openDetailPanel('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">
+            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+            Edit Connection
+          </button>
+          <div class="my-1 border-t border-gray-100"></div>
+          <button onclick="deleteDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+            Remove from Org
+          </button>`;
+      }
       document.body.appendChild(menu);
     }
     function closeDsCardMenus() {
@@ -3616,36 +3639,32 @@
           const a = _wsAssignments[ds.id];
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
           const selCount = a.tables ? a.tables.length : tblCount;
-          const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          const pal = connectorPalette(ds.connector);
           
           return `
           <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer transition-all" data-name="${ds.name.toLowerCase()}" onclick="event.stopPropagation()">
-            <div class="h-32 rounded-t-xl flex items-center justify-center relative" style="background:${connectorPalette(ds.connector).bg}" onclick="openDetailPanel('${ds.id}',true)">
+            <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
               <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
             </div>
-            <div class="px-3 pt-3 pb-3">
-              <div class="flex items-start justify-between">
-                <div class="min-w-0 flex-1">
-                  <p class="text-[13px] font-semibold text-gray-900 truncate mb-1 cursor-pointer hover:text-indigo-700" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
-                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                    ${typeIconHtml(ds.type)}
-                    <span>${ds.type}</span>
+            <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                <div class="flex items-center gap-2 flex-wrap mt-1">
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
+                    ${connectorIcon(ds.connector, 10)}
+                    ${ds.connector}
                   </span>
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
+                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+                    ${selCount} tables
+                  </span>
+                  ${statusBadgeHtml(ds.status)}
                 </div>
-                <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-1 flex-shrink-0">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-                </button>
+                <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
               </div>
-
-              <div class="flex items-center gap-2 mt-3 text-[11px] text-gray-500">
-                <span class="inline-block w-1.5 h-1.5 rounded-full ${ds.status === 'Connected' ? 'bg-green-500' : 'bg-red-500'}"></span>
-                <span class="truncate">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables included</span>
-              </div>
-
-              <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700">Edit Tables</button>
-                <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
-              </div>
+              <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75 12a.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+              </button>
             </div>
           </div>`;
         }).join('') : assignedList.map(ds => {
@@ -3813,42 +3832,34 @@
         const tblCount = (ds.tables_list || []).length || ds.tables || 0;
         const selCount = a.tables ? a.tables.length : tblCount;
         const inProj   = _projAssignments.has(ds.id);
-        const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+        const pal = connectorPalette(ds.connector);
         
         return `
-          <div class="report-card bg-white border ${inProj ? 'border-blue-200' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-80 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
-            <div class="h-32 rounded-t-xl flex items-center justify-center relative" style="background:${connectorPalette(ds.connector).bg}">
+          <div class="report-card bg-white border ${inProj ? 'border-indigo-100' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-85 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
+            <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
               <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
-              ${inProj ? '<span class="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm" style="background:rgba(255,255,255,0.95);color:#5B63F6; border:1px solid rgba(91,99,246,0.1)">Active in Project</span>' : ''}
+              ${inProj ? '<div class="absolute top-2.5 right-2.5 flex items-center gap-1.5"><span class="text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm bg-white/95 text-indigo-600 border border-indigo-100">Project Active</span></div>' : ''}
             </div>
-            <div class="px-3 pt-3 pb-3">
+            <div class="px-3 pt-2.5 pb-3">
               <div class="flex items-start justify-between">
-                <div class="min-w-0 flex-1">
-                  <p class="text-[13px] font-semibold text-gray-900 truncate mb-1">${ds.name}</p>
-                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:#EEF2FF;color:#5B63F6">
-                    ${typeIconHtml(ds.type)}
-                    <span>${ds.type}</span>
-                  </span>
+                <div>
+                  <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                  <div class="flex items-center gap-2 flex-wrap mt-1">
+                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
+                      ${connectorIcon(ds.connector, 10)}
+                      ${ds.connector}
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
+                      <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+                      ${selCount} tables
+                    </span>
+                    ${statusBadgeHtml(ds.status)}
+                  </div>
+                <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
                 </div>
-                <button class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-1 flex-shrink-0">
+                <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
                 </button>
-              </div>
-
-              <div class="flex items-center gap-2 mt-3 text-[11px] text-gray-500">
-                <span class="inline-block w-1.5 h-1.5 rounded-full ${ds.status === 'Connected' ? 'bg-green-500' : 'bg-red-500'}"></span>
-                <span>${selCount} tables accessible</span>
-              </div>
-
-              <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">${ds.status}</span>
-                ${inProj ? `
-                  <button onclick="toggleProjAssign('${ds.id}')" class="text-[11px] font-medium text-red-500 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 transition-colors">Remove</button>
-                ` : `
-                  <button onclick="toggleProjAssign('${ds.id}')" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity" style="background:#5B63F6">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add to Project
-                  </button>
-                `}
               </div>
             </div>
           </div>`;
