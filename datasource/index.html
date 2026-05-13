@@ -494,10 +494,10 @@
       </div>
 
       <!-- Toolbar: search + filters + view toggle -->
-      <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
 
         <!-- Left: WS filter + Type filter + Status pills -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="w-1/2 flex items-center gap-2">
 
           <!-- Workspace filter -->
           <div class="relative flex-shrink-0">
@@ -583,6 +583,19 @@
           <!-- Divider -->
           <!-- <div class="w-px h-5 bg-gray-200 mx-1"></div> -->
 
+          <!-- Search -->
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+            </span>
+            <input id="ds-search" type="text" placeholder="Search datasources…" oninput="filterDsList()"
+              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
+          </div>
+        </div>
+
+        <!-- Right: Status pills + View toggle -->
+        <div class="w-1/2 flex items-center justify-end gap-3">
+
           <!-- Status pills -->
           <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
             <button onclick="setDsStatus('all')" id="dss-pill-all" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
@@ -592,19 +605,6 @@
             <button onclick="setDsStatus('Error')" id="dss-pill-Error" class="ds-spill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
               <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>Error
             </button>
-          </div>
-        </div>
-
-        <!-- Right: Search + View toggle -->
-        <div class="flex items-center gap-3 flex-shrink-0">
-
-          <!-- Search -->
-          <div class="relative w-56">
-            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-            </span>
-            <input id="ds-search" type="text" placeholder="Search datasources…" oninput="filterDsList()"
-              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
           </div>
 
           <!-- View toggle -->
@@ -679,8 +679,9 @@
         </div>
 
         <!-- Toolbar: category + status + search + view toggle -->
-        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
-          <!-- Category dropdown -->
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center">
+          <!-- Left 50%: Category dropdown -->
+          <div class="w-1/2 flex items-center gap-3">
           <div class="relative flex-shrink-0">
             <button onclick="toggleWsCatDd()" id="ws-cat-dd-btn" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
@@ -723,10 +724,13 @@
             </div>
           </div>
           <!-- Search -->
-          <div class="relative flex-1 max-w-xs">
+          <div class="relative flex-1">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             <input id="ws-search" type="text" placeholder="Search datasources…" oninput="filterWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
           </div>
+          </div><!-- /left 50% -->
+          <!-- Right 50%: View toggle -->
+          <div class="w-1/2 flex items-center justify-end gap-3">
           <div id="ws-add-actions" class="hidden items-center gap-1.5 flex-shrink-0">
             <button id="ws-add-confirm" onclick="confirmWsAdd()" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
                Add &amp; configure tables
@@ -735,7 +739,6 @@
               Cancel
             </button>
           </div>
-          <div class="flex-1"></div>
           <!-- Hidden elements kept for JS compatibility -->
           <div id="ws-add-wrapper" class="hidden"><div id="ws-add-dd" class="hidden"><div id="ws-add-dd-list"></div><div id="ws-add-dd-empty"></div></div><span id="ws-add-label" class="hidden"></span><button id="ws-add-btn" class="hidden"></button></div>
           <!-- View toggle -->
@@ -747,6 +750,7 @@
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
             </button>
           </div>
+          </div><!-- /right 50% -->
         </div>
         <!-- Assigned list -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
@@ -829,10 +833,10 @@
           </div>
         </div>
         <!-- Toolbar -->
-        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center justify-between gap-3">
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center">
 
-          <!-- Left: Category filter + Status pills (mirrors Org scope) -->
-          <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- Left 50%: Category filter + Search -->
+          <div class="w-1/2 flex items-center gap-2">
 
             <!-- Category dropdown -->
             <div class="relative flex-shrink-0">
@@ -877,6 +881,19 @@
               </div>
             </div>
 
+            <!-- Search -->
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+              </span>
+              <input id="proj-search" type="text" placeholder="Search datasources…" oninput="filterProjList()"
+                class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
+            </div>
+          </div>
+
+          <!-- Right 50%: Status pills + View toggle -->
+          <div class="w-1/2 flex items-center justify-end gap-3">
+
             <!-- Status pills -->
             <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
               <button onclick="setProjStatus('all')" id="proj-spill-all" class="proj-spill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
@@ -887,24 +904,16 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>Error
               </button>
             </div>
-          </div>
 
-          <!-- Search -->
-          <div class="relative flex-1 min-w-0">
-            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-            </span>
-            <input id="proj-search" type="text" placeholder="Search datasources…" oninput="filterProjList()"
-              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
-          </div>
-          <!-- Right: View toggle -->
-          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
-            <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 transition-all" title="List view">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
-            </button>
-            <button id="proj-view-grid" onclick="setProjView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-indigo-600 shadow-sm transition-all" title="Grid view">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
-            </button>
+            <!-- View toggle -->
+            <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+              <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 transition-all" title="List view">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+              </button>
+              <button id="proj-view-grid" onclick="setProjView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-indigo-600 shadow-sm transition-all" title="Grid view">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+              </button>
+            </div>
           </div>
         </div>
         <!-- List -->
