@@ -24,9 +24,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- CodeMirror 5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/sql-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/display/placeholder.min.js"></script>
   <style>
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
     ::-webkit-scrollbar-track { background: transparent; }
 
@@ -186,6 +196,74 @@
     .src-chevron { transition: transform 200ms ease; }
     .src-chevron.open { transform: rotate(90deg); }
     .sources-btn.active { background:#EEF2FF !important; color:#5B63F6 !important; border-color:#C7D2FE !important; }
+
+    /* ── SQL mode switch ── */
+    .mode-switch { display:flex; gap:2px; padding:2px; background:#F3F4F6; border-radius:10px; }
+    .mode-btn { flex:1; height:25px; border-radius:8px; font-size:11.5px; font-weight:500; color:#6B7280; cursor:pointer; border:none; background:transparent; transition:all 120ms ease; white-space:nowrap; }
+    .mode-btn.active { background:white; color:#374151; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.10); }
+
+    /* ── CodeMirror editor — product-matched light theme ── */
+    .CodeMirror {
+      font-family: 'JetBrains Mono','SF Mono','Consolas',monospace !important;
+      font-size: 12px !important;
+      line-height: 1.75 !important;
+      height: 100% !important;
+      background: #fff !important;
+      color: #374151 !important;
+      border: none !important;
+    }
+    .CodeMirror-scroll { min-height: 0 !important; }
+    .CodeMirror-gutters { background: #FAFAFA !important; border-right: 1px solid #F3F4F6 !important; }
+    .CodeMirror-linenumber { color: #D1D5DB !important; font-size: 11px !important; padding: 0 8px 0 6px !important; }
+    .CodeMirror-cursor { border-left-color: #5B63F6 !important; }
+    .CodeMirror-selected { background: #EEF2FF !important; }
+    .CodeMirror-focused .CodeMirror-selected { background: #E0E7FF !important; }
+    .CodeMirror-activeline-background { background: #F9FAFB !important; }
+    /* SQL keyword colors matching product brand */
+    .cm-keyword { color: #5B63F6 !important; font-weight: 600 !important; }
+    .cm-builtin { color: #5B63F6 !important; }
+    .cm-string  { color: #059669 !important; }
+    .cm-number  { color: #D97706 !important; }
+    .cm-comment { color: #9CA3AF !important; font-style: italic !important; }
+    .cm-operator { color: #374151 !important; }
+    .cm-variable { color: #374151 !important; }
+    .CodeMirror-placeholder { color: #D1D5DB !important; }
+    /* hint dropdown */
+    .CodeMirror-hints { font-family:'JetBrains Mono',monospace; font-size:11.5px; border:1px solid #E5E7EB; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:4px; }
+    .CodeMirror-hint { border-radius:6px; padding:4px 8px; color:#374151; }
+    .CodeMirror-hint-active { background:#EEF2FF !important; color:#4338CA !important; }
+
+    /* ── SQL results table ── */
+    .sql-result-table { width:100%; border-collapse:collapse; }
+    .sql-result-table th { text-align:left; padding:7px 14px; font-size:11px; font-weight:600; color:#9CA3AF; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid #F3F4F6; background:#FAFAFA; white-space:nowrap; position:sticky; top:0; z-index:1; }
+    .sql-result-table td { padding:9px 14px; font-size:12.5px; color:#374151; border-bottom:1px solid #F9FAFB; white-space:nowrap; }
+    .sql-result-table tbody tr:last-child td { border-bottom:none; }
+    .sql-result-table tbody tr:hover td { background:#FAFAFA; }
+
+    /* ── Chart type selector (sidebar) ── */
+    .chart-type-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 4px 7px; border-radius:10px; border:1.5px solid #E5E7EB; background:white; font-size:10.5px; font-weight:500; color:#6B7280; cursor:pointer; transition:all 130ms ease; text-align:center; }
+    .chart-type-btn:hover:not(.disabled) { background:#EEF2FF; border-color:#C7D2FE; color:#4338CA; }
+    .chart-type-btn.selected { background:#EEF2FF; border-color:#5B63F6; color:#4338CA; box-shadow:0 0 0 1px #5B63F6; }
+    .chart-type-btn.disabled { opacity:0.38; cursor:not-allowed; pointer-events:none; }
+
+    /* ── KPI config inputs ── */
+    .kpi-field { width:100%; padding:7px 10px; font-size:12.5px; color:#374151; background:#F9FAFB; border:1.5px solid #E5E7EB; border-radius:8px; outline:none; transition:border-color 150ms, box-shadow 150ms; font-family:inherit; }
+    .kpi-field:focus { border-color:#5B63F6; background:white; box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+
+    /* Viz sidebar slide-in animation */
+    #sql-viz-sidebar {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: width 280ms cubic-bezier(0.4,0,0.2,1), opacity 240ms ease, min-width 280ms cubic-bezier(0.4,0,0.2,1);
+    }
+    #sql-viz-sidebar.sidebar-visible {
+      width: 300px;
+      min-width: 300px;
+      opacity: 1;
+    }
+    .kpi-field::placeholder { color:#D1D5DB; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -539,10 +617,28 @@
     </div>
 
     <!-- Content: canvas + chat panel -->
-    <div class="flex-1 flex overflow-hidden">
+    <div id="ai-layout-wrapper" class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Mode toolbar -->
+      <div class="flex items-center px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
+        <div class="mode-switch" style="width:188px;">
+          <button id="mode-ai-btn" class="mode-btn active" onclick="switchMode('ai')">Ask AI</button>
+          <button id="mode-sql-btn" class="mode-btn" onclick="switchMode('sql')">View/Edit SQL</button>
+        </div>
+      </div>
+
+      <div class="flex flex-1 overflow-hidden">
 
       <!-- Canvas area -->
       <div id="canvas-area" class="flex-1 canvas-grid flex items-center justify-center overflow-auto relative">
+
+        <!-- Mode toggle — pinned top-left of canvas -->
+        <!-- <div class="absolute top-4 left-4 z-10 pointer-events-auto">>
+          <div class="mode-switch" style="width:188px;">
+            <button id="mode-ai-btn" class="mode-btn active" onclick="switchMode('ai')">Ask AI</button>
+            <button id="mode-sql-btn" class="mode-btn" onclick="switchMode('sql')">Write SQL</button>
+          </div>
+        </div> -->
 
         <div id="empty-state" class="flex flex-col items-center text-center px-8 py-10 pointer-events-none select-none rounded-xl overflow-hidden bg-white">
           <div class="w-[72px] h-[72px] rounded-2xl flex items-center justify-center mb-5 pointer-events-auto"
@@ -600,11 +696,25 @@
           <div class="flex gap-2 mb-1">
             <span class="dot"></span><span class="dot"></span><span class="dot"></span>
           </div>
-          <p class="text-[13px] font-medium text-gray-500">Generating your chart…</p>
+          <p id="generating-text" class="text-[13px] font-medium text-gray-500">Generating your chart…</p>
         </div>
 
         <!-- Chart output -->
-        <div id="chart-output" class="hidden w-full h-full overflow-auto flex items-start justify-center p-8 rounded-xl bg-white"></div>
+        <div id="chart-output" class="hidden w-full h-full overflow-auto flex items-start justify-center pt-16 px-8 pb-8 rounded-xl bg-white"></div>
+
+        <!-- SQL empty state -->
+        <div id="sql-empty-state" class="hidden flex flex-col items-center text-center px-8 py-10 pointer-events-none select-none">
+          <div class="w-[56px] h-[56px] rounded-2xl flex items-center justify-center mb-4" style="background:#EEF2FF;border:1.5px solid #C7D2FE;">
+            <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/>
+            </svg>
+          </div>
+          <p class="text-[14px] font-semibold text-gray-700">Write a SQL query</p>
+          <p class="text-[12.5px] text-gray-400 mt-1.5 leading-relaxed">Enter your query in the panel,<br/>then click Run Query to see results.</p>
+        </div>
+
+        <!-- SQL query output -->
+        <div id="sql-output" class="hidden w-full h-full overflow-auto flex items-start justify-center pt-16 px-8 pb-8"></div>
       </div>
 
       <!-- ══ CHAT PANEL — fully redesigned ══ -->
@@ -633,7 +743,10 @@
         </div>
 
         <!-- ── Input area — redesigned ── -->
-        <div class="px-3 pb-3 pt-2.5 border-t border-gray-100 flex-shrink-0">
+        <div id="input-area-wrapper" class="border-t border-gray-100 flex-shrink-0">
+
+          <!-- AI input section -->
+          <div id="ai-input-section" class="px-3 pt-2.5 pb-3">
           <div class="input-wrapper">
             <textarea
               id="chat-input"
@@ -655,12 +768,356 @@
               </button>
             </div>
           </div>
+          </div>
+
+
+
         </div>
 
-      </div>
-      <!-- ═════════════════════════════════════ -->
+      </div><!-- end chat panel -->
 
-    </div>
+      </div><!-- end inner flex -->
+    </div><!-- end ai-layout-wrapper -->
+
+    <!-- ══════════════════════════════════════════
+         SQL MODE LAYOUT
+    ══════════════════════════════════════════════ -->
+    <div id="sql-layout" class="hidden flex-1 flex flex-col overflow-hidden">
+
+      <!-- Mode toolbar -->
+      <div class="flex items-center px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
+        <div class="mode-switch" style="width:188px;">
+          <button class="mode-btn" onclick="switchMode('ai')">Ask AI</button>
+          <button class="mode-btn active">View/Edit SQL</button>
+        </div>
+      </div>
+
+      <div class="flex flex-1 overflow-hidden">
+
+        <!-- ── Left: Editor + Results ── -->
+        <div class="flex-1 flex flex-col overflow-hidden canvas-grid">
+
+          <!-- Inline notices (destructive / stale) -->
+          <div id="sql-destructive-warn" class="hidden items-center gap-2 px-4 py-2 border-b border-red-50 flex-shrink-0" style="background:#FFF7F7;">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#EF4444" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+            <span class="text-[11.5px] font-medium" style="color:#DC2626;">Destructive queries (DELETE, DROP, UPDATE, ALTER, TRUNCATE, INSERT) are not permitted.</span>
+          </div>
+          <div id="sql-stale-notice" class="hidden items-center gap-2 px-4 py-2 border-b border-amber-50 flex-shrink-0" style="background:#FFFBF0;">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#F59E0B" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+            <span class="text-[11.5px] font-medium" style="color:#D97706;">Query changed — re-run to refresh results</span>
+          </div>
+
+          <!-- Editor header bar -->
+          <div class="flex items-center justify-between px-3 h-9 border-b border-gray-100 bg-white flex-shrink-0">
+            <!-- Code icon -->
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 flex items-center justify-center rounded-md" style="background:#EEF2FF;">
+                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/>
+                </svg>
+              </div>
+              <span class="text-[11.5px] font-medium text-gray-400">SQL Editor</span>
+            </div>
+            <!-- Actions -->
+            <div class="flex items-center gap-1">
+              <button onclick="clearSQL()" title="Clear editor" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11.5px] font-medium text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                <svg class="w-[13px] h-[13px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                </svg>
+                Clear
+              </button>
+              <button id="run-query-btn" onclick="runSQLQuery()" title="Run query (Ctrl+Enter)"
+                class="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11.5px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
+                style="background:#5B63F6;">
+                <svg width="7" height="8" fill="currentColor" viewBox="0 0 8 10"><path d="M0 0l8 5-8 5V0z"/></svg>
+                Run
+              </button>
+            </div>
+          </div>
+
+          <!-- CodeMirror container — takes half the height -->
+          <div id="sql-editor-wrap" class="bg-white" style="flex:1;min-height:0;overflow:hidden;"></div>
+
+          <!-- Results divider / header -->
+          <div class="flex items-center gap-2 px-3 h-8 flex-shrink-0" style="background:#F9FAFB;border-top:1.5px solid #E9EAEC;border-bottom:1px solid #E9EAEC;">
+            <svg class="w-3 h-3 flex-shrink-0" style="color:#9CA3AF" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+            <span class="text-[11px] font-semibold uppercase tracking-widest" style="color:#C4C9D4;">Results</span>
+          </div>
+
+          <!-- Results panel — takes other half -->
+          <div id="sql-results-panel" class="overflow-auto bg-white" style="flex:1;min-height:0;">
+
+            <!-- Empty state (default) -->
+            <div id="sql-results-empty" class="flex flex-col items-center justify-center h-full text-center px-8 select-none pointer-events-none">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:#EEF2FF;border:1.5px solid #C7D2FE;">
+                <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/>
+                </svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-600">Write a SELECT query above</p>
+              <p class="text-[12px] text-gray-400 mt-1 leading-relaxed">Results will appear here after you run it.</p>
+              <p class="text-[11px] text-gray-300 mt-3">Ctrl+Enter to run</p>
+            </div>
+
+            <!-- Running state -->
+            <div id="sql-results-running" class="hidden flex flex-col items-center justify-center h-full gap-3 select-none pointer-events-none">
+              <div class="flex gap-2">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              </div>
+              <p class="text-[12.5px] text-gray-400 font-medium">Running query…</p>
+            </div>
+
+            <!-- Table + truncation notice (rendered by JS) -->
+            <div id="sql-results-table-wrap" class="hidden h-full flex flex-col">
+              <div class="flex items-center justify-between px-5 py-2.5 border-b border-gray-50 flex-shrink-0">
+                <p id="sql-row-badge" class="text-[11.5px] font-medium text-gray-400"></p>
+                <p id="sql-truncation-note" class="hidden text-[11px] text-amber-500"></p>
+              </div>
+              <div class="flex-1 overflow-auto">
+                <table id="sql-table" class="sql-result-table"></table>
+              </div>
+            </div>
+
+            <!-- Error state -->
+            <div id="sql-results-error" class="hidden flex flex-col items-center justify-center h-full px-10 text-center select-none pointer-events-none">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style="background:#FFF7F7;border:1.5px solid #FCA5A5;">
+                <svg class="w-4 h-4" style="color:#EF4444" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+              </div>
+              <p id="sql-error-title" class="text-[13px] font-semibold text-gray-700"></p>
+              <p id="sql-error-msg" class="text-[12px] text-gray-400 mt-1.5 leading-relaxed max-w-sm"></p>
+            </div>
+
+            <!-- No rows state -->
+            <div id="sql-results-norows" class="hidden flex flex-col items-center justify-center h-full select-none pointer-events-none">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style="background:#F3F4F6;">
+                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+              </div>
+              <p class="text-[13px] font-semibold text-gray-500">No rows returned</p>
+              <p class="text-[12px] text-gray-400 mt-1.5 leading-relaxed">Query succeeded but returned no data.</p>
+            </div>
+
+          </div><!-- end sql-results-panel -->
+        </div><!-- end left column -->
+
+        <!-- ── Right: Visualization sidebar — slides in after results ── -->
+        <div id="sql-viz-sidebar" class="flex flex-col border-l border-gray-100 bg-white" style="margin:0;">
+
+          <!-- Section: Visualization -->
+          <div class="px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
+            <p class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">Visualization</p>
+            <div class="grid grid-cols-3 gap-2">
+
+              <!-- Table -->
+              <button id="chart-type-table" class="chart-type-btn" onclick="selectChartType('table')">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <rect width="54" height="32" rx="4" fill="#F9FAFB"/>
+                  <rect x="0" y="0" width="54" height="8" fill="#EEF2FF"/>
+                  <line x1="0" y1="8" x2="54" y2="8" stroke="#E5E7EB" stroke-width="0.75"/>
+                  <line x1="0" y1="16" x2="54" y2="16" stroke="#E5E7EB" stroke-width="0.75"/>
+                  <line x1="0" y1="24" x2="54" y2="24" stroke="#E5E7EB" stroke-width="0.75"/>
+                  <line x1="18" y1="0" x2="18" y2="32" stroke="#E5E7EB" stroke-width="0.75"/>
+                  <line x1="36" y1="0" x2="36" y2="32" stroke="#E5E7EB" stroke-width="0.75"/>
+                  <rect x="2" y="2.5" width="13" height="3" rx="1" fill="#C7D2FE"/>
+                  <rect x="20" y="2.5" width="13" height="3" rx="1" fill="#C7D2FE"/>
+                  <rect x="38" y="2.5" width="13" height="3" rx="1" fill="#C7D2FE"/>
+                  <rect x="2" y="11" width="10" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="20" y="11" width="13" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="38" y="11" width="9" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="2" y="19" width="12" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="20" y="19" width="10" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="38" y="19" width="13" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="2" y="27" width="10" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="20" y="27" width="14" height="2.5" rx="1" fill="#E5E7EB"/>
+                  <rect x="38" y="27" width="11" height="2.5" rx="1" fill="#E5E7EB"/>
+                </svg>
+                Table
+              </button>
+
+              <!-- KPI Card -->
+              <button id="chart-type-kpi" class="chart-type-btn disabled" onclick="selectChartType('kpi')" title="Requires a single-row or single numeric column result">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <rect width="54" height="32" rx="4" fill="#EEF2FF"/>
+                  <rect x="3" y="3" width="20" height="3" rx="1" fill="#C7D2FE"/>
+                  <text x="27" y="21" text-anchor="middle" font-size="13" font-weight="700" fill="#5B63F6" font-family="system-ui,sans-serif">42.8K</text>
+                  <text x="27" y="29.5" text-anchor="middle" font-size="6.5" font-weight="600" fill="#10B981" font-family="system-ui,sans-serif">&#x25B2; 12.4%</text>
+                </svg>
+                KPI Card
+              </button>
+
+              <!-- Bar Chart -->
+              <button id="chart-type-bar" class="chart-type-btn disabled" onclick="selectChartType('bar')" title="Requires a label column and at least one numeric column">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <rect x="3" y="18" width="8" height="12" rx="1.5" fill="#C7D2FE"/>
+                  <rect x="14" y="9" width="8" height="21" rx="1.5" fill="#818CF8"/>
+                  <rect x="25" y="13" width="8" height="17" rx="1.5" fill="#818CF8"/>
+                  <rect x="36" y="5" width="8" height="25" rx="1.5" fill="#5B63F6"/>
+                  <rect x="47" y="21" width="8" height="9" rx="1.5" fill="#C7D2FE"/>
+                  <line x1="0" y1="31" x2="54" y2="31" stroke="#E5E7EB" stroke-width="0.75"/>
+                </svg>
+                Bar
+              </button>
+
+              <!-- Line Chart -->
+              <button id="chart-type-line" class="chart-type-btn disabled" onclick="selectChartType('line')" title="Requires multiple rows with at least one numeric column">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <polyline points="3,26 12,18 22,21 32,11 42,15 51,6" stroke="#5B63F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="3" cy="26" r="2.5" fill="#5B63F6"/>
+                  <circle cx="12" cy="18" r="2.5" fill="#5B63F6"/>
+                  <circle cx="22" cy="21" r="2.5" fill="#5B63F6"/>
+                  <circle cx="32" cy="11" r="2.5" fill="#5B63F6"/>
+                  <circle cx="42" cy="15" r="2.5" fill="#5B63F6"/>
+                  <circle cx="51" cy="6" r="2.5" fill="#5B63F6"/>
+                  <line x1="0" y1="30" x2="54" y2="30" stroke="#E5E7EB" stroke-width="0.75"/>
+                </svg>
+                Line
+              </button>
+
+              <!-- Area Chart -->
+              <button id="chart-type-area" class="chart-type-btn disabled" onclick="selectChartType('area')" title="Requires multiple rows with at least one numeric column">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <path d="M3,26 L12,18 L22,21 L32,11 L42,15 L51,6 L51,30 L3,30 Z" fill="#EEF2FF"/>
+                  <polyline points="3,26 12,18 22,21 32,11 42,15 51,6" stroke="#5B63F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="0" y1="30" x2="54" y2="30" stroke="#E5E7EB" stroke-width="0.75"/>
+                </svg>
+                Area
+              </button>
+
+              <!-- Pie Chart -->
+              <button id="chart-type-pie" class="chart-type-btn disabled" onclick="selectChartType('pie')" title="Requires exactly 2 columns: one label and one numeric">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <path d="M27,17 L27,4 A13,13 0 0,1 34.6,27.5 Z" fill="#5B63F6"/>
+                  <path d="M27,17 L34.6,27.5 A13,13 0 0,1 14.6,21.0 Z" fill="#818CF8"/>
+                  <path d="M27,17 L14.6,21.0 A13,13 0 0,1 19.4,6.5 Z" fill="#A5B4FC"/>
+                  <path d="M27,17 L19.4,6.5 A13,13 0 0,1 27,4 Z" fill="#C7D2FE"/>
+                </svg>
+                Pie
+              </button>
+
+              <!-- Donut Chart -->
+              <button id="chart-type-donut" class="chart-type-btn disabled" onclick="selectChartType('donut')" title="Requires exactly 2 columns: one label and one numeric">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <path d="M27,17 L27,4 A13,13 0 0,1 34.6,27.5 Z" fill="#5B63F6"/>
+                  <path d="M27,17 L34.6,27.5 A13,13 0 0,1 14.6,21.0 Z" fill="#818CF8"/>
+                  <path d="M27,17 L14.6,21.0 A13,13 0 0,1 19.4,6.5 Z" fill="#A5B4FC"/>
+                  <path d="M27,17 L19.4,6.5 A13,13 0 0,1 27,4 Z" fill="#C7D2FE"/>
+                  <circle cx="27" cy="17" r="6" fill="white"/>
+                </svg>
+                Donut
+              </button>
+
+              <!-- Horizontal Bar -->
+              <button id="chart-type-hbar" class="chart-type-btn disabled" onclick="selectChartType('hbar')" title="Requires a label column and at least one numeric column">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <rect x="11" y="3" width="39" height="5" rx="1.5" fill="#5B63F6"/>
+                  <rect x="11" y="10" width="28" height="5" rx="1.5" fill="#818CF8"/>
+                  <rect x="11" y="17" width="22" height="5" rx="1.5" fill="#A5B4FC"/>
+                  <rect x="11" y="24" width="15" height="5" rx="1.5" fill="#C7D2FE"/>
+                  <line x1="11" y1="2" x2="11" y2="30" stroke="#E5E7EB" stroke-width="0.75"/>
+                </svg>
+                Horiz. Bar
+              </button>
+
+              <!-- Scatter -->
+              <button id="chart-type-scatter" class="chart-type-btn disabled" onclick="selectChartType('scatter')" title="Requires at least 2 numeric columns">
+                <svg viewBox="0 0 54 32" width="54" height="32" fill="none">
+                  <circle cx="8" cy="23" r="2.5" fill="#5B63F6"/>
+                  <circle cx="16" cy="13" r="2.5" fill="#818CF8"/>
+                  <circle cx="22" cy="20" r="2.5" fill="#5B63F6"/>
+                  <circle cx="28" cy="8" r="2.5" fill="#A5B4FC"/>
+                  <circle cx="36" cy="17" r="2.5" fill="#818CF8"/>
+                  <circle cx="42" cy="25" r="2.5" fill="#C7D2FE"/>
+                  <circle cx="48" cy="11" r="2.5" fill="#5B63F6"/>
+                  <circle cx="14" cy="27" r="2.5" fill="#C7D2FE"/>
+                  <circle cx="32" cy="23" r="2.5" fill="#818CF8"/>
+                  <line x1="0" y1="30" x2="54" y2="30" stroke="#E5E7EB" stroke-width="0.75"/>
+                  <line x1="3" y1="3" x2="3" y2="30" stroke="#E5E7EB" stroke-width="0.75"/>
+                </svg>
+                Scatter
+              </button>
+
+            </div>
+            <p id="viz-no-results-hint" class="text-[11px] text-gray-300 mt-3 leading-relaxed">Run a query to enable<br/>visualization options.</p>
+          </div>
+
+          <!-- Section: KPI Details (hidden until chart selected) -->
+          <div id="kpi-config-section" class="hidden flex-1 flex flex-col overflow-y-auto border-b border-gray-100">
+            <div class="px-4 pt-4 pb-3">
+              <p class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">KPI Details</p>
+              <div class="space-y-2.5">
+                <div>
+                  <label class="block text-[11.5px] font-medium text-gray-500 mb-1.5">Name <span class="text-red-400">*</span></label>
+                  <input id="kpi-name-input" type="text" class="kpi-field" placeholder="e.g. Monthly Revenue" maxlength="60" oninput="_onKPINameInput()"/>
+                </div>
+                <div>
+                  <label class="block text-[11.5px] font-medium text-gray-500 mb-1.5">Description <span class="text-[11px] font-normal text-gray-300">optional</span></label>
+                  <textarea id="kpi-desc-input" rows="2" class="kpi-field" style="resize:none;" placeholder="Brief description of this KPI"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Placeholder when no chart selected -->
+          <div id="kpi-config-placeholder" class="flex-1 flex flex-col items-center justify-center px-5 text-center pointer-events-none select-none">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5" style="background:#F3F4F6;">
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
+            </div>
+            <p class="text-[12px] font-medium text-gray-400">Select a chart type</p>
+            <p class="text-[11px] text-gray-300 mt-1 leading-relaxed">Choose a visualization to configure your KPI.</p>
+          </div>
+
+          <!-- Generate button -->
+          <div class="px-4 pb-4 pt-3 flex-shrink-0">
+            <button id="generate-kpi-btn" onclick="generateKPIFromSQL()"
+              class="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12.5px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
+              style="background:#5B63F6;">
+              Generate KPI
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+            </button>
+          </div>
+
+        </div><!-- end viz sidebar -->
+
+      </div><!-- end inner flex -->
+
+      <!-- ── KPI Preview (shown after Generate KPI) ── -->
+      <div id="sql-kpi-preview" class="hidden flex-1 flex overflow-hidden">
+
+        <!-- Left column: back bar + chart card -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+          <!-- Back bar -->
+          <div class="flex items-center gap-2.5 px-4 h-10 border-b border-gray-100 bg-white flex-shrink-0">
+            <button onclick="_hideSQLKPIPreview()" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11.5px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+              Back to editor
+            </button>
+          </div>
+
+          <!-- Chart card area -->
+          <div id="sql-kpi-preview-content" class="flex-1 overflow-auto canvas-grid flex items-center justify-center px-8 py-8"></div>
+
+        </div><!-- end left column -->
+
+        <!-- Right detail sidebar — full height alongside left column -->
+        <div class="w-[300px] flex-shrink-0 border-l border-gray-100 bg-white flex flex-col overflow-hidden">
+
+          <!-- Sidebar header -->
+          <div class="px-4 h-10 border-b border-gray-100 flex-shrink-0 flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            <span class="text-[12px] font-semibold text-gray-700">Query Details</span>
+          </div>
+
+          <!-- Sidebar body -->
+          <div id="sql-kpi-detail-body" class="flex-1 overflow-auto px-4 py-4 flex flex-col gap-5">
+            <!-- populated by generateKPIFromSQL() -->
+          </div>
+
+        </div><!-- end right detail sidebar -->
+
+      </div><!-- end sql-kpi-preview -->
+
+    </div><!-- end sql-layout -->
+
   </main>
 
   <script>
@@ -794,7 +1251,10 @@
 
     /* ── Render chart at given index ── */
     function renderChartAtIndex(idx) {
-      const { prompt, source } = charts[idx];
+      const chart = charts[idx];
+      const { prompt, source } = chart;
+      const isSQLSource = source && source.name === 'SQL Query';
+      const sqlQuery = chart.sqlQuery || '';
       const total   = charts.length;
       const current = idx + 1;
       const isFirst = idx === 0;
@@ -809,11 +1269,12 @@
       output.innerHTML = `
         <div class="w-full max-w-[940px] fade-up">
           <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);">
-            <!-- Header: title + source inline -->
+            <!-- Header: title + badges -->
             <div class="flex items-center gap-3 px-7 pt-6 pb-0">
               <h3 class="text-[18px] font-bold text-gray-900 leading-snug flex-1 min-w-0">${escHtml(prompt)}</h3>
-              <!-- Source badge: book icon + "Sources" label -->
-              <button onclick="toggleSourcesDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 border text-[12px] font-semibold" style=";cursor:pointer;">
+              ${isSQLSource ? `<button onclick="(function(){switchMode('sql');setTimeout(function(){if(sqlEditor&&${JSON.stringify(sqlQuery)}){sqlEditor.setValue(${JSON.stringify(sqlQuery)});_onEditorChange();}},80);})()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 border border-indigo-200 text-[12px] font-semibold" style="background:#EEF2FF;color:#4338CA;cursor:pointer;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>View/Edit SQL</button>` : ''}
+              <!-- Source badge -->
+              <button onclick="toggleSourcesDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 border text-[12px] font-semibold" style="cursor:pointer;">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                 Sources
               </button>
@@ -888,6 +1349,552 @@
     function goToDashboard() {
       window.location.href = '../dashboard/index.html';
     }
+
+    /* ══════════════════════════════════════════
+       SQL MODE
+    ══════════════════════════════════════════ */
+    var currentMode = 'ai';
+
+    // Centralized SQL state
+    var sqlState = { lastRunSQL: '', data: null, status: 'idle', chartType: null, timer: null };
+    var DESTRUCTIVE_RE = /^\s*(delete|drop|update|alter|truncate|insert|create|replace|merge)\b/im;
+    var SQL_MAX_ROWS = 200;
+    var sqlEditor = null; // CodeMirror instance
+
+    /* ══════════════════════════════════
+       MODE SWITCH
+    ══════════════════════════════════ */
+    function switchMode(mode) {
+      currentMode = mode;
+      // Canvas-area toggle (AI mode)
+      var aBtn = document.getElementById('mode-ai-btn');
+      var sBtn = document.getElementById('mode-sql-btn');
+      if (aBtn) aBtn.classList.toggle('active', mode === 'ai');
+      if (sBtn) sBtn.classList.toggle('active', mode === 'sql');
+
+      var aiWrapper = document.getElementById('ai-layout-wrapper');
+      var sqlWrapper = document.getElementById('sql-layout');
+
+      if (mode === 'sql') {
+        aiWrapper.classList.add('hidden');
+        sqlWrapper.classList.remove('hidden');
+        _initSQLEditor();
+        if (sqlEditor) sqlEditor.refresh();
+        setTimeout(function(){ if (sqlEditor) { sqlEditor.refresh(); sqlEditor.focus(); } }, 60);
+      } else {
+        sqlWrapper.classList.add('hidden');
+        aiWrapper.classList.remove('hidden');
+        // Restore AI canvas state
+        if (charts.length === 0 && document.getElementById('chart-output').classList.contains('hidden')) {
+          document.getElementById('empty-state').classList.remove('hidden');
+        }
+      }
+    }
+
+    /* ══════════════════════════════════
+       CODEMIRROR INIT
+    ══════════════════════════════════ */
+    function _initSQLEditor() {
+      if (sqlEditor) return;
+      var wrap = document.getElementById('sql-editor-wrap');
+      if (!wrap) return;
+      sqlEditor = CodeMirror(wrap, {
+        mode: 'text/x-sql',
+        lineNumbers: true,
+        tabSize: 2,
+        indentWithTabs: false,
+        lineWrapping: false,
+        autofocus: true,
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        extraKeys: {
+          'Ctrl-Enter': runSQLQuery,
+          'Cmd-Enter':  runSQLQuery,
+          'Ctrl-Space': 'autocomplete',
+        },
+        hintOptions: { completeSingle: false },
+      });
+      sqlEditor.setSize('100%', '100%');
+      sqlEditor.on('change', function() { _onEditorChange(); });
+    }
+
+    /* ══════════════════════════════════
+       SQL EDITOR CHANGE HANDLER
+    ══════════════════════════════════ */
+    function _onEditorChange() {
+      if (!sqlEditor) return;
+      var raw = sqlEditor.getValue();
+      var sql = raw.trim();
+      var isDestructive = DESTRUCTIVE_RE.test(raw);
+      var hasSQL = sql.length > 0 && !isDestructive;
+
+      // Destructive warning
+      _toggleNotice('sql-destructive-warn', isDestructive);
+
+      // Run button
+      _setRunBtn(hasSQL && sqlState.status !== 'running' ? 'idle-active' : 'idle-inactive');
+
+      // Stale detection — when results already exist
+      if (sqlState.status === 'success' || sqlState.status === 'error') {
+        var isStale = sql !== sqlState.lastRunSQL;
+        _toggleNotice('sql-stale-notice', isStale);
+        if (isStale) {
+          _setGenerateBtn(false);
+          sqlState.chartType = null;
+          _clearChartSelection();
+        }
+      }
+    }
+
+    /* ══════════════════════════════════
+       RUN QUERY
+    ══════════════════════════════════ */
+    function runSQLQuery() {
+      if (sqlState.status === 'running') return;
+      if (!sqlEditor) return;
+      var raw = sqlEditor.getValue();
+      var sql = raw.trim();
+      if (!sql) return;
+      if (DESTRUCTIVE_RE.test(raw)) return;
+      if (!/\bselect\b/i.test(sql)) {
+        _showResults('error', null, 'Only SELECT queries are supported.');
+        sqlState.status = 'error'; sqlState.lastRunSQL = sql;
+        return;
+      }
+
+      // Enter running state
+      sqlState.status = 'running';
+      sqlState.chartType = null;
+      sqlEditor.setOption('readOnly', 'nocursor');
+      _setRunBtn('running');
+      _toggleNotice('sql-stale-notice', false);
+      _toggleNotice('sql-destructive-warn', false);
+      _clearChartSelection();
+      _resetSidebar();
+      _showResultsPanel('running');
+
+      // Timeout guard (8 s)
+      sqlState.timer = setTimeout(function() {
+        _finishRun(sql, 'timeout', null);
+      }, 8000);
+
+      // Simulated execution (1.4 s)
+      setTimeout(function() {
+        clearTimeout(sqlState.timer);
+        var data = _getMockData(sql.toLowerCase());
+        _finishRun(sql, data.rows.length === 0 ? 'empty' : 'success', data);
+      }, 1400);
+    }
+
+    function _finishRun(sql, status, data) {
+      sqlState.status = status;
+      sqlState.lastRunSQL = sql;
+      sqlState.data = data;
+      if (sqlEditor) sqlEditor.setOption('readOnly', false);
+      _setRunBtn(status !== 'running' ? 'idle-active' : 'idle-inactive');
+      _showResults(status, data,
+        status === 'timeout' ? 'Query timed out. Try simplifying or adding a LIMIT clause.' : null);
+      // Update sidebar compat if we have results
+      if (status === 'success' && data) {
+        _updateSidebarCompat(data);
+        document.getElementById('viz-no-results-hint').classList.add('hidden');
+        // Slide in the viz sidebar
+        var sidebar = document.getElementById('sql-viz-sidebar');
+        if (sidebar) sidebar.classList.add('sidebar-visible');
+      }
+    }
+
+    /* ══════════════════════════════════
+       RESULTS PANEL RENDERING
+    ══════════════════════════════════ */
+    var _RESULT_PANELS = ['sql-results-empty','sql-results-running','sql-results-table-wrap','sql-results-error','sql-results-norows'];
+
+    function _showResultsPanel(which) {
+      _RESULT_PANELS.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', id !== which);
+      });
+    }
+
+    function _showResults(status, data, errMsg) {
+      if (status === 'running') { _showResultsPanel('sql-results-running'); return; }
+      if (status === 'error' || status === 'timeout') {
+        var title = status === 'timeout' ? 'Query timed out' : 'Query failed';
+        document.getElementById('sql-error-title').textContent = title;
+        document.getElementById('sql-error-msg').textContent   = errMsg || 'An unexpected error occurred. Correct the query and try again.';
+        _showResultsPanel('sql-results-error');
+        return;
+      }
+      if (status === 'empty') { _showResultsPanel('sql-results-norows'); return; }
+      if (status === 'success' && data) { _renderTable(data); return; }
+      _showResultsPanel('sql-results-empty');
+    }
+
+    function _renderTable(data) {
+      var display  = data.rows.slice(0, SQL_MAX_ROWS);
+      var truncated = data.rows.length > SQL_MAX_ROWS;
+
+      // Row badge
+      var badge = document.getElementById('sql-row-badge');
+      if (badge) {
+        if (truncated) {
+          badge.innerHTML = '<span class="px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:#FFF7ED;color:#F97316;">First ' + SQL_MAX_ROWS + ' of ' + data.rows.length + ' rows</span>';
+        } else {
+          badge.innerHTML = '<span class="px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:#F3F4F6;color:#6B7280;">' + data.rows.length + (data.rows.length === 1 ? ' row' : ' rows') + '</span>';
+        }
+      }
+      // Truncation note
+      var tNote = document.getElementById('sql-truncation-note');
+      if (tNote) {
+        tNote.classList.toggle('hidden', !truncated);
+        if (truncated) tNote.textContent = 'Add LIMIT to see more rows';
+      }
+
+      // Build table
+      var thead = '<thead><tr>' + data.cols.map(function(c) { return '<th>' + escHtml(c) + '</th>'; }).join('') + '</tr></thead>';
+      var tbody = '<tbody>' + display.map(function(row) {
+        return '<tr>' + data.cols.map(function(_, i) {
+          var v = row[i];
+          var empty = (v === null || v === undefined || String(v).trim() === '');
+          return '<td>' + (empty ? '<span style="color:#D1D5DB">\u2014</span>' : escHtml(String(v))) + '</td>';
+        }).join('') + '</tr>';
+      }).join('') + '</tbody>';
+
+      var tbl = document.getElementById('sql-table');
+      if (tbl) tbl.innerHTML = thead + tbody;
+      _showResultsPanel('sql-results-table-wrap');
+    }
+
+    /* ══════════════════════════════════
+       SIDEBAR — CHART COMPAT + KPI CONFIG
+    ══════════════════════════════════ */
+    function _updateSidebarCompat(data) {
+      var profile = _analyzeData(data);
+      var compat  = _getChartCompat(profile);
+      var types = ['table','kpi','bar','line','area','pie','donut','hbar','scatter'];
+      types.forEach(function(t) {
+        var btn = document.getElementById('chart-type-' + t);
+        if (!btn) return;
+        var ok = compat[t] && compat[t].ok;
+        btn.classList.toggle('disabled', !ok);
+        if (!ok && compat[t] && compat[t].hint) {
+          btn.title = compat[t].hint;
+        } else {
+          btn.title = '';
+        }
+      });
+    }
+
+    function _resetSidebar() {
+      _clearChartSelection();
+      document.getElementById('kpi-config-section').classList.add('hidden');
+      document.getElementById('kpi-config-placeholder').classList.remove('hidden');
+      _setGenerateBtn(false);
+      var ni = document.getElementById('kpi-name-input');
+      var di = document.getElementById('kpi-desc-input');
+      if (ni) ni.value = '';
+      if (di) di.value = '';
+      document.getElementById('viz-no-results-hint').classList.remove('hidden');
+      // Reset all chart btns to disabled until results come in
+      ['table','kpi','bar','line','area','pie','donut','hbar','scatter'].forEach(function(t) {
+        var btn = document.getElementById('chart-type-' + t);
+        if (btn) { btn.classList.remove('selected'); btn.classList.add('disabled'); }
+      });
+    }
+
+    function _clearChartSelection() {
+      ['table','kpi','bar','line','area','pie','donut','hbar','scatter'].forEach(function(t) {
+        var btn = document.getElementById('chart-type-' + t);
+        if (btn) btn.classList.remove('selected');
+      });
+    }
+
+    function selectChartType(type) {
+      // Don't allow clicking disabled buttons
+      var btn = document.getElementById('chart-type-' + type);
+      if (!btn || btn.classList.contains('disabled')) return;
+
+      sqlState.chartType = type;
+      _clearChartSelection();
+      btn.classList.add('selected');
+
+      // Show KPI config section
+      document.getElementById('kpi-config-section').classList.remove('hidden');
+      document.getElementById('kpi-config-placeholder').classList.add('hidden');
+
+      // Set a default name based on type
+      var ni = document.getElementById('kpi-name-input');
+      if (ni && !ni.value) {
+        var labels = { table:'Query Results', kpi:'Key Metric', bar:'Bar Chart', hbar:'Horiz. Bar Chart', line:'Trend Chart', area:'Area Chart', pie:'Distribution', donut:'Donut Chart', scatter:'Scatter Plot' };
+        ni.value = labels[type] || 'My KPI';
+      }
+
+      _onKPINameInput();
+    }
+
+    function _onKPINameInput() {
+      var ni = document.getElementById('kpi-name-input');
+      var hasName = ni && ni.value.trim().length > 0;
+      var hasChart = !!sqlState.chartType;
+      var notStale = sqlState.status === 'success' && sqlState.data;
+      _setGenerateBtn(hasName && hasChart && !!notStale);
+    }
+
+    /* ══════════════════════════════════
+       BUTTON STATE HELPERS
+    ══════════════════════════════════ */
+    var _RUN_ICON = 'Run Query <svg width="8" height="9" fill="currentColor" viewBox="0 0 8 10" style="display:inline;vertical-align:middle;"><path d="M0 0l8 5-8 5V0z"/></svg>';
+    var _DOT_HTML = '<span style="display:inline-flex;gap:3px;align-items:center;"><span class="chat-dot" style="background:white"></span><span class="chat-dot" style="background:white"></span><span class="chat-dot" style="background:white"></span></span>';
+
+    function _setRunBtn(state) {
+      var btn = document.getElementById('run-query-btn');
+      if (!btn) return;
+      if (state === 'running') {
+        btn.style.opacity = '0.7'; btn.style.cursor = 'not-allowed';
+        btn.innerHTML = _DOT_HTML;
+      } else if (state === 'idle-active') {
+        btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+        btn.innerHTML = _RUN_ICON;
+      } else {
+        btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed';
+        btn.innerHTML = _RUN_ICON;
+      }
+    }
+
+    function _setGenerateBtn(enabled) {
+      var btn = document.getElementById('generate-kpi-btn');
+      if (!btn) return;
+      btn.style.opacity = enabled ? '1' : '0.4';
+      btn.style.cursor  = enabled ? 'pointer' : 'not-allowed';
+    }
+
+    function _toggleNotice(id, visible) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('hidden', !visible);
+      el.classList.toggle('flex', visible);
+    }
+
+    /* ══════════════════════════════════
+       GENERATE KPI
+    ══════════════════════════════════ */
+    function generateKPIFromSQL() {
+      if (!sqlState.chartType || sqlState.status !== 'success') return;
+      var ni = document.getElementById('kpi-name-input');
+      var di = document.getElementById('kpi-desc-input');
+      if (!ni || !ni.value.trim()) return;
+      var kpiName = ni.value.trim();
+      var kpiDesc = di ? di.value.trim() : '';
+      var savedSQL = sqlState.lastRunSQL;
+      var savedType = sqlState.chartType;
+
+      // Store chart entry
+      charts.push({
+        prompt: kpiName,
+        desc: kpiDesc,
+        sqlQuery: savedSQL,
+        chartType: savedType,
+        source: { name: 'SQL Query', icon: 'database', bg: '#EEF2FF', color: '#5B63F6' }
+      });
+      currentChartIndex = charts.length - 1;
+
+      // Build chart card HTML inside the SQL tab preview pane
+      var content = document.getElementById('sql-kpi-preview-content');
+      if (content) {
+        var typeLabel = savedType.charAt(0).toUpperCase() + savedType.slice(1);
+        content.innerHTML =
+          '<div class="w-full max-w-[940px] fade-up">' +
+          '<div class="bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);">' +
+
+          '<div class="flex items-center gap-3 px-7 pt-6 pb-0">' +
+            '<h3 class="text-[18px] font-bold text-gray-900 leading-snug flex-1 min-w-0">' + escHtml(kpiName) + '</h3>' +
+            '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11.5px] font-semibold border border-indigo-200 flex-shrink-0" style="background:#EEF2FF;color:#4338CA;">' +
+              '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>' +
+              escHtml(typeLabel) + ' Chart' +
+            '</span>' +
+          '</div>' +
+          (kpiDesc ? '<p class="text-[13px] text-gray-400 px-7 mt-2">' + escHtml(kpiDesc) + '</p>' : '') +
+
+          '<div class="mx-7 my-5 rounded-xl flex flex-col items-center justify-center gap-2.5" style="background:#F8F9FC;height:clamp(280px,calc(100vh - 360px),460px);">' +
+            '<div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#EEF2FF;">' +
+              '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>' +
+            '</div>' +
+            '<p class="text-[13px] font-medium text-gray-400">' + escHtml(typeLabel) + ' chart renders here in production</p>' +
+            '<p class="text-[12px] text-gray-300">Connect a real datasource to populate</p>' +
+          '</div>' +
+
+          '<div class="flex items-center justify-between px-7 pb-5 pt-3 border-t border-gray-100">' +
+            '<div class="flex items-center gap-1.5 text-[11.5px] text-gray-400">' +
+              '<svg class="w-3.5 h-3.5" style="color:#9CA3AF" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 2.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>' +
+              'SQL Query' +
+            '</div>' +
+            '<button onclick="addToDashboard()" class="flex items-center gap-1.5 px-4 h-8 rounded-lg text-[12px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;">' +
+              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>' +
+              'Add to Dashboard' +
+            '</button>' +
+          '</div>' +
+
+          '</div></div>';
+      }
+
+      // Populate right detail sidebar
+      var detailBody = document.getElementById('sql-kpi-detail-body');
+      if (detailBody) {
+        // Build mini results table (up to 8 rows) using existing .sql-result-table CSS class
+        var tableHTML = '';
+        if (sqlState.data && sqlState.data.cols && sqlState.data.rows) {
+          var previewRows = sqlState.data.rows.slice(0, 8);
+          var totalRows = sqlState.data.rows.length;
+          tableHTML =
+            '<div>' +
+              '<div class="flex items-center justify-between mb-2.5">' +
+                '<span class="text-[11.5px] font-semibold text-gray-700">Results <span style="color:#D1D5DB;font-weight:400;">(preview)</span></span>' +
+                '<span class="px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:#F3F4F6;color:#6B7280;">' +
+                  totalRows + (totalRows === 1 ? ' row' : ' rows') +
+                '</span>' +
+              '</div>' +
+              '<div class="overflow-auto rounded-lg" style="max-height:220px;border:1.5px solid #E5E7EB;">' +
+                '<table class="sql-result-table">' +
+                  '<thead><tr>' +
+                    sqlState.data.cols.map(function(c) { return '<th>' + escHtml(c) + '</th>'; }).join('') +
+                  '</tr></thead>' +
+                  '<tbody>' +
+                    previewRows.map(function(row) {
+                      return '<tr>' +
+                        sqlState.data.cols.map(function(_, i) {
+                          var v = row[i];
+                          var empty = (v === null || v === undefined || String(v).trim() === '');
+                          return '<td>' + (empty ? '<span style="color:#D1D5DB">\u2014</span>' : escHtml(String(v))) + '</td>';
+                        }).join('') +
+                      '</tr>';
+                    }).join('') +
+                    (totalRows > 8
+                      ? '<tr><td colspan="' + sqlState.data.cols.length + '" style="color:#9CA3AF;font-style:italic;">+' + (totalRows - 8) + ' more rows\u2026</td></tr>'
+                      : '') +
+                  '</tbody>' +
+                '</table>' +
+              '</div>' +
+            '</div>';
+        }
+
+        detailBody.innerHTML =
+          // SQL block — light theme matching CodeMirror gutter palette
+          '<div>' +
+            '<div class="flex items-center justify-between mb-2.5">' +
+              '<span class="text-[11.5px] font-semibold text-gray-700">SQL Query</span>' +
+            '</div>' +
+            '<div class="overflow-hidden" style="border:1.5px solid #E5E7EB;border-radius:8px;">' +
+              '<div class="flex items-center gap-2 px-3 py-2" style="background:#FAFAFA;border-bottom:1px solid #F3F4F6;">' +
+                '<svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>' +
+                '<span style="font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:10.5px;color:#9CA3AF;">SQL Editor</span>' +
+              '</div>' +
+              '<pre style="background:#FAFAFA;color:#374151;font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:11px;line-height:1.7;padding:11px 13px;margin:0;overflow-x:auto;white-space:pre-wrap;word-break:break-word;">' + escHtml(savedSQL) + '</pre>' +
+            '</div>' +
+          '</div>' +
+          tableHTML;
+      }
+
+      // Show preview, hide editor+viz row
+      document.getElementById('sql-kpi-preview').classList.remove('hidden');
+      document.getElementById('sql-kpi-preview').classList.add('flex');
+      var editorRow = document.querySelector('#sql-layout > .flex.flex-1.overflow-hidden');
+      if (editorRow) editorRow.classList.add('hidden');
+
+      // Reset sidebar state
+      sqlState.chartType = null;
+      _setGenerateBtn(false);
+      _clearChartSelection();
+    }
+
+    function _hideSQLKPIPreview() {
+      document.getElementById('sql-kpi-preview').classList.add('hidden');
+      document.getElementById('sql-kpi-preview').classList.remove('flex');
+      var editorRow = document.querySelector('#sql-layout > .flex.flex-1.overflow-hidden');
+      if (editorRow) editorRow.classList.remove('hidden');
+    }
+
+    /* ══════════════════════════════════
+       CLEAR SQL
+    ══════════════════════════════════ */
+    function clearSQL() {
+      if (sqlEditor) { sqlEditor.setValue(''); sqlEditor.clearHistory(); }
+      if (sqlState.timer) { clearTimeout(sqlState.timer); sqlState.timer = null; }
+      sqlState.status = 'idle'; sqlState.lastRunSQL = ''; sqlState.data = null; sqlState.chartType = null;
+      if (sqlEditor) sqlEditor.setOption('readOnly', false);
+      _setRunBtn('idle-inactive');
+      _toggleNotice('sql-stale-notice', false);
+      _toggleNotice('sql-destructive-warn', false);
+      _resetSidebar();
+      _showResultsPanel('sql-results-empty');
+      document.getElementById('viz-no-results-hint').classList.remove('hidden');
+      // Collapse viz sidebar
+      var sidebar = document.getElementById('sql-viz-sidebar');
+      if (sidebar) sidebar.classList.remove('sidebar-visible');
+    }
+
+    /* ══════════════════════════════════
+       DATA PROFILING + CHART COMPAT
+    ══════════════════════════════════ */
+    function _isNumeric(val) {
+      if (val === null || val === undefined || String(val).trim() === '') return false;
+      return !isNaN(parseFloat(String(val).replace(/[$,%\s]/g, '')));
+    }
+
+    function _analyzeData(data) {
+      var TIME_RE = /month|date|day|week|year|quarter|period|time/i;
+      var numCols = 0, strCols = 0, hasTime = false;
+      data.cols.forEach(function(c, i) {
+        if (TIME_RE.test(c)) hasTime = true;
+        var sample = data.rows[0] ? data.rows[0][i] : null;
+        if (_isNumeric(sample)) numCols++; else strCols++;
+      });
+      return { totalCols: data.cols.length, numCols: numCols, strCols: strCols,
+               hasTime: hasTime, rowCount: data.rows.length, singleRow: data.rows.length === 1 };
+    }
+
+    function _getChartCompat(p) {
+      return {
+        table:   { ok: true, hint: '' },
+        kpi:     { ok: p.numCols >= 1 && (p.singleRow || p.totalCols === 1), hint: 'Requires a single-row result or a single numeric column' },
+        bar:     { ok: p.totalCols >= 2 && p.numCols >= 1, hint: 'Requires at least one label column and one numeric column' },
+        hbar:    { ok: p.totalCols >= 2 && p.numCols >= 1, hint: 'Requires at least one label column and one numeric column' },
+        line:    { ok: p.totalCols >= 2 && p.numCols >= 1 && p.rowCount >= 2, hint: 'Requires multiple rows with at least one numeric column' },
+        area:    { ok: p.totalCols >= 2 && p.numCols >= 1 && p.rowCount >= 2, hint: 'Requires multiple rows with at least one numeric column' },
+        pie:     { ok: p.totalCols === 2 && p.numCols === 1 && p.strCols === 1, hint: 'Requires exactly 2 columns: one label and one numeric' },
+        donut:   { ok: p.totalCols === 2 && p.numCols === 1 && p.strCols === 1, hint: 'Requires exactly 2 columns: one label and one numeric' },
+        scatter: { ok: p.numCols >= 2 && p.rowCount >= 3, hint: 'Requires at least 2 numeric columns and 3+ rows' }
+      };
+    }
+
+    /* ── Mock data ── */
+    function _getMockData(sql) {
+      if (/\b(sales|revenue)\b/.test(sql)) {
+        return { cols:['month','revenue','region'],
+          rows:[['Jan 2025','$124,500','APAC'],['Feb 2025','$138,200','APAC'],['Mar 2025','$142,800','APAC'],
+                ['Apr 2025','$151,400','EMEA'],['May 2025','$163,900','EMEA'],['Jun 2025','$172,100','Americas']] };
+      }
+      if (/customer|churn|retention/.test(sql)) {
+        return { cols:['cohort','customers','retained','churn_rate'],
+          rows:[['Jan 2025','1,240','1,104','10.97%'],['Feb 2025','1,380','1,215','11.96%'],
+                ['Mar 2025','1,510','1,359','10.00%'],['Apr 2025','1,620','1,474','9.01%']] };
+      }
+      if (/product|sku|inventor/.test(sql)) {
+        return { cols:['product','units_sold','revenue'],
+          rows:[['Enterprise Pro','842','$421,000'],['Business Plus','1,204','$240,800'],
+                ['Starter Pack','3,891','$194,550'],['Add-on Storage','2,340','$70,200'],['API Access','560','$56,000']] };
+      }
+      if (/market|campaign|spend/.test(sql)) {
+        return { cols:['channel','spend','impressions','conversions'],
+          rows:[['Paid Search','$24,500','1.2M','1,840'],['Social Ads','$18,200','2.8M','1,120'],
+                ['Email','$3,400','540K','2,210'],['Display','$8,100','4.1M','420']] };
+      }
+      if (/\b(count|total|sum)\s*\(/.test(sql) && !/group\s+by/i.test(sql)) {
+        return { cols:['total_revenue'], rows:[['$892,400']] };
+      }
+      return { cols:['dimension','value','change'],
+        rows:[['Category A','42,810','+12.4%'],['Category B','38,240','+8.1%'],
+              ['Category C','29,650','-2.3%'],['Category D','24,120','+5.7%'],['Category E','18,940','+1.2%']] };
+    }
     /* ── Confirm before clearing ── */
     function confirmClear() {
       const c = document.getElementById('messages-container');
@@ -917,6 +1924,15 @@
       const out = document.getElementById('chart-output');
       out.classList.add('hidden');
       out.innerHTML = '';
+
+      // Reset SQL state
+      if (sqlState) { sqlState.status = 'idle'; sqlState.lastRunSQL = ''; sqlState.data = null; sqlState.chartType = null; }
+      if (sqlEditor) { sqlEditor.setValue(''); sqlEditor.setOption('readOnly', false); }
+      _setRunBtn('idle-inactive');
+      _toggleNotice('sql-stale-notice', false);
+      _toggleNotice('sql-destructive-warn', false);
+      _resetSidebar();
+      _showResultsPanel('sql-results-empty');
       const topBtn = document.getElementById('add-to-dash-btn');
       if (topBtn) {
         topBtn.disabled = true;
