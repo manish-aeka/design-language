@@ -4353,7 +4353,7 @@
     }
 
     function renderWsScope() {
-      const assignedList = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _wsAssignments[ds.id]?.assigned);
+      const assignedList = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && ds.status !== 'Syncing' && _wsAssignments[ds.id]?.assigned);
       const assigned = assignedList.length;
       const q = (document.getElementById('ws-search')?.value || '').toLowerCase().trim();
 
@@ -4457,7 +4457,7 @@
     }
 
     function refreshWsDropdownList() {
-      const unassigned = _dsList.filter(ds => ds.status !== 'Pending' && !_wsAssignments[ds.id]?.assigned);
+      const unassigned = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Syncing' && !_wsAssignments[ds.id]?.assigned);
       const ddList  = document.getElementById('ws-add-dd-list');
       const ddEmpty = document.getElementById('ws-add-dd-empty');
       if (!unassigned.length) {
@@ -4528,6 +4528,7 @@
       const q = (document.getElementById('link-ws-search')?.value || '').toLowerCase();
       const unassigned = _dsList.filter(ds => {
         if (ds.status === 'Pending') return false;
+        if (ds.status === 'Syncing') return false;
         if (_wsAssignments[ds.id]?.assigned) return false;
         if (_lwsCatFilter !== 'all' && ds.connector !== _lwsCatFilter) return false;
         if (q && !ds.name.toLowerCase().includes(q) && !ds.connector.toLowerCase().includes(q)) return false;
@@ -4793,9 +4794,9 @@
     }
 
     function renderProjScope() {
-      const wsAssigned = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _wsAssignments[ds.id]?.assigned);
+      const wsAssigned = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && ds.status !== 'Syncing' && _wsAssignments[ds.id]?.assigned);
       const artifacts  = PROJECT_ARTIFACTS[_currentProjectId] || [];
-      const projDsList = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && _projAssignments.has(ds.id));
+      const projDsList = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && ds.status !== 'Syncing' && _projAssignments.has(ds.id));
 
       // KPI bar
       document.getElementById('proj-stat-total').textContent     = projDsList.length + artifacts.length;
