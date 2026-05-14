@@ -3523,10 +3523,13 @@
       loadDsList();
       const added = _dsList.find(d => d.name === connName);
       if (added) {
-        // Always assign to workspace so it shows up in org AND workspace scopes
-        if (!_wsAssignments[added.id]) _wsAssignments[added.id] = { assigned: true, tables: null };
-        else _wsAssignments[added.id].assigned = true;
-        // If created from the Project scope, also auto-assign to the current project
+        // Only assign based on the scope where datasource was created
+        if (_currentScope === 'ws') {
+          // Assign to workspace if created from workspace tab
+          if (!_wsAssignments[added.id]) _wsAssignments[added.id] = { assigned: true, tables: null };
+          else _wsAssignments[added.id].assigned = true;
+        }
+        // If created from the Project scope, only assign to the current project (not workspace)
         if (_currentScope === 'proj') {
           if (!_allProjAssignments[_currentProjectId]) _allProjAssignments[_currentProjectId] = new Set();
           _allProjAssignments[_currentProjectId].add(added.id);
@@ -3536,7 +3539,7 @@
       const returnScope = _currentScope;
       showView('view-list');
       // Return to whichever scope triggered the wizard
-      if (returnScope === 'proj') switchDsScope('proj');
+      switchDsScope(returnScope);
       showToast('Datasource connected successfully!');
     }
 
