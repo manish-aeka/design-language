@@ -516,7 +516,7 @@
     <!-- Bottom utility nav -->
     <nav class="px-3 py-2 space-y-0.5">
       <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+        <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
         Datasources
       </a>
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
@@ -762,7 +762,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/>
                 </svg>
               </div>
-              <span class="text-[11.5px] font-medium text-gray-400">SQL</span>
+              <span class="text-[11.5px] font-medium text-gray-400">SQL Editor</span>
             </div>
             <!-- Actions -->
             <div class="flex items-center gap-1">
@@ -845,8 +845,21 @@
           </div><!-- end sql-results-panel -->
         </div><!-- end left column -->
 
-        <!-- ── Right: Visualization sidebar — slides in after results ── -->
-        <div id="sql-viz-sidebar" class="flex flex-col border-l border-gray-100 bg-white" style="margin:0;">
+      </div><!-- end inner flex -->
+
+      <!-- ── KPI Preview (shown after Generate KPI) ── -->
+      <div id="sql-kpi-preview" class="hidden flex-1 flex flex-col overflow-hidden">
+        <div id="sql-kpi-preview-content" class="flex-1 overflow-auto flex flex-col p-4 bg-white"></div>
+      </div><!-- end sql-kpi-preview -->
+
+    </div><!-- end sql-layout -->
+
+    </div><!-- end left column -->
+
+    <!-- ══ SQL RIGHT PANEL — full height sibling ══ -->
+    <div id="sql-viz-sidebar" class="flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+
+      <div id="sql-sidebar-viz-view" class="flex flex-col flex-1 overflow-hidden">
 
           <!-- Section: Visualization -->
           <div class="px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
@@ -1021,50 +1034,18 @@
             </button>
           </div>
 
-        </div><!-- end viz sidebar -->
+      </div><!-- end sql-sidebar-viz-view -->
 
-      </div><!-- end inner flex -->
+      <!-- View 2: KPI Detail (shown after Generate KPI) -->
+      <div id="sql-sidebar-kpi-view" class="hidden flex-col flex-1 overflow-hidden">
+        <div class="px-4 h-11 border-b border-gray-100 flex-shrink-0 flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          <span class="text-[12px] font-semibold text-gray-700">Query Details</span>
+        </div>
+        <div id="sql-kpi-detail-body" class="flex-1 overflow-auto px-4 py-4 flex flex-col gap-5"></div>
+      </div><!-- end sql-sidebar-kpi-view -->
 
-      <!-- ── KPI Preview (shown after Generate KPI) ── -->
-      <div id="sql-kpi-preview" class="hidden flex-1 flex overflow-hidden">
-
-        <!-- Left column: back bar + chart card -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-
-          <!-- Back bar -->
-          <div class="flex items-center gap-2.5 px-4 h-10 border-b border-gray-100 bg-white flex-shrink-0">
-            <button onclick="_hideSQLKPIPreview()" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11.5px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-              Back to editor
-            </button>
-          </div>
-
-          <!-- Chart card area -->
-          <div id="sql-kpi-preview-content" class="flex-1 overflow-auto flex flex-col p-4 bg-white"></div>
-
-        </div><!-- end left column -->
-
-        <!-- Right detail sidebar -->
-        <div class="w-[300px] flex-shrink-0 border-l border-gray-100 bg-white flex flex-col overflow-hidden">
-
-          <!-- Sidebar header -->
-          <div class="px-4 h-10 border-b border-gray-100 flex-shrink-0 flex items-center gap-2">
-            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
-            <span class="text-[12px] font-semibold text-gray-700">Query Details</span>
-          </div>
-
-          <!-- Sidebar body -->
-          <div id="sql-kpi-detail-body" class="flex-1 overflow-auto px-4 py-4 flex flex-col gap-5">
-            <!-- populated by generateKPIFromSQL() -->
-          </div>
-
-        </div><!-- end right detail sidebar -->
-
-      </div><!-- end sql-kpi-preview -->
-
-    </div><!-- end sql-layout -->
-
-    </div><!-- end left column -->
+    </div><!-- end sql-viz-sidebar -->
 
     <!-- ══ CHAT PANEL ══ -->
     <div id="chat-panel" class="w-[300px] min-w-[300px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
@@ -1667,6 +1648,9 @@
         aiWrapper.classList.add('hidden');
         sqlWrapper.classList.remove('hidden');
         if (chatPanel) chatPanel.classList.add('hidden');
+        // Restore viz sidebar if results already exist
+        var vizSidebar = document.getElementById('sql-viz-sidebar');
+        if (vizSidebar && sqlState.status === 'success') vizSidebar.classList.add('sidebar-visible');
         _initSQLEditor();
         if (sqlEditor) sqlEditor.refresh();
         setTimeout(function(){ if (sqlEditor) { sqlEditor.refresh(); sqlEditor.focus(); } }, 60);
@@ -1674,6 +1658,9 @@
         sqlWrapper.classList.add('hidden');
         aiWrapper.classList.remove('hidden');
         if (chatPanel) chatPanel.classList.remove('hidden');
+        // Collapse viz sidebar when leaving SQL mode
+        var vizSidebar = document.getElementById('sql-viz-sidebar');
+        if (vizSidebar) vizSidebar.classList.remove('sidebar-visible');
         // Restore AI canvas state
         if (charts.length === 0 && document.getElementById('chart-output').classList.contains('hidden')) {
           document.getElementById('empty-state').classList.remove('hidden');
@@ -2083,7 +2070,7 @@
             '<div class="overflow-hidden" style="border:1.5px solid #E5E7EB;border-radius:8px;">' +
               '<div class="flex items-center gap-2 px-3 py-2" style="background:#FAFAFA;border-bottom:1px solid #F3F4F6;">' +
                 '<svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>' +
-                '<span style="font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:10.5px;color:#9CA3AF;">SQL Editor</span>' +
+                '<span style="font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:10.5px;color:#9CA3AF;">SQL</span>' +
               '</div>' +
               '<pre style="background:#FAFAFA;color:#374151;font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:11px;line-height:1.7;padding:11px 13px;margin:0;overflow-x:auto;white-space:pre-wrap;word-break:break-word;">' + escHtml(savedSQL) + '</pre>' +
             '</div>' +
@@ -2096,6 +2083,11 @@
       document.getElementById('sql-kpi-preview').classList.add('flex');
       var editorRow = document.querySelector('#sql-layout > .flex.flex-1.overflow-hidden');
       if (editorRow) editorRow.classList.add('hidden');
+      // Switch right panel to KPI detail view
+      var vizView = document.getElementById('sql-sidebar-viz-view');
+      var kpiView = document.getElementById('sql-sidebar-kpi-view');
+      if (vizView) vizView.classList.add('hidden');
+      if (kpiView) { kpiView.classList.remove('hidden'); kpiView.classList.add('flex'); }
 
       // Reset sidebar state
       sqlState.chartType = null;
@@ -2108,6 +2100,11 @@
       document.getElementById('sql-kpi-preview').classList.remove('flex');
       var editorRow = document.querySelector('#sql-layout > .flex.flex-1.overflow-hidden');
       if (editorRow) editorRow.classList.remove('hidden');
+      // Switch right panel back to viz view
+      var vizView = document.getElementById('sql-sidebar-viz-view');
+      var kpiView = document.getElementById('sql-sidebar-kpi-view');
+      if (kpiView) { kpiView.classList.add('hidden'); kpiView.classList.remove('flex'); }
+      if (vizView) vizView.classList.remove('hidden');
     }
 
     /* ══════════════════════════════════

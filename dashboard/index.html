@@ -71,6 +71,8 @@
     }
     .toolbar-btn:hover { background: #F9FAFB; }
     .toolbar-btn svg { flex-shrink: 0; }
+    .toolbar-btn.tb-disabled,
+    .tb-disabled { opacity: 0.38; pointer-events: none; cursor: not-allowed; }
 
     .chart-card {
       background: #fff;
@@ -300,7 +302,7 @@
 
     <nav class="px-3 py-2 space-y-0.5">
       <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+        <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
         Datasources
       </a>
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
@@ -400,7 +402,7 @@
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-          <h1 class="text-[15px] font-bold text-gray-900">Sales Overview</h1>
+          <h1 id="db-title" class="text-[15px] font-bold text-gray-900">Sales Overview</h1>
         </div>
         <span class="px-2 h-5 rounded-md flex items-center text-[11px] font-medium" style="background:#F3F4F6; color:#6B7280;">Draft</span>
       </div>
@@ -950,6 +952,88 @@
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
+
+    // ── New dashboard: handle ?new=1&name=...&project=... ─────────
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('new') !== '1') return;
+
+      // Set title
+      var name = params.get('name') || 'Untitled Dashboard';
+      var titleEl = document.getElementById('db-title');
+      if (titleEl) titleEl.textContent = name;
+      document.title = 'AiBii — ' + name;
+
+      // ── Inject into sidebar submenu & make active ────────────────
+      var projectId = params.get('project') || 'ws2'; // ws1 = SCG, ws2 = My Private Project
+      var subEl = document.getElementById(projectId + '-sub');
+      // ── Strip any existing active highlights across all sidebar items ──
+      document.querySelectorAll('.ws-submenu a, .ws-submenu button').forEach(function(el) {
+        el.style.background = '';
+        el.style.borderLeft = '';
+        el.classList.remove('font-semibold');
+        el.style.color = '';
+      });
+
+      if (subEl) {
+        // Expand submenu
+        subEl.classList.add('open');
+        // Rotate chevron
+        var btn = document.getElementById(projectId + '-btn');
+        if (btn) btn.classList.add('open');
+
+        // Active item HTML (dashboard icon in brand color, highlighted)
+        var activeItem = document.createElement('a');
+        activeItem.href = '#';
+        activeItem.className = 'flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-semibold text-gray-900';
+        activeItem.style.cssText = 'background:#EEF2FF;border-left:2px solid #5B63F6;';
+        activeItem.innerHTML =
+          '<svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">'
+          + '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>'
+          + '</svg>'
+          + name;
+        subEl.insertBefore(activeItem, subEl.firstChild);
+
+        // Highlight the project row
+        var projectRow = subEl.previousElementSibling;
+        if (projectRow) {
+          projectRow.style.background = '#EEF2FF';
+          var projLink = projectRow.querySelector('a');
+          if (projLink) { projLink.classList.add('font-semibold'); projLink.classList.remove('text-gray-700'); projLink.classList.add('text-gray-900'); }
+        }
+      }
+
+      // ── Disable toolbar buttons until a KPI is added ─────────────
+      var tbContainer = document.getElementById('toolbar-btns');
+      if (tbContainer) {
+        tbContainer.querySelectorAll('button, a').forEach(function(el) {
+          el.classList.add('tb-disabled');
+        });
+      }
+
+      // ── Hide existing charts and show empty state ────────────────
+      var canvas = document.getElementById('dashboard-canvas');
+      if (!canvas) return;
+      canvas.innerHTML = '';
+      canvas.style.display = 'flex';
+      canvas.style.alignItems = 'center';
+      canvas.style.justifyContent = 'center';
+      canvas.style.padding = '0';
+      canvas.innerHTML =
+        '<div class="flex flex-col items-center gap-5 text-center px-6" style="max-width:420px">'
+        + '<div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">'
+        + '<svg class="w-8 h-8" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">'
+        + '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>'
+        + '</svg></div>'
+        + '<div>'
+        + '<p class="text-[16px] font-semibold text-gray-900 mb-1">Your dashboard is empty</p>'
+        + '<p class="text-[13px] text-gray-500 leading-relaxed">Add KPIs to start visualising your data.</p>'
+        + '</div>'
+        + '<a href="../kpi-creator/index.html" class="flex items-center gap-1.5 px-4 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors hover:opacity-90" style="background:#5B63F6">'
+        + '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>'
+        + 'Add KPI</a>'
+        + '</div>';
+    })();
 
     // ── Sidebar workspace toggle ──
     function toggleWorkspace(id) {
