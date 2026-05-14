@@ -24,6 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <!-- CodeMirror 5 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css"/>
@@ -616,7 +617,11 @@
       </div>
     </div>
 
-    <!-- Content: canvas + chat panel -->
+    <!-- Content row: full height below nav-bar -->
+    <div class="flex-1 flex overflow-hidden">
+    <!-- Left: mode toolbar + canvas/SQL -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- AI canvas wrapper -->
     <div id="ai-layout-wrapper" class="flex-1 flex flex-col overflow-hidden">
 
       <!-- Mode toolbar -->
@@ -700,7 +705,7 @@
         </div>
 
         <!-- Chart output -->
-        <div id="chart-output" class="hidden w-full h-full overflow-auto flex items-start justify-center pt-16 px-8 pb-8 rounded-xl bg-white"></div>
+        <div id="chart-output" class="hidden w-full h-full overflow-auto flex flex-col p-4 rounded-xl bg-white"></div>
 
         <!-- SQL empty state -->
         <div id="sql-empty-state" class="hidden flex flex-col items-center text-center px-8 py-10 pointer-events-none select-none">
@@ -717,66 +722,7 @@
         <div id="sql-output" class="hidden w-full h-full overflow-auto flex items-start justify-center pt-16 px-8 pb-8"></div>
       </div>
 
-      <!-- ══ CHAT PANEL — fully redesigned ══ -->
-      <div class="w-[300px] min-w-[300px] flex flex-col border-l border-gray-100 bg-white rounded-xl overflow-hidden" style="margin:8px 8px 8px 0;">
-
-        <!-- ── Messages ── -->
-        <div id="messages-container" class="flex-1 overflow-y-auto px-3 py-4 space-y-3 rounded-xl bg-white">
-
-          <!-- AI greeting bubble -->
-          <div class="flex items-start gap-2 bubble-in">
-            <div class="ai-avatar mt-0.5 flex-shrink-0">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6">
-               
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
-           
-              </svg>
-            </div>
-            <div>
-              <div class="msg-bubble-ai">
-                Hi! Describe a metric and I'll generate a chart instantly.
-              </div>
-              <p class="msg-time">just now</p>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ── Input area — redesigned ── -->
-        <div id="input-area-wrapper" class="border-t border-gray-100 flex-shrink-0">
-
-          <!-- AI input section -->
-          <div id="ai-input-section" class="px-3 pt-2.5 pb-3">
-          <div class="input-wrapper">
-            <textarea
-              id="chat-input"
-              rows="3"
-              placeholder="Describe a chart…"
-              class="w-full text-[12.5px] text-gray-800 placeholder-gray-300 px-3 py-2.5 leading-relaxed bg-white block"
-              oninput="onInputChange(this)"
-              onkeydown="onKeyDown(event)"
-            ></textarea>
-            <!-- Toolbar row inside the box -->
-            <div class="flex items-center justify-between px-2.5 py-2 border-t border-gray-100" style="background:#FAFAFA;">
-              <span class="text-[10px]" style="color:#D1D5DB;">↵ send · ⇧↵ newline</span>
-              <button id="send-btn"
-                onclick="sendMessage()"
-                class="flex items-center gap-1.5 px-2.5 h-[22px] rounded-md text-[11px] font-semibold text-white opacity-40 cursor-not-allowed transition-all duration-150"
-                style="background:#5B63F6;">
-                Send
-                <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
-              </button>
-            </div>
-          </div>
-          </div>
-
-
-
-        </div>
-
-      </div><!-- end chat panel -->
-
-      </div><!-- end inner flex -->
+      </div><!-- end canvas flex -->
     </div><!-- end ai-layout-wrapper -->
 
     <!-- ══════════════════════════════════════════
@@ -816,7 +762,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/>
                 </svg>
               </div>
-              <span class="text-[11.5px] font-medium text-gray-400">SQL Editor</span>
+              <span class="text-[11.5px] font-medium text-gray-400">SQL</span>
             </div>
             <!-- Actions -->
             <div class="flex items-center gap-1">
@@ -842,6 +788,10 @@
           <div class="flex items-center gap-2 px-3 h-8 flex-shrink-0" style="background:#F9FAFB;border-top:1.5px solid #E9EAEC;border-bottom:1px solid #E9EAEC;">
             <svg class="w-3 h-3 flex-shrink-0" style="color:#9CA3AF" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
             <span class="text-[11px] font-semibold uppercase tracking-widest" style="color:#C4C9D4;">Results</span>
+            <div class="flex-1 flex items-center justify-end gap-2">
+              <p id="sql-truncation-note" class="hidden text-[11px] text-amber-500"></p>
+              <p id="sql-row-badge" class="text-[11px] font-medium text-gray-400"></p>
+            </div>
           </div>
 
           <!-- Results panel — takes other half -->
@@ -869,10 +819,6 @@
 
             <!-- Table + truncation notice (rendered by JS) -->
             <div id="sql-results-table-wrap" class="hidden h-full flex flex-col">
-              <div class="flex items-center justify-between px-5 py-2.5 border-b border-gray-50 flex-shrink-0">
-                <p id="sql-row-badge" class="text-[11.5px] font-medium text-gray-400"></p>
-                <p id="sql-truncation-note" class="hidden text-[11px] text-amber-500"></p>
-              </div>
               <div class="flex-1 overflow-auto">
                 <table id="sql-table" class="sql-result-table"></table>
               </div>
@@ -1094,11 +1040,11 @@
           </div>
 
           <!-- Chart card area -->
-          <div id="sql-kpi-preview-content" class="flex-1 overflow-auto canvas-grid flex items-center justify-center px-8 py-8"></div>
+          <div id="sql-kpi-preview-content" class="flex-1 overflow-auto flex flex-col p-4 bg-white"></div>
 
         </div><!-- end left column -->
 
-        <!-- Right detail sidebar — full height alongside left column -->
+        <!-- Right detail sidebar -->
         <div class="w-[300px] flex-shrink-0 border-l border-gray-100 bg-white flex flex-col overflow-hidden">
 
           <!-- Sidebar header -->
@@ -1117,6 +1063,59 @@
       </div><!-- end sql-kpi-preview -->
 
     </div><!-- end sql-layout -->
+
+    </div><!-- end left column -->
+
+    <!-- ══ CHAT PANEL ══ -->
+    <div id="chat-panel" class="w-[300px] min-w-[300px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+
+      <!-- ── Messages ── -->
+      <div id="messages-container" class="flex-1 overflow-y-auto px-3 py-4 space-y-3 bg-white">
+
+        <!-- AI greeting bubble -->
+        <div class="flex items-start gap-2 bubble-in">
+          <div class="ai-avatar mt-0.5 flex-shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="msg-bubble-ai">Hi! Describe a metric and I'll generate a chart instantly.</div>
+            <p class="msg-time">just now</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Input area ── -->
+      <div id="input-area-wrapper" class="border-t border-gray-100 flex-shrink-0">
+        <div id="ai-input-section" class="px-3 pt-2.5 pb-3">
+          <div class="input-wrapper">
+            <textarea
+              id="chat-input"
+              rows="3"
+              placeholder="Describe a chart…"
+              class="w-full text-[12.5px] text-gray-800 placeholder-gray-300 px-3 py-2.5 leading-relaxed bg-white block"
+              oninput="onInputChange(this)"
+              onkeydown="onKeyDown(event)"
+            ></textarea>
+            <div class="flex items-center justify-between px-2.5 py-2 border-t border-gray-100" style="background:#FAFAFA;">
+              <span class="text-[10px]" style="color:#D1D5DB;">↵ send · ⇧↵ newline</span>
+              <button id="send-btn"
+                onclick="sendMessage()"
+                class="flex items-center gap-1.5 px-2.5 h-[22px] rounded-md text-[11px] font-semibold text-white opacity-40 cursor-not-allowed transition-all duration-150"
+                style="background:#5B63F6;">
+                Send
+                <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end chat panel -->
+
+    </div><!-- end content row -->
 
   </main>
 
@@ -1267,55 +1266,56 @@
       const output = document.getElementById('chart-output');
       output.classList.remove('hidden');
       output.innerHTML = `
-        <div class="w-full max-w-[940px] fade-up">
-          <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);">
-            <!-- Header: title + badges -->
-            <div class="flex items-center gap-3 px-7 pt-6 pb-0">
-              <h3 class="text-[18px] font-bold text-gray-900 leading-snug flex-1 min-w-0">${escHtml(prompt)}</h3>
-              ${isSQLSource ? `<button onclick="(function(){switchMode('sql');setTimeout(function(){if(sqlEditor&&${JSON.stringify(sqlQuery)}){sqlEditor.setValue(${JSON.stringify(sqlQuery)});_onEditorChange();}},80);})()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 border border-indigo-200 text-[12px] font-semibold" style="background:#EEF2FF;color:#4338CA;cursor:pointer;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>View/Edit SQL</button>` : ''}
-              <!-- Source badge -->
-              <button onclick="toggleSourcesDrawer()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg flex-shrink-0 border text-[12px] font-semibold" style="cursor:pointer;">
+        <div class="w-full h-full flex flex-col fade-up">
+          <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col flex-1" style="box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03);">
+
+            <!-- ── Card header bar ── -->
+            <div class="flex items-center gap-3 px-5 h-[54px] border-b border-gray-100">
+              <h3 class="text-[14.5px] font-semibold text-gray-900 leading-snug flex-1 min-w-0 truncate">${escHtml(prompt)}</h3>
+              ${isSQLSource ? `<button onclick="(function(){switchMode('sql');setTimeout(function(){if(sqlEditor&&${JSON.stringify(sqlQuery)}){sqlEditor.setValue(${JSON.stringify(sqlQuery)});_onEditorChange();}},80);})()" class="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg flex-shrink-0 border border-indigo-100 text-[11.5px] font-semibold transition-colors hover:bg-indigo-50" style="background:#EEF2FF;color:#4338CA;cursor:pointer;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>View/Edit SQL</button>` : ''}
+              <!-- Sources button -->
+              <button onclick="toggleSourcesDrawer()" class="toolbar-btn sources-btn flex-shrink-0">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                 Sources
               </button>
             </div>
 
-            <div class="mx-7 my-5 rounded-xl flex flex-col items-center justify-center gap-2.5"
-                 style="background:#F8F9FC;height:460px;">
-              <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#EEF2FF;">
-                <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-              </div>
-              <p class="text-[13px] font-medium text-gray-400">Chart renders here in production</p>
-              <p class="text-[12px] text-gray-300">Connect a real datasource to populate</p>
+            <!-- ── Chart canvas area ── -->
+            <div class="flex-1 relative px-6 py-5" style="min-height:0;background:#fff;">
+              <canvas id="kpi-chart-canvas" style="width:100%;height:100%;"></canvas>
             </div>
 
-            <div class="flex items-center justify-between px-7 pb-5 pt-3 border-t border-gray-100">
-              <!-- Left: back + divider + nav -->
+            <!-- ── Card footer ── -->
+            <div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100">
+              <!-- Left: Back + divider + pagination -->
               <div class="flex items-center gap-2">
                 <button onclick="goToDashboard()"
-                  class="flex items-center gap-1.5 px-2.5 h-7 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                  class="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-gray-200 bg-white text-[12.5px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
                   Back
                 </button>
                 <div class="w-px h-4 bg-gray-200"></div>
-                <button onclick="prevChart()" ${prevDis}
-                  class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors ${prevCls}">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-                </button>
-                <span class="text-[12px] font-semibold text-gray-500 tabular-nums select-none px-0.5">${current} / ${total}</span>
-                <button onclick="nextChart()" ${nextDis}
-                  class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors ${nextCls}">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                </button>
+                <div class="flex items-center gap-1">
+                  <button onclick="prevChart()" ${prevDis}
+                    class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors ${prevCls}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                  </button>
+                  <span class="text-[12px] font-medium text-gray-500 tabular-nums select-none px-1.5">${current} / ${total}</span>
+                  <button onclick="nextChart()" ${nextDis}
+                    class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors ${nextCls}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                  </button>
+                </div>
               </div>
-              <!-- Right: Add to Dashboard -->
+              <!-- Right: Add to Dashboard CTA -->
               <button onclick="addToDashboard()"
-                class="flex items-center gap-1.5 px-4 h-8 rounded-lg text-[12px] font-semibold text-white transition-opacity hover:opacity-90"
-                style="background:#5B63F6;">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                class="flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
+                style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Add to Dashboard
               </button>
             </div>
+
           </div>
         </div>`;
 
@@ -1325,6 +1325,8 @@
         topBtn.classList.remove('opacity-40', 'cursor-not-allowed');
         topBtn.onclick = addToDashboard;
       }
+      // Render the real chart after DOM is painted
+      requestAnimationFrame(function() { _renderKPIChart(prompt); });
     }
 
     /* ── Chart navigation ── */
@@ -1351,6 +1353,291 @@
     }
 
     /* ══════════════════════════════════════════
+       KPI CHART RENDERER
+    ══════════════════════════════════════════ */
+    function _renderKPIChart(prompt) {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById('kpi-chart-canvas');
+      if (!canvas) return;
+
+      // Destroy previous instance
+      if (window._kpiChartInst) { window._kpiChartInst.destroy(); window._kpiChartInst = null; }
+
+      const p = prompt.toLowerCase();
+      const BRAND   = '#5B63F6';
+      const BRAND2  = '#818CF8';
+      const BRAND3  = '#A5B4FC';
+      const BRAND4  = '#C7D2FE';
+      const GREEN   = '#10B981';
+      const ORANGE  = '#F97316';
+      const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      let type = 'line', indexAxis, chartData, extraOpts = {};
+
+      if (/scatter|marketing.*roi|spend.*return|roi/.test(p)) {
+        type = 'scatter';
+        chartData = {
+          datasets: [{
+            label: 'Revenue vs Marketing Spend',
+            data: [
+              {x:12,y:38},{x:19,y:52},{x:25,y:61},{x:31,y:59},{x:38,y:74},
+              {x:44,y:82},{x:52,y:88},{x:60,y:95},{x:67,y:104},{x:74,y:112},
+              {x:82,y:121},{x:90,y:138},{x:55,y:79},{x:48,y:93},{x:35,y:68},
+              {x:22,y:47},{x:70,y:118},{x:15,y:43}
+            ],
+            backgroundColor: BRAND,
+            pointRadius: 6, pointHoverRadius: 8,
+          }]
+        };
+
+      } else if (/doughnut|donut|retention|returning/.test(p)) {
+        type = 'doughnut';
+        chartData = {
+          labels: ['Returning', 'New', 'Churned'],
+          datasets: [{ data: [62, 28, 10], backgroundColor: [BRAND, BRAND3, BRAND4], borderWidth: 0, hoverOffset: 8 }]
+        };
+        extraOpts = { cutout: '68%', plugins: { legend: { position: 'right' } } };
+
+      } else if (/pie/.test(p)) {
+        type = 'pie';
+        chartData = {
+          labels: ['Direct', 'Organic', 'Referral', 'Social', 'Paid'],
+          datasets: [{ data: [34, 22, 18, 15, 11], backgroundColor: [BRAND, BRAND2, BRAND3, GREEN, ORANGE], borderWidth: 0, hoverOffset: 8 }]
+        };
+        extraOpts = { plugins: { legend: { position: 'right' } } };
+
+      } else if (/top\s*\d|top\s+\d|horizontal|product|inventory/.test(p)) {
+        type = 'bar'; indexAxis = 'y';
+        chartData = {
+          labels: ['Pro Plan', 'Enterprise', 'Starter', 'Add-ons', 'Services'],
+          datasets: [{
+            label: 'Revenue ($K)',
+            data: [148, 124, 87, 63, 42],
+            backgroundColor: [BRAND, BRAND2, BRAND3, BRAND4, '#E0E7FF'],
+            borderRadius: 6, borderSkipped: false
+          }]
+        };
+
+      } else if (/bar|region|compare|q[1-4]|quarterly|sales by/.test(p)) {
+        type = 'bar';
+        chartData = {
+          labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+          datasets: [
+            { label: 'North', data: [42, 58, 51, 76], backgroundColor: BRAND,  borderRadius: 6, borderSkipped: false },
+            { label: 'South', data: [35, 44, 62, 53], backgroundColor: BRAND2, borderRadius: 6, borderSkipped: false },
+            { label: 'East',  data: [28, 37, 45, 61], backgroundColor: BRAND3, borderRadius: 6, borderSkipped: false },
+          ]
+        };
+
+      } else if (/cohort|new.*return|return.*new/.test(p)) {
+        type = 'line';
+        chartData = {
+          labels: MONTHS,
+          datasets: [
+            {
+              label: 'New Customers',
+              data: [820, 932, 901, 1054, 1230, 1290, 1370, 1540, 1420, 1680, 1910, 2100],
+              borderColor: BRAND, backgroundColor: 'rgba(91,99,246,0.08)', fill: true,
+              tension: 0.42, pointRadius: 4, pointHoverRadius: 6,
+              pointBackgroundColor: '#fff', pointBorderColor: BRAND, pointBorderWidth: 2, borderWidth: 2.5,
+            },
+            {
+              label: 'Returning',
+              data: [620, 710, 740, 830, 920, 980, 1050, 1140, 1200, 1310, 1480, 1650],
+              borderColor: GREEN, backgroundColor: 'rgba(16,185,129,0.07)', fill: true,
+              tension: 0.42, pointRadius: 4, pointHoverRadius: 6,
+              pointBackgroundColor: '#fff', pointBorderColor: GREEN, pointBorderWidth: 2, borderWidth: 2.5,
+            }
+          ]
+        };
+
+      } else {
+        // Default: smooth line — monthly revenue trend
+        type = 'line';
+        chartData = {
+          labels: MONTHS,
+          datasets: [{
+            label: 'Revenue ($K)',
+            data: [38, 42, 47, 44, 52, 61, 58, 67, 73, 70, 82, 91],
+            borderColor: BRAND,
+            backgroundColor: 'rgba(91,99,246,0.09)',
+            fill: true,
+            tension: 0.42,
+            pointRadius: 4, pointHoverRadius: 6,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: BRAND,
+            pointBorderWidth: 2,
+            borderWidth: 2.5,
+          }]
+        };
+      }
+
+      const isCircular = type === 'doughnut' || type === 'pie';
+      const multiDataset = !isCircular && chartData.datasets.length > 1;
+
+      const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 700, easing: 'easeOutQuart' },
+        plugins: {
+          legend: {
+            display: isCircular || multiDataset,
+            position: isCircular ? 'right' : 'top',
+            labels: {
+              font: { family: "'Inter', sans-serif", size: 12 },
+              color: '#6B7280', padding: 18,
+              usePointStyle: true, pointStyleWidth: 8,
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1F2937',
+            titleFont: { family: "'Inter', sans-serif", size: 12, weight: '600' },
+            bodyFont:  { family: "'Inter', sans-serif", size: 12 },
+            padding: 10, cornerRadius: 8, displayColors: true,
+          }
+        },
+        scales: isCircular ? {} : {
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' },
+            border: { display: false },
+          },
+          y: {
+            grid: { color: '#F3F4F6', lineWidth: 1 },
+            ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' },
+            border: { display: false },
+            beginAtZero: true,
+          }
+        },
+        ...extraOpts
+      };
+
+      if (indexAxis) options.indexAxis = 'y';
+
+      window._kpiChartInst = new Chart(canvas, { type, data: chartData, options });
+    }
+
+    /* ══════════════════════════════════════════
+       SQL KPI CHART RENDERER (uses actual query results)
+    ══════════════════════════════════════════ */
+    function _renderSQLKPIChart(chartType, canvasId) {
+      if (typeof Chart === 'undefined') return;
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      if (window._kpiChartInst) { window._kpiChartInst.destroy(); window._kpiChartInst = null; }
+
+      var data = sqlState.data;
+      if (!data || !data.cols || !data.rows || !data.rows.length) return;
+
+      var COLORS = ['#5B63F6','#818CF8','#10B981','#F97316','#A5B4FC','#FCD34D'];
+
+      function parseNum(v) {
+        if (v === null || v === undefined) return 0;
+        return parseFloat(String(v).replace(/[$,%]/g, '').replace(/,/g,'')) || 0;
+      }
+
+      function titleCase(s) {
+        return s.replace(/_/g,' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+      }
+
+      var labels = data.rows.map(function(r){ return String(r[0]); });
+      var numericCols = data.cols.slice(1);
+      var type = 'bar', indexAxis, extraOpts = {};
+
+      var datasets = numericCols.map(function(col, i) {
+        return {
+          label: titleCase(col),
+          data: data.rows.map(function(r){ return parseNum(r[i + 1]); }),
+          backgroundColor: COLORS[i % COLORS.length],
+          borderColor: COLORS[i % COLORS.length],
+          borderRadius: 6,
+          borderSkipped: false,
+          fill: i === 0,
+          tension: 0.42,
+          pointRadius: 4, pointHoverRadius: 6,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: COLORS[i % COLORS.length],
+          pointBorderWidth: 2,
+          borderWidth: 2.5,
+        };
+      });
+
+      var chartData;
+
+      if (chartType === 'line') {
+        type = 'line';
+        datasets.forEach(function(d, i) {
+          d.fill = i === 0;
+          d.backgroundColor = i === 0 ? 'rgba(91,99,246,0.09)' : 'transparent';
+        });
+        chartData = { labels: labels, datasets: datasets };
+
+      } else if (chartType === 'hbar') {
+        type = 'bar'; indexAxis = 'y';
+        chartData = { labels: labels, datasets: [datasets[0]] };
+
+      } else if (chartType === 'doughnut' || chartType === 'pie') {
+        type = chartType;
+        chartData = {
+          labels: labels,
+          datasets: [{
+            data: data.rows.map(function(r){ return parseNum(r[1]); }),
+            backgroundColor: COLORS.slice(0, labels.length),
+            borderWidth: 0, hoverOffset: 8,
+          }]
+        };
+        extraOpts = {
+          cutout: chartType === 'doughnut' ? '68%' : 0,
+          plugins: { legend: { position: 'right' } }
+        };
+
+      } else if (chartType === 'scatter') {
+        type = 'scatter';
+        chartData = {
+          datasets: [{
+            label: numericCols[1] ? titleCase(numericCols[0]) + ' vs ' + titleCase(numericCols[1]) : titleCase(numericCols[0]),
+            data: data.rows.map(function(r){ return { x: parseNum(r[1]), y: parseNum(r[2] !== undefined ? r[2] : r[1]) }; }),
+            backgroundColor: '#5B63F6', pointRadius: 6, pointHoverRadius: 8,
+          }]
+        };
+
+      } else {
+        // default: grouped bar
+        type = 'bar';
+        chartData = { labels: labels, datasets: datasets };
+      }
+
+      var isCircular = type === 'doughnut' || type === 'pie';
+      var multiDs = !isCircular && chartData.datasets && chartData.datasets.length > 1;
+
+      var options = Object.assign({
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 700, easing: 'easeOutQuart' },
+        plugins: {
+          legend: {
+            display: isCircular || multiDs,
+            position: isCircular ? 'right' : 'top',
+            labels: { font: { family: "'Inter', sans-serif", size: 12 }, color: '#6B7280', padding: 18, usePointStyle: true, pointStyleWidth: 8 }
+          },
+          tooltip: {
+            backgroundColor: '#1F2937',
+            titleFont: { family: "'Inter', sans-serif", size: 12, weight: '600' },
+            bodyFont:  { family: "'Inter', sans-serif", size: 12 },
+            padding: 10, cornerRadius: 8, displayColors: true,
+          }
+        },
+        scales: isCircular ? {} : {
+          x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' }, border: { display: false } },
+          y: { grid: { color: '#F3F4F6', lineWidth: 1 }, ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' }, border: { display: false }, beginAtZero: true }
+        }
+      }, extraOpts);
+
+      if (indexAxis) options.indexAxis = 'y';
+      window._kpiChartInst = new Chart(canvas, { type: type, data: chartData, options: options });
+    }
+
+    /* ══════════════════════════════════════════
        SQL MODE
     ══════════════════════════════════════════ */
     var currentMode = 'ai';
@@ -1374,16 +1661,19 @@
 
       var aiWrapper = document.getElementById('ai-layout-wrapper');
       var sqlWrapper = document.getElementById('sql-layout');
+      var chatPanel  = document.getElementById('chat-panel');
 
       if (mode === 'sql') {
         aiWrapper.classList.add('hidden');
         sqlWrapper.classList.remove('hidden');
+        if (chatPanel) chatPanel.classList.add('hidden');
         _initSQLEditor();
         if (sqlEditor) sqlEditor.refresh();
         setTimeout(function(){ if (sqlEditor) { sqlEditor.refresh(); sqlEditor.focus(); } }, 60);
       } else {
         sqlWrapper.classList.add('hidden');
         aiWrapper.classList.remove('hidden');
+        if (chatPanel) chatPanel.classList.remove('hidden');
         // Restore AI canvas state
         if (charts.length === 0 && document.getElementById('chart-output').classList.contains('hidden')) {
           document.getElementById('empty-state').classList.remove('hidden');
@@ -1416,6 +1706,19 @@
       });
       sqlEditor.setSize('100%', '100%');
       sqlEditor.on('change', function() { _onEditorChange(); });
+      // Pre-fill with a sample query
+      var sample = [
+        'SELECT',
+        '  month,',
+        '  SUM(revenue)   AS total_revenue,',
+        '  SUM(expenses)  AS total_expenses',
+        'FROM financial_data',
+        'WHERE year = 2024',
+        'GROUP BY month',
+        'ORDER BY month ASC;'
+      ].join('\n');
+      sqlEditor.setValue(sample);
+      sqlEditor.setCursor(sqlEditor.lineCount(), 0);
     }
 
     /* ══════════════════════════════════
@@ -1698,49 +2001,45 @@
       });
       currentChartIndex = charts.length - 1;
 
-      // Build chart card HTML inside the SQL tab preview pane
+      // Build chart card HTML — same layout as AI KPI output
       var content = document.getElementById('sql-kpi-preview-content');
       if (content) {
         var typeLabel = savedType.charAt(0).toUpperCase() + savedType.slice(1);
         content.innerHTML =
-          '<div class="w-full max-w-[940px] fade-up">' +
-          '<div class="bg-white border border-gray-200 rounded-2xl overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);">' +
+          '<div class="w-full h-full flex flex-col fade-up">' +
+          '<div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col flex-1" style="box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03);">' +
 
-          '<div class="flex items-center gap-3 px-7 pt-6 pb-0">' +
-            '<h3 class="text-[18px] font-bold text-gray-900 leading-snug flex-1 min-w-0">' + escHtml(kpiName) + '</h3>' +
-            '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11.5px] font-semibold border border-indigo-200 flex-shrink-0" style="background:#EEF2FF;color:#4338CA;">' +
-              '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>' +
-              escHtml(typeLabel) + ' Chart' +
+          '<div class="flex items-center gap-3 px-5 h-[54px] border-b border-gray-100">' +
+            '<h3 class="text-[14.5px] font-semibold text-gray-900 leading-snug flex-1 min-w-0 truncate">' + escHtml(kpiName) + '</h3>' +
+            '<span class="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg flex-shrink-0 border border-indigo-100 text-[11.5px] font-semibold" style="background:#EEF2FF;color:#4338CA;">' +
+              '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>' +
+              'SQL \u00b7 ' + escHtml(typeLabel) + ' Chart' +
             '</span>' +
           '</div>' +
-          (kpiDesc ? '<p class="text-[13px] text-gray-400 px-7 mt-2">' + escHtml(kpiDesc) + '</p>' : '') +
 
-          '<div class="mx-7 my-5 rounded-xl flex flex-col items-center justify-center gap-2.5" style="background:#F8F9FC;height:clamp(280px,calc(100vh - 360px),460px);">' +
-            '<div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#EEF2FF;">' +
-              '<svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>' +
-            '</div>' +
-            '<p class="text-[13px] font-medium text-gray-400">' + escHtml(typeLabel) + ' chart renders here in production</p>' +
-            '<p class="text-[12px] text-gray-300">Connect a real datasource to populate</p>' +
+          '<div class="flex-1 relative px-6 py-5" style="min-height:0;background:#fff;">' +
+            '<canvas id="sql-kpi-chart-canvas" style="width:100%;height:100%;"></canvas>' +
           '</div>' +
 
-          '<div class="flex items-center justify-between px-7 pb-5 pt-3 border-t border-gray-100">' +
-            '<div class="flex items-center gap-1.5 text-[11.5px] text-gray-400">' +
-              '<svg class="w-3.5 h-3.5" style="color:#9CA3AF" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 2.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>' +
-              'SQL Query' +
-            '</div>' +
-            '<button onclick="addToDashboard()" class="flex items-center gap-1.5 px-4 h-8 rounded-lg text-[12px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;">' +
-              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>' +
+          '<div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100">' +
+            '<button onclick="_hideSQLKPIPreview()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-gray-200 bg-white text-[12.5px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">' +
+              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>' +
+              'Back' +
+            '</button>' +
+            '<button onclick="addToDashboard()" class="flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">' +
+              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>' +
               'Add to Dashboard' +
             '</button>' +
           '</div>' +
 
           '</div></div>';
+
+        requestAnimationFrame(function() { _renderSQLKPIChart(savedType, 'sql-kpi-chart-canvas'); });
       }
 
       // Populate right detail sidebar
       var detailBody = document.getElementById('sql-kpi-detail-body');
       if (detailBody) {
-        // Build mini results table (up to 8 rows) using existing .sql-result-table CSS class
         var tableHTML = '';
         if (sqlState.data && sqlState.data.cols && sqlState.data.rows) {
           var previewRows = sqlState.data.rows.slice(0, 8);
@@ -1776,9 +2075,7 @@
               '</div>' +
             '</div>';
         }
-
         detailBody.innerHTML =
-          // SQL block — light theme matching CodeMirror gutter palette
           '<div>' +
             '<div class="flex items-center justify-between mb-2.5">' +
               '<span class="text-[11.5px] font-semibold text-gray-700">SQL Query</span>' +
@@ -1868,6 +2165,13 @@
 
     /* ── Mock data ── */
     function _getMockData(sql) {
+      if (/financial_data|expenses/.test(sql)) {
+        return { cols:['month','total_revenue','total_expenses'],
+          rows:[['Jan','148200','92400'],['Feb','162800','98100'],['Mar','171500','103700'],
+                ['Apr','185300','108200'],['May','196700','115400'],['Jun','214100','122800'],
+                ['Jul','229600','129300'],['Aug','241900','134700'],['Sep','256300','141200'],
+                ['Oct','271800','148600'],['Nov','298400','159300'],['Dec','318700','164900']] };
+      }
       if (/\b(sales|revenue)\b/.test(sql)) {
         return { cols:['month','revenue','region'],
           rows:[['Jan 2025','$124,500','APAC'],['Feb 2025','$138,200','APAC'],['Mar 2025','$142,800','APAC'],
