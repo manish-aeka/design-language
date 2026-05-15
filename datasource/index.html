@@ -193,6 +193,17 @@
     #view-detail.ds-readonly .ds-edit-only { display: none !important; }
     #view-detail.ds-readonly .ds-readonly-only { display: table-cell !important; }
     #view-detail.ds-readonly .ds-edit-input { pointer-events: none; }
+    /* Project scope: show table description edit even in readonly */
+    #view-detail.ds-readonly.scope-proj .proj-show { display: inline-flex !important; }
+    /* Meta-edit mode: project scope inline editing toggle in Metadata pane */
+    #view-detail.ds-readonly #tbl-pane-columns.meta-editing .ds-edit-only { display: table-cell !important; }
+    #view-detail.ds-readonly #tbl-pane-columns.meta-editing .ds-readonly-only { display: none !important; }
+    #view-detail.ds-readonly #tbl-pane-columns:not(.meta-editing) #tbl-cols-body input[type="text"] { pointer-events: none; }
+    #view-detail.ds-readonly #tbl-pane-columns.meta-editing #tbl-cols-body input[type="text"] { border-color: #E5E7EB !important; background: #fff !important; pointer-events: auto !important; }
+    /* Org scope: hide edit controls in columns table until Edit Metadata clicked */
+    #view-detail:not(.ds-readonly) #tbl-pane-columns:not(.meta-editing) .ds-edit-only { display: none !important; }
+    #view-detail:not(.ds-readonly) #tbl-pane-columns:not(.meta-editing) .ds-readonly-only { display: table-cell !important; }
+    #view-detail:not(.ds-readonly) #tbl-pane-columns.meta-editing #tbl-cols-body input[type="text"] { border-color: #E5E7EB !important; background: #fff !important; pointer-events: auto !important; }
 
     /* Test connection states */
     .conn-idle, .conn-loading, .conn-success, .conn-error { transition: opacity 150ms ease; }
@@ -216,6 +227,12 @@
     button { transition: all 100ms ease; }
     button:not(:disabled):hover { filter: brightness(0.98); }
     button:not(:disabled):active { transform: scale(0.98); }
+    /* Thin scrollbar */
+    .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #E2E8F0 transparent; }
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 9999px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -970,43 +987,79 @@
         <div id="panel-body" class="flex-1 overflow-y-auto px-6 py-5">
           <!-- Overview tab -->
           <div id="panel-overview">
-            <div class="grid grid-cols-2 gap-4">
-              <!-- Info Card -->
-              <div class="bg-gray-50/50 rounded-xl border border-gray-100 p-5">
-                <h4 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-4">Datasource Information</h4>
-                <div class="space-y-4">
-                  <div class="flex justify-between items-center group">
-                    <span class="text-[12px] font-medium text-gray-500">Status</span>
-                    <span id="panel-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[12px] font-semibold"></span>
-                  </div>
-                  <div class="flex justify-between items-center group">
-                    <span class="text-[12px] font-medium text-gray-500">Type</span>
-                    <span id="panel-type" class="text-[13px] font-semibold text-gray-900 text-right"></span>
-                  </div>
-                  <div class="flex justify-between items-center group">
-                    <span class="text-[12px] font-medium text-gray-500">Schema Objects</span>
-                    <span id="panel-tables" class="text-[13px] font-semibold text-gray-900 text-right"></span>
-                  </div>
-                  <div class="flex justify-between items-center group">
-                    <span class="text-[12px] font-medium text-gray-500">Record Owner</span>
-                    <span id="panel-owner" class="text-[13px] font-semibold text-gray-900 text-right"></span>
-                  </div>
+
+            <!-- Stat cards — same component as main stats bar -->
+            <div class="grid grid-cols-4 gap-3 mb-4">
+              <!-- Status -->
+              <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+                  <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-2">Status</p>
+                  <span id="panel-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[12px] font-semibold"></span>
                 </div>
               </div>
+              <!-- Type -->
+              <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FFF7ED">
+                  <svg style="color:#EA580C;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Type</p>
+                  <p id="panel-type" class="text-[15px] font-bold text-gray-900 leading-none truncate"></p>
+                </div>
+              </div>
+              <!-- Schema Objects -->
+              <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3E8FF">
+                  <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Schema Objects</p>
+                  <p id="panel-tables" class="text-[22px] font-bold text-gray-900 leading-none"></p>
+                </div>
+              </div>
+              <!-- Owner -->
+              <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EFF6FF">
+                  <svg style="color:#2563EB;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Record Owner</p>
+                  <p id="panel-owner" class="text-[15px] font-bold text-gray-900 leading-none truncate"></p>
+                </div>
+              </div>
+            </div>
 
-              <!-- Sync Card -->
-              <div class="bg-gray-50/50 rounded-xl border border-gray-100 p-5">
-                <h4 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-4">Sync Configuration</h4>
-                <div class="space-y-4">
-                  <div class="flex justify-between items-center group">
+            <!-- Detail cards -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Connection Details -->
+              <div class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                <div class="flex items-center gap-2.5 mb-4">
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+                    <svg style="width:16px;height:16px;color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+                  </div>
+                  <h4 class="text-[13px] font-semibold text-gray-800">Connection Details</h4>
+                </div>
+                <div id="panel-conn-container" class="space-y-3"></div>
+              </div>
+              <!-- Sync Schedule -->
+              <div class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                <div class="flex items-center gap-2.5 mb-4">
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+                    <svg style="width:16px;height:16px;color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  </div>
+                  <h4 class="text-[13px] font-semibold text-gray-800">Sync Schedule</h4>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center">
                     <span class="text-[12px] font-medium text-gray-500">Frequency</span>
                     <div class="flex items-center gap-2">
-                       <span id="panel-schedule" class="text-[13px] font-semibold text-gray-900 text-right"></span>
-                       <span class="text-[11px] font-semibold px-2 py-0.5 rounded-lg" style="background:#DCFCE7;color:#16A34A">Active</span>
+                      <span id="panel-schedule" class="text-[13px] font-semibold text-gray-900"></span>
+                      <span class="text-[11px] font-semibold px-2 py-0.5 rounded-lg" style="background:#DCFCE7;color:#16A34A">Active</span>
                     </div>
                   </div>
-                  <!-- Connection details will be injected here -->
-                  <div id="panel-conn-container" class="space-y-4 pt-4 border-t border-gray-100 mt-2"></div>
                 </div>
               </div>
             </div>
@@ -1065,7 +1118,7 @@
                 </div>
                 <div class="flex items-center gap-1.5 pl-0.5">
                   <span id="tbl-detail-desc" class="text-[12px] text-gray-400"></span>
-                  <button onclick="openTblDescModal(document.getElementById('tbl-detail-name').textContent)" class="flex-shrink-0 transition-opacity ds-edit-only" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#D1D5DB;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#D1D5DB'" title="Edit description">
+                  <button onclick="openTblDescModal(document.getElementById('tbl-detail-name').textContent)" class="flex-shrink-0 transition-opacity ds-edit-only proj-show" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#D1D5DB;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#D1D5DB'" title="Edit description">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
                   </button>
                 </div>
@@ -1079,11 +1132,72 @@
 
               <!-- Preview pane -->
               <div id="tbl-pane-preview">
-                <div class="rounded-xl border border-gray-200 overflow-x-auto">
-                  <table class="w-full text-[12px]" style="border-collapse:collapse;min-width:360px">
-                    <thead id="tbl-preview-head"></thead>
-                    <tbody id="tbl-preview-body"></tbody>
-                  </table>
+                <!-- Preview stat cards -->
+                <div class="flex mb-3 gap-3">
+                  <!-- Total Rows -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+                      <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Total Rows</p>
+                      <p id="prev-kpi-rows" class="text-[22px] font-bold text-gray-900 leading-none">—</p>
+                    </div>
+                  </div>
+                  <!-- Columns -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+                      <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Columns</p>
+                      <p id="prev-kpi-cols" class="text-[22px] font-bold leading-none" style="color:#16A34A">—</p>
+                    </div>
+                  </div>
+                  <!-- Last Synced -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEF3C7">
+                      <svg style="color:#D97706;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Last Synced</p>
+                      <p id="prev-kpi-synced" class="text-[15px] font-bold leading-none truncate" style="color:#D97706">—</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Toolbar — mirrors metadata page action bar style -->
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+                    <input id="prev-row-search" type="text" placeholder="Search rows…" oninput="filterPreviewRows(this.value)" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
+                  </div>
+                  <select id="prev-page-size" onchange="setPreviewPageSize(this.value)" class="flex-shrink-0 h-9 pl-3 pr-8 text-[13px] font-medium text-gray-600 border border-gray-200 rounded-lg bg-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-300 transition-colors" style="appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 8px center">
+                    <option value="10" selected>10 rows</option>
+                    <option value="25">25 rows</option>
+                    <option value="50">50 rows</option>
+                  </select>
+                </div>
+                <!-- Table + pagination card -->
+                <div class="rounded-xl border border-gray-200 overflow-hidden">
+                  <div class="overflow-auto scrollbar-thin" style="max-height:calc(100vh - 500px);min-height:180px">
+                    <table class="w-full text-[12px]" style="border-collapse:collapse;min-width:360px">
+                      <thead id="tbl-preview-head"></thead>
+                      <tbody id="tbl-preview-body"></tbody>
+                    </table>
+                  </div>
+                  <!-- Pagination bar -->
+                  <div class="flex items-center justify-between px-4 py-2.5 bg-white border-t border-gray-100">
+                    <span id="prev-pagination-info" class="text-[12px] text-gray-400">—</span>
+                    <div class="flex items-center gap-1">
+                      <button id="prev-page-prev" onclick="goPreviewPage(_prevPage-1)" class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                      </button>
+                      <div id="prev-page-nums" class="flex items-center gap-1"></div>
+                      <button id="prev-page-next" onclick="goPreviewPage(_prevPage+1)" class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1120,6 +1234,24 @@
                       <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Distinct Values</p>
                       <p id="tbl-kpi-distinct" class="text-[22px] font-bold leading-none" style="color:#D97706">—</p>
                     </div>
+                  </div>
+                </div>
+                <!-- Meta edit action bar (project scope only) -->
+                <div id="meta-edit-bar" class="hidden items-center justify-between mb-2 gap-3">
+                  <!-- Search -->
+                  <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                    <input id="meta-col-search" type="text" placeholder="Search columns, type, unit…" oninput="filterMetaCols(this.value)" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
+                  </div>
+                  <!-- Actions -->
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <button id="meta-edit-btn" onclick="enterMetaEditMode()" class="flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-[13px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                      Edit Metadata
+                    </button>
+                    <button id="meta-done-btn" onclick="exitMetaEditMode()" style="display:none;background:#5B63F6" class="flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity">
+                      Done
+                    </button>
                   </div>
                 </div>
                 <!-- Column schema table -->
@@ -2470,6 +2602,69 @@
     let _dsView = 'grid';
     let _wsView  = 'grid';
     let _projView = 'grid';
+    let _prevPage = 1;
+    let _prevPageSize = 10;
+    let _prevPdataCache = null;
+    let _prevTotalRowsCache = 0;
+
+    function renderPreviewPage(pdata, totalRows, page, pageSize) {
+      _prevPdataCache = pdata;
+      _prevTotalRowsCache = totalRows;
+      _prevPage = page;
+      _prevPageSize = pageSize;
+      const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+      const start = (page - 1) * pageSize + 1;
+      const end   = Math.min(page * pageSize, totalRows);
+      const colW  = Math.floor(100 / pdata.cols.length) + '%';
+      // Cycle mock rows for display
+      const pageRows = Array.from({ length: end - start + 1 }, (_, i) =>
+        pdata.rows[(start - 1 + i) % pdata.rows.length]
+      );
+      document.getElementById('tbl-preview-body').innerHTML = pageRows.map((row, i) =>
+        `<tr style="background:${i%2===0?'#fff':'#FAFAFA'};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${i%2===0?'#fff':'#FAFAFA'}'">` +
+        row.map(cell => `<td style="width:${colW};padding:8px 12px;font-size:12px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cell}</td>`).join('') +
+        '</tr>'
+      ).join('');
+      document.getElementById('prev-kpi-showing') && (document.getElementById('prev-kpi-showing').textContent = pageRows.length);
+      // (prev-kpi-synced is set once per table open, not per page)
+      document.getElementById('prev-pagination-info').textContent =
+        `Showing ${start.toLocaleString()}–${end.toLocaleString()} of ${totalRows.toLocaleString()} rows`;
+      const prevBtn = document.getElementById('prev-page-prev');
+      const nextBtn = document.getElementById('prev-page-next');
+      if (prevBtn) prevBtn.disabled = page <= 1;
+      if (nextBtn) nextBtn.disabled = page >= totalPages;
+      // Page number pills
+      const numsEl = document.getElementById('prev-page-nums');
+      if (!numsEl) return;
+      let nums = [];
+      if (totalPages <= 7) {
+        nums = Array.from({ length: totalPages }, (_, i) => i + 1);
+      } else if (page <= 4) {
+        nums = [1, 2, 3, 4, 5, '…', totalPages];
+      } else if (page >= totalPages - 3) {
+        nums = [1, '…', totalPages-4, totalPages-3, totalPages-2, totalPages-1, totalPages];
+      } else {
+        nums = [1, '…', page-1, page, page+1, '…', totalPages];
+      }
+      numsEl.innerHTML = nums.map(n => {
+        if (n === '…') return `<span class="w-7 h-7 flex items-center justify-center text-[12px] text-gray-400">…</span>`;
+        const active = n === page;
+        return `<button onclick="goPreviewPage(${n})" class="w-7 h-7 flex items-center justify-center rounded-lg text-[12px] font-medium transition-colors ${active ? 'text-white' : 'text-gray-500 hover:bg-gray-100 border border-gray-200'}" ${active ? 'style="background:#5B63F6;border:1px solid #4F56E0"' : ''}>${n}</button>`;
+      }).join('');
+    }
+
+    function goPreviewPage(p) {
+      if (!_prevPdataCache) return;
+      const totalPages = Math.max(1, Math.ceil(_prevTotalRowsCache / _prevPageSize));
+      if (p < 1 || p > totalPages) return;
+      renderPreviewPage(_prevPdataCache, _prevTotalRowsCache, p, _prevPageSize);
+    }
+
+    function setPreviewPageSize(size) {
+      if (!_prevPdataCache) return;
+      _prevPageSize = parseInt(size);
+      renderPreviewPage(_prevPdataCache, _prevTotalRowsCache, 1, _prevPageSize);
+    }
 
     function setDsView(v) {
       _dsView = v;
@@ -2534,34 +2729,35 @@
               <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
             </button>
           </div>
-        </div>`; }).join('') : list.map((d, idx) => `
-        <div class="ds-row group flex items-center cursor-pointer transition-colors hover:bg-gray-50 ${idx < list.length - 1 ? 'border-b border-gray-100' : ''}" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mx-4 my-2.5" style="background:#EEF2FF">${connectorIcon(d.connector, 20)}</div>
-          <div class="flex-1 min-w-0 py-3 pr-4">
-            <div class="flex items-center gap-2 flex-wrap">
-              <p class="text-sm font-medium text-[#111827] truncate group-hover:text-indigo-700 transition-colors">${d.name}</p>
-              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0" style="background:#F3F4F6;color:#4B5563">${typeIconHtml(d.type)}<span>${d.type}</span></span>
-              ${statusBadgeHtml(d.status)}
-            </div>
-            <p class="text-[12px] text-gray-500 mt-0.5 truncate">${d.connector}${d.host ? ' · ' + d.host : ''} · ${d.tables} tables · ${d.updated}</p>
+        </div>`; }).join('') : list.map((d, idx) => {
+          const pal = connectorPalette(d.connector);
+          return `
+        <div class="ds-row group flex items-center gap-4 cursor-pointer px-4 py-2.5 hover:bg-gray-50/80 transition-colors ${idx < list.length - 1 ? 'border-b border-gray-100' : ''}" onclick="openDetailPanel('${d.id}')" id="row-${d.id}">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${pal.bg}">${connectorIcon(d.connector, 18)}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">${d.name}</p>
+            <p class="text-[11px] text-gray-400 truncate">${d.connector}${d.host ? ' · ' + d.host : ''}</p>
           </div>
-          <div class="flex items-center gap-1.5 flex-shrink-0 pr-4">
-            <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
-            <span class="text-[12px] text-gray-500 truncate max-w-[100px]">${d.owner}</span>
+          <div class="w-24 flex-shrink-0 flex items-center gap-1 text-[11px] font-medium text-gray-500">
+            ${typeIconHtml(d.type)}<span>${d.type}</span>
           </div>
-          <div class="flex items-center gap-0.5 flex-shrink-0 pr-3 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
-            <button onclick="syncDs('${d.id}')" title="Sync" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-            </button>
+          <div class="w-20 flex-shrink-0">
+            <span class="text-[12px] text-gray-500">${d.tables} tables</span>
+          </div>
+          <div class="w-28 flex-shrink-0">${statusBadgeHtml(d.status)}</div>
+          <div class="w-32 flex items-center gap-1.5 flex-shrink-0 min-w-0">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0" style="background:#5B63F6">${d.owner[0]}</div>
+            <span class="text-[12px] text-gray-500 truncate">${d.owner}</span>
+          </div>
+          <div class="w-24 flex-shrink-0 text-right">
+            <span class="text-[11px] text-gray-400">${d.updated}</span>
+          </div>
+          <div class="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
             <button onclick="deleteDs('${d.id}')" title="Remove" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
             </button>
-            <button class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="More">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-            </button>
           </div>
-        </div>
-      `).join('');
+        </div>`; }).join('');
       updateStats();
     }
 
@@ -2711,9 +2907,10 @@
       if (!ds) return;
       currentDetailId = id;
 
-      // Apply readonly mode
+      // Apply readonly mode + scope class
       const detailView = document.getElementById('view-detail');
       detailView.classList.toggle('ds-readonly', readOnly);
+      detailView.classList.toggle('scope-proj', _currentScope === 'proj');
 
       // Header
       document.getElementById('panel-icon').innerHTML = connectorIcon(ds.connector, 20);
@@ -2726,7 +2923,7 @@
       }[ds.status];
       document.getElementById('panel-status-badge').textContent = ds.status;
       document.getElementById('panel-type').textContent         = ds.type;
-      document.getElementById('panel-tables').textContent       = ds.tables + ' objects';
+      document.getElementById('panel-tables').textContent       = ds.tables;
       document.getElementById('panel-owner').textContent        = ds.owner;
       document.getElementById('panel-schedule').textContent     = ds.schedule;
 
@@ -2777,8 +2974,41 @@
         }
       }
 
+      // Meta edit bar — show in org + project scopes, reset editing state
+      const metaBar = document.getElementById('meta-edit-bar');
+      if (metaBar) {
+        const isOrgOrProj = _currentScope === 'org' || _currentScope === 'proj';
+        metaBar.classList.toggle('hidden', !isOrgOrProj);
+        metaBar.classList.toggle('flex', isOrgOrProj);
+      }
+      document.getElementById('tbl-pane-columns')?.classList.remove('meta-editing');
+      const meBtn = document.getElementById('meta-edit-btn');
+      const mdBtn = document.getElementById('meta-done-btn');
+      if (meBtn) meBtn.style.display = '';
+      if (mdBtn) mdBtn.style.display = 'none';
+
       // Show detail view
       showView('view-detail');
+    }
+
+    function filterMetaCols(q) {
+      const lq = (q || '').toLowerCase().trim();
+      document.querySelectorAll('#tbl-cols-body tr').forEach(row => {
+        row.style.display = !lq || (row.dataset.search || '').includes(lq) ? '' : 'none';
+      });
+    }
+
+    function enterMetaEditMode() {
+      document.getElementById('tbl-pane-columns').classList.add('meta-editing');
+      document.getElementById('meta-edit-btn').style.display = 'none';
+      document.getElementById('meta-done-btn').style.display = 'flex';
+    }
+
+    function exitMetaEditMode() {
+      document.getElementById('tbl-pane-columns').classList.remove('meta-editing');
+      document.getElementById('meta-edit-btn').style.display = '';
+      document.getElementById('meta-done-btn').style.display = 'none';
+      showToast('Metadata saved.');
     }
 
     function closeDetailPanel() {
@@ -2850,7 +3080,7 @@
                 <td class="py-3 pr-4">
                   <div class="flex items-center gap-1.5">
                     <span id="tbl-list-desc-${t.name}" class="text-[12px] ${t.desc ? 'text-gray-500' : 'text-gray-300 italic'} truncate max-w-xs">${t.desc || 'No description'}</span>
-                    <button onclick="event.stopPropagation();openTblDescModal('${t.name}')" class="opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity ds-edit-only" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#9CA3AF'" title="Edit description">
+                    <button onclick="event.stopPropagation();openTblDescModal('${t.name}')" class="opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity ds-edit-only proj-show" style="width:18px;height:18px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.color='#5B63F6'" onmouseout="this.style.color='#9CA3AF'" title="Edit description">
                       <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
                     </button>
                   </div>
@@ -2904,6 +3134,15 @@
     }
 
     function openTblDetail(name) {
+      // Reset meta editing state when switching tables
+      document.getElementById('tbl-pane-columns')?.classList.remove('meta-editing');
+      const meBtn = document.getElementById('meta-edit-btn');
+      const mdBtn = document.getElementById('meta-done-btn');
+      if (meBtn) meBtn.style.display = '';
+      if (mdBtn) mdBtn.style.display = 'none';
+      const colSearch = document.getElementById('meta-col-search');
+      if (colSearch) colSearch.value = '';
+
       const ds = _dsList.find(d => d.id === currentDetailId);
       const tbl = (ds?.tables_list || []).find(t => t.name === name);
       document.getElementById('tbl-list-view').classList.add('hidden');
@@ -2922,7 +3161,23 @@
       const pdata = TABLE_PREVIEW_DATA[cat] || TABLE_PREVIEW_DATA.db;
       const colW = Math.floor(100 / pdata.cols.length) + '%';
       document.getElementById('tbl-preview-head').innerHTML = `<tr style="background:#F8FAFC;border-bottom:1px solid #E2E8F0">${pdata.cols.map(c=>`<th style="width:${colW};padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap">${c.replace(/_/g,' ')}</th>`).join('')}</tr>`;
-      document.getElementById('tbl-preview-body').innerHTML = pdata.rows.slice(0, 10).map((row,i)=>`<tr style="background:${i%2===0?'#fff':'#FAFAFA'};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${i%2===0?'#fff':'#FAFAFA'}'">`+row.map(cell=>`<td style="width:${colW};padding:8px 12px;font-size:12px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cell}</td>`).join('')+'</tr>').join('');
+
+      // Preview stat cards + paginated render
+      const rawRows = tbl?.rows;
+      const totalRows = rawRows
+        ? (typeof rawRows === 'number' ? rawRows : parseInt(String(rawRows).replace(/,/g, ''), 10) || pdata.rows.length)
+        : pdata.rows.length;
+      document.getElementById('prev-kpi-rows').textContent = rawRows || totalRows.toLocaleString();
+      document.getElementById('prev-kpi-cols').textContent = tbl?.cols ?? pdata.cols.length;
+      const psEl = document.getElementById('prev-page-size');
+      if (psEl) psEl.value = _prevPageSize;
+      _prevRowFilter = '';
+      const searchEl = document.getElementById('prev-row-search');
+      if (searchEl) searchEl.value = '';
+      renderPreviewPage(pdata, totalRows, 1, _prevPageSize);
+      const ds2 = _dsList.find(d => d.id === currentDetailId);
+      const syncedEl = document.getElementById('prev-kpi-synced');
+      if (syncedEl) syncedEl.textContent = ds2?.updated || '—';
 
       // KPI bar
       const kpiBar = document.getElementById('tbl-kpi-bar');
@@ -2954,12 +3209,12 @@
             : t==='JSON'||t==='JSONB'                                               ? {bg:'#FFFBEB',cl:'#B45309'}
             :                                                                          {bg:'#F3F4F6',cl:'#374151'};
           return `
-          <tr style="background:${bg};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${bg}'">
+          <tr data-search="${(c.name+' '+c.type+' '+colType+' '+unit).toLowerCase()}" style="background:${bg};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${bg}'">
             <td style="padding:9px 14px;font-size:12px;font-weight:600;color:#111827;white-space:nowrap">${c.name}</td>
             <td style="padding:9px 12px"><code style="font-size:11px;font-family:monospace;background:${chip.bg};color:${chip.cl};padding:2px 7px;border-radius:5px;font-weight:600;white-space:nowrap">${c.type}</code></td>
             <td style="padding:6px 12px">
               <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
-            <td style="padding:6px 12px">
+            <td style="padding:6px 12px" class="ds-edit-only">
               <select onchange="saveColMeta(${i},'colType',this.value)" style="width:130px;height:28px;padding:0 8px;font-size:11px;font-weight:500;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;cursor:pointer;outline:none">
                 <option value="" ${!colType?'selected':''} style="color:#9CA3AF">Select type</option>
                 <option value="measure"   ${colType==='measure'  ?'selected':''}>Measure</option>
@@ -2967,9 +3222,11 @@
                 <option value="time"      ${colType==='time'     ?'selected':''}>Time</option>
               </select>
             </td>
-            <td style="padding:6px 12px">
+            <td style="padding:9px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${colType||'—'}</td>
+            <td style="padding:6px 12px" class="ds-edit-only">
               <input type="text" value="${unit}" placeholder="e.g. USD, km" onchange="saveColMeta(${i},'unit',this.value)" style="width:90px;height:28px;padding:0 8px;font-size:11px;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;outline:none" onfocus="this.style.borderColor='#5B63F6'" onblur="this.style.borderColor='#E5E7EB'" />
             </td>
+            <td style="padding:9px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${unit||'—'}</td>
           </tr>`;
         }).join('');
       } else {
@@ -3852,7 +4109,7 @@
         ds.tables_list.push({ name, rows: '—', cols: 0, desc: '' });
       });
       ds.tables = ds.tables_list.length;
-      document.getElementById('panel-tables').textContent = ds.tables + ' objects';
+      document.getElementById('panel-tables').textContent = ds.tables;
       const n = _addTblSelected.size;
       exitAddTableMode();
       renderPanelTables();
@@ -4454,7 +4711,7 @@
         btnGrid.style.boxShadow = v === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
       }
       const listEl = document.getElementById('ws-assign-list');
-      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'space-y-2';
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100';
       renderWsScope();
     }
 
@@ -4473,7 +4730,7 @@
         btnGrid.style.boxShadow = '';
       }
       const listEl = document.getElementById('proj-assign-list');
-      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-4 gap-4' : 'space-y-4';
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-4 gap-4' : 'border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100';
       renderProjScope();
     }
 
@@ -4546,27 +4803,27 @@
           const a = _wsAssignments[ds.id];
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
           const selCount = a.tables ? a.tables.length : tblCount;
-          const statusClass = ds.status === 'Connected' ? 'badge-connected' : ds.status === 'Error' ? 'badge-error' : 'badge-pending';
+          const pal = connectorPalette(ds.connector);
           return `
-          <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white" data-name="${ds.name.toLowerCase()}">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer" style="background:#EEF2FF" onclick="openDetailPanel('${ds.id}',true)">${connectorIcon(ds.connector, 18)}</div>
-            <div class="flex-1 min-w-0 cursor-pointer" onclick="openDetailPanel('${ds.id}',true)">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-semibold text-gray-900 hover:text-indigo-700 transition-colors">${ds.name}</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style="background:#F3F4F6;color:#6B7280">${ds.type}</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${statusClass}">${ds.status}</span>
-              </div>
-              <div class="flex items-center gap-2 mt-1">
-                <svg class="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                <span class="text-[11px] text-gray-500">${a.tables ? selCount + ' of ' + tblCount + ' tables' : 'All ' + tblCount + ' tables'} included</span>
-                <span class="text-gray-300 mx-1">|</span>
-                <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">Edit tables</button>
-              </div>
+          <div class="assign-row group flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50/80 transition-colors cursor-pointer bg-white" data-name="${ds.name.toLowerCase()}" onclick="openDetailPanel('${ds.id}',true)">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${pal.bg}">${connectorIcon(ds.connector, 18)}</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">${ds.name}</p>
+              <p class="text-[11px] text-gray-400 truncate">${ds.connector}${ds.host ? ' · ' + ds.host : ''}</p>
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <button onclick="event.stopPropagation();removeWsAssign('${ds.id}')" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium border transition-colors bg-white border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-100 hover:bg-red-50">
-                Remove
-              </button>
+            <div class="w-24 flex-shrink-0 flex items-center gap-1 text-[11px] font-medium text-gray-500">
+              ${typeIconHtml(ds.type)}<span>${ds.type}</span>
+            </div>
+            <div class="w-44 flex-shrink-0 flex items-center gap-2">
+              <span class="text-[12px] font-medium text-gray-700">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables</span>
+              <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Edit</button>
+            </div>
+            <div class="w-28 flex-shrink-0">${statusBadgeHtml(ds.status)}</div>
+            <div class="w-24 flex-shrink-0 text-right">
+              <span class="text-[11px] text-gray-400">${ds.updated || 'Recently'}</span>
+            </div>
+            <div class="flex-shrink-0" onclick="event.stopPropagation()">
+              <button onclick="removeWsAssign('${ds.id}')" class="h-7 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-100 hover:bg-red-50 transition-colors">Remove</button>
             </div>
           </div>`;
         }).join('');
@@ -4994,13 +5251,13 @@
             const pal = connectorPalette(ds.connector);
             return `
             <div class="report-card bg-white border ${inProj ? 'border-indigo-100' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-85 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
-              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}')">
+              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
                 <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
               </div>
               <div class="px-3 pt-2.5 pb-3">
                 <div class="flex items-start justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}')">${ds.name}</p>
+                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
                     <div class="flex items-center gap-2 flex-wrap mt-1">
                       <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
                         ${connectorIcon(ds.connector, 10)}
@@ -5027,28 +5284,43 @@
             const tblCount = (ds.tables_list || []).length || ds.tables || 0;
             const selCount = a.tables ? a.tables.length : tblCount;
             const inProj   = _projAssignments.has(ds.id);
+            const pal = connectorPalette(ds.connector);
             return inProj ? `
-            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-indigo-200 hover:shadow-sm transition-all" onclick="openDetailPanel('${ds.id}')">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
+            <div class="assign-row flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50/80 transition-colors cursor-pointer bg-white" onclick="openDetailPanel('${ds.id}',true)">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${pal.bg}">${connectorIcon(ds.connector, 18)}</div>
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-[13px] font-semibold text-gray-900">${ds.name}</span>
-                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:#EEF2FF;color:#5B63F6">Datasource</span>
-                  ${statusBadgeHtml(ds.status)}
-                </div>
-                <p class="text-[11px] text-gray-400 mt-0.5">${selCount} tables · Updated ${ds.updated || 'Recently'}</p>
+                <p class="text-[13px] font-semibold text-gray-900 truncate">${ds.name}</p>
+                <p class="text-[11px] text-gray-400 truncate">${ds.connector}${ds.host ? ' · ' + ds.host : ''}</p>
               </div>
-              <button onclick="event.stopPropagation();toggleProjAssign('${ds.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Remove">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
+              <div class="w-24 flex-shrink-0 flex items-center gap-1 text-[11px] font-medium text-gray-500">
+                ${typeIconHtml(ds.type)}<span>${ds.type}</span>
+              </div>
+              <div class="w-44 flex-shrink-0">
+                <span class="text-[12px] font-medium text-gray-700">${selCount} tables</span>
+              </div>
+              <div class="w-28 flex-shrink-0">${statusBadgeHtml(ds.status)}</div>
+              <div class="w-24 flex-shrink-0 text-right">
+                <span class="text-[11px] text-gray-400">${ds.updated || 'Recently'}</span>
+              </div>
+              <div class="w-24 flex-shrink-0 flex justify-end" onclick="event.stopPropagation()">
+                <button onclick="toggleProjAssign('${ds.id}')" class="h-7 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-100 hover:bg-red-50 transition-colors">Remove</button>
+              </div>
             </div>` : `
-            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-dashed border-gray-200 bg-gray-50/40 opacity-70 hover:opacity-100 transition-opacity">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F3F4F6">${connectorIcon(ds.connector, 18)}</div>
+            <div class="assign-row flex items-center gap-4 px-4 py-2.5 bg-gray-50/30 opacity-70 hover:opacity-100 transition-opacity">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F3F4F6">${connectorIcon(ds.connector, 18)}</div>
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2"><span class="text-[13px] font-semibold text-gray-600">${ds.name}</span></div>
-                <p class="text-[11px] text-gray-400 mt-0.5">Not added to project</p>
+                <p class="text-[13px] font-medium text-gray-500 truncate">${ds.name}</p>
+                <p class="text-[11px] text-gray-400">${ds.connector} · Not added to project</p>
               </div>
-              <button onclick="toggleProjAssign('${ds.id}')" class="flex-shrink-0 flex items-center gap-1.5 px-3 h-7 rounded-lg text-[12px] font-semibold text-white hover:opacity-90" style="background:#5B63F6">+ Add</button>
+              <div class="w-24 flex-shrink-0 flex items-center gap-1 text-[11px] font-medium text-gray-400">
+                ${typeIconHtml(ds.type)}<span>${ds.type}</span>
+              </div>
+              <div class="w-44 flex-shrink-0"></div>
+              <div class="w-28 flex-shrink-0"></div>
+              <div class="w-24 flex-shrink-0"></div>
+              <div class="w-24 flex-shrink-0 flex justify-end" onclick="event.stopPropagation()">
+                <button onclick="toggleProjAssign('${ds.id}')" class="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">+ Add</button>
+              </div>
             </div>`;
           }).join('');
         }
@@ -5088,23 +5360,30 @@
             </div>`).join('');
         } else {
           artHtml = filteredArt.map(art => `
-            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-indigo-200 hover:shadow-sm transition-all">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:${artTypeBg[art.type] || '#F3F4F6'}">${artifactIconHtml(art.icon, artTypeColor[art.type] || '#6B7280')}</div>
+            <div class="assign-row flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50/80 transition-colors cursor-pointer bg-white">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${artTypeBg[art.type] || '#F3F4F6'}">${artifactIconHtml(art.icon, artTypeColor[art.type] || '#6B7280')}</div>
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-[13px] font-semibold text-gray-900">${art.name}</span>
-                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:${artTypeBg[art.type]};color:${artTypeColor[art.type]}">${art.type}</span>
-                </div>
-                <p class="text-[11px] text-gray-400 mt-0.5">Updated ${art.updated}</p>
+                <p class="text-[13px] font-semibold text-gray-900 truncate">${art.name}</p>
+                <p class="text-[11px] text-gray-400">Artifact</p>
               </div>
-              <button onclick="event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" title="Options">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-              </button>
+              <div class="w-24 flex-shrink-0 flex items-center gap-1 text-[11px] font-medium" style="color:${artTypeColor[art.type] || '#6B7280'}">
+                ${artifactIconHtml(art.icon, artTypeColor[art.type] || '#6B7280', 14)}<span>${art.type}</span>
+              </div>
+              <div class="w-44 flex-shrink-0"></div>
+              <div class="w-28 flex-shrink-0"></div>
+              <div class="w-24 flex-shrink-0 text-right">
+                <span class="text-[11px] text-gray-400">${art.updated}</span>
+              </div>
+              <div class="w-24 flex-shrink-0 flex justify-end" onclick="event.stopPropagation()">
+                <button onclick="event.stopPropagation();toggleArtCardMenu(event,'${art.id || art.name}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" title="Options">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                </button>
+              </div>
             </div>`).join('');
         }
       }
 
-      listEl.className = _projView === 'grid' ? 'grid grid-cols-4 gap-4' : 'flex flex-col gap-2';
+      listEl.className = _projView === 'grid' ? 'grid grid-cols-4 gap-4' : 'border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100';
       listEl.innerHTML = dsHtml + artHtml;
     }
 
