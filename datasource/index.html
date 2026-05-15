@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -1089,22 +1089,49 @@
 
               <!-- Metadata pane -->
               <div id="tbl-pane-columns" class="hidden">
-                <div id="tbl-kpi-bar" class="hidden flex items-center gap-5 px-4 py-3 rounded-xl mb-3" style="background:#F8FAFC;border:1px solid #E2E8F0">
-                  <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Avg Null</p><p id="tbl-kpi-null" class="text-[18px] font-bold text-gray-800 leading-tight">—</p></div>
-                  <div class="w-px h-7 bg-gray-200"></div>
-                  <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Avg Unique</p><p id="tbl-kpi-unique" class="text-[18px] font-bold text-gray-800 leading-tight">—</p></div>
-                  <div class="w-px h-7 bg-gray-200"></div>
-                  <div><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Distinct Values</p><p id="tbl-kpi-distinct" class="text-[18px] font-bold text-gray-800 leading-tight">—</p></div>
+                <!-- KPI stats bar -->
+                <div id="tbl-kpi-bar" class="hidden flex mb-3 gap-3">
+                  <!-- Avg Null -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+                      <svg style="color:#5B63F6;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Avg Null</p>
+                      <p id="tbl-kpi-null" class="text-[22px] font-bold text-gray-900 leading-none">—</p>
+                    </div>
+                  </div>
+                  <!-- Avg Unique -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+                      <svg style="color:#16A34A;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Avg Unique</p>
+                      <p id="tbl-kpi-unique" class="text-[22px] font-bold leading-none" style="color:#16A34A">—</p>
+                    </div>
+                  </div>
+                  <!-- Distinct Values -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEF3C7">
+                      <svg style="color:#D97706;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Distinct Values</p>
+                      <p id="tbl-kpi-distinct" class="text-[22px] font-bold leading-none" style="color:#D97706">—</p>
+                    </div>
+                  </div>
                 </div>
+                <!-- Column schema table -->
                 <div class="rounded-xl border border-gray-200 overflow-x-auto">
-                  <table class="w-full text-[12px]" style="border-collapse:collapse;min-width:700px">
+                  <table class="w-full" style="border-collapse:collapse;min-width:720px;font-size:12px">
                     <thead>
-                      <tr style="background:#F8FAFC;border-bottom:1px solid #E5E7EB">
-                        <th style="padding:8px 14px;text-align:left;font-weight:600;color:#6B7280;white-space:nowrap">Column Name</th>
-                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280;white-space:nowrap">Data Type</th>
-                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280">Description</th>
-                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280;white-space:nowrap;width:150px">Column Type</th>
-                        <th style="padding:8px 12px;text-align:left;font-weight:600;color:#6B7280;width:110px">Unit</th>
+                      <tr style="background:#F8FAFC;border-bottom:1px solid #E2E8F0">
+                        <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">Column Name</th>
+                        <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">Data Type</th>
+                        <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em">Description</th>
+                        <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em;width:150px">Column Type</th>
+                        <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em;width:110px">Unit</th>
                       </tr>
                     </thead>
                     <tbody id="tbl-cols-body"></tbody>
@@ -1774,94 +1801,26 @@
        WORKSPACE SWITCHER MODAL
   ═══════════════════════════════════════════ -->
   <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
-    <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
-      <!-- Modal header -->
+    <div id="ws-modal" class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden flex flex-col" style="max-height:480px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
-        <div>
-          <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
-          <p class="text-[12px] text-gray-400 mt-0.5">Select a workspace to switch to</p>
-        </div>
-        <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-          New Workspace
+        <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
+        <button onclick="closeWsModal(event)" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <!-- Search -->
-      <div class="px-4 pt-3 pb-2 flex-shrink-0">
-        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
-          <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
-          <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
-        </div>
-      </div>
-      <!-- Workspace list -->
-      <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
-        <div id="ws-modal-list" class="space-y-0.5"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- New Workspace full-screen -->
-  <div id="new-ws-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background:#F3F4F6">
-    <!-- Topbar -->
-    <div class="flex items-center justify-between px-6 h-11 bg-white border-b border-gray-100 flex-shrink-0">
-      <div class="flex items-center gap-2">
-        <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:#5B63F6">A</span>
-        <span class="text-[13px] font-semibold text-gray-800">Aibii</span>
-      </div>
-      <button onclick="closeNewWsModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-    </div>
-
-    <!-- Body -->
-    <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
-      <div class="bg-white rounded-lg w-full max-w-lg mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
-
-        <!-- Header -->
-        <div class="mb-6">
-          <h2 class="text-[17px] font-bold text-gray-900">New workspace</h2>
-          <p class="text-[12px] text-gray-400 mt-1">A shared space for your team's work.</p>
-        </div>
-
-        <!-- Avatar + name row -->
-        <div class="flex items-center gap-3 mb-5">
-          <div id="ws-preview-avatar"
-            class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all"
-            style="background:#5B63F6"
-            onclick="cycleWsColor()" title="Click to change color">A
-          </div>
-          <div class="flex-1 min-w-0">
-            <p id="ws-preview-name" class="text-[13px] font-semibold text-gray-800 truncate">Your workspace</p>
-            <p class="text-[11px] text-gray-400">Click avatar to change color</p>
-          </div>
-        </div>
-
-        <!-- Fields -->
-        <div class="space-y-3">
-          <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1">Name <span class="text-red-400">*</span></label>
-            <input id="new-ws-name" type="text" placeholder="e.g. Design Team" autocomplete="off" maxlength="48"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400"
-              oninput="onWsNameInput(this.value)"
-              onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
-              onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"
-              onkeydown="if(event.key==='Enter')createNewWs()">
-          </div>
-          <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1">Description <span class="text-gray-400 font-normal">optional</span></label>
-            <textarea id="new-ws-desc" rows="2" placeholder="What is this workspace for?"
-              class="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400"
-              onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
-              onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"></textarea>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex gap-2 mt-5">
-          <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
-          <button onclick="createNewWs()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
-        </div>
-
+      <div class="flex-1 px-3 pb-3 pt-2 overflow-y-auto space-y-1">
+        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</span>
+          <div><p class="text-[13px] font-medium text-gray-900">My Private Project</p><p class="text-[11px] text-gray-400">Personal</p></div>
+        </button>
+        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#16A34A">S</span>
+          <div><p class="text-[13px] font-medium text-gray-900">Sovereign Capital Gate</p><p class="text-[11px] text-gray-400">Team</p></div>
+        </button>
+        <button class="w-full flex items-center gap-3 px-3 h-11 rounded-xl hover:bg-gray-50 transition-colors text-left">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">M</span>
+          <div><p class="text-[13px] font-medium text-gray-900">Marketing Analytics</p><p class="text-[11px] text-gray-400">Team</p></div>
+        </button>
       </div>
     </div>
   </div>
@@ -2268,34 +2227,6 @@
           { name:'transactions_may.csv', rows:'1,500', cols:14 },
           { name:'web_traffic_june.csv', rows:'42,000', cols:8 },
           { name:'marketing_spend.csv', rows:'850', cols:12 },
-        ],
-      },
-      // ── Project-only datasources (not linked at workspace level) ──
-      {
-        id: 'ds-6', name: 'Marketing BigQuery', connector: 'BigQuery', type: 'Database',
-        status: 'Connected', tables: 8, updated: '4 hrs ago', updatedMs: Date.now() - 4*60*60*1000,
-        owner: 'Manish K.', schedule: 'Every 3 hours', health: 99,
-        syncLog: [{ ts: '2026-05-11 08:00', status: 'success', msg: 'Synced 8 tables, 0 errors' }],
-        tables_list: [
-          { name: 'campaigns',   rows: '2,400',       cols: 12 },
-          { name: 'impressions', rows: '1,840,000',   cols: 8  },
-          { name: 'clicks',      rows: '92,000',      cols: 7  },
-          { name: 'conversions', rows: '8,200',       cols: 9  },
-          { name: 'ad_spend',    rows: '2,400',       cols: 10 },
-          { name: 'audiences',   rows: '48,000',      cols: 11 },
-          { name: 'keywords',    rows: '12,000',      cols: 8  },
-          { name: 'creatives',   rows: '3,600',       cols: 7  },
-        ],
-      },
-      {
-        id: 'ds-7', name: 'Product S3 Export', connector: 'CSV', type: 'File',
-        status: 'Connected', tables: 3, updated: '2 days ago', updatedMs: Date.now() - 48*60*60*1000,
-        owner: 'Priya N.', schedule: 'Weekly', health: 100,
-        syncLog: [{ ts: '2026-05-09 10:00', status: 'success', msg: 'CSV exported, 3 files processed' }],
-        tables_list: [
-          { name: 'product_events.csv',    rows: '280,000', cols: 14 },
-          { name: 'feature_usage.csv',     rows: '45,000',  cols: 9  },
-          { name: 'retention_cohorts.csv', rows: '12,000',  cols: 11 },
         ],
       },
     ];
@@ -3012,13 +2943,23 @@
           const colType = c.colType || '';
           const unit    = c.unit    || '';
           const bg = i % 2 === 0 ? '#fff' : '#FAFAFA';
+          // Semantic datatype chip
+          const t = (c.type||'').toUpperCase();
+          const chip = t.startsWith('INT')||t==='BIGINT'||t==='SMALLINT'||t==='TINYINT' ? {bg:'#EEF2FF',cl:'#5B63F6'}
+            : t.startsWith('VARCHAR')||t==='TEXT'||t.startsWith('CHAR')              ? {bg:'#F0FDF4',cl:'#16A34A'}
+            : t.startsWith('DECIMAL')||t==='FLOAT'||t==='DOUBLE'||t==='NUMERIC'     ? {bg:'#FFFBEB',cl:'#D97706'}
+            : t==='BOOLEAN'||t==='BOOL'                                              ? {bg:'#FDF4FF',cl:'#9333EA'}
+            : t==='TIMESTAMP'||t==='DATE'||t==='DATETIME'||t==='TIME'               ? {bg:'#F0FDFA',cl:'#0D9488'}
+            : t==='ENUM'                                                             ? {bg:'#FFF7ED',cl:'#EA580C'}
+            : t==='JSON'||t==='JSONB'                                               ? {bg:'#FFFBEB',cl:'#B45309'}
+            :                                                                          {bg:'#F3F4F6',cl:'#374151'};
           return `
           <tr style="background:${bg};border-bottom:1px solid #F1F5F9" onmouseover="this.style.background='#F5F7FF'" onmouseout="this.style.background='${bg}'">
-            <td style="padding:8px 14px;font-weight:600;color:#111827;white-space:nowrap">${c.name}</td>
-            <td style="padding:8px 12px"><code style="font-size:11px;font-family:monospace;background:#F3F4F6;color:#374151;padding:2px 6px;border-radius:4px">${c.type}</code></td>
+            <td style="padding:9px 14px;font-size:12px;font-weight:600;color:#111827;white-space:nowrap">${c.name}</td>
+            <td style="padding:9px 12px"><code style="font-size:11px;font-family:monospace;background:${chip.bg};color:${chip.cl};padding:2px 7px;border-radius:5px;font-weight:600;white-space:nowrap">${c.type}</code></td>
             <td style="padding:6px 12px">
-              <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" class="ds-edit-input" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
-            <td style="padding:6px 12px" class="ds-edit-only">
+              <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
+            <td style="padding:6px 12px">
               <select onchange="saveColMeta(${i},'colType',this.value)" style="width:130px;height:28px;padding:0 8px;font-size:11px;font-weight:500;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;cursor:pointer;outline:none">
                 <option value="" ${!colType?'selected':''} style="color:#9CA3AF">Select type</option>
                 <option value="measure"   ${colType==='measure'  ?'selected':''}>Measure</option>
@@ -3026,11 +2967,9 @@
                 <option value="time"      ${colType==='time'     ?'selected':''}>Time</option>
               </select>
             </td>
-            <td style="padding:6px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${colType||'—'}</td>
-            <td style="padding:6px 12px" class="ds-edit-only">
+            <td style="padding:6px 12px">
               <input type="text" value="${unit}" placeholder="e.g. USD, km" onchange="saveColMeta(${i},'unit',this.value)" style="width:90px;height:28px;padding:0 8px;font-size:11px;border:1px solid #E5E7EB;border-radius:7px;background:white;color:#374151;outline:none" onfocus="this.style.borderColor='#5B63F6'" onblur="this.style.borderColor='#E5E7EB'" />
             </td>
-            <td style="padding:6px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${unit||'—'}</td>
           </tr>`;
         }).join('');
       } else {
@@ -4032,11 +3971,11 @@
     }
     // Per-project assignments: { projectId: Set<dsId> }
     const _allProjAssignments = {
-      'p-1': new Set(['ds-1', 'ds-2', 'ds-3', 'ds-6', 'ds-7']),
-      'p-2': new Set(['ds-3', 'ds-4', 'ds-6']),
-      'p-3': new Set(['ds-4', 'ds-5', 'ds-1', 'ds-6']),
+      'p-1': new Set(['ds-1', 'ds-2', 'ds-3']),
+      'p-2': new Set(['ds-3', 'ds-4']),
+      'p-3': new Set(['ds-4', 'ds-5', 'ds-1']),
       'p-4': new Set(['ds-2', 'ds-1', 'ds-3']),
-      'p-5': new Set(['ds-1', 'ds-5', 'ds-4', 'ds-7']),
+      'p-5': new Set(['ds-1', 'ds-5', 'ds-4']),
     };
     let _currentProjectId = 'p-1';
 
@@ -4121,7 +4060,7 @@
     const SCOPE_META = {
       org:  { title: 'Datasources',  desc: 'Connect and manage datasources at the organization level' },
       ws:   { title: 'Datasources',  desc: 'Assign datasources and configure table access for this workspace' },
-      proj: { title: 'Datasources',  desc: 'Datasources linked to this project — from workspace and project level' },
+      proj: { title: 'Datasources',  desc: 'Configure datasources and manage artifacts for the selected project.' },
     };
 
     function switchDsScope(scope) {
@@ -5008,17 +4947,13 @@
     function renderProjScope() {
       const wsAssigned = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && ds.status !== 'Syncing' && _wsAssignments[ds.id]?.assigned);
       const artifacts  = PROJECT_ARTIFACTS[_currentProjectId] || [];
-      // Project-only: added at project level but NOT linked at workspace level
-      const projOnlyDs = _dsList.filter(ds => ds.status !== 'Pending' && !_wsAssignments[ds.id]?.assigned && _projAssignments.has(ds.id));
-      // Full visible set: workspace sources + project-level additions
-      const allProjSources = [...wsAssigned, ...projOnlyDs];
-      const projDsList = allProjSources.filter(ds => _projAssignments.has(ds.id));
+      const projDsList = _dsList.filter(ds => ds.status !== 'Pending' && ds.status !== 'Error' && ds.status !== 'Syncing' && _projAssignments.has(ds.id));
 
       // KPI bar
-      document.getElementById('proj-stat-total').textContent     = allProjSources.length + artifacts.length;
-      document.getElementById('proj-stat-connected').textContent = allProjSources.filter(ds => ds.status === 'Connected').length;
-      document.getElementById('proj-stat-error').textContent     = allProjSources.filter(ds => ds.status === 'Error').length;
-      document.getElementById('proj-stat-tables').textContent    = allProjSources.reduce((sum, ds) => {
+      document.getElementById('proj-stat-total').textContent     = projDsList.length + artifacts.length;
+      document.getElementById('proj-stat-connected').textContent = projDsList.filter(ds => ds.status === 'Connected').length;
+      document.getElementById('proj-stat-error').textContent     = 0;
+      document.getElementById('proj-stat-tables').textContent    = projDsList.reduce((sum, ds) => {
         const a = _wsAssignments[ds.id];
         const tblCount = (ds.tables_list || []).length || ds.tables || 0;
         return sum + (a?.tables ? a.tables.length : tblCount);
@@ -5027,7 +4962,7 @@
       const emptyEl = document.getElementById('proj-empty-ws');
       const listEl  = document.getElementById('proj-assign-list');
 
-      const hasAny = allProjSources.length > 0 || artifacts.length > 0;
+      const hasAny = wsAssigned.length > 0 || artifacts.length > 0;
       if (!hasAny) {
         emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
         listEl.innerHTML = '';
@@ -5043,7 +4978,7 @@
       // --- Datasource cards ---
       let dsHtml = '';
       {
-        const filteredDs = allProjSources.filter(ds => {
+        const filteredDs = wsAssigned.filter(ds => {
           if (_projTypeFilter === 'artifact') return false;
           if (q && !ds.name.toLowerCase().includes(q)) return false;
           if (_projCatFilter !== 'all' && ds.connector !== _projCatFilter) return false;
@@ -5054,19 +4989,18 @@
           dsHtml = filteredDs.map(ds => {
             const a = _wsAssignments[ds.id];
             const tblCount = (ds.tables_list || []).length || ds.tables || 0;
-            const selCount = a?.tables ? a.tables.length : tblCount;
+            const selCount = a.tables ? a.tables.length : tblCount;
             const inProj   = _projAssignments.has(ds.id);
-            const isWs     = !!_wsAssignments[ds.id]?.assigned;
             const pal = connectorPalette(ds.connector);
             return `
             <div class="report-card bg-white border ${inProj ? 'border-indigo-100' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-85 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
-              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
+              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}')">
                 <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
               </div>
               <div class="px-3 pt-2.5 pb-3">
                 <div class="flex items-start justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}')">${ds.name}</p>
                     <div class="flex items-center gap-2 flex-wrap mt-1">
                       <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
                         ${connectorIcon(ds.connector, 10)}
@@ -5077,7 +5011,6 @@
                         ${selCount} tables
                       </span>
                       ${statusBadgeHtml(ds.status)}
-                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold" style="${isWs ? 'background:#EEF2FF;color:#6366F1' : 'background:#F3E8FF;color:#9333EA'}">${isWs ? 'Workspace' : 'Project'}</span>
                     </div>
                     <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
                   </div>
@@ -5092,18 +5025,16 @@
           dsHtml = filteredDs.map(ds => {
             const a = _wsAssignments[ds.id];
             const tblCount = (ds.tables_list || []).length || ds.tables || 0;
-            const selCount = a?.tables ? a.tables.length : tblCount;
+            const selCount = a.tables ? a.tables.length : tblCount;
             const inProj   = _projAssignments.has(ds.id);
-            const isWs     = !!_wsAssignments[ds.id]?.assigned;
             return inProj ? `
-            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-indigo-200 hover:shadow-sm transition-all" onclick="openDetailPanel('${ds.id}',true)">
+            <div class="assign-row flex items-center gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-indigo-200 hover:shadow-sm transition-all" onclick="openDetailPanel('${ds.id}')">
               <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">${connectorIcon(ds.connector, 18)}</div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="text-[13px] font-semibold text-gray-900">${ds.name}</span>
                   <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:#EEF2FF;color:#5B63F6">Datasource</span>
                   ${statusBadgeHtml(ds.status)}
-                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold" style="${isWs ? 'background:#EEF2FF;color:#6366F1' : 'background:#F3E8FF;color:#9333EA'}">${isWs ? 'Workspace' : 'Project'}</span>
                 </div>
                 <p class="text-[11px] text-gray-400 mt-0.5">${selCount} tables · Updated ${ds.updated || 'Recently'}</p>
               </div>
@@ -5408,105 +5339,12 @@
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
 
-    // ── Workspace switcher ──────────────────────────────────────────
-    var wsData = [
-      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
-      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
-      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
-      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
-      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
-      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
-    ];
-    try {
-      var _saved = JSON.parse(localStorage.getItem('aibii_workspaces') || '[]');
-      _saved.forEach(function(ws) {
-        if (!wsData.find(function(w) { return w.id === ws.id; })) {
-          wsData.push({ id: ws.id, name: ws.name, initial: ws.initial, color: ws.color, current: false });
-        }
-      });
-    } catch(e) {}
-    function renderWsModalList(filter) {
-      var list = document.getElementById('ws-modal-list');
-      if (!list) return;
-      var q = (filter || '').toLowerCase();
-      var items = wsData.filter(function(ws) { return !q || ws.name.toLowerCase().includes(q); });
-      var container = list.parentElement;
-      var ROW_H = 44; var SHOWN = 5;
-      container.style.maxHeight = (items.length > SHOWN ? ROW_H * SHOWN + 12 : '') + 'px';
-      container.style.overflowY = items.length > SHOWN ? 'auto' : 'visible';
-      if (!items.length) {
-        list.innerHTML = '<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>';
-        return;
-      }
-      list.innerHTML = items.map(function(ws) {
-        var isCurrent = ws.current;
-        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors ' + (isCurrent ? 'bg-indigo-50' : 'hover:bg-gray-50') + '">'
-          + '<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
-          + '<span class="flex-1 text-[13px] ' + (isCurrent ? 'font-semibold text-gray-900' : 'font-medium text-gray-700') + ' truncate">' + ws.name + '</span>'
-          + (isCurrent ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
-          + '</button>';
-      }).join('');
-    }
-    function filterWsList() {
-      renderWsModalList(document.getElementById('ws-search').value);
-    }
+    // ── WS modal ─────────────────────────────────
     function openWsModal() {
-      var input = document.getElementById('ws-search');
-      if (input) input.value = '';
-      renderWsModalList('');
       document.getElementById('ws-modal-backdrop').classList.add('open');
     }
     function closeWsModal(e) {
-      if (!e || e.target === document.getElementById('ws-modal-backdrop')) {
-        document.getElementById('ws-modal-backdrop').classList.remove('open');
-      }
-    }
-    function selectWorkspace(id) {
-      wsData.forEach(function(ws) { ws.current = ws.id === id; });
-      var ws = wsData.find(function(ws) { return ws.id === id; });
-      if (ws) {
-        var nameEl = document.getElementById('ws-name');
-        var avatarEl = document.getElementById('ws-avatar');
-        if (nameEl) nameEl.textContent = ws.name.length > 24 ? ws.name.slice(0, 24) + '...' : ws.name;
-        if (avatarEl) { avatarEl.textContent = ws.initial; avatarEl.style.background = ws.color; }
-      }
       document.getElementById('ws-modal-backdrop').classList.remove('open');
-    }
-    function openNewWsModal() {
-      document.getElementById('ws-modal-backdrop').classList.remove('open');
-      document.getElementById('new-ws-modal').classList.remove('hidden');
-      document.getElementById('new-ws-name').value = '';
-      document.getElementById('new-ws-desc').value = '';
-      wsNewColor = '#5B63F6';
-      wsColorIndex = 0;
-      onWsNameInput('');
-      setTimeout(function() { document.getElementById('new-ws-name').focus(); }, 80);
-    }
-    function closeNewWsModal() {
-      document.getElementById('new-ws-modal').classList.add('hidden');
-    }
-    var wsColors = ['#5B63F6','#16A34A','#F97316','#8B5CF6','#EC4899','#0EA5E9','#EAB308'];
-    var wsNewColor = '#5B63F6';
-    var wsColorIndex = 0;
-    function cycleWsColor() {
-      wsColorIndex = (wsColorIndex + 1) % wsColors.length;
-      wsNewColor = wsColors[wsColorIndex];
-      var el = document.getElementById('ws-preview-avatar');
-      if (el) { el.style.background = wsNewColor; el.style.boxShadow = '0 4px 16px ' + wsNewColor + '55'; }
-    }
-    function onWsNameInput(val) {
-      var preview = document.getElementById('ws-preview-name');
-      var avatarEl = document.getElementById('ws-preview-avatar');
-      if (preview) preview.textContent = val.trim() || 'Your workspace';
-      if (avatarEl) avatarEl.textContent = val.trim() ? val.trim()[0].toUpperCase() : 'A';
-    }
-    function createNewWs() {
-      var name = document.getElementById('new-ws-name').value.trim();
-      if (!name) { document.getElementById('new-ws-name').focus(); return; }
-      var newWs = { id: 'ws-dyn-' + Date.now(), name: name, initial: name[0].toUpperCase(), color: wsNewColor, current: false };
-      wsData.push(newWs);
-      closeNewWsModal();
-      selectWorkspace(newWs.id);
     }
 
     // ── Notifications ─────────────────────────────
