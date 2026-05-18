@@ -513,8 +513,8 @@
       <!-- Toolbar: search + filters + view toggle -->
       <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
 
-        <!-- Left: WS filter + Type filter + Status pills -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Left 50%: WS filter + Type filter + Status pills -->
+        <div class="flex items-center gap-2 w-1/2">
 
           <!-- Workspace filter -->
           <div class="relative flex-shrink-0">
@@ -612,11 +612,11 @@
           </div>
         </div>
 
-        <!-- Right: Search + View toggle -->
-        <div class="flex items-center gap-3 flex-shrink-0">
+        <!-- Right 50%: Search + View toggle -->
+        <div class="flex items-center gap-3 w-1/2">
 
           <!-- Search -->
-          <div class="relative flex-1 max-w-xs">
+          <div class="relative flex-1">
             <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
             </span>
@@ -695,8 +695,10 @@
           </div>
         </div>
 
-        <!-- Toolbar: category + status + search + view toggle -->
-        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+        <!-- Toolbar: category + search + view toggle -->
+        <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+          <!-- Left 50%: Category + Search -->
+          <div class="flex items-center gap-3 w-1/2">
           <!-- Category dropdown -->
           <div class="relative flex-shrink-0">
             <button onclick="toggleWsCatDd()" id="ws-cat-dd-btn" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
@@ -739,11 +741,6 @@
               </button>
             </div>
           </div>
-          <!-- Search -->
-          <div class="relative flex-1 max-w-xs">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-            <input id="ws-search" type="text" placeholder="Search datasources…" oninput="filterWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
-          </div>
           <div id="ws-add-actions" class="hidden items-center gap-1.5 flex-shrink-0">
             <button id="ws-add-confirm" onclick="confirmWsAdd()" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
                Add &amp; configure tables
@@ -752,9 +749,16 @@
               Cancel
             </button>
           </div>
-          <div class="flex-1"></div>
           <!-- Hidden elements kept for JS compatibility -->
           <div id="ws-add-wrapper" class="hidden"><div id="ws-add-dd" class="hidden"><div id="ws-add-dd-list"></div><div id="ws-add-dd-empty"></div></div><span id="ws-add-label" class="hidden"></span><button id="ws-add-btn" class="hidden"></button></div>
+          <!-- Search -->
+          <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+            <input id="ws-search" type="text" placeholder="Search datasources…" oninput="filterWsList()" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors" />
+          </div>
+          </div><!-- /ws-left-50 -->
+          <!-- Right 50%: View toggle -->
+          <div class="flex items-center gap-3 w-1/2 justify-end">
           <!-- View toggle -->
           <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
             <button id="ws-view-list" onclick="setWsView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400" title="List view">
@@ -764,6 +768,7 @@
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
             </button>
           </div>
+          </div><!-- /ws-right-50 -->
         </div>
         <!-- Assigned list -->
         <div class="flex-1 overflow-y-auto px-6 py-4">
@@ -811,7 +816,7 @@
                 Datasource
               </button>
               <button onclick="setProjTypeFilter('artifact')" id="proj-type-artifact" class="proj-type-pill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
                 Artifact
               </button>
             </div>
@@ -863,8 +868,8 @@
         <!-- Toolbar -->
         <div class="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white flex items-center justify-between gap-3">
 
-          <!-- Left: Category filter + Status pills -->
-          <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- Left 50%: Category filter + Status pills -->
+          <div class="flex items-center gap-2 w-1/2">
 
             <!-- Category dropdown -->
             <div class="relative flex-shrink-0">
@@ -921,22 +926,24 @@
             </div>
           </div>
 
-          <!-- Search -->
-          <div class="relative flex-1 max-w-xs ml-auto">
-            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
-            </span>
-            <input id="proj-search" type="text" placeholder="Search datasources…" oninput="filterProjList()"
-              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
-          </div>
-          <!-- Right: View toggle -->
-          <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
-            <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 transition-all" title="List view">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
-            </button>
-            <button id="proj-view-grid" onclick="setProjView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-indigo-600 shadow-sm transition-all" title="Grid view">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
-            </button>
+          <!-- Right 50%: Search + View toggle -->
+          <div class="flex items-center gap-3 w-1/2">
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
+              </span>
+              <input id="proj-search" type="text" placeholder="Search datasources…" oninput="filterProjList()"
+                class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
+            </div>
+            <!-- View toggle -->
+            <div class="flex items-center gap-0.5 p-0.5 rounded-lg flex-shrink-0" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+              <button id="proj-view-list" onclick="setProjView('list')" class="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 transition-all" title="List view">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+              </button>
+              <button id="proj-view-grid" onclick="setProjView('grid')" class="flex items-center justify-center w-8 h-8 rounded-md bg-white text-indigo-600 shadow-sm transition-all" title="Grid view">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+              </button>
+            </div>
           </div>
         </div>
         <!-- List -->
@@ -1006,7 +1013,7 @@
                   <svg style="color:#EA580C;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>
                 </div>
                 <div class="min-w-0">
-                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Type</p>
+                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Category</p>
                   <p id="panel-type" class="text-[15px] font-bold text-gray-900 leading-none truncate"></p>
                 </div>
               </div>
@@ -1016,7 +1023,7 @@
                   <svg style="color:#9333EA;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
                 </div>
                 <div class="min-w-0">
-                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Schema Objects</p>
+                  <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Tables</p>
                   <p id="panel-tables" class="text-[22px] font-bold text-gray-900 leading-none"></p>
                 </div>
               </div>
@@ -1033,8 +1040,8 @@
             </div>
 
             <!-- Detail cards -->
-            <div class="grid grid-cols-2 gap-4">
-              <!-- Connection Details -->
+            <div>
+              <!-- Connection Details (full width) -->
               <div class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
                 <div class="flex items-center gap-2.5 mb-4">
                   <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
@@ -1043,24 +1050,6 @@
                   <h4 class="text-[13px] font-semibold text-gray-800">Connection Details</h4>
                 </div>
                 <div id="panel-conn-container" class="space-y-3"></div>
-              </div>
-              <!-- Sync Schedule -->
-              <div class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
-                <div class="flex items-center gap-2.5 mb-4">
-                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
-                    <svg style="width:16px;height:16px;color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  </div>
-                  <h4 class="text-[13px] font-semibold text-gray-800">Sync Schedule</h4>
-                </div>
-                <div class="space-y-3">
-                  <div class="flex justify-between items-center">
-                    <span class="text-[12px] font-medium text-gray-500">Frequency</span>
-                    <div class="flex items-center gap-2">
-                      <span id="panel-schedule" class="text-[13px] font-semibold text-gray-900"></span>
-                      <span class="text-[11px] font-semibold px-2 py-0.5 rounded-lg" style="background:#DCFCE7;color:#16A34A">Active</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -1154,14 +1143,24 @@
                       <p id="prev-kpi-cols" class="text-[22px] font-bold leading-none" style="color:#16A34A">—</p>
                     </div>
                   </div>
-                  <!-- Last Synced -->
+                  <!-- Avg Null -->
+                  <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEE2E2">
+                      <svg style="color:#EF4444;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Avg Null</p>
+                      <p id="prev-kpi-null" class="text-[22px] font-bold leading-none" style="color:#EF4444">—</p>
+                    </div>
+                  </div>
+                  <!-- Avg Unique -->
                   <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 flex-1" style="box-shadow:0 1px 4px rgba(0,0,0,0.05)">
                     <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#FEF3C7">
-                      <svg style="color:#D97706;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                      <svg style="color:#D97706;width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33"/></svg>
                     </div>
-                    <div class="min-w-0">
-                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Last Synced</p>
-                      <p id="prev-kpi-synced" class="text-[15px] font-bold leading-none truncate" style="color:#D97706">—</p>
+                    <div>
+                      <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wider leading-none mb-1">Avg Unique</p>
+                      <p id="prev-kpi-unique" class="text-[22px] font-bold leading-none" style="color:#D97706">—</p>
                     </div>
                   </div>
                 </div>
@@ -1170,17 +1169,6 @@
                   <div class="relative flex-1">
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z"/></svg>
                     <input id="prev-row-search" type="text" placeholder="Search rows…" oninput="filterPreviewRows(this.value)" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
-                  </div>
-                  <div class="relative flex-shrink-0">
-                    <button id="prev-page-size-btn" onclick="togglePrevPageSizeDd()" class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
-                      <span id="prev-page-size-label">10 rows</span>
-                      <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div id="prev-page-size-dd" class="hidden absolute top-full right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[110px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.10)">
-                      <button onclick="setPrevPageSize(10)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">10 rows</button>
-                      <button onclick="setPrevPageSize(25)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">25 rows</button>
-                      <button onclick="setPrevPageSize(50)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">50 rows</button>
-                    </div>
                   </div>
                 </div>
                 <!-- Table + pagination card -->
@@ -1193,7 +1181,22 @@
                   </div>
                   <!-- Pagination bar -->
                   <div class="flex items-center justify-between px-4 py-2.5 bg-white border-t border-gray-100">
-                    <span id="prev-pagination-info" class="text-[12px] text-gray-400">—</span>
+                    <!-- Left: page size + row info -->
+                    <div class="flex items-center gap-2">
+                      <div class="relative">
+                        <button id="prev-page-size-btn" onclick="togglePrevPageSizeDd()" class="flex items-center gap-1 px-2 h-7 rounded-lg text-[12px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
+                          <span id="prev-page-size-label">10 rows</span>
+                          <svg class="w-2.5 h-2.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="prev-page-size-dd" class="hidden absolute bottom-full left-0 mb-1.5 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[110px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.10)">
+                          <button onclick="setPrevPageSize(10)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">10 rows</button>
+                          <button onclick="setPrevPageSize(25)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">25 rows</button>
+                          <button onclick="setPrevPageSize(50)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">50 rows</button>
+                        </div>
+                      </div>
+                      <span id="prev-pagination-info" class="text-[12px] text-gray-400">—</span>
+                    </div>
+                    <!-- Right: page nav -->
                     <div class="flex items-center gap-1">
                       <button id="prev-page-prev" onclick="goPreviewPage(_prevPage-1)" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
@@ -1242,15 +1245,14 @@
                     </div>
                   </div>
                 </div>
-                <!-- Meta edit action bar (project scope only) -->
-                <div id="meta-edit-bar" class="hidden items-center justify-between mb-2 gap-3">
-                  <!-- Search -->
+                <!-- Metadata toolbar: search always visible, edit actions org/proj only -->
+                <div class="flex items-center gap-3 mb-2">
                   <div class="relative flex-1">
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                     <input id="meta-col-search" type="text" placeholder="Search columns, type, unit…" oninput="filterMetaCols(this.value)" class="w-full h-9 pl-9 pr-3 text-[13px] bg-white border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5B63F6] focus:border-transparent transition-all" />
                   </div>
-                  <!-- Actions -->
-                  <div class="flex items-center gap-2 flex-shrink-0">
+                  <!-- Edit actions — org/proj scope only -->
+                  <div id="meta-edit-bar" class="hidden items-center gap-2 flex-shrink-0">
                     <button id="meta-edit-btn" onclick="enterMetaEditMode()" class="flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-[13px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
                       Edit Metadata
@@ -1288,7 +1290,7 @@
           <!-- Settings tab -->
           <div id="panel-settings-tab" style="display:none" class="p-4 space-y-4">
             <div>
-              <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Display Name</label>
+              <label class="text-[12px] font-semibold text-gray-600 block mb-1.5">Connection Name</label>
               <input type="text" id="panel-edit-name" class="w-full h-10 px-3 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400" />
             </div>
 
@@ -1303,7 +1305,7 @@
             </div>
             
             <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-              <button onclick="deleteDs(currentDetailId)" class="h-9 px-4 rounded-lg text-[13px] font-semibold text-red-500 border border-red-200 hover:bg-red-50 transition-colors">Remove Datasource</button>
+              <button onclick="deleteDs(currentDetailId)" class="flex items-center gap-1.5 h-9 px-4 rounded-lg text-[13px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>Delete Datasource</button>
               <button class="h-9 px-6 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#3B5BDB">Save Settings</button>
             </div>
           </div>
@@ -1336,14 +1338,14 @@
         </div>
       </div>
       <!-- Toolbar row 2: search + view toggle -->
-      <div class="flex-shrink-0 flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100">
-        <div class="relative flex-1 max-w-sm">
+      <div class="flex-shrink-0 flex items-center justify-between gap-3 px-6 py-3 bg-white border-b border-gray-100">
+        <div class="relative w-1/2">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
           <input id="cr-search" type="text" placeholder="Search by table name…" autocomplete="off"
             class="w-full h-9 pl-9 pr-3 text-[13px] border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:border-indigo-400 transition-colors"
             oninput="renderCrRelList()" />
         </div>
-        <div class="flex items-center gap-1 p-1 rounded-xl flex-shrink-0 ml-auto" style="background:#F3F4F6">
+        <div class="flex items-center gap-1 p-1 rounded-xl flex-shrink-0" style="background:#F3F4F6">
           <button id="cr-view-list-btn" onclick="setCrRelView('list')"
             class="flex items-center justify-center w-8 h-7 rounded-lg bg-white text-gray-700 transition-all" style="box-shadow:0 1px 3px rgba(0,0,0,0.1)" title="List view">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
@@ -1428,15 +1430,15 @@
         <div>
 
 
-          <!-- Type filter + Search row -->
+          <!-- Category filter + Search row -->
           <div class="flex items-center gap-3 mb-7">
-            <!-- Type dropdown -->
+            <!-- Category dropdown -->
             <div class="relative flex-shrink-0">
               <button onclick="toggleTypeDropdown()"
-                class="flex items-center gap-1.5 px-3 h-10 rounded-full text-[13px] font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
-                style="width:120px; justify-content:space-between;">
+                class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
+                style="width:130px; justify-content:space-between;">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                <span id="type-label">Type</span>
+                <span id="type-label">Category</span>
                 <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
               <div id="type-dropdown"
@@ -2253,7 +2255,7 @@
       {
         id: 'ds-1', name: 'Production Analytics DB', connector: 'Postgres', type: 'Database',
         status: 'Connected', tables: 20, host: 'prod-db.internal.com', port: '5432',
-        database: 'analytics_prod', updated: '2 min ago', updatedMs: Date.now() - 2*60*1000,
+        database: 'analytics_prod', schema: 'public', updated: '2 min ago', updatedMs: Date.now() - 2*60*1000,
         owner: 'Manish K.', schedule: 'Every 6 hours', health: 98,
         syncLog: [
           { ts: '2026-05-11 09:00', status: 'success', msg: 'Synced 18 tables, 0 errors' },
@@ -2325,7 +2327,7 @@
       {
         id: 'ds-3', name: 'CRM MySQL Database', connector: 'MySQL', type: 'Database',
         status: 'Syncing', tables: 12, host: 'crm.mysql.internal', port: '3306',
-        database: 'crm_v2', updated: 'Syncing…', updatedMs: Date.now() - 30*1000,
+        database: 'crm_v2', schema: 'crm_schema', updated: 'Syncing…', updatedMs: Date.now() - 30*1000,
         owner: 'Sara M.', schedule: 'Every 12 hours', health: 87,
         syncLog: [
           { ts: '2026-05-11 09:10', status: 'syncing', msg: 'Sync in progress — 8/12 tables done' },
@@ -2772,10 +2774,8 @@
           <div class="w-24 flex-shrink-0 text-right">
             <span class="text-[11px] text-gray-400">${d.updated}</span>
           </div>
-          <div class="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
-            <button onclick="deleteDs('${d.id}')" title="Remove" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
-            </button>
+          <div class="flex items-center gap-0.5 flex-shrink-0" onclick="event.stopPropagation()">
+            <button onclick="deleteDs('${d.id}')" title="Delete" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>Delete</button>
           </div>
         </div>`; }).join('');
       updateStats();
@@ -2920,7 +2920,7 @@
       _dsList = _dsList.filter(d => d.id !== id);
       closeDetailPanel();
       renderDsList();
-      showToast('Datasource removed.');
+      showToast('Datasource deleted.');
     }
 
     // ─── Detail panel ─────────────────────────────────────────
@@ -2949,7 +2949,6 @@
       document.getElementById('panel-type').textContent         = ds.type;
       document.getElementById('panel-tables').textContent       = ds.tables;
       document.getElementById('panel-owner').textContent        = ds.owner;
-      document.getElementById('panel-schedule').textContent     = ds.schedule;
 
       // Connection info — insert as grid items into container
       const connContainer = document.getElementById('panel-conn-container');
@@ -2957,13 +2956,14 @@
       if (ds.host)     infoItems.push(['Host', ds.host]);
       if (ds.port)     infoItems.push(['Port', ds.port]);
       if (ds.database) infoItems.push(['Database', ds.database]);
+      infoItems.push(['Schema', ds.schema || '']);
       
       if (infoItems.length) {
         connContainer.classList.remove('hidden');
         connContainer.innerHTML = infoItems.map(([k, v]) =>
           `<div class="flex justify-between items-center group">
             <span class="text-[12px] font-medium text-gray-500">${k}</span>
-            <span class="text-[13px] font-semibold text-gray-900 text-right">${v}</span>
+            <span class="text-[13px] font-semibold text-gray-900 text-right">${v || '<span class=\'text-gray-300\'>—</span>'}</span>
           </div>`
         ).join('');
       } else {
@@ -3114,10 +3114,13 @@
                   <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background:#EEF2FF;color:#5B63F6">${t.rows}</span>
                 </td>
                 ${isReadOnly ? `
-                <td class="py-3 text-center">
-                  <button onclick="event.stopPropagation();removeTableFromProject('${currentDetailId}','${t.name}')" class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors" title="Remove table">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-                  </button>
+                <td class="py-3 pr-2">
+                  <div class="flex justify-end">
+                    <button onclick="event.stopPropagation();removeTableFromProject('${currentDetailId}','${t.name}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
+                      Delete
+                    </button>
+                  </div>
                 </td>` : ''}
               </tr>
             `).join('')}
@@ -3193,15 +3196,23 @@
         : pdata.rows.length;
       document.getElementById('prev-kpi-rows').textContent = rawRows || totalRows.toLocaleString();
       document.getElementById('prev-kpi-cols').textContent = tbl?.cols ?? pdata.cols.length;
+      // Null / Unique badges
+      const prevNullEl   = document.getElementById('prev-kpi-null');
+      const prevUniqueEl = document.getElementById('prev-kpi-unique');
+      if (tbl?.columns?.length) {
+        const cols = tbl.columns;
+        if (prevNullEl)   prevNullEl.textContent   = (cols.reduce((s,c)=>s+c.nullPct,0)/cols.length).toFixed(1) + '%';
+        if (prevUniqueEl) prevUniqueEl.textContent = (cols.reduce((s,c)=>s+c.uniquePct,0)/cols.length).toFixed(1) + '%';
+      } else {
+        if (prevNullEl)   prevNullEl.textContent   = '—';
+        if (prevUniqueEl) prevUniqueEl.textContent = '—';
+      }
       const psLbl = document.getElementById('prev-page-size-label');
       if (psLbl) psLbl.textContent = _prevPageSize + ' rows';
       _prevRowFilter = '';
       const searchEl = document.getElementById('prev-row-search');
       if (searchEl) searchEl.value = '';
       renderPreviewPage(pdata, totalRows, 1, _prevPageSize);
-      const ds2 = _dsList.find(d => d.id === currentDetailId);
-      const syncedEl = document.getElementById('prev-kpi-synced');
-      if (syncedEl) syncedEl.textContent = ds2?.updated || '—';
 
       // KPI bar
       const kpiBar = document.getElementById('tbl-kpi-bar');
@@ -4417,7 +4428,7 @@
           <div class="my-1 border-t border-gray-100"></div>
           <button onclick="deleteDs('${id}');closeDsCardMenus()" class="w-full flex items-center gap-2.5 px-3 h-9 text-[13px] text-red-600 hover:bg-red-50 rounded-b-xl transition-colors">
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
-            Remove from Org
+            Delete from Organisation
           </button>`;
       }
       document.body.appendChild(menu);
@@ -4840,14 +4851,14 @@
             </div>
             <div class="w-44 flex-shrink-0 flex items-center gap-2">
               <span class="text-[12px] font-medium text-gray-700">${a.tables ? selCount + ' of ' + tblCount : 'All ' + tblCount} tables</span>
-              <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" class="text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors">Edit</button>
+              <button onclick="event.stopPropagation();openTblPicker('${ds.id}')" title="Edit tables" class="w-5 h-5 flex items-center justify-center rounded text-gray-300 hover:text-indigo-500 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg></button>
             </div>
             <div class="w-28 flex-shrink-0">${statusBadgeHtml(ds.status)}</div>
             <div class="w-24 flex-shrink-0 text-right">
               <span class="text-[11px] text-gray-400">${ds.updated || 'Recently'}</span>
             </div>
             <div class="flex-shrink-0" onclick="event.stopPropagation()">
-              <button onclick="removeWsAssign('${ds.id}')" class="h-7 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-100 hover:bg-red-50 transition-colors">Remove</button>
+              <button onclick="removeWsAssign('${ds.id}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>Delete</button>
             </div>
           </div>`;
         }).join('');
@@ -5327,7 +5338,7 @@
                 <span class="text-[11px] text-gray-400">${ds.updated || 'Recently'}</span>
               </div>
               <div class="w-24 flex-shrink-0 flex justify-end" onclick="event.stopPropagation()">
-                <button onclick="toggleProjAssign('${ds.id}')" class="h-7 px-3 rounded-lg text-[12px] font-medium border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-100 hover:bg-red-50 transition-colors">Remove</button>
+                <button onclick="toggleProjAssign('${ds.id}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>Delete</button>
               </div>
             </div>` : `
             <div class="assign-row flex items-center gap-4 px-4 py-2.5 bg-gray-50/30 opacity-70 hover:opacity-100 transition-opacity">
