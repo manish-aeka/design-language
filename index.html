@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
     .screen-card {
       background: #fff;
       border: 1px solid #E5E7EB;
@@ -28,7 +31,7 @@
     .card-arrow { opacity: 0; transform: translateX(-4px); transition: opacity 150ms ease, transform 150ms ease; }
   </style>
 </head>
-<body class="min-h-screen bg-[#F8F9FC] text-gray-900">
+<body class="min-h-screen bg-white text-gray-900">
 
   <!-- Header -->
   <header class="bg-white border-b border-gray-100 px-8 py-4 flex items-center gap-3">

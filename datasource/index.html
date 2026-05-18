@@ -810,13 +810,13 @@
             <div class="flex items-center gap-1 p-1 rounded-lg flex-shrink-0" style="background:#F3F4F6">
               <button onclick="setProjTypeFilter('all')" id="proj-type-all" class="proj-type-pill h-8 px-4 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 transition-all bg-white text-gray-900 border border-gray-200" style="box-shadow:0 1px 4px rgba(0,0,0,0.10)">All</button>
               <button onclick="setProjTypeFilter('datasource')" id="proj-type-datasource" class="proj-type-pill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                   <ellipse cx="12" cy="5" rx="8" ry="2.5"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/>
                 </svg>
                 Datasource
               </button>
               <button onclick="setProjTypeFilter('artifact')" id="proj-type-artifact" class="proj-type-pill h-8 px-4 rounded-lg text-[13px] font-medium text-gray-500 flex items-center gap-1.5 transition-all">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
                 Artifact
               </button>
             </div>
@@ -3118,7 +3118,7 @@
                   <div class="flex justify-end">
                     <button onclick="event.stopPropagation();removeTableFromProject('${currentDetailId}','${t.name}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>
-                      Delete
+                      Remove
                     </button>
                   </div>
                 </td>` : ''}
@@ -4746,7 +4746,7 @@
         btnGrid.style.boxShadow = v === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : '';
       }
       const listEl = document.getElementById('ws-assign-list');
-      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-3 gap-4' : 'border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100';
+      if (listEl) listEl.className = v === 'grid' ? 'grid grid-cols-4 gap-4' : 'border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100';
       renderWsScope();
     }
 
@@ -4807,14 +4807,13 @@
           const pal = connectorPalette(ds.connector);
           
           return `
-          <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer transition-all" data-name="${ds.name.toLowerCase()}" onclick="event.stopPropagation()">
-            <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
-              <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
+          <div class="report-card bg-white border border-gray-200 rounded-xl shadow-card cursor-pointer" onclick="openDetailPanel('${ds.id}',true)">
+            <div class="h-40 rounded-t-xl flex items-center justify-center p-6 relative" style="background:${pal.bg}">
+              ${connectorIconLarge(ds.connector, 40)}
             </div>
-            <div class="px-3 pt-2.5 pb-3">
-            <div class="flex items-start justify-between">
+            <div class="px-3 pt-2.5 pb-3 flex items-start justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]">${ds.name}</p>
                 <div class="flex items-center gap-2 flex-wrap mt-1">
                   <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
                     ${connectorIcon(ds.connector, 10)}
@@ -4826,14 +4825,13 @@
                   </span>
                   ${statusBadgeHtml(ds.status)}
                 </div>
+                <p class="text-[11px] text-gray-400 mt-1">Updated ${ds.updated || 'Recently'}</p>
               </div>
               <button onclick="event.stopPropagation();toggleDsCardMenu(event,'${ds.id}')" class="overflow-btn p-1 rounded-md hover:bg-gray-100 -mt-0.5 flex-shrink-0">
                 <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
               </button>
             </div>
-            <p class="text-[11px] text-gray-400 mt-2.5">Updated ${ds.updated || 'Recently'}</p>
-          </div>
-        </div>`;
+          </div>`;
         }).join('') : filteredList.map(ds => {
           const a = _wsAssignments[ds.id];
           const tblCount = (ds.tables_list || []).length || ds.tables || 0;
@@ -4858,7 +4856,7 @@
               <span class="text-[11px] text-gray-400">${ds.updated || 'Recently'}</span>
             </div>
             <div class="flex-shrink-0" onclick="event.stopPropagation()">
-              <button onclick="removeWsAssign('${ds.id}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>Delete</button>
+              <button onclick="removeWsAssign('${ds.id}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916"/></svg>Remove</button>
             </div>
           </div>`;
         }).join('');

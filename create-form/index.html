@@ -115,9 +115,9 @@
       backdrop-filter: blur(3px);
     }
     .modal-box {
-      background: #fff; border-radius: 20px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.06);
-      width: 100%; max-width: 480px; padding: 28px;
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+      width: 100%; max-width: 480px; padding: 24px;
       animation: popIn 180ms cubic-bezier(.4,0,.2,1);
     }
     @keyframes popIn {
@@ -125,14 +125,14 @@
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .m-input {
-      width: 100%; border: 1.5px solid #E5E7EB; border-radius: 10px;
-      padding: 9px 13px; font-size: 13px; color: #111827; outline: none;
-      background: #FAFAFA; font-family: inherit;
+      width: 100%; border: 1px solid #E5E7EB; border-radius: 8px;
+      padding: 8px 12px; font-size: 13px; color: #111827; outline: none;
+      background: #F9FAFB; font-family: inherit;
       transition: border-color 150ms, box-shadow 150ms;
     }
     .m-input:focus { border-color: #5B63F6; background: #fff; box-shadow: 0 0 0 3px rgba(91,99,246,0.10); }
     .m-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; display: block; }
-    .m-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 32px; }
+    .m-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 32px; height: 36px; cursor: pointer; }
 
     /* Sidebar collapse */
     #sidebar { transition: width 220ms ease, min-width 220ms ease, opacity 180ms ease; overflow-x: hidden; overflow-y: auto; }
@@ -643,11 +643,11 @@
 
     <!-- Floating Add Field button (bottom-right of canvas column) -->
     <button id="fab-add" onclick="openAddModal()"
-      class="absolute bottom-6 right-6 z-20 hidden items-center gap-2 px-5 h-10 rounded-full text-[13px] font-semibold text-white"
-      style="background:#3B5BDB;box-shadow:0 6px 22px rgba(59,91,219,0.45);transition:box-shadow 150ms,transform 150ms"
-      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(59,91,219,0.55)'"
-      onmouseout="this.style.transform='';this.style.boxShadow='0 6px 22px rgba(59,91,219,0.45)'">
-      <i class="fa-solid fa-plus text-[11px]"></i>
+      class="absolute bottom-5 right-5 z-20 hidden items-center gap-1.5 px-3.5 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors"
+      style="background:#5B63F6"
+      onmouseover="this.style.background='#4850e4'"
+      onmouseout="this.style.background='#5B63F6'">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
       Add field
     </button>
 
@@ -759,17 +759,36 @@
         </div>
         <div>
           <label class="m-label">Field type</label>
-          <select id="m-type-select" class="m-input m-select" onchange="onModalTypeChange()">
-            <option value="text">Short answer</option>
-            <option value="email">Email</option>
-            <option value="number">Number</option>
-            <option value="textarea">Long text (paragraph)</option>
-            <option value="dropdown">Dropdown</option>
-            <option value="checkbox">Checkboxes</option>
-            <option value="radio">Multiple choice</option>
-            <option value="date">Date</option>
-            <option value="file">File upload</option>
-          </select>
+          <div class="relative" id="field-type-wrapper">
+            <button type="button" id="field-type-btn" onclick="toggleFieldTypeDropdown()"
+              class="w-full flex items-center justify-between px-3 h-9 rounded-lg border border-gray-200 text-[13px] text-gray-700 transition-colors"
+              style="background:#F9FAFB">
+              <span id="field-type-label">Short answer</span>
+              <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="field-type-menu" class="hidden absolute left-0 top-[calc(100%+4px)] z-50 w-full bg-white border border-gray-200 rounded-lg py-1" style="box-shadow:0 8px 24px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06)">
+              <button type="button" onclick="selectFieldType('text','Short answer')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="text"><span>Short answer</span><svg class="w-3 h-3 flex-shrink-0 ft-check" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('email','Email')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="email"><span>Email</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('number','Number')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="number"><span>Number</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('textarea','Long text (paragraph)')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="textarea"><span>Long text (paragraph)</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('dropdown','Dropdown')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="dropdown"><span>Dropdown</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('checkbox','Checkboxes')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="checkbox"><span>Checkboxes</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('radio','Multiple choice')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="radio"><span>Multiple choice</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('date','Date')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="date"><span>Date</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+              <button type="button" onclick="selectFieldType('file','File upload')" class="field-type-opt w-full flex items-center justify-between px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors" data-val="file"><span>File upload</span><svg class="w-3 h-3 flex-shrink-0 ft-check hidden" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button>
+            </div>
+            <select id="m-type-select" class="hidden">
+              <option value="text">Short answer</option>
+              <option value="email">Email</option>
+              <option value="number">Number</option>
+              <option value="textarea">Long text (paragraph)</option>
+              <option value="dropdown">Dropdown</option>
+              <option value="checkbox">Checkboxes</option>
+              <option value="radio">Multiple choice</option>
+              <option value="date">Date</option>
+              <option value="file">File upload</option>
+            </select>
+          </div>
         </div>
         <div id="m-options-row" class="hidden">
           <label class="m-label">Options <span class="text-gray-400 font-normal">(comma separated)</span></label>
@@ -1027,9 +1046,28 @@
     /* ═══════════════════════════════════════════
        ADD FIELD MODAL
     ═══════════════════════════════════════════ */
+    function toggleFieldTypeDropdown() {
+      document.getElementById('field-type-menu').classList.toggle('hidden');
+    }
+
+    function selectFieldType(value, label) {
+      document.getElementById('m-type-select').value = value;
+      document.getElementById('field-type-label').textContent = label;
+      document.querySelectorAll('.field-type-opt').forEach(function(btn) {
+        btn.querySelector('.ft-check').classList.toggle('hidden', btn.dataset.val !== value);
+      });
+      document.getElementById('field-type-menu').classList.add('hidden');
+      onModalTypeChange();
+    }
+
     function openAddModal() {
       document.getElementById('m-label-input').value = '';
       document.getElementById('m-type-select').value = 'text';
+      document.getElementById('field-type-label').textContent = 'Short answer';
+      document.querySelectorAll('.field-type-opt').forEach(function(btn) {
+        btn.querySelector('.ft-check').classList.toggle('hidden', btn.dataset.val !== 'text');
+      });
+      document.getElementById('field-type-menu').classList.add('hidden');
       document.getElementById('m-options-input').value = '';
       document.getElementById('m-required-check').checked = false;
       document.getElementById('m-options-row').classList.add('hidden');
@@ -1386,6 +1424,9 @@
       var userWrapper = document.getElementById('user-menu-wrapper');
       var userDd = document.getElementById('user-dropdown');
       if (userDd && !userDd.classList.contains('hidden') && userWrapper && !userWrapper.contains(e.target)) userDd.classList.add('hidden');
+      var ftWrapper = document.getElementById('field-type-wrapper');
+      var ftMenu = document.getElementById('field-type-menu');
+      if (ftMenu && !ftMenu.classList.contains('hidden') && ftWrapper && !ftWrapper.contains(e.target)) ftMenu.classList.add('hidden');
     });
 
     // ── Workspace switcher modal ────────────────────────────────────
