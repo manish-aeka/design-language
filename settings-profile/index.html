@@ -634,11 +634,17 @@
                     </div>
                   </div>
                   <div class="w-24 flex justify-end">
-                    <select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                      <option selected>Admin</option>
-                      <option>Editor</option>
-                      <option>Viewer</option>
-                    </select>
+                    <div class="relative" id="ws-mr-1">
+                      <button onclick="toggleMemberRoleDD('ws-mr-1')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+                        <span class="mr-role-label">Admin</span>
+                        <svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                      </button>
+                      <div id="ws-mr-1-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:110px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+                        <button onclick="setMemberRole('ws-mr-1','Admin')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Admin</button>
+                        <button onclick="setMemberRole('ws-mr-1','Editor')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Editor</button>
+                        <button onclick="setMemberRole('ws-mr-1','Viewer')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Viewer</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <!-- Editor -->
@@ -651,11 +657,17 @@
                     </div>
                   </div>
                   <div class="w-24 flex justify-end">
-                    <select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                      <option>Admin</option>
-                      <option selected>Editor</option>
-                      <option>Viewer</option>
-                    </select>
+                    <div class="relative" id="ws-mr-2">
+                      <button onclick="toggleMemberRoleDD('ws-mr-2')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
+                        <span class="mr-role-label">Editor</span>
+                        <svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                      </button>
+                      <div id="ws-mr-2-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:110px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+                        <button onclick="setMemberRole('ws-mr-2','Admin')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Admin</button>
+                        <button onclick="setMemberRole('ws-mr-2','Editor')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Editor</button>
+                        <button onclick="setMemberRole('ws-mr-2','Viewer')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Viewer</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -863,19 +875,19 @@
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#0F9D58">A</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Arjun Patel</p><p class="text-[11px] text-gray-400 truncate">arjun@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-1"><button onclick="toggleMemberRoleDD('org-mr-1')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-1-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-1','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-1','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">S</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Sneha Rao</p><p class="text-[11px] text-gray-400 truncate">sneha@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-2"><button onclick="toggleMemberRoleDD('org-mr-2')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-2-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-2','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-2','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#8B5CF6">R</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Riya Sharma</p><p class="text-[11px] text-gray-400 truncate">riya@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-3"><button onclick="toggleMemberRoleDD('org-mr-3')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-3-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-3','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-3','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#22C55E">D</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Dev Verma</p><p class="text-[11px] text-gray-400 truncate">dev@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select></div>
+                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-4"><button onclick="toggleMemberRoleDD('org-mr-4')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-4-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-4','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-4','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
                 </div>
               </div>
             </div>
@@ -1069,7 +1081,7 @@
         <div>
           <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Role</label>
           <select id="nm-role"
-            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
+            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
             <option value="User" selected>User</option>
             <option value="Owner">Owner</option>
           </select>
@@ -1253,6 +1265,20 @@
       _wsSearchTerm = q.toLowerCase();
       _applyWsFilter();
     }
+    // ── Member row role dropdowns ─────────────────────────────
+    function toggleMemberRoleDD(id) {
+      const dd = document.getElementById(id + '-dd');
+      const isHidden = dd?.classList.contains('hidden');
+      document.querySelectorAll('.mr-dd').forEach(el => el.classList.add('hidden'));
+      if (isHidden) dd?.classList.remove('hidden');
+    }
+
+    function setMemberRole(id, role) {
+      const wrapper = document.getElementById(id);
+      if (wrapper) wrapper.querySelector('.mr-role-label').textContent = role;
+      document.getElementById(id + '-dd')?.classList.add('hidden');
+    }
+
     function filterWsRole(role) {
       _wsRoleFilter = role;
       document.getElementById('ws-role-label').textContent = role === 'All' ? 'Role' : role;
@@ -1331,9 +1357,10 @@
       const initial  = first[0].toUpperCase();
       const bg       = NM_AVATAR_COLORS[Math.floor(Math.random() * NM_AVATAR_COLORS.length)];
       const isOwner  = role === 'Owner';
+      const mrId = 'org-mr-dyn-' + Date.now();
       const roleCellHtml = isOwner
         ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span>`
-        : `<select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400"><option>Owner</option><option selected>User</option></select>`;
+        : `<div class="relative" id="${mrId}"><button onclick="toggleMemberRoleDD('${mrId}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="${mrId}-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('${mrId}','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('${mrId}','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div>`;
       const row = document.createElement('div');
       row.className = 'flex items-center px-4 h-12';
       row.innerHTML = `
@@ -2279,6 +2306,9 @@
       }
       if (!e.target.closest('#org-role-dropdown') && !e.target.closest('[onclick="toggleOrgRoleDropdown()"]')) {
         document.getElementById('org-role-dropdown')?.classList.remove('open');
+      }
+      if (!e.target.closest('.mr-dd') && !e.target.closest('[onclick^="toggleMemberRoleDD"]')) {
+        document.querySelectorAll('.mr-dd').forEach(dd => dd.classList.add('hidden'));
       }
       if (!e.target.closest('#billing-year-dropdown') && !e.target.closest('#billing-year-btn')) {
         document.getElementById('billing-year-dropdown')?.classList.remove('open');
