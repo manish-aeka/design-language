@@ -3363,12 +3363,18 @@
             <td style="padding:6px 12px">
               <input type="text" id="col-desc-cell-${i}" value="${(c.desc||'').replace(/"/g,'&quot;')}" placeholder="Add description…" onchange="saveColMeta(${i},'desc',this.value)" style="width:100%;min-width:160px;height:28px;padding:0 8px;font-size:12px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6B7280;outline:none;cursor:text" onfocus="this.style.borderColor='#5B63F6';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" /></td>
             <td style="padding:6px 12px" class="ds-edit-only">
-              <select onchange="saveColMeta(${i},'colType',this.value)" onfocus="this.style.borderColor='#5B63F6'" onblur="this.style.borderColor='#E5E7EB'" style="width:130px;height:28px;padding:0 8px;font-size:11px;font-weight:500;border:1px solid #E5E7EB;border-radius:8px;background:white;color:#374151;cursor:pointer;outline:none">
-                <option value="" ${!colType?'selected':''} style="color:#9CA3AF">Select type</option>
-                <option value="measure"   ${colType==='measure'  ?'selected':''}>Measure</option>
-                <option value="dimension" ${colType==='dimension'?'selected':''}>Dimension</option>
-                <option value="time"      ${colType==='time'     ?'selected':''}>Time</option>
-              </select>
+              <div style="position:relative;display:inline-block" id="col-type-wrap-${i}">
+                <button type="button" onclick="toggleColTypeDd(${i},event)" style="width:120px;height:28px;padding:0 8px;font-size:11px;font-weight:500;border:1px solid #E5E7EB;border-radius:8px;background:white;color:#374151;cursor:pointer;outline:none;display:flex;align-items:center;justify-content:space-between;gap:4px">
+                  <span id="col-type-label-${i}" style="color:${colType?'#374151':'#9CA3AF'}">${colType ? colType.charAt(0).toUpperCase()+colType.slice(1) : 'Select type'}</span>
+                  <svg width="10" height="10" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="col-type-dd-${i}" style="display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:200;background:white;border:1px solid #E5E7EB;border-radius:12px;padding:4px 0;min-width:130px;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+                  <button onclick="selectColType(${i},'','Select type')" style="width:100%;text-align:left;padding:6px 12px;font-size:12px;color:#9CA3AF;background:none;border:none;cursor:pointer" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='none'">— None</button>
+                  <button onclick="selectColType(${i},'measure','Measure')" style="width:100%;text-align:left;padding:6px 12px;font-size:12px;font-weight:500;color:#374151;background:${colType==='measure'?'#EEF2FF':'none'};border:none;cursor:pointer" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='${colType==='measure'?'#EEF2FF':'none'}">Measure</button>
+                  <button onclick="selectColType(${i},'dimension','Dimension')" style="width:100%;text-align:left;padding:6px 12px;font-size:12px;font-weight:500;color:#374151;background:${colType==='dimension'?'#EEF2FF':'none'};border:none;cursor:pointer" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='${colType==='dimension'?'#EEF2FF':'none'}">Dimension</button>
+                  <button onclick="selectColType(${i},'time','Time')" style="width:100%;text-align:left;padding:6px 12px;font-size:12px;font-weight:500;color:#374151;background:${colType==='time'?'#EEF2FF':'none'};border:none;cursor:pointer" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='${colType==='time'?'#EEF2FF':'none'}">Time</button>
+                </div>
+              </div>
             </td>
             <td style="padding:9px 12px;font-size:11px;color:#9CA3AF;display:none" class="ds-readonly-only">${colType||'—'}</td>
             <td style="padding:6px 12px" class="ds-edit-only">
@@ -4090,6 +4096,8 @@
     document.addEventListener('click', e => {
       if (!e.target.closest('#rel-with-wrapper'))
         document.getElementById('rel-with-dd')?.classList.add('hidden');
+      if (!e.target.closest('[id^="col-type-wrap-"]'))
+        document.querySelectorAll('[id^="col-type-dd-"]').forEach(d => d.style.display = 'none');
     });
 
     function closeRelModal(e) {
@@ -4323,6 +4331,22 @@
       if (tbl?.columns?.[idx] !== undefined) {
         tbl.columns[idx][field] = value;
       }
+    }
+
+    function toggleColTypeDd(idx, e) {
+      e.stopPropagation();
+      const dd = document.getElementById('col-type-dd-' + idx);
+      const isOpen = dd.style.display !== 'none';
+      document.querySelectorAll('[id^="col-type-dd-"]').forEach(d => d.style.display = 'none');
+      if (!isOpen) dd.style.display = 'block';
+    }
+
+    function selectColType(idx, value, label) {
+      const lbl = document.getElementById('col-type-label-' + idx);
+      lbl.textContent = label === 'Select type' ? '— None' : label;
+      lbl.style.color = value ? '#374151' : '#9CA3AF';
+      document.getElementById('col-type-dd-' + idx).style.display = 'none';
+      saveColMeta(idx, 'colType', value);
     }
 
 
@@ -5420,13 +5444,13 @@
             const pal = connectorPalette(ds.connector);
             return `
             <div class="report-card bg-white border ${inProj ? 'border-indigo-100' : 'border-gray-200'} rounded-xl shadow-card cursor-pointer transition-all ${!inProj ? 'opacity-85 hover:opacity-100' : ''}" data-name="${ds.name}" onclick="event.stopPropagation()">
-              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}',true)">
+              <div class="h-40 rounded-t-xl flex items-center justify-center relative" style="background:${pal.bg}" onclick="openDetailPanel('${ds.id}')">
                 <div style="transform:scale(1.4)">${connectorIcon(ds.connector, 24)}</div>
               </div>
               <div class="px-3 pt-2.5 pb-3">
                 <div class="flex items-start justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}',true)">${ds.name}</p>
+                    <p class="text-sm font-medium text-gray-900 truncate max-w-[170px]" onclick="openDetailPanel('${ds.id}')">${ds.name}</p>
                     <div class="flex items-center gap-2 flex-wrap mt-1">
                       <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style="background:${pal.bg};color:${pal.color}">
                         ${connectorIcon(ds.connector, 10)}
@@ -5455,7 +5479,7 @@
             const inProj   = _projAssignments.has(ds.id);
             const pal = connectorPalette(ds.connector);
             return inProj ? `
-            <div class="assign-row flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50/80 transition-colors cursor-pointer bg-white" onclick="openDetailPanel('${ds.id}',true)">
+            <div class="assign-row flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50/80 transition-colors cursor-pointer bg-white" onclick="openDetailPanel('${ds.id}')">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${pal.bg}">${connectorIcon(ds.connector, 18)}</div>
               <div class="flex-1 min-w-0">
                 <p class="text-[13px] font-semibold text-gray-900 truncate">${ds.name}</p>

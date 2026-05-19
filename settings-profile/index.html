@@ -990,54 +990,57 @@
 
   <!-- ═══ ADD USER TO WORKSPACE MODAL ═══ -->
   <div id="add-user-overlay" onclick="if(event.target===this)closeAddUserModal()"
-    style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-lg shadow-2xl w-[440px] max-w-[92vw]">
-      <!-- Header -->
+    style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.45);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl w-full max-w-md mx-4" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)">
       <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-        <h2 class="text-[17px] font-bold text-gray-900">Add to workspace</h2>
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">Add member</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Invite someone to join this workspace</p>
+        </div>
         <button onclick="closeAddUserModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <!-- Body -->
-      <div class="px-6 py-5 space-y-4">
-        <!-- Member search -->
-        <div>
-          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Member <span class="text-red-400">*</span></label>
-          <div class="relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
-            <input id="au-member-search" type="text" placeholder="Search by name or email…" autocomplete="off"
-              oninput="filterAuMembers(this.value)"
-              class="w-full h-9 pl-9 pr-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+      <div class="px-6 py-5 space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">First name</label>
+            <input id="au-firstname" type="text" placeholder="Jane"
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
+              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+              onblur="this.style.borderColor='';this.style.boxShadow=''" />
           </div>
-          <!-- inline results list — part of flow, no absolute overflow -->
-          <div id="au-member-dropdown" class="hidden mt-1.5 rounded-lg border border-gray-200 overflow-hidden" style="box-shadow:0 2px 8px rgba(0,0,0,0.08)">
-            <div id="au-member-dropdown-inner" class="bg-white py-1.5 overflow-y-auto" style="max-height:172px;scrollbar-width:thin;scrollbar-color:#D1D5DB transparent"></div>
-          </div>
-          <!-- selected chip -->
-          <div id="au-selected-chip" class="hidden mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50">
-            <div id="au-chip-avatar" class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"></div>
-            <span id="au-chip-name" class="text-[13px] font-medium text-gray-900 flex-1 truncate"></span>
-            <button type="button" onclick="clearAuMember()" class="text-gray-400 hover:text-gray-600">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+          <div>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Last name</label>
+            <input id="au-lastname" type="text" placeholder="Doe"
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
+              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+              onblur="this.style.borderColor='';this.style.boxShadow=''" />
           </div>
         </div>
-        <!-- Role -->
+        <div>
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email <span class="text-red-400">*</span></label>
+          <input id="au-email" type="email" placeholder="jane@example.com"
+            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
+            onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+            onblur="this.style.borderColor='';this.style.boxShadow=''" />
+        </div>
         <div>
           <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Role <span class="text-red-400">*</span></label>
-          <div class="grid grid-cols-3 gap-2" id="au-role-group">
-            <button type="button" onclick="selectAuRole(this,'Viewer')" data-role="Viewer"
-              class="au-role-btn h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:border-indigo-300 transition-colors">Viewer</button>
-            <button type="button" onclick="selectAuRole(this,'Editor')" data-role="Editor"
-              class="au-role-btn h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:border-indigo-300 transition-colors">Editor</button>
-            <button type="button" onclick="selectAuRole(this,'Admin')" data-role="Admin"
-              class="au-role-btn h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 bg-white hover:border-indigo-300 transition-colors">Admin</button>
+          <div class="relative" id="au-role-dd-wrapper">
+            <button type="button" onclick="toggleAuRoleDD()" class="w-full flex items-center justify-between h-9 px-3 rounded-lg border border-gray-200 bg-white text-[13px] hover:bg-gray-50 transition-colors">
+              <span id="au-role-label" class="text-gray-400">Select role…</span>
+              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="au-role-dd" class="hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+              <button onclick="selectAuRoleDd('Viewer')" class="w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><span class="font-medium">Viewer</span><span class="text-[11px] text-gray-400 ml-2">Can view only</span></button>
+              <button onclick="selectAuRoleDd('Editor')" class="w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><span class="font-medium">Editor</span><span class="text-[11px] text-gray-400 ml-2">Can edit and create</span></button>
+              <button onclick="selectAuRoleDd('Admin')" class="w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><span class="font-medium">Admin</span><span class="text-[11px] text-gray-400 ml-2">Full workspace access</span></button>
+            </div>
           </div>
-          <p class="text-[11px] text-gray-400 mt-1.5" id="au-role-hint">Viewer — can view dashboards only</p>
+          <p id="au-role-hint" class="text-[11px] text-red-500 mt-1.5 hidden"></p>
         </div>
       </div>
-      <!-- Footer -->
       <div class="flex items-center justify-end gap-2 px-6 pb-5">
         <button onclick="closeAddUserModal()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
         <button onclick="sendWorkspaceInvite()" class="flex items-center gap-1.5 px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
@@ -1050,47 +1053,62 @@
 
   <!-- ═══ NEW MEMBER MODAL ═══ -->
   <div id="new-member-overlay" onclick="if(event.target===this)closeNewMemberModal()"
-    style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.4);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-lg shadow-2xl w-[440px] max-w-[92vw] overflow-hidden">
-      <!-- Header -->
+    style="display:none;position:fixed;inset:0;z-index:60;background:rgba(17,24,39,0.45);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl w-full max-w-md mx-4" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)">
       <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-        <h2 class="text-[17px] font-bold text-gray-900">New member</h2>
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">New member</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Invite someone to join your organisation</p>
+        </div>
         <button onclick="closeNewMemberModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <!-- Body -->
-      <div class="px-6 py-5">
-        <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="px-6 py-5 space-y-3">
+        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-[12px] font-medium text-gray-600 mb-1.5">First name</label>
             <input id="nm-firstname" type="text" placeholder="Jane"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
+              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+              onblur="this.style.borderColor='';this.style.boxShadow=''" />
           </div>
           <div>
             <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Last name</label>
             <input id="nm-lastname" type="text" placeholder="Doe"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
+              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+              onblur="this.style.borderColor='';this.style.boxShadow=''" />
           </div>
         </div>
-        <div class="mb-4">
-          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email address</label>
+        <div>
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email <span class="text-red-400">*</span></label>
           <input id="nm-email" type="email" placeholder="jane@example.com"
-            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
+            onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
+            onblur="this.style.borderColor='';this.style.boxShadow=''" />
         </div>
         <div>
-          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Role</label>
-          <select id="nm-role"
-            class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
-            <option value="User" selected>User</option>
-            <option value="Owner">Owner</option>
-          </select>
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Role <span class="text-red-400">*</span></label>
+          <div class="relative" id="nm-role-dd-wrapper">
+            <button type="button" onclick="toggleNmRoleDD()" class="w-full flex items-center justify-between h-9 px-3 rounded-lg border border-gray-200 bg-white text-[13px] hover:bg-gray-50 transition-colors">
+              <span id="nm-role-label" class="text-gray-400">Select role…</span>
+              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="nm-role-dd" class="hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
+              <button onclick="selectNmRoleDd('User')" class="w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><span class="font-medium">User</span><span class="text-[11px] text-gray-400 ml-2">Standard member</span></button>
+              <button onclick="selectNmRoleDd('Owner')" class="w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-gray-50"><span class="font-medium">Owner</span><span class="text-[11px] text-gray-400 ml-2">Full org access</span></button>
+            </div>
+          </div>
+          <p id="nm-role-hint" class="text-[11px] text-red-500 mt-1.5 hidden"></p>
         </div>
       </div>
-      <!-- Footer -->
       <div class="flex items-center justify-end gap-2 px-6 pb-5">
         <button onclick="closeNewMemberModal()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
-        <button onclick="addOrgMember()" class="px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">Add</button>
+        <button onclick="addOrgMember()" class="flex items-center gap-1.5 px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-opacity" style="background:#5B63F6">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+          Add member
+        </button>
       </div>
     </div>
   </div>
@@ -1195,6 +1213,7 @@
     function renderSettingDsTable() {
       const tbody = document.getElementById('settings-ds-tbody');
       const empty = document.getElementById('settings-ds-empty');
+      if (!tbody || !empty) return;
       const rows = SETTING_DS_DATA.filter(d => {
         const matchConnector = settingDsTypeFilter === 'All' || d.connector === settingDsTypeFilter;
         const matchSearch = d.name.toLowerCase().includes(settingDsSearchTerm) || d.connector.toLowerCase().includes(settingDsSearchTerm);
@@ -1247,11 +1266,11 @@
       // placeholder — add modal HTML if needed
     }
 
-    const WS_TABS = ['info','users','datasources'];
+    const WS_TABS = ['info','users'];
     function setWsTab(active) {
       WS_TABS.forEach(t => {
-        document.getElementById('wstab-' + t).classList.toggle('active', t === active);
-        document.getElementById('wspanel-' + t).classList.toggle('active', t === active);
+        document.getElementById('wstab-' + t)?.classList.toggle('active', t === active);
+        document.getElementById('wspanel-' + t)?.classList.toggle('active', t === active);
       });
     }
 
@@ -1324,39 +1343,80 @@
       document.getElementById('org-role-dropdown').classList.toggle('open');
     }
 
-    /* ── New member modal ───────────────────────────────── */
+    /* ── New member modal (org) ─────────────────────────── */
     const NM_AVATAR_COLORS = ['#3B5BDB','#0F9D58','#F97316','#8B5CF6','#22C55E','#DD344C','#D97706','#0EA5E9'];
+    let _nmSelectedRole = '';
+    let _nmSelectedMember = null;
 
+    function toggleNmRoleDD() {
+      document.getElementById('nm-role-dd').classList.toggle('hidden');
+    }
+    function selectNmRoleDd(role) {
+      _nmSelectedRole = role;
+      const lbl = document.getElementById('nm-role-label');
+      lbl.textContent = role; lbl.className = 'text-gray-900';
+      document.getElementById('nm-role-dd').classList.add('hidden');
+      document.getElementById('nm-role-hint').classList.add('hidden');
+    }
+    function filterNmMembers(q) {
+      _nmSelectedMember = null;
+      document.getElementById('nm-selected-chip').classList.add('hidden');
+      const dd = document.getElementById('nm-member-dropdown');
+      const inner = document.getElementById('nm-member-dropdown-inner');
+      if (!q.trim()) { dd.classList.add('hidden'); return; }
+      const matches = ORG_MEMBERS_LIST.filter(m =>
+        m.name.toLowerCase().includes(q.toLowerCase()) || m.email.toLowerCase().includes(q.toLowerCase())
+      );
+      if (!matches.length) { inner.innerHTML = '<p class="px-4 py-3 text-[13px] text-gray-400">No members found</p>'; dd.classList.remove('hidden'); return; }
+      inner.innerHTML = matches.map(m => { const idx = ORG_MEMBERS_LIST.indexOf(m);
+        return `<button type="button" onclick="selectNmMember(${idx})" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:${m.color}">${m.initial}</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">${m.name}</p><p class="text-[11px] text-gray-400 truncate">${m.email}</p></div></button>`;
+      }).join(''); dd.classList.remove('hidden');
+    }
+    function selectNmMember(idx) {
+      const m = ORG_MEMBERS_LIST[idx]; _nmSelectedMember = m;
+      document.getElementById('nm-email-search').value = '';
+      document.getElementById('nm-member-dropdown').classList.add('hidden');
+      document.getElementById('nm-chip-avatar').style.background = m.color;
+      document.getElementById('nm-chip-avatar').textContent = m.initial;
+      document.getElementById('nm-chip-name').textContent = m.name + ' · ' + m.email;
+      document.getElementById('nm-selected-chip').classList.remove('hidden');
+    }
+    function clearNmMember() {
+      _nmSelectedMember = null;
+      document.getElementById('nm-selected-chip').classList.add('hidden');
+      document.getElementById('nm-email-search').value = '';
+      document.getElementById('nm-email-search').focus();
+    }
     function openNewMemberModal() {
+      _nmSelectedRole = ''; _nmSelectedMember = null;
       document.getElementById('nm-firstname').value = '';
       document.getElementById('nm-lastname').value  = '';
       document.getElementById('nm-email').value     = '';
-      document.getElementById('nm-role').value      = 'User';
-      const ov = document.getElementById('new-member-overlay');
-      ov.style.display = 'flex';
+      const lbl = document.getElementById('nm-role-label');
+      lbl.textContent = 'Select role…'; lbl.className = 'text-gray-400';
+      document.getElementById('nm-role-dd').classList.add('hidden');
+      document.getElementById('nm-role-hint').classList.add('hidden');
+      document.getElementById('new-member-overlay').style.display = 'flex';
+      setTimeout(() => document.getElementById('nm-firstname').focus(), 50);
     }
-
     function closeNewMemberModal() {
       document.getElementById('new-member-overlay').style.display = 'none';
     }
-
     function syncNmRoleStyles() {}
-
     document.addEventListener('change', function(e) {});
-
     function addOrgMember() {
-      const first = document.getElementById('nm-firstname').value.trim();
-      const last  = document.getElementById('nm-lastname').value.trim();
-      const email = document.getElementById('nm-email').value.trim();
-      const role  = document.getElementById('nm-role').value;
-      if (!first || !email) {
-        document.getElementById(first ? 'nm-email' : 'nm-firstname').focus();
-        return;
+      const first    = document.getElementById('nm-firstname').value.trim();
+      const last     = document.getElementById('nm-lastname').value.trim();
+      const emailRaw = document.getElementById('nm-email').value.trim();
+      if (!emailRaw) { document.getElementById('nm-email').focus(); return; }
+      if (!_nmSelectedRole) {
+        const hint = document.getElementById('nm-role-hint');
+        hint.textContent = '⚠ Please select a role'; hint.classList.remove('hidden'); return;
       }
-      const fullName = (first + ' ' + last).trim();
-      const initial  = first[0].toUpperCase();
+      const fullName = first ? (first + (last ? ' ' + last : '')) : emailRaw.split('@')[0];
+      const initial  = fullName[0].toUpperCase();
       const bg       = NM_AVATAR_COLORS[Math.floor(Math.random() * NM_AVATAR_COLORS.length)];
-      const isOwner  = role === 'Owner';
+      const isOwner  = _nmSelectedRole === 'Owner';
       const mrId = 'org-mr-dyn-' + Date.now();
       const roleCellHtml = isOwner
         ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span>`
@@ -1368,7 +1428,7 @@
           <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:${bg}">${initial}</div>
           <div class="min-w-0">
             <p class="text-[13px] font-medium text-gray-900 truncate">${fullName}</p>
-            <p class="text-[11px] text-gray-400 truncate">${email}</p>
+            <p class="text-[11px] text-gray-400 truncate">${emailRaw}</p>
           </div>
         </div>
         <div class="w-24 flex justify-end">${roleCellHtml}</div>`;
@@ -1376,39 +1436,35 @@
       closeNewMemberModal();
     }
 
-    /* ── Add user to workspace modal ───────────────────── */
-    const AU_ROLE_HINTS = {
-      Viewer: 'Viewer — can view dashboards only',
-      Editor: 'Editor — can edit and create dashboards',
-      Admin:  'Admin — full workspace access',
-    };
+    /* ── Add user to workspace modal ─────────────────── */
     let _auSelectedRole = '';
 
-    function selectAuRole(btn, role) {
+    function toggleAuRoleDD() {
+      const dd = document.getElementById('au-role-dd');
+      dd.classList.toggle('hidden');
+    }
+
+    function selectAuRoleDd(role) {
       _auSelectedRole = role;
-      document.querySelectorAll('.au-role-btn').forEach(b => {
-        const active = b === btn;
-        b.style.background    = active ? '#EEF2FF' : '';
-        b.style.borderColor   = active ? '#5B63F6' : '';
-        b.style.color         = active ? '#5B63F6' : '';
-        b.style.fontWeight    = active ? '600' : '';
-      });
-      document.getElementById('au-role-hint').textContent = AU_ROLE_HINTS[role] || '';
+      const lbl = document.getElementById('au-role-label');
+      lbl.textContent = role;
+      lbl.classList.remove('text-gray-400');
+      lbl.classList.add('text-gray-900');
+      document.getElementById('au-role-dd').classList.add('hidden');
+      document.getElementById('au-role-hint').classList.add('hidden');
     }
 
     function openAddUserModal() {
       _auSelectedRole = '';
-      _auSelectedMember = null;
-      document.getElementById('au-member-search').value = '';
-      document.getElementById('au-member-dropdown').classList.add('hidden');
-      document.getElementById('au-selected-chip').classList.add('hidden');
-      document.querySelectorAll('.au-role-btn').forEach(b => {
-        b.style.background = b.style.borderColor = b.style.color = b.style.fontWeight = '';
-      });
-      document.getElementById('au-role-hint').textContent = 'Viewer — can view dashboards only';
-      document.getElementById('au-role-hint').style.color = '';
+      document.getElementById('au-firstname').value = '';
+      document.getElementById('au-lastname').value  = '';
+      document.getElementById('au-email').value     = '';
+      const lbl = document.getElementById('au-role-label');
+      lbl.textContent = 'Select role…'; lbl.className = 'text-gray-400';
+      document.getElementById('au-role-dd').classList.add('hidden');
+      document.getElementById('au-role-hint').classList.add('hidden');
       document.getElementById('add-user-overlay').style.display = 'flex';
-      setTimeout(() => document.getElementById('au-member-search').focus(), 50);
+      setTimeout(() => document.getElementById('au-firstname').focus(), 50);
     }
 
     function closeAddUserModal() {
@@ -1470,21 +1526,21 @@
     }
 
     function sendWorkspaceInvite() {
-      if (!_auSelectedMember) { document.getElementById('au-member-search').focus(); return; }
+      const first    = document.getElementById('au-firstname').value.trim();
+      const last     = document.getElementById('au-lastname').value.trim();
+      const _email   = document.getElementById('au-email').value.trim();
+      if (!_email) { document.getElementById('au-email').focus(); return; }
       if (!_auSelectedRole) {
-        document.getElementById('au-role-hint').textContent = '⚠ Please select a role';
-        document.getElementById('au-role-hint').style.color = '#DC2626';
+        const hint = document.getElementById('au-role-hint');
+        hint.textContent = '⚠ Please select a role';
+        hint.classList.remove('hidden');
         return;
       }
-      const { name: email, initial, color: bg } = _auSelectedMember;
-      // reuse vars named 'email' just for compat with row builder below
-      const _name = _auSelectedMember.name;
-      const _email = _auSelectedMember.email;
-      const roleCell = `<select class="text-[12px] text-gray-700 border border-gray-200 rounded-lg px-2 h-7 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
-        <option${_auSelectedRole==='Admin'?' selected':''}>Admin</option>
-        <option${_auSelectedRole==='Editor'?' selected':''}>Editor</option>
-        <option${_auSelectedRole==='Viewer'?' selected':''}>Viewer</option>
-      </select>`;
+      const _name  = first ? (first + (last ? ' ' + last : '')) : _email.split('@')[0];
+      const initial = _name[0].toUpperCase();
+      const bg = AU_AVATAR_COLORS[Math.floor(Math.random() * AU_AVATAR_COLORS.length)];
+      const mrId = 'ws-mr-dyn-' + Date.now();
+      const roleCell = `<div class="relative" id="${mrId}"><button onclick="toggleMemberRoleDD('${mrId}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">${_auSelectedRole}</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="${mrId}-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('${mrId}','Admin')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Admin</button><button onclick="setMemberRole('${mrId}','Editor')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Editor</button><button onclick="setMemberRole('${mrId}','Viewer')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Viewer</button></div></div>`;
       const row = document.createElement('div');
       row.className = 'flex items-center px-4 h-12';
       row.innerHTML = `
@@ -1496,7 +1552,6 @@
           </div>
         </div>
         <div class="w-24 flex justify-end">${roleCell}</div>`;
-      // insert before the last child of the ws users list (before the outer wrapper closes)
       const container = document.querySelector('#wspanel-users .divide-y');
       if (container) container.appendChild(row);
       closeAddUserModal();
@@ -2315,6 +2370,15 @@
       }
       if (!e.target.closest('#au-member-dropdown') && !e.target.closest('#au-member-search')) {
         document.getElementById('au-member-dropdown')?.classList.add('hidden');
+      }
+      if (!e.target.closest('#au-role-dd') && !e.target.closest('#au-role-dd-wrapper')) {
+        document.getElementById('au-role-dd')?.classList.add('hidden');
+      }
+      if (!e.target.closest('#nm-member-dropdown') && !e.target.closest('#nm-email-search')) {
+        document.getElementById('nm-member-dropdown')?.classList.add('hidden');
+      }
+      if (!e.target.closest('#nm-role-dd') && !e.target.closest('#nm-role-dd-wrapper')) {
+        document.getElementById('nm-role-dd')?.classList.add('hidden');
       }
       if (!e.target.closest('#cb-cat-dropdown') && !e.target.closest('[onclick="cbToggleCatDropdown()"]')) {
         document.getElementById('cb-cat-dropdown')?.classList.remove('open');
