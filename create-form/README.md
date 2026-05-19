@@ -111,7 +111,7 @@ Fixed `44px` (`h-11`) bar with `border-b border-gray-100`. Layout: `flex items-c
 | Unread dot | `id="notif-dot"`, `w-1.5 h-1.5`, `bg-red-500` |
 | Dropdown id | `notif-dropdown` |
 | Width | `320px` (`w-80`) |
-| Radius | `rounded-2xl` |
+| Radius | `rounded-lg` |
 
 **5 notification items:**
 
@@ -266,16 +266,31 @@ Header: "Switch Workspace" + "New Workspace" button → `openNewWsModal()`.
 Search: `id="ws-search"`, `oninput="filterWsList()"`.
 List: `id="ws-modal-list"`, rendered by `renderWsModalList(filter)`.
 
-`wsData` (5 workspaces): Manish kumar's Workspace (current), Sovereign Capital Gate, Design System, Data Analytics, Product Research.
+`wsData` (6 workspaces, merged with `localStorage('aibii_workspaces')`):
+
+| `id` | Name | Initial | Color | Current |
+|---|---|---|---|---|
+| `ws-manish` | Manish kumar's Workspace | M | `#3B5BDB` | ✓ |
+| `ws-scg` | Sovereign Capital Gate | S | `#5B63F6` | — |
+| `ws-design` | Design System | D | `#16A34A` | — |
+| `ws-data` | Data Analytics | A | `#F97316` | — |
+| `ws-prod` | Product Research | P | `#8B5CF6` | — |
+| `ws-mkt` | Marketing Hub | H | `#EC4899` | — |
 
 ### New Workspace Full-Screen (`id="new-ws-modal"`)
 
 `hidden fixed inset-0 z-[60]`, `background:#F3F4F6`.
-- Avatar preview `id="ws-preview-avatar"` (44px `rounded-xl`, click → `cycleWsColor()`)
-- Name preview `id="ws-preview-name"`
-- Name input `id="new-ws-name"` → `onWsNameInput(val)`
-- Description textarea `id="new-ws-desc"`
-- `createNewWs()` — pushes to `wsData`, selects it
+Form card: `rounded-lg max-w-lg px-7 py-8`.
+- h2 `"New workspace"` + p `"A shared space for your team's work."`
+- `#ws-preview-avatar` `w-11 h-11 rounded-xl` + hint `"Click avatar to change color"` → `cycleWsColor()`
+- `#ws-preview-name` live preview
+- `#new-ws-name` input → `onWsNameInput(val)`; Enter → `createNewWs()`
+- `#new-ws-desc` textarea (optional)
+- Cancel + Create buttons (Create: `bg:#5B63F6 hover:#4850e4`)
+
+`wsColors` palette (7): `#5B63F6 · #16A34A · #F97316 · #8B5CF6 · #EC4899 · #0EA5E9 · #EAB308`
+
+`createNewWs()` — pushes to `wsData`, selects it
 
 ---
 

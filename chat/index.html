@@ -204,7 +204,7 @@
     <!-- Bottom nav -->
     <nav class="px-3 py-2 space-y-0.5">
       <a href="../datasource/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
-        <svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
+        <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5" stroke="currentColor" fill="none"/><path stroke-linecap="round" d="M4 5v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5V5"/><path stroke-linecap="round" d="M4 12v7c0 1.38 3.582 2.5 8 2.5s8-1.12 8-2.5v-7"/></svg>
         Datasources
       </a>
       <a href="../settings-profile/index.html" class="nav-item flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm text-gray-600">
@@ -356,7 +356,7 @@
       <!-- Left: chat title -->
       <div class="flex items-center gap-2 min-w-0">
         <svg class="w-4 h-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/></svg>
-        <h2 class="text-[14px] font-semibold text-gray-900 truncate">New Chat</h2>
+        <h2 id="chat-topbar-title" class="text-[14px] font-semibold text-gray-900 truncate">New Chat</h2>
       </div>
       <!-- Right: Model picker, Share -->
       <div class="flex items-center gap-2">
@@ -415,7 +415,8 @@
     <div class="flex-1 flex overflow-hidden">
     <div class="flex-1 flex flex-col overflow-hidden">
     <!-- ── Chat messages area ── -->
-    <div id="messages-area" class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+    <div id="messages-area" class="flex-1 overflow-y-auto py-6">
+    <div id="messages-inner" class="max-w-5xl mx-auto px-4 space-y-6">
 
 
       <!-- ── User message 1 ── -->
@@ -565,31 +566,49 @@
         </div>
       </div>
 
+    </div><!-- /max-w-5xl -->
     </div><!-- /messages-area -->
 
 
     <!-- ── Input bar ── -->
-    <div class="px-6 pb-5 flex-shrink-0">
-      <div class="flex items-end gap-3 bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-card focus-within:border-indigo-300 focus-within:shadow-input transition-all">
+    <div class="px-4 pb-5 pt-2 flex-shrink-0">
+      <div class="max-w-5xl mx-auto">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-card focus-within:border-indigo-300 focus-within:shadow-input transition-all overflow-hidden">
 
-        <!-- Attach -->
-        <button class="flex-shrink-0 mb-0.5 text-gray-400 hover:text-gray-600 transition-colors" title="Attach file">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/></svg>
-        </button>
+          <!-- Top: Textarea -->
+          <div class="px-4 pt-3.5 pb-2">
+            <textarea id="chat-input" rows="1"
+              placeholder="Ask anything about your data…"
+              class="w-full text-[14px] text-gray-900 placeholder-gray-400 bg-transparent border-none outline-none leading-relaxed resize-none"
+              oninput="autoGrow(this)" onkeydown="handleKey(event)"></textarea>
+          </div>
 
-        <!-- Textarea -->
-        <textarea id="chat-input" rows="1"
-          placeholder="Ask anything about your data…"
-          class="flex-1 text-[14px] text-gray-900 placeholder-gray-400 bg-transparent border-none outline-none leading-relaxed"
-          oninput="autoGrow(this)" onkeydown="handleKey(event)"></textarea>
+          <!-- Bottom: actions row -->
+          <div class="flex items-center justify-between px-3 pb-2.5 pt-1">
+            <!-- Left actions -->
+            <div class="flex items-center gap-1.5">
+              <!-- Attach -->
+              <button class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="Attach file">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              </button>
+              <!-- Search pill -->
+              <button class="flex items-center gap-1.5 px-2.5 h-7 rounded-full border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.75"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75L21 21"/></svg>
+                Search
+              </button>
+            </div>
+            <!-- Right: send -->
+            <div class="flex items-center gap-2">
+              <!-- Send -->
+              <button id="send-btn" onclick="sendMessage()"
+                class="w-7 h-7 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
+                style="background:#5B63F6">
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+              </button>
+            </div>
+          </div>
 
-        <!-- Send button -->
-        <button id="send-btn" onclick="sendMessage()"
-          class="flex-shrink-0 mb-0.5 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
-          style="background:#5B63F6">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-        </button>
-
+        </div>
       </div>
     </div>
     </div><!-- /chat-column -->
@@ -902,6 +921,7 @@
       if (!text) return;
 
       const area = document.getElementById('messages-area');
+      const inner = document.getElementById('messages-inner');
 
       // Append user bubble
       const userMsg = document.createElement('div');
@@ -911,7 +931,7 @@
           <div class="bubble px-4 py-2.5 text-[14px] leading-relaxed">${escapeHtml(text)}</div>
           <span class="text-[11px] text-gray-400">${currentTime()}</span>
         </div>`;
-      area.appendChild(userMsg);
+      inner.appendChild(userMsg);
       area.scrollTop = area.scrollHeight;
 
       // Clear input
@@ -961,9 +981,9 @@
               </button>
             </div>
           </div>`;
-        area.appendChild(aiMsg);
+        inner.appendChild(aiMsg);
         // Strip Regenerate from all previous AI messages
-        document.querySelectorAll('#messages-area .msg-ai .regen-btn').forEach(function(btn) { btn.remove(); });
+        document.querySelectorAll('#messages-inner .msg-ai .regen-btn').forEach(function(btn) { btn.remove(); });
         area.scrollTop = area.scrollHeight;
       }, 1600);
     }
@@ -994,12 +1014,59 @@
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
 
+    // ── New chat: handle ?new=1&name=...&project=... ───────────────
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('new') !== '1') return;
+
+      var name = params.get('name') || 'New Chat';
+      // Update chat title in topbar
+      var titleEl = document.querySelector('#chat-topbar-title');
+      if (!titleEl) {
+        // fallback: find the h2 in the second topbar
+        var h2s = document.querySelectorAll('h2');
+        h2s.forEach(function(h) { if (h.textContent.trim() === 'New Chat') titleEl = h; });
+      }
+      if (titleEl) titleEl.textContent = name;
+      document.title = 'AiBii — ' + name;
+
+      // Inject into sidebar submenu & make active
+      var projectId = params.get('project') || 'ws2';
+      var subEl = document.getElementById(projectId + '-sub');
+      if (subEl) {
+        subEl.classList.add('open');
+        var btn = document.getElementById(projectId + '-btn');
+        if (btn) btn.classList.add('open');
+
+        var activeItem = document.createElement('a');
+        activeItem.href = '#';
+        activeItem.className = 'flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-semibold text-gray-900';
+        activeItem.style.cssText = 'background:#EEF2FF;border-left:2px solid #5B63F6;';
+        activeItem.innerHTML =
+          '<svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">'
+          + '<path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/>'
+          + '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h.01M12 12h.01M15 12h.01"/>'
+          + '</svg>'
+          + name;
+        subEl.insertBefore(activeItem, subEl.firstChild);
+
+        var projectRow = subEl.previousElementSibling;
+        if (projectRow) {
+          projectRow.style.background = '#EEF2FF';
+          var projLink = projectRow.querySelector('a');
+          if (projLink) { projLink.classList.add('font-semibold'); projLink.classList.remove('text-gray-700'); projLink.classList.add('text-gray-900'); }
+        }
+      }
+    })();
+
     // ── Model dropdown ──────────────────────────────────────────────
     function toggleModelDropdown() {
       document.getElementById('model-dropdown').classList.toggle('open');
     }
     function selectModel(name, el) {
       document.getElementById('model-label').textContent = name;
+      var lbl2 = document.getElementById('current-model-label');
+      if (lbl2) lbl2.textContent = name;
       document.querySelectorAll('.model-option').forEach(function(btn) {
         btn.classList.remove('selected');
         btn.querySelector('svg') && btn.querySelector('svg').remove();

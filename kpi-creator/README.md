@@ -630,3 +630,50 @@ Sidebar collapse: `width 220ms ease, min-width 220ms ease, opacity 180ms ease`
 | `toggleWorkspace(id)` | Accordion toggle for sidebar project groups |
 | `toggleNotifications()` | Shows/hides `#notif-dropdown` |
 | `markAllRead()` | Clears notification dot and unread highlight styles |
+| `openWsModal()` / `closeWsModal(e)` | Workspace Switcher modal lifecycle |
+| `renderWsModalList(filter)` | Renders filtered workspace rows in `#ws-modal-list` |
+| `filterWsList()` | Reads `#ws-search`, calls `renderWsModalList` |
+| `selectWorkspace(id)` | Switches active workspace, updates sidebar header |
+| `openNewWsModal()` / `closeNewWsModal()` | New Workspace full-screen lifecycle |
+| `cycleWsColor()` | Cycles avatar color through 7 presets |
+| `onWsNameInput(val)` | Live preview for workspace name + avatar letter |
+| `createNewWs()` | Pushes new workspace to `wsData`, selects it |
+
+---
+
+## Workspace Switcher Modal (`#ws-modal-backdrop`)
+
+Opened by `openWsModal()`. Backdrop: `rgba(17,24,39,0.45) backdrop-filter:blur(2px)`. Click backdrop → `closeWsModal(event)`.
+
+```
+#ws-modal  rounded-lg max-w-lg max-height:620px bg-white
+  Header
+    h2  "Switch Workspace"  text-[15px] font-semibold text-gray-900
+    p   "Select a workspace to switch to"  text-[12px] text-gray-400
+    button  "New Workspace"  bg:#5B63F6 hover:#4850e4  → openNewWsModal()
+  Search  #ws-search  oninput="filterWsList()"
+  List    #ws-modal-list  rendered by renderWsModalList(filter)
+```
+
+`wsData` array (6 entries, merged with `localStorage('aibii_workspaces')`):
+
+| `id` | Name | Initial | Color | Current |
+|---|---|---|---|---|
+| `ws-manish` | Manish kumar's Workspace | M | `#3B5BDB` | ✓ |
+| `ws-scg` | Sovereign Capital Gate | S | `#5B63F6` | — |
+| `ws-design` | Design System | D | `#16A34A` | — |
+| `ws-data` | Data Analytics | A | `#F97316` | — |
+| `ws-prod` | Product Research | P | `#8B5CF6` | — |
+| `ws-mkt` | Marketing Hub | H | `#EC4899` | — |
+
+## New Workspace (`#new-ws-modal`, full-screen)
+
+`hidden fixed inset-0 z-[60]`, `background:#F3F4F6` with mini Aibii topbar (close ×).
+Form card: `rounded-lg max-w-lg px-7 py-8`.
+- `#ws-preview-avatar` `w-11 h-11 rounded-xl` → `cycleWsColor()`; hint `"Click avatar to change color"`
+- `#ws-preview-name` live preview
+- `#new-ws-name` → `onWsNameInput(val)`; Enter → `createNewWs()`
+- `#new-ws-desc` textarea (optional)
+- Cancel + Create buttons (Create: `bg:#5B63F6 hover:#4850e4`)
+
+`wsColors` palette (7): `#5B63F6 · #16A34A · #F97316 · #8B5CF6 · #EC4899 · #0EA5E9 · #EAB308`

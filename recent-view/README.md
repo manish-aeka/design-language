@@ -303,7 +303,7 @@ Opened by `openWsModal()`. Backdrop: `rgba(17,24,39,0.45) backdrop-filter:blur(2
 |---|---|
 | Modal max-width | `512px` (`max-w-lg`) |
 | Max-height | `620px` |
-| Radius | `rounded-2xl` |
+| Radius | `rounded-lg` |
 | Shadow | `0 20px 60px rgba(0,0,0,0.18)` |
 
 **Header:** "Switch Workspace" title + "New Workspace" button (`background:#5B63F6`) → `openNewWsModal()`.  

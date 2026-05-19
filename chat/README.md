@@ -183,8 +183,11 @@ Triggered by `openWsModal()` from the workspace switcher button.
 
 ```
 #ws-modal-backdrop  fixed inset-0 z-50  bg rgba(17,24,39,0.45) blur(2px)
-  #ws-modal  bg-white rounded-2xl max-w-lg  max-height:620px
-    header  "Switch Workspace" + "New Workspace" button (bg:#5B63F6)
+  #ws-modal  bg-white rounded-lg max-w-lg  max-height:620px
+    header
+      h2  "Switch Workspace"  text-[15px] font-semibold text-gray-900
+      p   "Select a workspace to switch to"  text-[12px] text-gray-400 mt-0.5
+      button  "New Workspace"  bg:#5B63F6  hover:#4850e4  px-3 h-8 rounded-lg
     search  #ws-search  oninput="filterWsList()"
     list    #ws-modal-list  rendered by renderWsModalList()
 ```
@@ -198,12 +201,15 @@ Triggered by `openWsModal()` from the workspace switcher button.
 ```
 #new-ws-modal  hidden fixed inset-0 z-[60]  bg:#F3F4F6
   topbar  Aibii logo + close button
-  form card  bg-white rounded-2xl max-w-sm
-    #ws-preview-avatar  w-11 h-11 rounded-xl  onclick="cycleWsColor()"
-    #ws-preview-name
-    input#new-ws-name   oninput="onWsNameInput(this.value)"
-    textarea#new-ws-desc
-    Cancel + Create buttons
+  form card  bg-white rounded-lg max-w-lg  px-7 py-8
+    h2  "New workspace"  text-[17px] font-bold text-gray-900
+    p   "A shared space for your team's work."  text-[12px] text-gray-400
+    #ws-preview-avatar  w-11 h-11 rounded-xl  onclick="cycleWsColor()"  title="Click to change color"
+    #ws-preview-name  text-[13px] font-semibold text-gray-800
+    p   "Click avatar to change color"  text-[11px] text-gray-400
+    label + input#new-ws-name   oninput="onWsNameInput(this.value)"  onkeydown Enter→createNewWs()
+    label + textarea#new-ws-desc  (optional)
+    Cancel + Create buttons  (Create: bg:#5B63F6 hover:#4850e4)
 ```
 
 ---

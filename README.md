@@ -121,7 +121,7 @@ Every page uses a **3-zone shell**:
   </aside>
   <main class="flex-1 flex flex-col overflow-hidden">
     <!-- topbar -->
-    <div class="flex items-center justify-between px-5 h-11 border-b border-gray-100 bg-white flex-shrink-0">…</div>
+    <div class="flex items-center justify-between px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">…</div>
     <!-- content -->
     <div class="flex-1 overflow-auto …">…</div>
   </main>
@@ -134,13 +134,13 @@ Every page uses a **3-zone shell**:
 
 ### Topbar
 
-Height `h-11`, padding `px-5`, `border-b border-gray-100`, `bg-white`, `flex-shrink-0`.
+Height `h-11`, padding `px-4`, `border-b border-gray-100`, `bg-white`, `flex-shrink-0`.
 
 **LEFT zone:** hamburger → back → forward → `w-px h-4 bg-gray-200` divider → breadcrumb  
 **RIGHT zone:** bell icon button → user avatar + name
 
 ```html
-<div class="flex items-center justify-between px-5 h-11 border-b border-gray-100 bg-white flex-shrink-0">
+<div class="flex items-center justify-between px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
   <div class="flex items-center gap-1.5">
     <!-- hamburger, back, fwd, divider, breadcrumb -->
   </div>
@@ -162,7 +162,7 @@ Height `h-11`, padding `px-5`, `border-b border-gray-100`, `bg-white`, `flex-shr
 
 #### Workspace Switcher
 
-Top of sidebar, `border-b border-gray-100`. Avatar is `w-7 h-7 rounded-full` with workspace color. Dropdown is `fixed` positioned, `border rounded-[12px]`, uses the `ws-dropdown` shadow.
+Top of sidebar, `border-b border-gray-100`. Avatar is `w-7 h-7 rounded-full` with workspace color. Opens `#ws-modal-backdrop` (full-screen modal overlay) via `openWsModal()` — see [Workspace Switcher JS Pattern](#workspace-switcher-js-pattern).
 
 #### Nav Items
 
@@ -369,7 +369,7 @@ Three `chat-dot` spans in a `#F3F4F6` bubble with `border-radius:16px 16px 16px 
   width:100%; text-align:left;
   display:flex; align-items:center; gap:8px;
   padding:7px 10px; border-radius:10px;
-  border:1px solid #EFEFEF; background:#FAFAFA;
+  border:1px solid #E5E7EB; background:#F3F4F6;
   font-size:11.5px; font-weight:500; color:#4B5563;
   transition: all 130ms ease;
 }
@@ -450,7 +450,7 @@ Canvas area classes: `flex-1 canvas-grid flex items-center justify-center overfl
 Applied globally across all pages:
 
 ```css
-::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar { width: 6px; }  /* 5px on chat page */
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ```
@@ -853,11 +853,33 @@ Cards that contain scrollable lists must include `flex flex-col flex-1 min-h-0` 
 
 ## Workspace Switcher JS Pattern
 
-All pages include the same workspace switcher dropdown with:
-- `wsData` array with `{id, name, initial, color, current}`
-- `toggleWsSwitcher()` → `renderWsSwitcherList()` + `positionWsDropdown()`
-- `selectWorkspace(id)` → updates header avatar + name, closes dropdown
-- `document` click-outside listener to close dropdown
+All pages include the same workspace switcher **modal** with:
+- `wsData` array with `{id, name, initial, color, current}` (6 entries, merged with `localStorage('aibii_workspaces')`)
+- `openWsModal()` → adds `.open` to `#ws-modal-backdrop`, calls `renderWsModalList('')`, focuses search
+- `closeWsModal(e)` → removes `.open` if click target is the backdrop itself
+- `renderWsModalList(filter)` → renders filtered `<button>` rows into `#ws-modal-list`
+- `filterWsList()` → reads search input, calls `renderWsModalList`
+- `selectWorkspace(id)` → updates header avatar + name, closes modal
+- `openNewWsModal()` / `closeNewWsModal()` → full-screen new-workspace form
+- `cycleWsColor()` → cycles `wsColors` palette (7 colors) on avatar click
+- `onWsNameInput(val)` → updates live preview name + avatar initial
+- `createNewWs()` → pushes to `wsData`, calls `selectWorkspace`
+
+**Modal structure:**
+```html
+<div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center"
+     style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)">
+  <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg max-h-[620px] …">
+    <!-- Header: "Switch Workspace" h2 + subtitle p + "New Workspace" button -->
+    <!-- Search: #ws-search input -->
+    <!-- List: #ws-modal-list -->
+  </div>
+</div>
+```
+
+**New Workspace form** (`#new-ws-modal`) is a separate full-screen overlay (`fixed inset-0 z-[60] bg:#F3F4F6`) with a mini Aibii topbar and a centered form card (`rounded-lg max-w-lg`).
+
+`wsColors` palette: `#5B63F6 · #16A34A · #F97316 · #8B5CF6 · #EC4899 · #0EA5E9 · #EAB308`
 
 ---
 
