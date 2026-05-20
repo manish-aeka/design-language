@@ -3109,7 +3109,7 @@
       // Controlled visibility for 'Add Table' button in tables tab
       const addTblBtn = document.getElementById('inline-add-tbl-btn');
       if (addTblBtn) {
-        if (readOnly) {
+        if (readOnly || _currentScope === 'proj') {
           addTblBtn.classList.remove('hidden');
           addTblBtn.classList.add('flex');
         } else {
