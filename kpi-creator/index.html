@@ -25,6 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <!-- CodeMirror 5 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css"/>
@@ -674,6 +675,10 @@
       </div>
     </div>
 
+    <!-- Content row: full height below topbar -->
+    <div id="content-row" class="flex-1 flex overflow-hidden">
+    <!-- Left: mode toolbar + canvas/SQL -->
+    <div class="flex-1 flex flex-col overflow-hidden">
     <!-- ── Shared mode + datasource toolbar ── -->
     <div class="flex items-center gap-3 px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
       <div class="mode-switch" style="width:204px;">
@@ -687,11 +692,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Content row: full height below mode toolbar -->
-    <div class="flex-1 flex overflow-hidden">
-    <!-- Left: canvas/SQL -->
-    <div class="flex-1 flex flex-col overflow-hidden">
     <!-- AI canvas wrapper -->
     <div id="ai-layout-wrapper" class="flex-1 flex flex-col overflow-hidden">
 
@@ -982,25 +982,17 @@
 
       </div><!-- end inner flex -->
 
-      <!-- ══ Visualization Editor Mode (full split view, shown when + Visualization clicked) ══ -->
-      <div id="sql-viz-editor-mode" class="hidden flex-1 flex overflow-hidden">
-
-        <!-- Center: chart preview area -->
-        <div class="flex-1 flex flex-col overflow-hidden" style="background:#F4F5F8;">
+      <!-- ══ Visualization Editor Mode ══ -->
+      <div id="sql-viz-editor-mode" class="hidden flex-1 flex flex-col overflow-hidden" style="background:#F4F5F8;">
 
           <!-- Breadcrumb bar -->
           <div class="flex items-center gap-2 px-4 h-10 border-b border-gray-100 bg-white flex-shrink-0">
             <button onclick="closeVizEditorMode()" class="flex items-center gap-1.5 text-[12px] font-medium text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-              Query Editor
+              
             </button>
-            <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
             <span id="ve-breadcrumb-name" class="text-[12px] font-medium text-gray-700 truncate">New Visualization</span>
-            <div class="flex-1"></div>
-            <button onclick="startNewVisualization()" class="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11.5px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              New
-            </button>
           </div>
 
           <!-- Preview area -->
@@ -1059,10 +1051,23 @@
               </div>
             </div><!-- end chart card -->
           </div><!-- end preview area -->
-        </div><!-- end center -->
+      </div><!-- end sql-viz-editor-mode -->
 
-        <!-- Right: Visualization Editor panel -->
-        <div class="flex flex-col border-l border-gray-100 bg-white overflow-hidden flex-shrink-0" style="width:300px;min-width:300px;">
+      <!-- ══ VE Right Panel — moved to content-row level by JS when VE mode opens ══ -->
+      <div id="ve-right-panel" class="flex flex-col border-l border-gray-100 bg-white overflow-hidden flex-shrink-0" style="width:300px;min-width:300px;display:none;">
+
+          <!-- Panel header -->
+          <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <div style="width:22px;height:22px;min-width:22px;border-radius:7px;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;">
+                <svg width="11" height="11" fill="none" stroke="#5B63F6" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+              </div>
+              <div class="flex flex-col">
+                <span id="ve-panel-viz-name" class="text-[13px] font-semibold text-gray-800 leading-tight">New Visualization</span>
+                <span class="text-[10px] font-medium leading-tight" style="color:#9CA3AF;">Visualization Editor</span>
+              </div>
+            </div>
+          </div>
 
           <!-- Viz type + name section -->
           <div class="px-4 pt-4 pb-3.5 border-b border-gray-100 flex-shrink-0 space-y-3">
@@ -1131,7 +1136,7 @@
               </div>
               <!-- Column selector -->
               <div>
-                <label class="ve-label" id="ve-x-col-lbl">Column <span class="text-[10.5px] font-normal text-gray-400">category / label</span></label>
+                <label class="ve-label" id="ve-x-col-lbl">Column <span class="text-[10.5px] font-normal text-gray-400">label</span></label>
                 <select id="ve-x-col" class="ve-select"></select>
               </div>
               <!-- Granularity (Time only) -->
@@ -1188,7 +1193,7 @@
                 </div>
               </div>
               <!-- Aggregation -->
-              <div>
+              <div id="ve-y-agg-row">
                 <label class="ve-label">Aggregation</label>
                 <select id="ve-y-agg" class="ve-select">
                   <option value="none">None (raw values)</option>
@@ -1200,12 +1205,12 @@
                 </select>
               </div>
               <!-- Axis Title -->
-              <div>
+              <div id="ve-y-title-row">
                 <label class="ve-label">Axis Title <span class="text-[10.5px] font-normal text-gray-400">optional</span></label>
                 <input type="text" id="ve-y-title" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="Y axis label"/>
               </div>
               <!-- Range -->
-              <div>
+              <div id="ve-y-range-row">
                 <label class="ve-label">Range <span class="text-[10.5px] font-normal text-gray-400">optional override</span></label>
                 <div class="grid grid-cols-2 gap-2">
                   <input type="number" id="ve-y-min" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="Min (auto)"/>
@@ -1213,7 +1218,7 @@
                 </div>
               </div>
               <!-- Sort -->
-              <div>
+              <div id="ve-y-sort-row">
                 <label class="ve-label">Sort values</label>
                 <select id="ve-y-sort" class="ve-select">
                   <option value="">None</option>
@@ -1302,8 +1307,7 @@
             </button>
           </div>
 
-        </div><!-- end ve panel -->
-      </div><!-- end sql-viz-editor-mode -->
+      </div><!-- end ve-right-panel -->
 
       <!-- ── KPI Preview (shown after Generate KPI) ── -->
       <div id="sql-kpi-preview" class="hidden flex-1 flex flex-col overflow-hidden">
@@ -1577,8 +1581,8 @@
       <!-- Panel header -->
       <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
         <div class="flex items-center gap-2">
-          <div class="ai-avatar" style="width:22px;height:22px;min-width:22px;border-radius:7px;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          <div style="width:22px;height:22px;min-width:22px;border-radius:7px;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5B63F6" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
           </div>
           <span class="text-[13px] font-semibold text-gray-800">AI Assistant</span>
         </div>
@@ -2044,7 +2048,7 @@
     /* ══════════════════════════════════════════
        SQL KPI CHART RENDERER (uses actual query results)
     ══════════════════════════════════════════ */
-    function _renderSQLKPIChart(chartType, canvasId) {
+    function _renderSQLKPIChart(chartType, canvasId, showDataLabels) {
       if (typeof Chart === 'undefined') return;
       var canvas = document.getElementById(canvasId);
       if (!canvas) return;
@@ -2164,7 +2168,34 @@
       }, extraOpts);
 
       if (indexAxis) options.indexAxis = 'y';
-      window._kpiChartInst = new Chart(canvas, { type: type, data: chartData, options: options });
+
+      // Data labels plugin (chartjs-plugin-datalabels)
+      var chartPlugins = [];
+      if (showDataLabels && typeof ChartDataLabels !== 'undefined' && type !== 'scatter') {
+        chartPlugins = [ChartDataLabels];
+        var isHBar = indexAxis === 'y';
+        options.plugins.datalabels = {
+          color: isCircular ? '#fff' : '#374151',
+          font: { family: "'Inter', sans-serif", size: 11, weight: '600' },
+          anchor: isCircular ? 'center' : (isHBar ? 'end' : 'end'),
+          align:  isCircular ? 'center' : (isHBar ? 'right' : 'top'),
+          offset: isCircular ? 0 : 4,
+          clamp: true,
+          formatter: function(value, ctx) {
+            if (isCircular) {
+              var total = ctx.dataset.data.reduce(function(a, b){ return a + b; }, 0);
+              var pct = total > 0 ? Math.round(value / total * 100) : 0;
+              return pct > 3 ? pct + '%' : '';
+            }
+            return value !== null && value !== 0 ? value : '';
+          }
+        };
+      } else {
+        // Explicitly disable to avoid ghost labels from global registration
+        options.plugins.datalabels = { display: false };
+      }
+
+      window._kpiChartInst = new Chart(canvas, { type: type, data: chartData, options: options, plugins: chartPlugins });
       return window._kpiChartInst;
     }
 
@@ -2930,13 +2961,20 @@
       // Close old sidebar if somehow open
       var vizSidebar = document.getElementById('sql-viz-sidebar');
       if (vizSidebar) { vizSidebar.classList.add('hidden'); vizSidebar.classList.remove('flex'); }
+      // Move VE right panel to content-row level so it spans from Ask AI/Write SQL toolbar down
+      var vePanel = document.getElementById('ve-right-panel');
+      var contentRow = document.getElementById('content-row');
+      var chatPanel = document.getElementById('chat-panel');
+      if (vePanel && contentRow) {
+        contentRow.insertBefore(vePanel, chatPanel || null);
+        vePanel.style.display = 'flex';
+      }
+      if (chatPanel) chatPanel.classList.add('hidden');
       // Reset editor state
       _veYCols = [];
       _veCurrentVizId = null;
       if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; }
-      // Populate dropdowns from query results
-      _populateVEDropdowns();
-      // Reset form fields
+      // Reset form fields first (so populate can set a fresh default name)
       var nameIn = document.getElementById('ve-viz-name'); if (nameIn) nameIn.value = '';
       var vtSel = document.getElementById('ve-viz-type'); if (vtSel) vtSel.value = 'chart';
       var ctSel = document.getElementById('ve-chart-type'); if (ctSel) ctSel.value = 'bar';
@@ -2945,10 +2983,15 @@
       ['ve-x-title','ve-y-title','ve-y-min','ve-y-max'].forEach(function(id) {
         var el = document.getElementById(id); if (el) el.value = '';
       });
+      // Populate dropdowns (also sets default name like "Chart 1")
+      _populateVEDropdowns();
+      // Sync breadcrumb + panel header to the auto-set name
+      var autoName = (document.getElementById('ve-viz-name') || {}).value || 'New Visualization';
+      document.getElementById('ve-breadcrumb-name').textContent = autoName;
+      var pnm = document.getElementById('ve-panel-viz-name'); if (pnm) pnm.textContent = autoName;
       // Reset preview
       document.getElementById('ve-preview-empty').classList.remove('hidden');
       document.getElementById('ve-preview-chart-card').classList.add('hidden');
-      document.getElementById('ve-breadcrumb-name').textContent = 'New Visualization';
       // Reset Create KPI button
       var btn = document.getElementById('ve-create-btn');
       if (btn) {
@@ -2971,6 +3014,13 @@
       if (veMode) { veMode.classList.add('hidden'); veMode.classList.remove('flex'); }
       if (inner) inner.classList.remove('hidden');
       if (fileTabBar) fileTabBar.classList.remove('hidden');
+      // Move VE right panel back into sql-layout (its resting place) and hide it
+      var vePanel = document.getElementById('ve-right-panel');
+      var sqlLayout = document.getElementById('sql-layout');
+      if (vePanel && sqlLayout) { sqlLayout.appendChild(vePanel); vePanel.style.display = 'none'; }
+      // Restore chat panel
+      var chatPanel = document.getElementById('chat-panel');
+      if (chatPanel) chatPanel.classList.remove('hidden');
       if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; window._kpiChartInst = null; }
       if (_veCurrentVizId) {
         switchResultTab(_veCurrentVizId);
@@ -3121,19 +3171,41 @@
 
     function _onVEChartTypeChange() {
       var ct = (document.getElementById('ve-chart-type') || {}).value;
+
+      // General tab: stacked toggle only for bar/line/area
       var stackedRow = document.getElementById('ve-stacked-row');
       if (stackedRow) {
         var showStacked = ct === 'bar' || ct === 'line' || ct === 'area';
         stackedRow.classList.toggle('hidden', !showStacked);
         stackedRow.classList.toggle('flex', showStacked);
       }
+
+      // Y Axis tab: show/hide fields based on chart type
+      // pie/doughnut: no axis → hide Title and Range; keep Aggregation + Sort
+      // scatter: raw XY pairs → hide Aggregation and Sort; keep Title + Range
+      // bar/line/area/hbar: all visible
+      var isPieLike  = ct === 'pie' || ct === 'doughnut';
+      var isScatter  = ct === 'scatter';
+
+      var aggRow   = document.getElementById('ve-y-agg-row');
+      var titleRow = document.getElementById('ve-y-title-row');
+      var rangeRow = document.getElementById('ve-y-range-row');
+      var sortRow  = document.getElementById('ve-y-sort-row');
+
+      if (aggRow)   aggRow.classList.toggle('hidden',  isScatter);
+      if (titleRow) titleRow.classList.toggle('hidden', isPieLike);
+      if (rangeRow) rangeRow.classList.toggle('hidden', isPieLike);
+      if (sortRow)  sortRow.classList.toggle('hidden',  isScatter);
+
       _checkVECreateBtn();
     }
 
     function _onVENameInput() {
-      var nm = document.getElementById('ve-breadcrumb-name');
       var val = (document.getElementById('ve-viz-name').value || '').trim();
-      if (nm) nm.textContent = val || 'New Visualization';
+      var nm = document.getElementById('ve-breadcrumb-name');
+      var pnm = document.getElementById('ve-panel-viz-name');
+      if (nm)  nm.textContent  = val || 'New Visualization';
+      if (pnm) pnm.textContent = val || 'New Visualization';
       _checkVECreateBtn();
     }
 
@@ -3200,7 +3272,8 @@
         if (kpiDisplay) { kpiDisplay.style.display = 'none'; kpiDisplay.classList.add('hidden'); }
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
-            _renderSQLKPIChart(rawChartType, 've-chart-canvas');
+            var dlChk = document.getElementById('ve-data-labels');
+            _renderSQLKPIChart(rawChartType, 've-chart-canvas', dlChk && dlChk.checked);
             _veChartInst = window._kpiChartInst;
           });
         });
@@ -3359,7 +3432,8 @@
         if (kpiDisplay) { kpiDisplay.style.display = 'none'; kpiDisplay.classList.add('hidden'); }
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
-            _renderSQLKPIChart(rawChartType, 've-chart-canvas');
+            var dlChk = document.getElementById('ve-data-labels');
+            _renderSQLKPIChart(rawChartType, 've-chart-canvas', dlChk && dlChk.checked);
             _veChartInst = window._kpiChartInst;
           });
         });
