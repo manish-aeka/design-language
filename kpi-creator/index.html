@@ -107,9 +107,8 @@
     .ai-avatar {
       width: 26px; height: 26px; min-width: 26px;
       border-radius: 8px;
-      background: linear-gradient(140deg, #5B63F6 0%, #7C6FF7 100%);
+      background: #EEF2FF;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 1px 4px rgba(91,99,246,0.30);
     }
     .user-avatar {
       width: 26px; height: 26px; min-width: 26px;
@@ -301,8 +300,18 @@
     .ve-tab { display:flex;align-items:center;height:37px;padding:0 12px;font-size:12px;font-weight:500;color:#9CA3AF;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color 100ms;flex-shrink:0;position:relative;top:1px; }
     .ve-tab:hover { color:#6B7280; }
     .ve-tab.active { color:#5B63F6;font-weight:600;border-bottom-color:#5B63F6; }
-    .ve-select { width:100%;height:32px;padding:0 28px 0 10px;font-size:12.5px;color:#374151;background-color:#F9FAFB;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%239CA3AF' stroke-width='2.5' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;border:1.5px solid #E5E7EB;border-radius:8px;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;font-family:inherit;transition:border-color 150ms,box-shadow 150ms; }
-    .ve-select:focus { border-color:#5B63F6;background-color:white;box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+    .ve-select { display:none!important; }
+    /* VE custom dropdown (replaces native select) */
+    .ve-dd-wrap { position:relative;width:100%; }
+    .ve-dd-trigger { width:100%;height:34px;padding:0 10px;font-size:12.5px;font-weight:500;color:#374151;background:white;border:1.5px solid #E5E7EB;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:6px;transition:border-color 150ms,box-shadow 150ms;text-align:left;outline:none;font-family:inherit;box-sizing:border-box; }
+    .ve-dd-trigger .ve-dd-lbl { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .ve-dd-trigger:hover { border-color:#C7D2FE; }
+    .ve-dd-trigger.open { border-color:#5B63F6;box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+    .ve-dd-panel { position:absolute;left:0;top:calc(100% + 5px);z-index:600;width:100%;background:white;border:1px solid #E5E7EB;border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.05);max-height:220px;overflow-y:auto; }
+    .ve-dd-opt { width:100%;text-align:left;padding:7px 10px;font-size:12.5px;font-weight:500;color:#374151;background:none;border:none;cursor:pointer;border-radius:7px;transition:background 70ms;display:block;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .ve-dd-opt:hover { background:#F9FAFB; }
+    .ve-dd-opt.ve-dd-selected { color:#4338CA;background:#EEF2FF;font-weight:600; }
+    .ve-dd-opt.ve-dd-placeholder { color:#9CA3AF;font-weight:400; }
     .ve-toggle { -webkit-appearance:none;appearance:none;width:34px;height:18px;border-radius:99px;background:#E5E7EB;cursor:pointer;position:relative;flex-shrink:0;transition:background 150ms;vertical-align:middle; }
     .ve-toggle:checked { background:#5B63F6; }
     .ve-toggle::after { content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,0.18);transition:left 150ms; }
@@ -323,6 +332,14 @@
     .ve-scale-btn { flex:1;height:28px;border-radius:6px;font-size:11.5px;font-weight:500;color:#6B7280;background:#F3F4F6;border:1.5px solid transparent;cursor:pointer;transition:all 120ms; }
     .ve-scale-btn.active { color:#4338CA;background:#EEF2FF;border-color:#C7D2FE;font-weight:600; }
     .ve-scale-btn:hover:not(.active) { background:#E9EAEC; }
+    /* VE type segmented control */
+    .ve-seg { display:flex;border-radius:8px;border:1.5px solid #E9EAEC;overflow:hidden;background:#F3F4F6;padding:2px; }
+    .ve-seg-btn { flex:1;height:26px;font-size:11.5px;font-weight:500;color:#9CA3AF;background:transparent;border:none;cursor:pointer;transition:all 100ms;border-radius:6px; }
+    .ve-seg-btn.active { background:#fff;color:#374151;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.09); }
+    /* VE chart type icon buttons */
+    .ve-ct-btn { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 3px 6px;border-radius:7px;border:1.5px solid #E9EAEC;background:#fff;cursor:pointer;font-size:10px;font-weight:500;color:#9CA3AF;transition:all 100ms;line-height:1;width:100%; }
+    .ve-ct-btn:hover:not(.active) { background:#F9FAFB;border-color:#D1D5DB;color:#6B7280; }
+    .ve-ct-btn.active { background:#EEF2FF;border-color:#818CF8;color:#4338CA; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -1056,20 +1073,7 @@
       <!-- ══ VE Right Panel — moved to content-row level by JS when VE mode opens ══ -->
       <div id="ve-right-panel" class="flex flex-col border-l border-gray-100 bg-white overflow-hidden flex-shrink-0" style="width:300px;min-width:300px;display:none;">
 
-          <!-- Panel header -->
-          <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
-            <div class="flex items-center gap-2">
-              <div style="width:22px;height:22px;min-width:22px;border-radius:7px;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;">
-                <svg width="11" height="11" fill="none" stroke="#5B63F6" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-              </div>
-              <div class="flex flex-col">
-                <span id="ve-panel-viz-name" class="text-[13px] font-semibold text-gray-800 leading-tight">New Visualization</span>
-                <span class="text-[10px] font-medium leading-tight" style="color:#9CA3AF;">Visualization Editor</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Viz type + name section -->
+          <!-- Viz type + name -->
           <div class="px-4 pt-4 pb-3.5 border-b border-gray-100 flex-shrink-0 space-y-3">
             <div>
               <label class="ve-label">Visualization Type</label>
@@ -1085,11 +1089,12 @@
             </div>
           </div>
 
-          <!-- Tab bar (chart type only) -->
+          <!-- Tab bar (chart only) -->
           <div id="ve-tab-bar" class="flex border-b border-gray-100 flex-shrink-0 px-1" style="background:#FAFAFA;">
             <button class="ve-tab active" onclick="switchVETab('general')" id="ve-tab-btn-general">General</button>
             <button class="ve-tab" onclick="switchVETab('xaxis')" id="ve-tab-btn-xaxis">X Axis</button>
             <button class="ve-tab" onclick="switchVETab('yaxis')" id="ve-tab-btn-yaxis">Y Axis</button>
+            <button class="ve-tab" onclick="switchVETab('series')" id="ve-tab-btn-series">Series</button>
           </div>
 
           <!-- Scrollable content wrapper -->
@@ -1113,6 +1118,29 @@
                 <input type="checkbox" id="ve-data-labels" class="ve-toggle"/>
                 <span class="text-[12.5px] text-gray-600">Show data labels</span>
               </label>
+              <div>
+                <label class="ve-label" id="ve-x-col-lbl">X Column</label>
+                <select id="ve-x-col" class="ve-select"></select>
+              </div>
+              <div>
+                <label class="ve-label">Y Columns <span class="text-red-400 font-medium">*</span></label>
+                <div style="position:relative;">
+                  <div id="ve-y-col-trigger" class="ve-multicol" onclick="_toggleVEYColPanel(event)" tabindex="0">
+                    <div id="ve-y-col-chips" class="flex flex-wrap gap-1.5 flex-1"></div>
+                    <span id="ve-y-col-placeholder" class="text-[12px]" style="color:#9CA3AF;">Choose columns…</span>
+                    <svg class="flex-shrink-0" style="width:10px;height:10px;margin-left:auto;" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </div>
+                  <div id="ve-y-col-panel" class="ve-col-panel hidden"></div>
+                </div>
+              </div>
+              <div>
+                <label class="ve-label">Group by</label>
+                <select id="ve-group-by" class="ve-select"></select>
+              </div>
+              <div>
+                <label class="ve-label">Errors column</label>
+                <select id="ve-errors-col" class="ve-select"></select>
+              </div>
               <label class="flex items-center gap-2.5 cursor-pointer">
                 <input type="checkbox" id="ve-show-legend" class="ve-toggle" checked/>
                 <span class="text-[12.5px] text-gray-600">Show Legend</span>
@@ -1127,17 +1155,12 @@
             <div id="ve-tab-xaxis" class="hidden px-4 pt-4 pb-3 space-y-4">
               <!-- Scale Type pills -->
               <div>
-                <label class="ve-label">Scale Type</label>
+                <label class="ve-label">Column Type</label>
                 <div class="grid grid-cols-3 gap-1.5">
                   <button id="ve-x-scale-dimension" onclick="_setXScale('dimension')" class="ve-scale-btn active">Dimension</button>
                   <button id="ve-x-scale-time" onclick="_setXScale('time')" class="ve-scale-btn">Time</button>
                   <button id="ve-x-scale-measure" onclick="_setXScale('measure')" class="ve-scale-btn">Measure</button>
                 </div>
-              </div>
-              <!-- Column selector -->
-              <div>
-                <label class="ve-label" id="ve-x-col-lbl">Column <span class="text-[10.5px] font-normal text-gray-400">label</span></label>
-                <select id="ve-x-col" class="ve-select"></select>
               </div>
               <!-- Granularity (Time only) -->
               <div id="ve-x-gran-field" class="hidden">
@@ -1180,18 +1203,6 @@
 
             <!-- ── CHART: Y Axis tab ── -->
             <div id="ve-tab-yaxis" class="hidden px-4 pt-4 pb-3 space-y-4">
-              <!-- Y Columns multi-select -->
-              <div>
-                <label class="ve-label">Y Columns <span class="text-red-400 font-medium">*</span> <span class="text-[10.5px] font-normal text-gray-400">values to plot</span></label>
-                <div style="position:relative;">
-                  <div id="ve-y-col-trigger" class="ve-multicol" onclick="_toggleVEYColPanel(event)" tabindex="0">
-                    <div id="ve-y-col-chips" class="flex flex-wrap gap-1.5 flex-1"></div>
-                    <span id="ve-y-col-placeholder" class="text-[12px]" style="color:#9CA3AF;">Choose columns…</span>
-                    <svg class="flex-shrink-0" style="width:10px;height:10px;margin-left:auto;" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                  </div>
-                  <div id="ve-y-col-panel" class="ve-col-panel hidden"></div>
-                </div>
-              </div>
               <!-- Aggregation -->
               <div id="ve-y-agg-row">
                 <label class="ve-label">Aggregation</label>
@@ -1228,7 +1239,17 @@
               </div>
             </div><!-- end yaxis tab -->
 
-            <!-- ── COUNTER / KPI content (no tabs) ── -->
+            <!-- ── CHART: Series tab ── -->
+            <div id="ve-tab-series" class="hidden px-4 pt-4 pb-3">
+              <!-- empty state (no Y cols chosen yet) -->
+              <div id="ve-series-empty" class="flex flex-col items-center justify-center py-10 text-center select-none pointer-events-none">
+                <svg class="w-7 h-7 mb-2" style="color:#D1D5DB" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                <p class="text-[12.5px] font-medium text-gray-400">No Y columns selected</p>
+                <p class="text-[11.5px] text-gray-300 mt-1">Pick columns in the General tab first.</p>
+              </div>
+              <!-- per-series rows rendered by JS -->
+              <div id="ve-series-list" class="space-y-3"></div>
+            </div><!-- end series tab -->
             <div id="ve-counter-content" class="hidden px-4 pt-4 pb-3 space-y-4">
               <div>
                 <label class="ve-label">Value Column <span class="text-red-400 font-medium">*</span></label>
@@ -1581,8 +1602,8 @@
       <!-- Panel header -->
       <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
         <div class="flex items-center gap-2">
-          <div style="width:22px;height:22px;min-width:22px;border-radius:7px;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5B63F6" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          <div style="width:22px;height:22px;min-width:22px;border-radius:7px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5B63F6" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
           </div>
           <span class="text-[13px] font-semibold text-gray-800">AI Assistant</span>
         </div>
@@ -1594,8 +1615,8 @@
         <!-- AI greeting bubble -->
         <div class="flex items-start gap-2 bubble-in">
           <div class="ai-avatar mt-0.5 flex-shrink-0">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5B63F6" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
             </svg>
           </div>
           <div>
@@ -1658,7 +1679,7 @@
     }
 
     /* ── AI sparkle SVG string (reused everywhere) ── */
-    const aiSVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>`;
+    const aiSVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5B63F6" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>`;
 
     /* ── Click an example chip → auto-send ── */
     function sendChip(text) {
@@ -2074,14 +2095,24 @@
         return s.replace(/_/g,' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
       }
 
-      var labels = data.rows.map(function(r){ return String(r[0]); });
-      var numericCols = data.cols.slice(1);
+      // Determine label (X) column from axisState or default to first column
+      var xColName = (_axisState && _axisState['x-axis']) || null;
+      var xColIdx = xColName ? data.cols.indexOf(xColName) : 0;
+      if (xColIdx < 0) xColIdx = 0;
+      var labels = data.rows.map(function(r){ return String(r[xColIdx]); });
+      // Determine Y columns: use configured list if present, else all non-X columns
+      var rawYCols = _axisState && _axisState['y-cols'];
+      var numericCols = (rawYCols && rawYCols.length > 0)
+        ? rawYCols.filter(function(col) { return data.cols.indexOf(col) >= 0; })
+        : data.cols.filter(function(_, i) { return i !== xColIdx; });
       var type = 'bar', indexAxis, extraOpts = {};
 
       var datasets = numericCols.map(function(col, i) {
+        var colIdx = data.cols.indexOf(col);
+        if (colIdx < 0) colIdx = i + 1;
         return {
           label: titleCase(col),
-          data: data.rows.map(function(r){ return parseNum(r[i + 1]); }),
+          data: data.rows.map(function(r){ return parseNum(r[colIdx]); }),
           backgroundColor: COLORS[i % COLORS.length],
           borderColor: COLORS[i % COLORS.length],
           borderRadius: 6,
@@ -2143,6 +2174,10 @@
 
       var isCircular = type === 'doughnut' || type === 'pie';
       var multiDs = !isCircular && chartData.datasets && chartData.datasets.length > 1;
+      var lgChkEl = document.getElementById('ve-show-legend');
+      var showLegend = lgChkEl ? lgChkEl.checked : (isCircular || multiDs);
+      var stackedChkEl = document.getElementById('ve-stacked');
+      var isStacked = !isCircular && stackedChkEl && stackedChkEl.checked;
 
       var options = Object.assign({
         responsive: true,
@@ -2150,7 +2185,7 @@
         animation: { duration: 700, easing: 'easeOutQuart' },
         plugins: {
           legend: {
-            display: isCircular || multiDs,
+            display: showLegend,
             position: isCircular ? 'right' : 'top',
             labels: { font: { family: "'Inter', sans-serif", size: 12 }, color: '#6B7280', padding: 18, usePointStyle: true, pointStyleWidth: 8 }
           },
@@ -2162,8 +2197,8 @@
           }
         },
         scales: isCircular ? {} : {
-          x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' }, border: { display: false } },
-          y: { grid: { color: '#F3F4F6', lineWidth: 1 }, ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' }, border: { display: false }, beginAtZero: true }
+          x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' }, border: { display: false }, stacked: isStacked },
+          y: { grid: { color: '#F3F4F6', lineWidth: 1 }, ticks: { font: { family: "'Inter', sans-serif", size: 11 }, color: '#9CA3AF' }, border: { display: false }, beginAtZero: true, stacked: isStacked }
         }
       }, extraOpts);
 
@@ -2950,6 +2985,92 @@
     var _veCurrentVizId = null;  // set after saving
     var _veChartInst = null;     // Chart.js instance in ve-chart-canvas
 
+    // ── VE Custom Dropdown Engine ─────────────────────────────────────────────
+    var _veOpenDD = null;
+    var _veDDChevSVG = '<svg width="10" height="10" fill="none" stroke="#6B7280" stroke-width="2.5" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>';
+
+    function _veInitDropdowns() {
+      document.querySelectorAll('#ve-right-panel select.ve-select').forEach(function(sel) {
+        if (sel.dataset.vedd) return;
+        sel.dataset.vedd = '1';
+        var wrap = document.createElement('div');
+        wrap.className = 've-dd-wrap';
+        sel.parentNode.insertBefore(wrap, sel);
+        wrap.appendChild(sel);
+        var trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 've-dd-trigger';
+        trigger.innerHTML = '<span class="ve-dd-lbl"></span>' + _veDDChevSVG;
+        wrap.insertBefore(trigger, sel);
+        var panel = document.createElement('div');
+        panel.className = 've-dd-panel';
+        panel.style.display = 'none';
+        wrap.appendChild(panel);
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (_veOpenDD && _veOpenDD !== panel) _veCloseDD(_veOpenDD);
+          panel.style.display === 'none' ? _veOpenDDPanel(sel, trigger, panel) : _veCloseDD(panel);
+        });
+        _veRefreshDD(sel);
+      });
+    }
+
+    function _veOpenDDPanel(sel, trigger, panel) {
+      trigger.classList.add('open');
+      panel.style.display = 'block';
+      _veOpenDD = panel;
+      var cur = panel.querySelector('.ve-dd-selected');
+      if (cur) setTimeout(function() { cur.scrollIntoView({ block: 'nearest' }); }, 0);
+    }
+
+    function _veCloseDD(panel) {
+      if (!panel) return;
+      var wrap = panel.parentNode;
+      var tr = wrap && wrap.querySelector('.ve-dd-trigger');
+      if (tr) tr.classList.remove('open');
+      panel.style.display = 'none';
+      if (_veOpenDD === panel) _veOpenDD = null;
+    }
+
+    function _veRefreshDD(sel) {
+      if (!sel || !sel.dataset.vedd) return;
+      var wrap = sel.parentNode;
+      if (!wrap) return;
+      var trigger = wrap.querySelector('.ve-dd-trigger');
+      var panel = wrap.querySelector('.ve-dd-panel');
+      // Update trigger label
+      var opt = sel.options[sel.selectedIndex];
+      var lbl = trigger && trigger.querySelector('.ve-dd-lbl');
+      if (lbl) { lbl.textContent = opt ? opt.text : ''; }
+      if (trigger) trigger.style.color = (opt && !opt.value) ? '#9CA3AF' : '#374151';
+      // Rebuild panel options
+      if (!panel) return;
+      panel.innerHTML = '';
+      Array.from(sel.options).forEach(function(o) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 've-dd-opt' + (o.selected ? ' ve-dd-selected' : '') + (!o.value ? ' ve-dd-placeholder' : '');
+        btn.textContent = o.text;
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          sel.value = o.value;
+          var ev = new Event('change', { bubbles: true });
+          sel.dispatchEvent(ev);
+          _veRefreshDD(sel);
+          if (panel) _veCloseDD(panel);
+        });
+        panel.appendChild(btn);
+      });
+    }
+
+    function _veRefreshDDById(id) {
+      var sel = document.getElementById(id);
+      if (sel) _veRefreshDD(sel);
+    }
+
+    document.addEventListener('click', function() { if (_veOpenDD) _veCloseDD(_veOpenDD); });
+    // ─────────────────────────────────────────────────────────────────────────
+
     function startNewVisualization() {
       // Show the full Visualization Editor split view
       var inner = document.getElementById('sql-editor-inner');
@@ -2978,6 +3099,8 @@
       var nameIn = document.getElementById('ve-viz-name'); if (nameIn) nameIn.value = '';
       var vtSel = document.getElementById('ve-viz-type'); if (vtSel) vtSel.value = 'chart';
       var ctSel = document.getElementById('ve-chart-type'); if (ctSel) ctSel.value = 'bar';
+      _veRefreshDDById('ve-viz-type');
+      _veRefreshDDById('ve-chart-type');
       var dlChk = document.getElementById('ve-data-labels'); if (dlChk) dlChk.checked = false;
       var lgChk = document.getElementById('ve-show-legend'); if (lgChk) lgChk.checked = true;
       ['ve-x-title','ve-y-title','ve-y-min','ve-y-max'].forEach(function(id) {
@@ -3031,12 +3154,69 @@
     }
 
     function switchVETab(tab) {
-      ['general','xaxis','yaxis'].forEach(function(t) {
+      ['general','xaxis','yaxis','series'].forEach(function(t) {
         var btn = document.getElementById('ve-tab-btn-' + t);
         var content = document.getElementById('ve-tab-' + t);
         if (btn) btn.classList.toggle('active', t === tab);
         if (content) content.classList.toggle('hidden', t !== tab);
       });
+      if (tab === 'series') _renderVESeriesRows();
+    }
+
+    // Series config store: { colName: { label, color, type } }
+    var _veSeriesCfg = {};
+    var _veSeriesColors = ['#5B63F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#F97316','#EC4899'];
+
+    function _renderVESeriesRows() {
+      var list = document.getElementById('ve-series-list');
+      var empty = document.getElementById('ve-series-empty');
+      if (!list) return;
+      if (!_veYCols || _veYCols.length === 0) {
+        list.innerHTML = '';
+        if (empty) empty.classList.remove('hidden');
+        return;
+      }
+      if (empty) empty.classList.add('hidden');
+      // Ensure cfg entries exist for each col
+      _veYCols.forEach(function(col, i) {
+        if (!_veSeriesCfg[col]) {
+          _veSeriesCfg[col] = { label: col, color: _veSeriesColors[i % _veSeriesColors.length], type: 'auto' };
+        }
+      });
+      list.innerHTML = _veYCols.map(function(col) {
+        var cfg = _veSeriesCfg[col];
+        var safeCol = escHtml(col);
+        var jsCol = col.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        return '<div class="rounded-xl border border-gray-200 bg-gray-50 p-3 space-y-2.5">' +
+          '<div class="flex items-center gap-2 mb-1">' +
+            '<span class="text-[11.5px] font-semibold text-gray-500 truncate flex-1">' + safeCol + '</span>' +
+            '<div class="w-4 h-4 rounded-full flex-shrink-0 border border-white" style="background:' + cfg.color + ';box-shadow:0 0 0 1px #E5E7EB;"></div>' +
+          '</div>' +
+          '<div>' +
+            '<label class="ve-label">Label</label>' +
+            '<input type="text" class="kpi-field" style="height:30px;font-size:12px;" value="' + escHtml(cfg.label) + '" ' +
+              'oninput="_veSeriesCfg[\'' + jsCol + '\'].label=this.value" placeholder="' + safeCol + '"/>' +
+          '</div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<div>' +
+              '<label class="ve-label">Color</label>' +
+              '<input type="color" value="' + cfg.color + '" ' +
+                'oninput="_veSeriesCfg[\'' + jsCol + '\'].color=this.value" ' +
+                'class="w-full h-[30px] rounded-lg border border-gray-200 cursor-pointer bg-white p-0.5"/>' +
+            '</div>' +
+            '<div>' +
+              '<label class="ve-label">Type</label>' +
+              '<select class="ve-select" style="height:30px;" onchange="_veSeriesCfg[\'' + jsCol + '\'].type=this.value">' +
+                '<option value="auto"' + (cfg.type==='auto'?' selected':'') + '>Auto</option>' +
+                '<option value="bar"' + (cfg.type==='bar'?' selected':'') + '>Bar</option>' +
+                '<option value="line"' + (cfg.type==='line'?' selected':'') + '>Line</option>' +
+                '<option value="area"' + (cfg.type==='area'?' selected':'') + '>Area</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      _veInitDropdowns();
     }
 
     function _populateVEDropdowns() {
@@ -3049,11 +3229,31 @@
       });
       var nonNum = cols.filter(function(c) { return numCols.indexOf(c) === -1; });
 
-      // X Column (chart X Axis tab)
+      // X Column
       var xSel = document.getElementById('ve-x-col');
       if (xSel) {
         xSel.innerHTML = cols.map(function(c) { return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
         xSel.value = (nonNum.length > 0 ? nonNum[0] : cols[0]) || '';
+        _veRefreshDDById('ve-x-col');
+      }
+
+      // Group by (all cols, first option = none)
+      var gbSel = document.getElementById('ve-group-by');
+      if (gbSel) {
+        gbSel.innerHTML = '<option value="">Choose column…</option>' +
+          cols.map(function(c) { return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+        gbSel.value = '';
+        _veRefreshDDById('ve-group-by');
+      }
+
+      // Errors column (numeric cols, first option = none)
+      var errSel = document.getElementById('ve-errors-col');
+      if (errSel) {
+        var errCols = numCols.length > 0 ? numCols : cols;
+        errSel.innerHTML = '<option value="">Choose column…</option>' +
+          errCols.map(function(c) { return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+        errSel.value = '';
+        _veRefreshDDById('ve-errors-col');
       }
 
       // Y Columns: default to first numeric col
@@ -3066,6 +3266,7 @@
       if (kpiCol) {
         var kpiCols = numCols.length > 0 ? numCols : cols;
         kpiCol.innerHTML = kpiCols.map(function(c) { return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+        _veRefreshDDById('ve-kpi-col');
       }
 
       // Table columns checklist
@@ -3203,9 +3404,7 @@
     function _onVENameInput() {
       var val = (document.getElementById('ve-viz-name').value || '').trim();
       var nm = document.getElementById('ve-breadcrumb-name');
-      var pnm = document.getElementById('ve-panel-viz-name');
-      if (nm)  nm.textContent  = val || 'New Visualization';
-      if (pnm) pnm.textContent = val || 'New Visualization';
+      if (nm) nm.textContent = val || 'New Visualization';
       _checkVECreateBtn();
     }
 
@@ -3235,7 +3434,7 @@
       var rawChartType = vizType === 'counter' ? 'kpi' : (vizType === 'table' ? 'table' : document.getElementById('ve-chart-type').value);
       var xCol = (document.getElementById('ve-x-col') || {}).value || null;
       var kpiCol = (document.getElementById('ve-kpi-col') || {}).value || xCol;
-      var newAxisState = { 'x-axis': xCol, 'y-axis': _veYCols[0] || null, 'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol };
+      var newAxisState = { 'x-axis': xCol, 'y-axis': _veYCols[0] || null, 'y-cols': _veYCols.slice(), 'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol };
       // Apply axis + chart state globally for rendering
       _axisState = JSON.parse(JSON.stringify(newAxisState));
       sqlState.chartType = rawChartType;
@@ -3402,7 +3601,7 @@
       var rawChartType = vizType === 'counter' ? 'kpi' : (vizType === 'table' ? 'table' : document.getElementById('ve-chart-type').value);
       var xCol = (document.getElementById('ve-x-col') || {}).value || null;
       var kpiCol = (document.getElementById('ve-kpi-col') || {}).value || xCol;
-      var newAxisState = { 'x-axis': xCol, 'y-axis': _veYCols[0] || null, 'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol };
+      var newAxisState = { 'x-axis': xCol, 'y-axis': _veYCols[0] || null, 'y-cols': _veYCols.slice(), 'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol };
       _axisState = JSON.parse(JSON.stringify(newAxisState));
       sqlState.chartType = rawChartType;
       // Show preview card
@@ -4026,9 +4225,12 @@
       body.classList.toggle('open', !isOpen);
       if (chevron) chevron.classList.toggle('open', !isOpen);
     }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _veInitDropdowns);
+    } else {
+      _veInitDropdowns();
+    }
   </script>
-
-  <!-- Sources drawer backdrop -->
   <div id="sources-drawer-backdrop" onclick="closeSourcesDrawer()" class="fixed inset-0 z-[60]" style="background:transparent"></div>
 
   <!-- ═══════════════════════════════════════════
