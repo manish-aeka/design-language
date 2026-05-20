@@ -200,13 +200,15 @@
 
     /* ── SQL mode switch ── */
     .mode-switch { display:flex; gap:2px; padding:2px; background:#F3F4F6; border-radius:10px; }
-    .mode-btn { flex:1; height:25px; border-radius:8px; font-size:11.5px; font-weight:500; color:#6B7280; cursor:pointer; border:none; background:transparent; transition:all 120ms ease; white-space:nowrap; }
+    .mode-btn { flex:1; height:27px; border-radius:8px; font-size:11.5px; font-weight:500; color:#6B7280; cursor:pointer; border:none; background:transparent; transition:all 120ms ease; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:4px; padding:0 6px; }
     .mode-btn.active { background:white; color:#374151; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.10); }
+    .mode-btn svg { flex-shrink:0; opacity:0.7; }
+    .mode-btn.active svg { opacity:1; }
 
     /* ── CodeMirror editor — product-matched light theme ── */
     .CodeMirror {
       font-family: 'JetBrains Mono','SF Mono','Consolas',monospace !important;
-      font-size: 12px !important;
+      font-size: 13.5px !important;
       line-height: 1.75 !important;
       height: 100% !important;
       background: #fff !important;
@@ -215,7 +217,7 @@
     }
     .CodeMirror-scroll { min-height: 0 !important; }
     .CodeMirror-gutters { background: #FAFAFA !important; border-right: 1px solid #F3F4F6 !important; }
-    .CodeMirror-linenumber { color: #D1D5DB !important; font-size: 11px !important; padding: 0 8px 0 6px !important; }
+    .CodeMirror-linenumber { color: #D1D5DB !important; font-size: 12px !important; padding: 0 8px 0 6px !important; }
     .CodeMirror-cursor { border-left-color: #5B63F6 !important; }
     .CodeMirror-selected { background: #EEF2FF !important; }
     .CodeMirror-focused .CodeMirror-selected { background: #E0E7FF !important; }
@@ -236,10 +238,11 @@
 
     /* ── SQL results table ── */
     .sql-result-table { width:100%; border-collapse:collapse; }
-    .sql-result-table th { text-align:left; padding:7px 14px; font-size:11px; font-weight:600; color:#9CA3AF; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid #F3F4F6; background:#FAFAFA; white-space:nowrap; position:sticky; top:0; z-index:1; }
-    .sql-result-table td { padding:9px 14px; font-size:12.5px; color:#374151; border-bottom:1px solid #F9FAFB; white-space:nowrap; }
+    .sql-result-table th { padding:8px 12px; text-align:left; font-size:11px; font-weight:600; color:#64748B; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; background:#F8FAFC; border-bottom:1px solid #E2E8F0; position:sticky; top:0; z-index:1; }
+    .sql-result-table tbody tr:nth-child(even) td { background:#FAFAFA; }
+    .sql-result-table tbody tr td { padding:8px 12px; font-size:12px; color:#374151; border-bottom:1px solid #F1F5F9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:#fff; transition:background 60ms; }
     .sql-result-table tbody tr:last-child td { border-bottom:none; }
-    .sql-result-table tbody tr:hover td { background:#FAFAFA; }
+    .sql-result-table tbody tr:hover td { background:#F5F7FF !important; }
 
     /* ── Chart type selector (sidebar) ── */
     .chart-type-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 4px 7px; border-radius:10px; border:1.5px solid #E5E7EB; background:white; font-size:10.5px; font-weight:500; color:#6B7280; cursor:pointer; transition:all 130ms ease; text-align:center; }
@@ -250,21 +253,75 @@
     /* ── KPI config inputs ── */
     .kpi-field { width:100%; padding:7px 10px; font-size:12.5px; color:#374151; background:#F9FAFB; border:1.5px solid #E5E7EB; border-radius:8px; outline:none; transition:border-color 150ms, box-shadow 150ms; font-family:inherit; }
     .kpi-field:focus { border-color:#5B63F6; background:white; box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+    .kpi-field::placeholder { color:#D1D5DB; }
 
-    /* Viz sidebar slide-in animation */
+    /* ── Result tabs (Redash-style tab bar) ── */
+    .result-tab { display:flex;align-items:center;gap:5px;padding:0 13px;height:37px;font-size:12px;font-weight:500;color:#9CA3AF;border:none;background:transparent;cursor:pointer;white-space:nowrap;transition:color 100ms;flex-shrink:0;border-bottom:2.5px solid transparent;position:relative;top:1px; }
+    .result-tab:hover { color:#6B7280; }
+    .result-tab.active { color:#111827;font-weight:600;border-bottom-color:#5B63F6; }
+    .result-tab .tab-x { margin-left:3px;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;opacity:0;transition:opacity 100ms;flex-shrink:0; }
+    .result-tab:hover .tab-x { opacity:1; }
+    .result-tab .tab-x:hover { background:#E5E7EB; }
+    /* ── Axis dropdown (app style) ── */
+    .axis-dd-trigger { width:100%;height:28px;padding:0 8px;font-size:12px;font-weight:500;border:1.5px solid #E5E7EB;border-radius:8px;background:white;color:#374151;cursor:pointer;outline:none;display:flex;align-items:center;justify-content:space-between;gap:4px;transition:border-color 150ms; }
+    .axis-dd-trigger:hover { border-color:#C7D2FE; }
+    .axis-dd-trigger.open { border-color:#5B63F6;box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+    .axis-dd-panel { display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:300;background:white;border:1px solid #E5E7EB;border-radius:12px;padding:4px 0;min-width:100%;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06); }
+    .axis-dd-opt { width:100%;text-align:left;padding:6px 12px;font-size:12px;color:#374151;background:none;border:none;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .axis-dd-opt:hover { background:#F9FAFB; }
+    .axis-dd-opt.selected { color:#4338CA;background:#EEF2FF;font-weight:600; }
+
+    /* SQL viz sidebar — always 300px when in SQL mode */
     #sql-viz-sidebar {
-      width: 0;
-      min-width: 0;
-      opacity: 0;
-      overflow: hidden;
-      transition: width 280ms cubic-bezier(0.4,0,0.2,1), opacity 240ms ease, min-width 280ms cubic-bezier(0.4,0,0.2,1);
-    }
-    #sql-viz-sidebar.sidebar-visible {
       width: 300px;
       min-width: 300px;
-      opacity: 1;
+      overflow: hidden;
+    }
+    /* Mode content area smooth fade */
+    #ai-layout-wrapper, #sql-layout {
+      transition: opacity 160ms ease;
     }
     .kpi-field::placeholder { color:#D1D5DB; }
+
+    /* ── SQL file tabs ── */
+    .sql-file-tab { display:flex;align-items:center;gap:5px;padding:0 13px;height:42px;font-size:13px;font-weight:500;color:#6B7280;border:none;background:transparent;cursor:pointer;white-space:nowrap;border-bottom:2.5px solid transparent;transition:color 100ms,background 100ms;flex-shrink:0; }
+    .sql-file-tab:hover { color:#374151;background:#F9FAFB; }
+    .sql-file-tab.active { color:#111827;font-weight:600;border-bottom-color:#5B63F6; }
+    .sql-file-tab .ftab-x { width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;opacity:0;transition:opacity 100ms;flex-shrink:0;margin-left:1px; }
+    .sql-file-tab:hover .ftab-x { opacity:0.6; }
+    .sql-file-tab.active .ftab-x { opacity:0.5; }
+    .sql-file-tab .ftab-x:hover { background:#E5E7EB !important;opacity:1 !important; }
+
+    /* Toast notification */
+    #app-toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:#1F2937;color:white;font-size:12.5px;font-weight:500;padding:10px 18px;border-radius:10px;opacity:0;transition:opacity 200ms ease,transform 200ms ease;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.18); }
+    #app-toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+
+    /* ── Visualization Editor Panel ── */
+    .ve-tab { display:flex;align-items:center;height:37px;padding:0 12px;font-size:12px;font-weight:500;color:#9CA3AF;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color 100ms;flex-shrink:0;position:relative;top:1px; }
+    .ve-tab:hover { color:#6B7280; }
+    .ve-tab.active { color:#5B63F6;font-weight:600;border-bottom-color:#5B63F6; }
+    .ve-select { width:100%;height:32px;padding:0 28px 0 10px;font-size:12.5px;color:#374151;background-color:#F9FAFB;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%239CA3AF' stroke-width='2.5' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;border:1.5px solid #E5E7EB;border-radius:8px;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;font-family:inherit;transition:border-color 150ms,box-shadow 150ms; }
+    .ve-select:focus { border-color:#5B63F6;background-color:white;box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+    .ve-toggle { -webkit-appearance:none;appearance:none;width:34px;height:18px;border-radius:99px;background:#E5E7EB;cursor:pointer;position:relative;flex-shrink:0;transition:background 150ms;vertical-align:middle; }
+    .ve-toggle:checked { background:#5B63F6; }
+    .ve-toggle::after { content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,0.18);transition:left 150ms; }
+    .ve-toggle:checked::after { left:18px; }
+    .ve-label { display:block;font-size:11.5px;font-weight:500;color:#6B7280;margin-bottom:5px; }
+    .ve-section-head { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#C4C9D4;margin-bottom:8px;display:block; }
+    .ve-multicol { width:100%;min-height:32px;padding:4px 8px;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:8px;cursor:pointer;transition:border-color 150ms;display:flex;flex-wrap:wrap;gap:3px;align-items:center; }
+    .ve-multicol.open { border-color:#5B63F6;background:white;box-shadow:0 0 0 3px rgba(91,99,246,0.09); }
+    .ve-col-chip { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:#EEF2FF;color:#4338CA;border-radius:4px;font-size:11px;font-weight:500;line-height:1.5; }
+    .ve-col-chip-x { width:12px;height:12px;display:inline-flex;align-items:center;justify-content:center;opacity:0.55;cursor:pointer;border-radius:2px; }
+    .ve-col-chip-x:hover { opacity:1;background:rgba(0,0,0,0.08); }
+    .ve-col-panel { position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:300;background:white;border:1px solid #E5E7EB;border-radius:10px;padding:4px 0;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06); }
+    .ve-col-opt { width:100%;text-align:left;padding:6px 12px;font-size:12px;color:#374151;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap; }
+    .ve-col-opt:hover { background:#F9FAFB; }
+    .ve-col-opt.selected { color:#4338CA;background:#EEF2FF;font-weight:600; }
+    .ve-check { width:14px;height:14px;border-radius:3px;border:1.5px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center; }
+    .ve-col-opt.selected .ve-check { background:#5B63F6;border-color:#5B63F6;color:white; }
+    .ve-scale-btn { flex:1;height:28px;border-radius:6px;font-size:11.5px;font-weight:500;color:#6B7280;background:#F3F4F6;border:1.5px solid transparent;cursor:pointer;transition:all 120ms; }
+    .ve-scale-btn.active { color:#4338CA;background:#EEF2FF;border-color:#C7D2FE;font-weight:600; }
+    .ve-scale-btn:hover:not(.active) { background:#E9EAEC; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
@@ -617,20 +674,26 @@
       </div>
     </div>
 
-    <!-- Content row: full height below nav-bar -->
+    <!-- ── Shared mode + datasource toolbar ── -->
+    <div class="flex items-center gap-3 px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
+      <div class="mode-switch" style="width:204px;">
+        <button id="mode-ai-btn" class="mode-btn active" onclick="switchMode('ai')">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          Ask AI
+        </button>
+        <button id="mode-sql-btn" class="mode-btn" onclick="switchMode('sql')">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          Write SQL
+        </button>
+      </div>
+    </div>
+
+    <!-- Content row: full height below mode toolbar -->
     <div class="flex-1 flex overflow-hidden">
-    <!-- Left: mode toolbar + canvas/SQL -->
+    <!-- Left: canvas/SQL -->
     <div class="flex-1 flex flex-col overflow-hidden">
     <!-- AI canvas wrapper -->
     <div id="ai-layout-wrapper" class="flex-1 flex flex-col overflow-hidden">
-
-      <!-- Mode toolbar -->
-      <div class="flex items-center px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
-        <div class="mode-switch" style="width:188px;">
-          <button id="mode-ai-btn" class="mode-btn active" onclick="switchMode('ai')">Ask AI</button>
-          <button id="mode-sql-btn" class="mode-btn" onclick="switchMode('sql')">View/Edit SQL</button>
-        </div>
-      </div>
 
       <div class="flex flex-1 overflow-hidden">
 
@@ -730,15 +793,17 @@
     ══════════════════════════════════════════════ -->
     <div id="sql-layout" class="hidden flex-1 flex flex-col overflow-hidden">
 
-      <!-- Mode toolbar -->
-      <div class="flex items-center px-4 h-11 border-b border-gray-100 bg-white flex-shrink-0">
-        <div class="mode-switch" style="width:188px;">
-          <button class="mode-btn" onclick="switchMode('ai')">Ask AI</button>
-          <button class="mode-btn active">View/Edit SQL</button>
-        </div>
+      <!-- ── SQL File Tabs ── -->
+      <div class="flex items-center border-b border-gray-100 bg-white flex-shrink-0 overflow-x-auto" id="sql-file-tab-bar" style="min-height:42px;">
+        <div id="sql-file-tabs" class="flex items-center h-full flex-1"></div>
+        <button onclick="addSQLFile()" title="New SQL file (Ctrl+T)"
+          class="flex items-center gap-1.5 h-[32px] px-3 mx-3 rounded-lg text-[12.5px] font-medium flex-shrink-0 border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          New File
+        </button>
       </div>
 
-      <div class="flex flex-1 overflow-hidden">
+      <div id="sql-editor-inner" class="flex flex-1 overflow-hidden">
 
         <!-- ── Left: Editor + Results ── -->
         <div class="flex-1 flex flex-col overflow-hidden canvas-grid">
@@ -753,44 +818,45 @@
             <span class="text-[11.5px] font-medium" style="color:#D97706;">Query changed — re-run to refresh results</span>
           </div>
 
-          <!-- Editor header bar -->
-          <div class="flex items-center justify-between px-3 h-9 border-b border-gray-100 bg-white flex-shrink-0">
-            <!-- Code icon -->
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 flex items-center justify-center rounded-md" style="background:#EEF2FF;">
-                <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/>
-                </svg>
-              </div>
-              <span class="text-[11.5px] font-medium text-gray-400">SQL Editor</span>
-            </div>
-            <!-- Actions -->
-            <div class="flex items-center gap-1">
-              <button onclick="clearSQL()" title="Clear editor" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11.5px] font-medium text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                <svg class="w-[13px] h-[13px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                </svg>
-                Clear
-              </button>
-              <button id="run-query-btn" onclick="runSQLQuery()" title="Run query (Ctrl+Enter)"
-                class="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11.5px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
-                style="background:#5B63F6;">
-                <svg width="7" height="8" fill="currentColor" viewBox="0 0 8 10"><path d="M0 0l8 5-8 5V0z"/></svg>
-                Run
-              </button>
-            </div>
-          </div>
-
           <!-- CodeMirror container — takes half the height -->
           <div id="sql-editor-wrap" class="bg-white" style="flex:1;min-height:0;overflow:hidden;"></div>
 
-          <!-- Results divider / header -->
-          <div class="flex items-center gap-2 px-3 h-8 flex-shrink-0" style="background:#F9FAFB;border-top:1.5px solid #E9EAEC;border-bottom:1px solid #E9EAEC;">
-            <svg class="w-3 h-3 flex-shrink-0" style="color:#9CA3AF" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
-            <span class="text-[11px] font-semibold uppercase tracking-widest" style="color:#C4C9D4;">Results</span>
-            <div class="flex-1 flex items-center justify-end gap-2">
-              <p id="sql-truncation-note" class="hidden text-[11px] text-amber-500"></p>
-              <p id="sql-row-badge" class="text-[11px] font-medium text-gray-400"></p>
+          <!-- ── Result tab bar (Redash-style) ── -->
+          <div class="flex items-center flex-shrink-0 overflow-x-auto" id="result-tab-bar"
+            style="background:#F9FAFB;border-top:1.5px solid #E9EAEC;border-bottom:1px solid #E9EAEC;min-height:38px;">
+            <!-- Table tab (always first) -->
+            <button id="result-tab-table" data-tab-id="table" onclick="switchResultTab('table')" class="result-tab active">
+              <svg class="w-3 h-3 flex-shrink-0" style="color:currentColor" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+              Table
+              <span id="result-tab-row-badge" class="text-[10px] font-medium px-1.5 py-0.5 rounded-md ml-0.5 hidden" style="background:#E5E7EB;color:#6B7280;"></span>
+            </button>
+            <!-- Dynamically added viz tabs go here -->
+            <div id="result-viz-tabs" class="flex items-center"></div>
+            <!-- Divider -->
+            <div class="w-px h-4 flex-shrink-0 mx-1" style="background:#E9EAEC;"></div>
+            <!-- + New Visualization button -->
+            <button id="new-viz-tab-btn" onclick="startNewVisualization()" disabled
+              class="flex items-center gap-1.5 h-[26px] px-3 mx-2 rounded-lg text-[11.5px] font-semibold flex-shrink-0 opacity-40 cursor-not-allowed transition-all"
+              style="background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;">
+              <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Visualization
+            </button>
+            <!-- Spacer -->
+            <div class="flex-1"></div>
+            <!-- Truncation note + Clear + Run -->            
+            <p id="sql-truncation-note" class="hidden text-[11px] text-amber-500 px-2 flex-shrink-0"></p>
+            <div class="flex items-center gap-1.5 px-2 flex-shrink-0">
+              <button onclick="clearSQL()" title="Clear editor"
+                class="flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg text-[11.5px] font-medium text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                Clear
+              </button>
+              <button id="run-query-btn" onclick="runSQLQuery()" title="Run query (Ctrl+Enter)"
+                class="flex items-center gap-1.5 h-[28px] px-3.5 rounded-lg text-[12px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
+                style="background:#5B63F6;">
+                <svg width="7" height="8" fill="currentColor" viewBox="0 0 8 10"><path d="M0 0l8 5-8 5V0z"/></svg>
+                Run Query
+              </button>
             </div>
           </div>
 
@@ -817,10 +883,42 @@
               <p class="text-[12.5px] text-gray-400 font-medium">Running query…</p>
             </div>
 
-            <!-- Table + truncation notice (rendered by JS) -->
-            <div id="sql-results-table-wrap" class="hidden h-full flex flex-col">
-              <div class="flex-1 overflow-auto">
-                <table id="sql-table" class="sql-result-table"></table>
+            <!-- Table + pagination (rendered by JS) -->
+            <div id="sql-results-table-wrap" class="hidden flex flex-col h-full">
+              <div class="flex-1 overflow-hidden flex flex-col m-3 rounded-xl border border-gray-200">
+                <div class="flex-1 overflow-auto">
+                  <table id="sql-table" class="sql-result-table"></table>
+                </div>
+                <!-- Pagination bar -->
+                <div class="flex items-center justify-between px-4 py-2.5 bg-white border-t border-gray-100 flex-shrink-0">
+                  <div class="flex items-center gap-2">
+                    <div class="relative">
+                      <button id="sql-page-size-btn" onclick="toggleSQLPageSizeDd()"
+                        class="flex items-center gap-1 px-2 h-7 rounded-lg text-[12px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
+                        <span id="sql-page-size-label">25 rows</span>
+                        <svg class="w-2.5 h-2.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                      </button>
+                      <div id="sql-page-size-dd" class="hidden absolute bottom-full left-0 mb-1.5 z-50 bg-white border border-gray-200 rounded-xl py-1 min-w-[110px]" style="box-shadow:0 8px 24px rgba(0,0,0,0.10)">
+                        <button onclick="setSQLPageSize(10)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">10 rows</button>
+                        <button onclick="setSQLPageSize(25)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">25 rows</button>
+                        <button onclick="setSQLPageSize(50)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">50 rows</button>
+                        <button onclick="setSQLPageSize(100)" class="w-full flex items-center px-3 h-8 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors">100 rows</button>
+                      </div>
+                    </div>
+                    <span id="sql-pagination-info" class="text-[12px] text-gray-400">—</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button id="sql-page-prev" onclick="goSQLPage(_sqlPage - 1)"
+                      class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                    </button>
+                    <div id="sql-page-nums" class="flex items-center gap-1"></div>
+                    <button id="sql-page-next" onclick="goSQLPage(_sqlPage + 1)"
+                      class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -842,10 +940,370 @@
               <p class="text-[12px] text-gray-400 mt-1.5 leading-relaxed">Query succeeded but returned no data.</p>
             </div>
 
+            <!-- ── Viz preview panel (shown when editing/viewing a visualization tab) ── -->
+            <div id="sql-results-viz-preview" class="hidden flex flex-col h-full bg-white">
+              <!-- Saved viz card header (shown after save) -->
+              <div id="sql-viz-card-header" class="hidden items-center gap-3 px-5 h-[46px] border-b border-gray-100 flex-shrink-0">
+                <div id="sql-viz-card-type-icon" class="w-6 h-6 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:#EEF2FF;">
+                  <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                </div>
+                <span id="sql-viz-card-title" class="text-[14px] font-semibold text-gray-900 flex-1 truncate"></span>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;">Saved</span>
+              </div>
+              <!-- Chart or KPI value area -->
+              <div class="flex-1 relative" style="min-height:0;padding:20px 24px 12px;">
+                <!-- Chart canvas (for chart types) -->
+                <canvas id="sql-inline-chart-canvas" style="width:100%;height:100%;display:block;"></canvas>
+                <!-- KPI counter display (for kpi type) -->
+                <div id="sql-kpi-counter-display" class="hidden absolute inset-0 flex flex-col items-center justify-center">
+                  <div class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">KPI Value</div>
+                  <div id="sql-kpi-big-number" class="font-bold" style="font-size:54px;color:#5B63F6;line-height:1;letter-spacing:-2px;"></div>
+                  <div id="sql-kpi-col-label" class="text-[13px] text-gray-400 mt-3 font-medium"></div>
+                </div>
+              </div>
+              <!-- Saved viz footer (shown after saving) -->
+              <div id="sql-viz-saved-footer" class="hidden items-center justify-end gap-2 px-5 py-3 border-t border-gray-100 flex-shrink-0">
+                <button onclick="exportViz()"
+                  class="flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12.5px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                  Export
+                </button>
+                <button onclick="addToDashboard()"
+                  class="flex items-center gap-1.5 px-4 h-8 rounded-xl text-[12.5px] font-semibold text-white transition-opacity hover:opacity-90"
+                  style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  Add to Dashboard
+                </button>
+              </div>
+            </div><!-- end sql-results-viz-preview -->
+
           </div><!-- end sql-results-panel -->
         </div><!-- end left column -->
 
       </div><!-- end inner flex -->
+
+      <!-- ══ Visualization Editor Mode (full split view, shown when + Visualization clicked) ══ -->
+      <div id="sql-viz-editor-mode" class="hidden flex-1 flex overflow-hidden">
+
+        <!-- Center: chart preview area -->
+        <div class="flex-1 flex flex-col overflow-hidden" style="background:#F4F5F8;">
+
+          <!-- Breadcrumb bar -->
+          <div class="flex items-center gap-2 px-4 h-10 border-b border-gray-100 bg-white flex-shrink-0">
+            <button onclick="closeVizEditorMode()" class="flex items-center gap-1.5 text-[12px] font-medium text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+              Query Editor
+            </button>
+            <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <span id="ve-breadcrumb-name" class="text-[12px] font-medium text-gray-700 truncate">New Visualization</span>
+            <div class="flex-1"></div>
+            <button onclick="startNewVisualization()" class="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11.5px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              New
+            </button>
+          </div>
+
+          <!-- Preview area -->
+          <div class="flex-1 flex flex-col overflow-hidden p-4" style="background:#fcfdff;">
+
+            <!-- Empty state (before Create KPI) -->
+            <div id="ve-preview-empty" class="flex-1 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style="background:#EEF2FF;border:1.5px solid #C7D2FE;">
+                <svg class="w-6 h-6" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+              </div>
+              <p class="text-[14px] font-semibold text-gray-700">Configure your visualization</p>
+              <p class="text-[13px] text-gray-400 mt-1.5 leading-relaxed" style="max-width:280px;">Set the chart type and columns in the editor, then click <strong class="text-gray-600">Create KPI</strong> to preview.</p>
+            </div>
+
+            <!-- Chart preview card (shown after Create KPI) -->
+            <div id="ve-preview-chart-card" class="hidden flex-1 flex flex-col fade-up">
+              <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col flex-1" style="box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03);">
+
+                <!-- Card header -->
+                <div class="flex items-center gap-2 px-5 h-[54px] border-b border-gray-100">
+                  <span id="ve-card-title" class="text-[14.5px] font-semibold text-gray-900 leading-snug flex-1 min-w-0 truncate"></span>
+                  
+                </div>
+
+                <!-- Canvas area -->
+                <div class="flex-1 relative" style="min-height:0;background:#fff;">
+                  <canvas id="ve-chart-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+                  <div id="ve-kpi-counter" class="hidden" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <div class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">KPI Value</div>
+                    <div id="ve-kpi-big-num" class="font-bold" style="font-size:56px;color:#5B63F6;line-height:1;letter-spacing:-2px;"></div>
+                    <div id="ve-kpi-col-lbl" class="text-[13px] text-gray-400 mt-3 font-medium"></div>
+                  </div>
+                  <div id="ve-table-preview" class="hidden" style="position:absolute;inset:0;overflow:auto;padding:16px 20px;">
+                    <table id="ve-table-preview-tbl" class="sql-result-table"></table>
+                  </div>
+                </div>
+
+                <!-- Card footer -->
+                <div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100">
+                  <button onclick="closeVizEditorMode()" class="flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12.5px] font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                    Back to query
+                  </button>
+                  <div class="flex items-center gap-2">
+                    <button onclick="exportViz()" class="flex items-center gap-1.5 h-9 px-3 rounded-xl text-[12.5px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                      Export
+                    </button>
+                    <button onclick="saveVizAndClose()" class="flex items-center gap-2 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      Save
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- end chart card -->
+          </div><!-- end preview area -->
+        </div><!-- end center -->
+
+        <!-- Right: Visualization Editor panel -->
+        <div class="flex flex-col border-l border-gray-100 bg-white overflow-hidden flex-shrink-0" style="width:300px;min-width:300px;">
+
+          <!-- Viz type + name section -->
+          <div class="px-4 pt-4 pb-3.5 border-b border-gray-100 flex-shrink-0 space-y-3">
+            <div>
+              <label class="ve-label">Visualization Type</label>
+              <select id="ve-viz-type" class="ve-select" onchange="_onVETypeChange()">
+                <option value="chart">Chart</option>
+                <option value="counter">Counter / KPI</option>
+                <option value="table">Table</option>
+              </select>
+            </div>
+            <div>
+              <label class="ve-label">Visualization Name</label>
+              <input id="ve-viz-name" type="text" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="e.g. Monthly Revenue" maxlength="60" oninput="_onVENameInput()"/>
+            </div>
+          </div>
+
+          <!-- Tab bar (chart type only) -->
+          <div id="ve-tab-bar" class="flex border-b border-gray-100 flex-shrink-0 px-1" style="background:#FAFAFA;">
+            <button class="ve-tab active" onclick="switchVETab('general')" id="ve-tab-btn-general">General</button>
+            <button class="ve-tab" onclick="switchVETab('xaxis')" id="ve-tab-btn-xaxis">X Axis</button>
+            <button class="ve-tab" onclick="switchVETab('yaxis')" id="ve-tab-btn-yaxis">Y Axis</button>
+          </div>
+
+          <!-- Scrollable content wrapper -->
+          <div class="flex-1 overflow-y-auto">
+
+            <!-- ── CHART: General tab ── -->
+            <div id="ve-tab-general" class="px-4 pt-4 pb-3 space-y-4">
+              <div>
+                <label class="ve-label">Chart Type</label>
+                <select id="ve-chart-type" class="ve-select" onchange="_onVEChartTypeChange()">
+                  <option value="bar">Bar</option>
+                  <option value="line">Line</option>
+                  <option value="area">Area</option>
+                  <option value="pie">Pie</option>
+                  <option value="doughnut">Donut</option>
+                  <option value="hbar">Horizontal Bar</option>
+                  <option value="scatter">Scatter</option>
+                </select>
+              </div>
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="ve-data-labels" class="ve-toggle"/>
+                <span class="text-[12.5px] text-gray-600">Show data labels</span>
+              </label>
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="ve-show-legend" class="ve-toggle" checked/>
+                <span class="text-[12.5px] text-gray-600">Show Legend</span>
+              </label>
+              <label id="ve-stacked-row" class="hidden items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="ve-stacked" class="ve-toggle"/>
+                <span class="text-[12.5px] text-gray-600">Stacked</span>
+              </label>
+            </div><!-- end general tab -->
+
+            <!-- ── CHART: X Axis tab ── -->
+            <div id="ve-tab-xaxis" class="hidden px-4 pt-4 pb-3 space-y-4">
+              <!-- Scale Type pills -->
+              <div>
+                <label class="ve-label">Scale Type</label>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button id="ve-x-scale-dimension" onclick="_setXScale('dimension')" class="ve-scale-btn active">Dimension</button>
+                  <button id="ve-x-scale-time" onclick="_setXScale('time')" class="ve-scale-btn">Time</button>
+                  <button id="ve-x-scale-measure" onclick="_setXScale('measure')" class="ve-scale-btn">Measure</button>
+                </div>
+              </div>
+              <!-- Column selector -->
+              <div>
+                <label class="ve-label" id="ve-x-col-lbl">Column <span class="text-[10.5px] font-normal text-gray-400">category / label</span></label>
+                <select id="ve-x-col" class="ve-select"></select>
+              </div>
+              <!-- Granularity (Time only) -->
+              <div id="ve-x-gran-field" class="hidden">
+                <label class="ve-label">Granularity</label>
+                <select id="ve-x-granularity" class="ve-select">
+                  <option value="year">Yearly</option>
+                  <option value="quarter">Quarterly</option>
+                  <option value="month" selected>Monthly</option>
+                  <option value="week">Weekly</option>
+                  <option value="day">Daily</option>
+                  <option value="hour">Hourly</option>
+                </select>
+              </div>
+              <!-- Date Format (Time only) -->
+              <div id="ve-x-datefmt-field" class="hidden">
+                <label class="ve-label">Date Format</label>
+                <select id="ve-x-dateformat" class="ve-select">
+                  <option value="auto">Auto</option>
+                  <option value="mon-year">Jan 2024</option>
+                  <option value="year-month">2024-01</option>
+                  <option value="year">2024</option>
+                  <option value="quarter-year">Q1 2024</option>
+                </select>
+              </div>
+              <!-- Sort -->
+              <div>
+                <label class="ve-label">Sort</label>
+                <select id="ve-x-sort" class="ve-select">
+                  <option value="">None (original order)</option>
+                  <option value="asc">Ascending (A→Z / 0→9)</option>
+                  <option value="desc">Descending (Z→A / 9→0)</option>
+                </select>
+              </div>
+              <!-- Axis Title -->
+              <div>
+                <label class="ve-label">Axis Title <span class="text-[10.5px] font-normal text-gray-400">optional</span></label>
+                <input type="text" id="ve-x-title" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="X axis label"/>
+              </div>
+            </div><!-- end xaxis tab -->
+
+            <!-- ── CHART: Y Axis tab ── -->
+            <div id="ve-tab-yaxis" class="hidden px-4 pt-4 pb-3 space-y-4">
+              <!-- Y Columns multi-select -->
+              <div>
+                <label class="ve-label">Y Columns <span class="text-red-400 font-medium">*</span> <span class="text-[10.5px] font-normal text-gray-400">values to plot</span></label>
+                <div style="position:relative;">
+                  <div id="ve-y-col-trigger" class="ve-multicol" onclick="_toggleVEYColPanel(event)" tabindex="0">
+                    <div id="ve-y-col-chips" class="flex flex-wrap gap-1.5 flex-1"></div>
+                    <span id="ve-y-col-placeholder" class="text-[12px]" style="color:#9CA3AF;">Choose columns…</span>
+                    <svg class="flex-shrink-0" style="width:10px;height:10px;margin-left:auto;" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </div>
+                  <div id="ve-y-col-panel" class="ve-col-panel hidden"></div>
+                </div>
+              </div>
+              <!-- Aggregation -->
+              <div>
+                <label class="ve-label">Aggregation</label>
+                <select id="ve-y-agg" class="ve-select">
+                  <option value="none">None (raw values)</option>
+                  <option value="sum">SUM</option>
+                  <option value="avg">AVG</option>
+                  <option value="min">MIN</option>
+                  <option value="max">MAX</option>
+                  <option value="count">COUNT</option>
+                </select>
+              </div>
+              <!-- Axis Title -->
+              <div>
+                <label class="ve-label">Axis Title <span class="text-[10.5px] font-normal text-gray-400">optional</span></label>
+                <input type="text" id="ve-y-title" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="Y axis label"/>
+              </div>
+              <!-- Range -->
+              <div>
+                <label class="ve-label">Range <span class="text-[10.5px] font-normal text-gray-400">optional override</span></label>
+                <div class="grid grid-cols-2 gap-2">
+                  <input type="number" id="ve-y-min" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="Min (auto)"/>
+                  <input type="number" id="ve-y-max" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="Max (auto)"/>
+                </div>
+              </div>
+              <!-- Sort -->
+              <div>
+                <label class="ve-label">Sort values</label>
+                <select id="ve-y-sort" class="ve-select">
+                  <option value="">None</option>
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
+            </div><!-- end yaxis tab -->
+
+            <!-- ── COUNTER / KPI content (no tabs) ── -->
+            <div id="ve-counter-content" class="hidden px-4 pt-4 pb-3 space-y-4">
+              <div>
+                <label class="ve-label">Value Column <span class="text-red-400 font-medium">*</span></label>
+                <select id="ve-kpi-col" class="ve-select" onchange="_checkVECreateBtn()"></select>
+              </div>
+              <div>
+                <label class="ve-label">Aggregation</label>
+                <select id="ve-kpi-agg" class="ve-select">
+                  <option value="sum">SUM</option>
+                  <option value="avg">AVG</option>
+                  <option value="max">MAX</option>
+                  <option value="min">MIN</option>
+                  <option value="count">COUNT (rows)</option>
+                  <option value="none">None (first row value)</option>
+                </select>
+              </div>
+              <div>
+                <label class="ve-label">Number Format</label>
+                <select id="ve-kpi-format" class="ve-select">
+                  <option value="auto">Auto (K / M / B)</option>
+                  <option value="number">Number (1,234)</option>
+                  <option value="decimal">Decimal (1,234.56)</option>
+                  <option value="percent">Percentage (%)</option>
+                  <option value="currency">Currency ($)</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="ve-label">Prefix</label>
+                  <input type="text" id="ve-kpi-prefix" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="e.g. $"/>
+                </div>
+                <div>
+                  <label class="ve-label">Suffix</label>
+                  <input type="text" id="ve-kpi-suffix" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="e.g. %"/>
+                </div>
+              </div>
+              <div>
+                <label class="ve-label">Label <span class="text-[10.5px] font-normal text-gray-400">shown below value</span></label>
+                <input type="text" id="ve-kpi-label" class="kpi-field" style="height:32px;font-size:12.5px;" placeholder="e.g. Total Revenue"/>
+              </div>
+            </div><!-- end counter content -->
+
+            <!-- ── TABLE content (no tabs) ── -->
+            <div id="ve-table-content" class="hidden px-4 pt-4 pb-3 space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="ve-label" style="margin-bottom:0">Columns to display</label>
+                  <div class="flex items-center gap-2">
+                    <button onclick="_veTableToggleAll(true)" class="text-[11px] font-medium hover:underline" style="color:#5B63F6;">All</button>
+                    <span class="text-gray-300 text-[11px]">|</span>
+                    <button onclick="_veTableToggleAll(false)" class="text-[11px] font-medium text-gray-400 hover:underline">None</button>
+                  </div>
+                </div>
+                <div id="ve-table-cols-list" class="rounded-lg border border-gray-200 overflow-hidden divide-y divide-gray-100"></div>
+              </div>
+              <div>
+                <label class="ve-label">Rows per page</label>
+                <select id="ve-table-page-size" class="ve-select">
+                  <option value="10">10</option>
+                  <option value="25" selected>25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div><!-- end table content -->
+
+          </div><!-- end scrollable content -->
+
+          <!-- Create KPI footer -->
+          <div class="px-4 py-3 border-t border-gray-100 flex-shrink-0">
+            <button id="ve-create-btn" onclick="previewVizInEditor()" disabled
+              class="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12.5px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
+              style="background:#5B63F6;">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              Preview
+            </button>
+          </div>
+
+        </div><!-- end ve panel -->
+      </div><!-- end sql-viz-editor-mode -->
 
       <!-- ── KPI Preview (shown after Generate KPI) ── -->
       <div id="sql-kpi-preview" class="hidden flex-1 flex flex-col overflow-hidden">
@@ -857,13 +1315,39 @@
     </div><!-- end left column -->
 
     <!-- ══ SQL RIGHT PANEL — full height sibling ══ -->
-    <div id="sql-viz-sidebar" class="flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+    <div id="sql-viz-sidebar" class="hidden flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+
+      <!-- Panel header -->
+      <div class="flex items-center justify-between px-4 h-11 border-b border-gray-100 flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-[22px] h-[22px] rounded-[7px] flex items-center justify-center flex-shrink-0" style="background:linear-gradient(140deg,#5B63F6,#7C6FF7);">
+            <svg width="11" height="11" fill="none" stroke="white" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+          </div>
+          <span class="text-[13px] font-semibold text-gray-800">Visualization</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span id="sql-viz-saved-count" class="hidden text-[11px] font-medium px-2 py-0.5 rounded-full" style="background:#EEF2FF;color:#4338CA;"></span>
+          <button onclick="closeSQLVizSidebar()" title="Close panel" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
 
       <div id="sql-sidebar-viz-view" class="flex flex-col flex-1 overflow-hidden">
 
-          <!-- Section: Visualization -->
-          <div class="px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
-            <p class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">Visualization</p>
+          <!-- ── Pre-run empty state (shown until first successful query) ── -->
+          <div id="sql-side-prerun" class="flex-1 flex flex-col items-center justify-center px-5 text-center pointer-events-none select-none border-b border-gray-100 py-8">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-3" style="background:#EEF2FF;border:1.5px solid #C7D2FE;">
+              <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </div>
+            <p class="text-[13px] font-semibold text-gray-600">Run a query first</p>
+            <p class="text-[12px] text-gray-400 mt-1.5 leading-relaxed">Execute a SELECT query to<br/>enable visualization options.</p>
+            <p class="text-[11px] text-gray-300 mt-3">Ctrl+Enter to run</p>
+          </div>
+
+          <!-- Section: Visualization (hidden until results ready) -->
+          <div id="sql-side-types" class="hidden px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
+            <p class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">Chart type</p>
             <div class="grid grid-cols-3 gap-2">
 
               <!-- Table -->
@@ -995,21 +1479,61 @@
               </button>
 
             </div>
-            <p id="viz-no-results-hint" class="text-[11px] text-gray-300 mt-3 leading-relaxed">Run a query to enable<br/>visualization options.</p>
+            <!-- Closing hint removed — replaced by pre-run state above -->
           </div>
 
           <!-- Section: KPI Details (hidden until chart selected) -->
           <div id="kpi-config-section" class="hidden flex-1 flex flex-col overflow-y-auto border-b border-gray-100">
-            <div class="px-4 pt-4 pb-3">
-              <p class="text-[11px] font-semibold uppercase tracking-widest mb-3" style="color:#C4C9D4;">KPI Details</p>
-              <div class="space-y-2.5">
+            <div class="px-4 pt-3 pb-3 border-b border-gray-100">
+              <!-- ── Column Mapping ── -->
+              <p class="text-[11px] font-semibold uppercase tracking-widest mb-2.5" style="color:#C4C9D4;">Axes</p>
+              <div class="space-y-2.5" id="axes-config-fields">
+                <!-- X Axis (hidden for KPI type) -->
+                <div id="x-axis-field">
+                  <label class="block text-[11.5px] font-medium text-gray-500 mb-1">X Axis <span class="text-[10px] font-normal text-gray-300">category / time</span></label>
+                  <div class="relative" id="x-axis-dd-wrap">
+                    <button type="button" onclick="toggleAxisDD('x-axis',event)" class="axis-dd-trigger" id="x-axis-trigger">
+                      <span id="x-axis-label" class="truncate text-[12px]" style="color:#9CA3AF">Select column</span>
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="x-axis-dd" class="axis-dd-panel"></div>
+                  </div>
+                </div>
+                <!-- Y Axis (hidden for KPI type) -->
+                <div id="y-axis-field">
+                  <label class="block text-[11.5px] font-medium text-gray-500 mb-1">Y Axis <span class="text-[10px] font-normal text-gray-300">metric</span></label>
+                  <div class="relative" id="y-axis-dd-wrap">
+                    <button type="button" onclick="toggleAxisDD('y-axis',event)" class="axis-dd-trigger" id="y-axis-trigger">
+                      <span id="y-axis-label" class="truncate text-[12px]" style="color:#9CA3AF">Select column</span>
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="y-axis-dd" class="axis-dd-panel"></div>
+                  </div>
+                </div>
+                <!-- KPI Value column (only for KPI type) -->
+                <div id="kpi-value-field" class="hidden">
+                  <label class="block text-[11.5px] font-medium text-gray-500 mb-1">Value Column</label>
+                  <div class="relative" id="kpi-value-dd-wrap">
+                    <button type="button" onclick="toggleAxisDD('kpi-value',event)" class="axis-dd-trigger" id="kpi-value-trigger">
+                      <span id="kpi-value-label" class="truncate text-[12px]" style="color:#9CA3AF">Select column</span>
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="#9CA3AF" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="kpi-value-dd" class="axis-dd-panel"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ── Visualization Name ── -->
+            <div class="px-4 pt-3 pb-3">
+              <p class="text-[11px] font-semibold uppercase tracking-widest mb-2.5" style="color:#C4C9D4;">Details</p>
+              <div class="space-y-2">
                 <div>
                   <label class="block text-[11.5px] font-medium text-gray-500 mb-1.5">Name <span class="text-red-400">*</span></label>
                   <input id="kpi-name-input" type="text" class="kpi-field" placeholder="e.g. Monthly Revenue" maxlength="60" oninput="_onKPINameInput()"/>
                 </div>
                 <div>
                   <label class="block text-[11.5px] font-medium text-gray-500 mb-1.5">Description <span class="text-[11px] font-normal text-gray-300">optional</span></label>
-                  <textarea id="kpi-desc-input" rows="2" class="kpi-field" style="resize:none;" placeholder="Brief description of this KPI"></textarea>
+                  <textarea id="kpi-desc-input" rows="2" class="kpi-field" style="resize:none;" placeholder="Brief description"></textarea>
                 </div>
               </div>
             </div>
@@ -1024,13 +1548,13 @@
             <p class="text-[11px] text-gray-300 mt-1 leading-relaxed">Choose a visualization to configure your KPI.</p>
           </div>
 
-          <!-- Generate button -->
+          <!-- Save Visualization button -->
           <div class="px-4 pb-4 pt-3 flex-shrink-0">
             <button id="generate-kpi-btn" onclick="generateKPIFromSQL()"
               class="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12.5px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
               style="background:#5B63F6;">
-              Generate KPI
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Create KPI
             </button>
           </div>
 
@@ -1049,6 +1573,16 @@
 
     <!-- ══ CHAT PANEL ══ -->
     <div id="chat-panel" class="w-[300px] min-w-[300px] flex flex-col border-l border-gray-100 bg-white overflow-hidden">
+
+      <!-- Panel header -->
+      <div class="flex items-center px-4 h-11 border-b border-gray-100 flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="ai-avatar" style="width:22px;height:22px;min-width:22px;border-radius:7px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <span class="text-[13px] font-semibold text-gray-800">AI Assistant</span>
+        </div>
+      </div>
 
       <!-- ── Messages ── -->
       <div id="messages-container" class="flex-1 overflow-y-auto px-3 py-4 space-y-3 bg-white">
@@ -1098,6 +1632,9 @@
 
     </div><!-- end content row -->
 
+  <!-- Toast notification -->
+  <div id="app-toast"></div>
+
   </main>
 
   <script>
@@ -1141,7 +1678,7 @@
       document.getElementById('generating-state').classList.remove('hidden');
       setTimeout(() => {
         removeThinkingBubble(thinkId);
-        appendAIBubble("Got it! I've generated a chart based on your request. You can add it to the dashboard when ready.");
+        appendAIBubble("Got it! I've generated a chart based on your request. You can add it to the dashboard when ready.", true);
         showGeneratedChart(text);
       }, 2200);
     }
@@ -1251,12 +1788,11 @@
           <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col flex-1" style="box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03);">
 
             <!-- ── Card header bar ── -->
-            <div class="flex items-center gap-3 px-5 h-[54px] border-b border-gray-100">
+            <div class="flex items-center gap-2 px-5 h-[54px] border-b border-gray-100">
               <h3 class="text-[14.5px] font-semibold text-gray-900 leading-snug flex-1 min-w-0 truncate">${escHtml(prompt)}</h3>
-              ${isSQLSource ? `<button onclick="(function(){switchMode('sql');setTimeout(function(){if(sqlEditor&&${JSON.stringify(sqlQuery)}){sqlEditor.setValue(${JSON.stringify(sqlQuery)});_onEditorChange();}},80);})()" class="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg flex-shrink-0 border border-indigo-100 text-[11.5px] font-semibold transition-colors hover:bg-indigo-50" style="background:#EEF2FF;color:#4338CA;cursor:pointer;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>View/Edit SQL</button>` : ''}
-              <!-- Sources button -->
-              <button onclick="toggleSourcesDrawer()" class="toolbar-btn sources-btn flex-shrink-0">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+              ${isSQLSource ? `<button onclick="(function(){switchMode('sql');setTimeout(function(){if(sqlEditor&&${JSON.stringify(sqlQuery)}){sqlEditor.setValue(${JSON.stringify(sqlQuery)});_onEditorChange();}},80);})()" class="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg flex-shrink-0 border border-indigo-100 text-[11.5px] font-semibold transition-colors hover:bg-indigo-50" style="background:#EEF2FF;color:#4338CA;cursor:pointer;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>View SQL</button>` : ''}
+              <button onclick="toggleSourcesDrawer()" class="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg flex-shrink-0 border border-gray-200 bg-white text-[11.5px] font-medium text-gray-500 hover:bg-gray-50 transition-colors sources-btn">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                 Sources
               </button>
             </div>
@@ -1288,13 +1824,20 @@
                   </button>
                 </div>
               </div>
-              <!-- Right: Add to Dashboard CTA -->
-              <button onclick="addToDashboard()"
-                class="flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
-                style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                Add to Dashboard
-              </button>
+              <!-- Right: Export + Add to Dashboard -->
+              <div class="flex items-center gap-2">
+                <button onclick="exportViz()"
+                  class="flex items-center gap-1.5 px-3 h-9 rounded-xl text-[13px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                  Export
+                </button>
+                <button onclick="addToDashboard()"
+                  class="flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
+                  style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  Add to Dashboard
+                </button>
+              </div>
             </div>
 
           </div>
@@ -1505,7 +2048,13 @@
       if (typeof Chart === 'undefined') return;
       var canvas = document.getElementById(canvasId);
       if (!canvas) return;
+      // Destroy any existing chart on this specific canvas (covers multiple canvas IDs)
+      var existing = Chart.getChart(canvas);
+      if (existing) { existing.destroy(); }
       if (window._kpiChartInst) { window._kpiChartInst.destroy(); window._kpiChartInst = null; }
+      // Clear stale dimension attributes so Chart.js recomputes from the current CSS layout
+      canvas.removeAttribute('width');
+      canvas.removeAttribute('height');
 
       var data = sqlState.data;
       if (!data || !data.cols || !data.rows || !data.rows.length) return;
@@ -1616,6 +2165,7 @@
 
       if (indexAxis) options.indexAxis = 'y';
       window._kpiChartInst = new Chart(canvas, { type: type, data: chartData, options: options });
+      return window._kpiChartInst;
     }
 
     /* ══════════════════════════════════════════
@@ -1634,33 +2184,29 @@
     ══════════════════════════════════ */
     function switchMode(mode) {
       currentMode = mode;
-      // Canvas-area toggle (AI mode)
       var aBtn = document.getElementById('mode-ai-btn');
       var sBtn = document.getElementById('mode-sql-btn');
       if (aBtn) aBtn.classList.toggle('active', mode === 'ai');
       if (sBtn) sBtn.classList.toggle('active', mode === 'sql');
 
-      var aiWrapper = document.getElementById('ai-layout-wrapper');
+      var aiWrapper  = document.getElementById('ai-layout-wrapper');
       var sqlWrapper = document.getElementById('sql-layout');
       var chatPanel  = document.getElementById('chat-panel');
+      var vizSidebar = document.getElementById('sql-viz-sidebar');
 
       if (mode === 'sql') {
         aiWrapper.classList.add('hidden');
         sqlWrapper.classList.remove('hidden');
-        if (chatPanel) chatPanel.classList.add('hidden');
-        // Restore viz sidebar if results already exist
-        var vizSidebar = document.getElementById('sql-viz-sidebar');
-        if (vizSidebar && sqlState.status === 'success') vizSidebar.classList.add('sidebar-visible');
+        if (chatPanel)  chatPanel.classList.add('hidden');
+        // vizSidebar stays HIDDEN — only opens when user clicks + Visualization
         _initSQLEditor();
         if (sqlEditor) sqlEditor.refresh();
         setTimeout(function(){ if (sqlEditor) { sqlEditor.refresh(); sqlEditor.focus(); } }, 60);
       } else {
         sqlWrapper.classList.add('hidden');
         aiWrapper.classList.remove('hidden');
-        if (chatPanel) chatPanel.classList.remove('hidden');
-        // Collapse viz sidebar when leaving SQL mode
-        var vizSidebar = document.getElementById('sql-viz-sidebar');
-        if (vizSidebar) vizSidebar.classList.remove('sidebar-visible');
+        if (chatPanel)  chatPanel.classList.remove('hidden');
+        if (vizSidebar) { vizSidebar.classList.add('hidden'); vizSidebar.classList.remove('flex'); }
         // Restore AI canvas state
         if (charts.length === 0 && document.getElementById('chart-output').classList.contains('hidden')) {
           document.getElementById('empty-state').classList.remove('hidden');
@@ -1705,7 +2251,135 @@
         'ORDER BY month ASC;'
       ].join('\n');
       sqlEditor.setValue(sample);
+      _fileContents[_activeFileId] = sample;
       sqlEditor.setCursor(sqlEditor.lineCount(), 0);
+      // Render file tabs
+      _renderSQLFileTabs();
+    }
+
+    /* ══════════════════════════════════════════
+       SQL FILE TAB SYSTEM
+    ══════════════════════════════════════════ */
+    var _sqlFiles = [{ id: 'sql-file-0', name: 'Untitled' }];
+    var _activeFileId = 'sql-file-0';
+    var _fileContents = { 'sql-file-0': '' };
+
+    function _renderSQLFileTabs() {
+      var container = document.getElementById('sql-file-tabs');
+      if (!container) return;
+      container.innerHTML = _sqlFiles.map(function(f) {
+        var isActive = f.id === _activeFileId;
+        var canClose = _sqlFiles.length > 1;
+        return '<button class="sql-file-tab' + (isActive ? ' active' : '') + '" ' +
+          'onclick="switchSQLFile(\'' + f.id + '\')" ' +
+          'ondblclick="startRenameFile(\'' + f.id + '\')" ' +
+          'title="Double-click to rename">' +
+          '<svg class="w-3 h-3 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/>' +
+          '</svg>' +
+          '<span id="ftab-label-' + f.id + '" class="max-w-[110px] truncate">' + escHtml(f.name) + '</span>' +
+          (canClose
+            ? '<span class="ftab-x" onclick="closeSQLFile(\'' + f.id + '\', event)">' +
+              '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+              '</span>'
+            : '') +
+          '</button>';
+      }).join('');
+    }
+
+    function addSQLFile() {
+      // Save current editor content to current file
+      if (sqlEditor) _fileContents[_activeFileId] = sqlEditor.getValue();
+      var id = 'sql-file-' + Date.now();
+      _sqlFiles.push({ id: id, name: 'Untitled' });
+      _fileContents[id] = '';
+      _activeFileId = id;
+      _renderSQLFileTabs();
+      // Load empty editor
+      if (sqlEditor) { sqlEditor.setValue(''); sqlEditor.clearHistory(); sqlEditor.focus(); }
+      clearSQL();
+      closeSQLVizSidebar();
+    }
+
+    function switchSQLFile(fileId) {
+      if (fileId === _activeFileId) return;
+      // Save current editor content
+      if (sqlEditor) _fileContents[_activeFileId] = sqlEditor.getValue();
+      _activeFileId = fileId;
+      _renderSQLFileTabs();
+      // Load the file's content into editor (must happen BEFORE state reset)
+      var content = _fileContents[fileId] || '';
+      if (sqlEditor) { sqlEditor.setValue(content); sqlEditor.clearHistory(); sqlEditor.focus(); }
+      // Reset query state but do NOT clear the editor we just loaded
+      _resetSQLQueryState();
+      closeSQLVizSidebar();
+    }
+
+    function closeSQLFile(fileId, e) {
+      if (e) e.stopPropagation();
+      if (_sqlFiles.length <= 1) return; // can't close last tab
+      var idx = _sqlFiles.findIndex(function(f) { return f.id === fileId; });
+      if (idx === -1) return;
+      _sqlFiles.splice(idx, 1);
+      delete _fileContents[fileId];
+      if (_activeFileId === fileId) {
+        var newFile = _sqlFiles[Math.max(0, idx - 1)];
+        _activeFileId = newFile.id;
+        var content = _fileContents[_activeFileId] || '';
+        if (sqlEditor) { sqlEditor.setValue(content); sqlEditor.clearHistory(); }
+        clearSQL();
+        closeSQLVizSidebar();
+      }
+      _renderSQLFileTabs();
+    }
+
+    function startRenameFile(fileId) {
+      var label = document.getElementById('ftab-label-' + fileId);
+      if (!label) return;
+      var f = _sqlFiles.find(function(f2) { return f2.id === fileId; });
+      if (!f) return;
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.value = f.name;
+      input.style.cssText = 'outline:none;border:none;background:transparent;font-size:12px;font-weight:600;color:#111827;width:' + Math.min(120, Math.max(50, f.name.length * 9)) + 'px;';
+      label.replaceWith(input);
+      input.focus(); input.select();
+      function finish() {
+        f.name = input.value.trim() || 'Untitled';
+        _renderSQLFileTabs();
+      }
+      input.onblur = finish;
+      input.onkeydown = function(e) {
+        if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { input.value = f.name; input.blur(); }
+      };
+    }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR OPEN / CLOSE
+    ══════════════════════════════════════════ */
+    function closeSQLVizSidebar() {
+      var vizSidebar = document.getElementById('sql-viz-sidebar');
+      if (vizSidebar) { vizSidebar.classList.add('hidden'); vizSidebar.classList.remove('flex'); }
+      // If __new__ tab was active, cancel it and go back to table
+      if (_activeResultTab === '__new__') {
+        _removeNewVizTab(null);
+      }
+    }
+
+    /* ══════════════════════════════════════════
+       EXPORT + TOAST
+    ══════════════════════════════════════════ */
+    function exportViz() {
+      _showToast('Chart exported as PNG');
+    }
+
+    function _showToast(msg) {
+      var t = document.getElementById('app-toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(function() { t.classList.remove('show'); }, 2600);
     }
 
     /* ══════════════════════════════════
@@ -1787,17 +2461,36 @@
       // Update sidebar compat if we have results
       if (status === 'success' && data) {
         _updateSidebarCompat(data);
-        document.getElementById('viz-no-results-hint').classList.add('hidden');
-        // Slide in the viz sidebar
-        var sidebar = document.getElementById('sql-viz-sidebar');
-        if (sidebar) sidebar.classList.add('sidebar-visible');
+        // Show chart type section, hide pre-run empty state
+        var prerun = document.getElementById('sql-side-prerun');
+        var types  = document.getElementById('sql-side-types');
+        if (prerun) prerun.classList.add('hidden');
+        if (types)  types.classList.remove('hidden');
       }
+      // Enable / update the "New Visualization" tab button
+      var newVizBtn = document.getElementById('new-viz-tab-btn');
+      if (newVizBtn) {
+        var canViz = status === 'success' && data && data.rows && data.rows.length > 0;
+        newVizBtn.disabled = !canViz;
+        newVizBtn.style.opacity = canViz ? '1' : '0.4';
+        newVizBtn.style.cursor  = canViz ? 'pointer' : 'not-allowed';
+      }
+      // Update tab row badge
+      if (status === 'success' && data) {
+        var badge = document.getElementById('result-tab-row-badge');
+        if (badge) {
+          badge.textContent = data.rows.length + ' rows';
+          badge.classList.remove('hidden');
+        }
+      }
+      // Switch to Table tab (in case we were on a viz tab)
+      switchResultTab('table', true);
     }
 
     /* ══════════════════════════════════
        RESULTS PANEL RENDERING
     ══════════════════════════════════ */
-    var _RESULT_PANELS = ['sql-results-empty','sql-results-running','sql-results-table-wrap','sql-results-error','sql-results-norows'];
+    var _RESULT_PANELS = ['sql-results-empty','sql-results-running','sql-results-table-wrap','sql-results-error','sql-results-norows','sql-results-viz-preview'];
 
     function _showResultsPanel(which) {
       _RESULT_PANELS.forEach(function(id) {
@@ -1820,31 +2513,41 @@
       _showResultsPanel('sql-results-empty');
     }
 
-    function _renderTable(data) {
-      var display  = data.rows.slice(0, SQL_MAX_ROWS);
-      var truncated = data.rows.length > SQL_MAX_ROWS;
+    /* ── SQL table pagination state ── */
+    var _sqlPage = 1;
+    var _sqlPageSize = 25;
+    var _sqlTableData = null;   // { cols, rows } — full dataset
 
-      // Row badge
-      var badge = document.getElementById('sql-row-badge');
-      if (badge) {
-        if (truncated) {
-          badge.innerHTML = '<span class="px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:#FFF7ED;color:#F97316;">First ' + SQL_MAX_ROWS + ' of ' + data.rows.length + ' rows</span>';
-        } else {
-          badge.innerHTML = '<span class="px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:#F3F4F6;color:#6B7280;">' + data.rows.length + (data.rows.length === 1 ? ' row' : ' rows') + '</span>';
-        }
-      }
-      // Truncation note
+    function _renderTable(data) {
+      _sqlTableData = data;
+      _sqlPage = 1;
+      _renderSQLTablePage(1);
+      _showResultsPanel('sql-results-table-wrap');
+    }
+
+    function _renderSQLTablePage(page) {
+      if (!_sqlTableData) return;
+      var data = _sqlTableData;
+      var totalRows = data.rows.length;
+      var totalPages = Math.max(1, Math.ceil(totalRows / _sqlPageSize));
+      page = Math.max(1, Math.min(page, totalPages));
+      _sqlPage = page;
+      var start = (page - 1) * _sqlPageSize;
+      var end   = Math.min(start + _sqlPageSize, totalRows);
+      var pageRows = data.rows.slice(start, end);
+
+      // Truncation note (legacy — now handled by pagination info)
       var tNote = document.getElementById('sql-truncation-note');
-      if (tNote) {
-        tNote.classList.toggle('hidden', !truncated);
-        if (truncated) tNote.textContent = 'Add LIMIT to see more rows';
-      }
+      if (tNote) tNote.classList.add('hidden');
 
       // Build table
-      var thead = '<thead><tr>' + data.cols.map(function(c) { return '<th>' + escHtml(c) + '</th>'; }).join('') + '</tr></thead>';
-      var tbody = '<tbody>' + display.map(function(row) {
-        return '<tr>' + data.cols.map(function(_, i) {
-          var v = row[i];
+      var thead = '<thead><tr style="background:#F8FAFC;border-bottom:1px solid #E2E8F0">' +
+        data.cols.map(function(c) {
+          return '<th>' + escHtml(c.replace(/_/g, ' ')) + '</th>';
+        }).join('') + '</tr></thead>';
+      var tbody = '<tbody>' + pageRows.map(function(row, i) {
+        return '<tr>' + data.cols.map(function(_, ci) {
+          var v = row[ci];
           var empty = (v === null || v === undefined || String(v).trim() === '');
           return '<td>' + (empty ? '<span style="color:#D1D5DB">\u2014</span>' : escHtml(String(v))) + '</td>';
         }).join('') + '</tr>';
@@ -1852,7 +2555,60 @@
 
       var tbl = document.getElementById('sql-table');
       if (tbl) tbl.innerHTML = thead + tbody;
-      _showResultsPanel('sql-results-table-wrap');
+
+      // Pagination info
+      var infoEl = document.getElementById('sql-pagination-info');
+      if (infoEl) infoEl.textContent = 'Showing ' + (start + 1).toLocaleString() + '–' + end.toLocaleString() + ' of ' + totalRows.toLocaleString() + ' rows';
+
+      // Prev / Next buttons
+      var prevBtn = document.getElementById('sql-page-prev');
+      var nextBtn = document.getElementById('sql-page-next');
+      if (prevBtn) prevBtn.disabled = page <= 1;
+      if (nextBtn) nextBtn.disabled = page >= totalPages;
+
+      // Page number pills
+      var numsEl = document.getElementById('sql-page-nums');
+      if (numsEl) {
+        var nums = [];
+        if (totalPages <= 7) {
+          nums = Array.from({ length: totalPages }, function(_, i) { return i + 1; });
+        } else if (page <= 4) {
+          nums = [1, 2, 3, 4, 5, '…', totalPages];
+        } else if (page >= totalPages - 3) {
+          nums = [1, '…', totalPages-4, totalPages-3, totalPages-2, totalPages-1, totalPages];
+        } else {
+          nums = [1, '…', page-1, page, page+1, '…', totalPages];
+        }
+        numsEl.innerHTML = nums.map(function(n) {
+          if (n === '…') return '<span class="w-7 h-7 flex items-center justify-center text-[12px] text-gray-400">…</span>';
+          var active = n === page;
+          return '<button onclick="goSQLPage(' + n + ')" class="w-7 h-7 flex items-center justify-center rounded-lg text-[12px] font-medium transition-colors ' + (active ? 'text-white' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100') + '" ' + (active ? 'style="background:#5B63F6"' : '') + '>' + n + '</button>';
+        }).join('');
+      }
+
+      // Page size label
+      var lbl = document.getElementById('sql-page-size-label');
+      if (lbl) lbl.textContent = _sqlPageSize + ' rows';
+    }
+
+    function goSQLPage(p) {
+      if (!_sqlTableData) return;
+      var totalPages = Math.max(1, Math.ceil(_sqlTableData.rows.length / _sqlPageSize));
+      if (p < 1 || p > totalPages) return;
+      _renderSQLTablePage(p);
+    }
+
+    function setSQLPageSize(size) {
+      _sqlPageSize = parseInt(size);
+      var lbl = document.getElementById('sql-page-size-label');
+      if (lbl) lbl.textContent = size + ' rows';
+      toggleSQLPageSizeDd();
+      _renderSQLTablePage(1);
+    }
+
+    function toggleSQLPageSizeDd() {
+      var dd = document.getElementById('sql-page-size-dd');
+      if (dd) dd.classList.toggle('hidden');
     }
 
     /* ══════════════════════════════════
@@ -1884,12 +2640,13 @@
       var di = document.getElementById('kpi-desc-input');
       if (ni) ni.value = '';
       if (di) di.value = '';
-      document.getElementById('viz-no-results-hint').classList.remove('hidden');
       // Reset all chart btns to disabled until results come in
       ['table','kpi','bar','line','area','pie','donut','hbar','scatter'].forEach(function(t) {
         var btn = document.getElementById('chart-type-' + t);
         if (btn) { btn.classList.remove('selected'); btn.classList.add('disabled'); }
       });
+      // Reset axis state
+      _axisState = { 'x-axis': null, 'y-axis': null, 'kpi-value': null };
     }
 
     function _clearChartSelection() {
@@ -1908,6 +2665,15 @@
       _clearChartSelection();
       btn.classList.add('selected');
 
+      // Show / hide axis fields based on chart type
+      var isKPI = type === 'kpi';
+      var el = document.getElementById('x-axis-field'); if (el) el.classList.toggle('hidden', isKPI);
+      var el2 = document.getElementById('y-axis-field'); if (el2) el2.classList.toggle('hidden', isKPI);
+      var el3 = document.getElementById('kpi-value-field'); if (el3) el3.classList.toggle('hidden', !isKPI);
+
+      // Populate axis dropdowns from result columns
+      _populateAxisDropdowns(type);
+
       // Show KPI config section
       document.getElementById('kpi-config-section').classList.remove('hidden');
       document.getElementById('kpi-config-placeholder').classList.add('hidden');
@@ -1916,10 +2682,128 @@
       var ni = document.getElementById('kpi-name-input');
       if (ni && !ni.value) {
         var labels = { table:'Query Results', kpi:'Key Metric', bar:'Bar Chart', hbar:'Horiz. Bar Chart', line:'Trend Chart', area:'Area Chart', pie:'Distribution', donut:'Donut Chart', scatter:'Scatter Plot' };
-        ni.value = labels[type] || 'My KPI';
+        ni.value = labels[type] || 'My Visualization';
       }
 
       _onKPINameInput();
+      // No live preview — chart renders only when Create KPI is clicked
+    }
+
+    /* ── Populate axis dropdowns from current result columns ── */
+    var _axisState = { 'x-axis': null, 'y-axis': null, 'kpi-value': null };
+
+    function _populateAxisDropdowns(type) {
+      var data = sqlState.data;
+      if (!data || !data.cols) return;
+      var cols = data.cols;
+      var numCols = cols.filter(function(c, i) {
+        // detect numeric by sampling first row
+        var v = data.rows[0] ? data.rows[0][i] : null;
+        return !isNaN(parseFloat(v));
+      });
+      var allCols = cols;
+
+      function buildOpts(ddId, colList, currentVal) {
+        var dd = document.getElementById(ddId);
+        if (!dd) return;
+        dd.innerHTML = colList.map(function(c) {
+          return '<button class="axis-dd-opt' + (c === currentVal ? ' selected' : '') + '" onclick="selectAxisCol(' + JSON.stringify(ddId.replace('-dd','')) + ',' + JSON.stringify(c) + ',event)">' + escHtml(c) + '</button>';
+        }).join('');
+      }
+
+      // Auto-select defaults if not yet chosen
+      if (!_axisState['x-axis'] && allCols.length > 0)   _axisState['x-axis']   = allCols[0];
+      if (!_axisState['y-axis'] && numCols.length > 0)    _axisState['y-axis']   = numCols[0];
+      if (!_axisState['kpi-value'] && numCols.length > 0) _axisState['kpi-value']= numCols[0];
+
+      buildOpts('x-axis-dd', allCols, _axisState['x-axis']);
+      buildOpts('y-axis-dd', numCols.length ? numCols : allCols, _axisState['y-axis']);
+      buildOpts('kpi-value-dd', numCols.length ? numCols : allCols, _axisState['kpi-value']);
+
+      // Update trigger labels
+      _setAxisLabel('x-axis',   _axisState['x-axis']);
+      _setAxisLabel('y-axis',   _axisState['y-axis']);
+      _setAxisLabel('kpi-value',_axisState['kpi-value']);
+    }
+
+    function _setAxisLabel(axis, val) {
+      var lbl = document.getElementById(axis + '-label');
+      var trig = document.getElementById(axis + '-trigger');
+      if (lbl) {
+        lbl.textContent = val || 'Select column';
+        lbl.style.color = val ? '#374151' : '#9CA3AF';
+      }
+      if (trig) trig.classList.toggle('open', false);
+    }
+
+    function selectAxisCol(axis, col, e) {
+      if (e) e.stopPropagation();
+      _axisState[axis] = col;
+      _setAxisLabel(axis, col);
+      var dd = document.getElementById(axis + '-dd');
+      if (dd) dd.style.display = 'none';
+      // Update selected state in dropdown
+      var btns = dd ? dd.querySelectorAll('.axis-dd-opt') : [];
+      btns.forEach(function(b) { b.classList.toggle('selected', b.textContent === col); });
+      // No live re-preview — chart renders only when Create KPI is clicked
+    }
+
+    function toggleAxisDD(axis, e) {
+      if (e) e.stopPropagation();
+      var dd = document.getElementById(axis + '-dd');
+      var trig = document.getElementById(axis + '-trigger');
+      if (!dd) return;
+      var isOpen = dd.style.display === 'block';
+      // Close all axis DDs first
+      ['x-axis-dd','y-axis-dd','kpi-value-dd'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+        var t = document.getElementById(id.replace('-dd','-trigger'));
+        if (t) t.classList.remove('open');
+      });
+      if (!isOpen) {
+        dd.style.display = 'block';
+        if (trig) trig.classList.add('open');
+      }
+    }
+
+    /* ── Live preview chart in the results viz panel ── */
+    function _livePreviewChart(type) {
+      _showResultsPanel('sql-results-viz-preview');
+      // Hide saved footer and card header during editing
+      var footer = document.getElementById('sql-viz-saved-footer');
+      if (footer) { footer.classList.add('hidden'); footer.classList.remove('flex'); }
+      var cardHdr = document.getElementById('sql-viz-card-header');
+      if (cardHdr) { cardHdr.classList.add('hidden'); cardHdr.classList.remove('flex'); }
+      // Show/hide canvas vs KPI counter
+      var canvas = document.getElementById('sql-inline-chart-canvas');
+      var counter = document.getElementById('sql-kpi-counter-display');
+      if (type === 'kpi') {
+        if (canvas) canvas.style.display = 'none';
+        if (counter) { counter.classList.remove('hidden'); _renderKPICounter(); }
+      } else {
+        if (canvas) canvas.style.display = 'block';
+        if (counter) counter.classList.add('hidden');
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            _renderSQLKPIChart(type, 'sql-inline-chart-canvas');
+          });
+        });
+      }
+    }
+
+    function _renderKPICounter() {
+      var data = sqlState.data;
+      var col = _axisState['kpi-value'];
+      if (!data || !col) return;
+      var colIdx = data.cols.indexOf(col);
+      var val = data.rows[0] ? data.rows[0][colIdx !== -1 ? colIdx : 0] : '—';
+      var num = parseFloat(String(val).replace(/[$,%]/g,'').replace(/,/g,''));
+      var formatted = isNaN(num) ? String(val) : (num >= 1000000 ? (num/1000000).toFixed(1)+'M' : num >= 1000 ? (num/1000).toFixed(1)+'K' : String(num));
+      var bigNum = document.getElementById('sql-kpi-big-number');
+      var lblEl  = document.getElementById('sql-kpi-col-label');
+      if (bigNum) bigNum.textContent = formatted;
+      if (lblEl)  lblEl.textContent  = col;
     }
 
     function _onKPINameInput() {
@@ -1965,153 +2849,680 @@
       el.classList.toggle('flex', visible);
     }
 
-    /* ══════════════════════════════════
-       GENERATE KPI
-    ══════════════════════════════════ */
+    /* ══════════════════════════════════════════
+       RESULT TAB SYSTEM
+    ══════════════════════════════════════════ */
+    var _savedVizList = []; // { id, name, type, axisState, data }
+    var _activeResultTab = 'table';
+    var _editingNewViz = false;
+
+    function switchResultTab(tabId, skipRender) {
+      _activeResultTab = tabId;
+      _editingNewViz = tabId === '__new__';
+
+      // Update tab active states
+      document.querySelectorAll('.result-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.tabId === tabId);
+      });
+
+      if (tabId === 'table') {
+        // Show table (or appropriate empty/error state)
+        var st = sqlState.status;
+        if (st === 'success') _showResultsPanel('sql-results-table-wrap');
+        else if (st === 'error' || st === 'timeout') _showResultsPanel('sql-results-error');
+        else if (st === 'empty') _showResultsPanel('sql-results-norows');
+        else _showResultsPanel('sql-results-empty');
+        // Hide card header
+        var ch = document.getElementById('sql-viz-card-header');
+        if (ch) { ch.classList.add('hidden'); ch.classList.remove('flex'); }
+      } else if (tabId === '__new__') {
+        // Hide card header in new-viz editing mode
+        var ch = document.getElementById('sql-viz-card-header');
+        if (ch) { ch.classList.add('hidden'); ch.classList.remove('flex'); }
+        // Keep showing the table while configuring — chart only renders on Create KPI
+        var st = sqlState.status;
+        if (st === 'success') _showResultsPanel('sql-results-table-wrap');
+        else _showResultsPanel('sql-results-empty');
+        var footer = document.getElementById('sql-viz-saved-footer');
+        if (footer) { footer.classList.add('hidden'); footer.classList.remove('flex'); }
+        // Sidebar is open (opened by startNewVisualization)
+      } else {
+        // A saved viz tab — find the viz and render it
+        var viz = _savedVizList.find(function(v) { return v.id === tabId; });
+        if (!viz) return;
+        // Temporarily set axis state and chart type, then render
+        var prevAxisState = _axisState;
+        var prevChartType = sqlState.chartType;
+        _axisState = viz.axisState;
+        sqlState.chartType = viz.type;
+        sqlState.data = viz.data;
+        _livePreviewChart(viz.type);
+        // Show the card header
+        var cardHeader = document.getElementById('sql-viz-card-header');
+        var cardTitle  = document.getElementById('sql-viz-card-title');
+        if (cardHeader) { cardHeader.classList.remove('hidden'); cardHeader.classList.add('flex'); }
+        if (cardTitle)  cardTitle.textContent = viz.name;
+        // Show the saved footer
+        var footer = document.getElementById('sql-viz-saved-footer');
+        if (footer) {
+          footer.classList.remove('hidden');
+          footer.classList.add('flex');
+        }
+        // Sidebar is always visible in SQL mode — no action needed
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       VISUALIZATION EDITOR MODE
+    ══════════════════════════════════════════════════ */
+    var _veYCols = [];           // selected Y column names
+    var _veCurrentVizId = null;  // set after saving
+    var _veChartInst = null;     // Chart.js instance in ve-chart-canvas
+
+    function startNewVisualization() {
+      // Show the full Visualization Editor split view
+      var inner = document.getElementById('sql-editor-inner');
+      var fileTabBar = document.getElementById('sql-file-tab-bar');
+      var veMode = document.getElementById('sql-viz-editor-mode');
+      if (inner) inner.classList.add('hidden');
+      if (fileTabBar) fileTabBar.classList.add('hidden');
+      if (veMode) { veMode.classList.remove('hidden'); veMode.classList.add('flex'); }
+      // Close old sidebar if somehow open
+      var vizSidebar = document.getElementById('sql-viz-sidebar');
+      if (vizSidebar) { vizSidebar.classList.add('hidden'); vizSidebar.classList.remove('flex'); }
+      // Reset editor state
+      _veYCols = [];
+      _veCurrentVizId = null;
+      if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; }
+      // Populate dropdowns from query results
+      _populateVEDropdowns();
+      // Reset form fields
+      var nameIn = document.getElementById('ve-viz-name'); if (nameIn) nameIn.value = '';
+      var vtSel = document.getElementById('ve-viz-type'); if (vtSel) vtSel.value = 'chart';
+      var ctSel = document.getElementById('ve-chart-type'); if (ctSel) ctSel.value = 'bar';
+      var dlChk = document.getElementById('ve-data-labels'); if (dlChk) dlChk.checked = false;
+      var lgChk = document.getElementById('ve-show-legend'); if (lgChk) lgChk.checked = true;
+      ['ve-x-title','ve-y-title','ve-y-min','ve-y-max'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
+      });
+      // Reset preview
+      document.getElementById('ve-preview-empty').classList.remove('hidden');
+      document.getElementById('ve-preview-chart-card').classList.add('hidden');
+      document.getElementById('ve-breadcrumb-name').textContent = 'New Visualization';
+      // Reset Create KPI button
+      var btn = document.getElementById('ve-create-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-40','cursor-not-allowed');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Create KPI';
+      }
+      // Switch to General tab
+      switchVETab('general');
+      _onVETypeChange();
+      // Mark __new__ tab as active
+      _ensureNewVizTab();
+      _activeResultTab = '__new__';
+    }
+
+    function closeVizEditorMode() {
+      var inner = document.getElementById('sql-editor-inner');
+      var fileTabBar = document.getElementById('sql-file-tab-bar');
+      var veMode = document.getElementById('sql-viz-editor-mode');
+      if (veMode) { veMode.classList.add('hidden'); veMode.classList.remove('flex'); }
+      if (inner) inner.classList.remove('hidden');
+      if (fileTabBar) fileTabBar.classList.remove('hidden');
+      if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; window._kpiChartInst = null; }
+      if (_veCurrentVizId) {
+        switchResultTab(_veCurrentVizId);
+      } else {
+        _removeNewVizTab(null);
+        switchResultTab('table', true);
+      }
+    }
+
+    function switchVETab(tab) {
+      ['general','xaxis','yaxis'].forEach(function(t) {
+        var btn = document.getElementById('ve-tab-btn-' + t);
+        var content = document.getElementById('ve-tab-' + t);
+        if (btn) btn.classList.toggle('active', t === tab);
+        if (content) content.classList.toggle('hidden', t !== tab);
+      });
+    }
+
+    function _populateVEDropdowns() {
+      var data = sqlState.data;
+      if (!data || !data.cols) return;
+      var cols = data.cols;
+      var numCols = cols.filter(function(c, i) {
+        var v = data.rows[0] ? data.rows[0][i] : null;
+        return !isNaN(parseFloat(v)) && isFinite(v);
+      });
+      var nonNum = cols.filter(function(c) { return numCols.indexOf(c) === -1; });
+
+      // X Column (chart X Axis tab)
+      var xSel = document.getElementById('ve-x-col');
+      if (xSel) {
+        xSel.innerHTML = cols.map(function(c) { return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+        xSel.value = (nonNum.length > 0 ? nonNum[0] : cols[0]) || '';
+      }
+
+      // Y Columns: default to first numeric col
+      _veYCols = numCols.length > 0 ? [numCols[0]] : [];
+      _renderVEYColPanel();
+      _renderVEYColChips();
+
+      // Counter/KPI column (numeric preferred)
+      var kpiCol = document.getElementById('ve-kpi-col');
+      if (kpiCol) {
+        var kpiCols = numCols.length > 0 ? numCols : cols;
+        kpiCol.innerHTML = kpiCols.map(function(c) { return '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; }).join('');
+      }
+
+      // Table columns checklist
+      var tableList = document.getElementById('ve-table-cols-list');
+      if (tableList) {
+        tableList.innerHTML = cols.map(function(c) {
+          return '<label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors">' +
+            '<input type="checkbox" checked value="' + escHtml(c) + '" class="w-3.5 h-3.5 rounded" style="accent-color:#5B63F6" onchange="_checkVECreateBtn()"/>' +
+            '<span class="text-[12.5px] text-gray-700 truncate">' + escHtml(c.replace(/_/g, ' ')) + '</span>' +
+            '</label>';
+        }).join('');
+      }
+
+      // Default name
+      var nameIn = document.getElementById('ve-viz-name');
+      if (nameIn && !nameIn.value.trim()) nameIn.value = 'Chart 1';
+      _checkVECreateBtn();
+    }
+
+    function _renderVEYColPanel() {
+      var data = sqlState.data;
+      if (!data || !data.cols) return;
+      var cols = data.cols;
+      var numCols = cols.filter(function(c, i) {
+        var v = data.rows[0] ? data.rows[0][i] : null;
+        return !isNaN(parseFloat(v)) && isFinite(v);
+      });
+      var list = numCols.length > 0 ? numCols : cols;
+      var panel = document.getElementById('ve-y-col-panel');
+      if (!panel) return;
+      panel.innerHTML = list.map(function(c) {
+        var sel = _veYCols.indexOf(c) !== -1;
+        return '<button class="ve-col-opt' + (sel ? ' selected' : '') + '" onclick="_toggleVEYCol(\'' + c.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')">' +
+          '<span class="ve-check">' + (sel ? '<svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '') + '</span>' +
+          escHtml(c) + '</button>';
+      }).join('');
+    }
+
+    function _toggleVEYColPanel(e) {
+      if (e) e.stopPropagation();
+      var panel = document.getElementById('ve-y-col-panel');
+      var trigger = document.getElementById('ve-y-col-trigger');
+      if (!panel) return;
+      var isOpen = !panel.classList.contains('hidden');
+      if (isOpen) {
+        panel.classList.add('hidden');
+        if (trigger) trigger.classList.remove('open');
+      } else {
+        _renderVEYColPanel();
+        panel.classList.remove('hidden');
+        if (trigger) trigger.classList.add('open');
+      }
+    }
+
+    function _toggleVEYCol(col) {
+      var idx = _veYCols.indexOf(col);
+      if (idx >= 0) { _veYCols.splice(idx, 1); }
+      else { _veYCols.push(col); }
+      _renderVEYColChips();
+      _renderVEYColPanel();
+      _renderVESeriesTab();
+      _checkVECreateBtn();
+    }
+
+    function _renderVEYColChips() {
+      var chips = document.getElementById('ve-y-col-chips');
+      var placeholder = document.getElementById('ve-y-col-placeholder');
+      if (!chips) return;
+      chips.innerHTML = _veYCols.map(function(c) {
+        return '<span class="ve-col-chip">' + escHtml(c) +
+          '<span class="ve-col-chip-x" onclick="_toggleVEYCol(\'' + c.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\');event.stopPropagation();">' +
+            '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+          '</span></span>';
+      }).join('');
+      if (placeholder) placeholder.style.display = _veYCols.length === 0 ? 'inline' : 'none';
+    }
+
+    function _renderVESeriesTab() { /* series removed */ }
+
+    function _onVETypeChange() {
+      var type = document.getElementById('ve-viz-type').value;
+      var isChart = type === 'chart';
+      var isCounter = type === 'counter';
+      var isTable = type === 'table';
+      // Show/hide tab bar
+      var tabBar = document.getElementById('ve-tab-bar');
+      if (tabBar) tabBar.classList.toggle('hidden', !isChart);
+      // Show/hide chart tab panels
+      if (isChart) { switchVETab('general'); } else {
+        ['general','xaxis','yaxis'].forEach(function(t) {
+          var el = document.getElementById('ve-tab-' + t);
+          if (el) el.classList.add('hidden');
+        });
+      }
+      // Show/hide counter/table content
+      var cc = document.getElementById('ve-counter-content');
+      var tc = document.getElementById('ve-table-content');
+      if (cc) cc.classList.toggle('hidden', !isCounter);
+      if (tc) tc.classList.toggle('hidden', !isTable);
+      _populateVEDropdowns();
+      _checkVECreateBtn();
+    }
+
+    function _onVEChartTypeChange() {
+      var ct = (document.getElementById('ve-chart-type') || {}).value;
+      var stackedRow = document.getElementById('ve-stacked-row');
+      if (stackedRow) {
+        var showStacked = ct === 'bar' || ct === 'line' || ct === 'area';
+        stackedRow.classList.toggle('hidden', !showStacked);
+        stackedRow.classList.toggle('flex', showStacked);
+      }
+      _checkVECreateBtn();
+    }
+
+    function _onVENameInput() {
+      var nm = document.getElementById('ve-breadcrumb-name');
+      var val = (document.getElementById('ve-viz-name').value || '').trim();
+      if (nm) nm.textContent = val || 'New Visualization';
+      _checkVECreateBtn();
+    }
+
+    function _checkVECreateBtn() {
+      var name = (document.getElementById('ve-viz-name').value || '').trim();
+      var type = (document.getElementById('ve-viz-type') || {}).value;
+      var valid = false;
+      if (type === 'chart') valid = name.length > 0 && _veYCols.length > 0;
+      else if (type === 'counter') {
+        var col = (document.getElementById('ve-kpi-col') || {}).value;
+        valid = name.length > 0 && !!col;
+      } else if (type === 'table') {
+        valid = name.length > 0;
+      }
+      var btn = document.getElementById('ve-create-btn');
+      if (!btn) return;
+      btn.disabled = !valid;
+      btn.classList.toggle('opacity-40', !valid);
+      btn.classList.toggle('cursor-not-allowed', !valid);
+    }
+
+    function createKPIFromVizEditor() {
+      var vizName = (document.getElementById('ve-viz-name').value || '').trim();
+      var vizType = document.getElementById('ve-viz-type').value;
+      if (!vizName) return;
+      if (vizType === 'chart' && _veYCols.length === 0) return;
+      var rawChartType = vizType === 'counter' ? 'kpi' : (vizType === 'table' ? 'table' : document.getElementById('ve-chart-type').value);
+      var xCol = (document.getElementById('ve-x-col') || {}).value || null;
+      var kpiCol = (document.getElementById('ve-kpi-col') || {}).value || xCol;
+      var newAxisState = { 'x-axis': xCol, 'y-axis': _veYCols[0] || null, 'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol };
+      // Apply axis + chart state globally for rendering
+      _axisState = JSON.parse(JSON.stringify(newAxisState));
+      sqlState.chartType = rawChartType;
+      // Save / update viz entry
+      var vizId = _veCurrentVizId || ('viz-' + Date.now());
+      _veCurrentVizId = vizId;
+      var vizEntry = { id: vizId, name: vizName, type: rawChartType, axisState: JSON.parse(JSON.stringify(newAxisState)), data: sqlState.data };
+      var existIdx = _savedVizList.findIndex(function(v) { return v.id === vizId; });
+      if (existIdx >= 0) { _savedVizList[existIdx] = vizEntry; } else { _savedVizList.push(vizEntry); }
+      // Show preview card
+      document.getElementById('ve-preview-empty').classList.add('hidden');
+      document.getElementById('ve-breadcrumb-name').textContent = vizName;
+      var card = document.getElementById('ve-preview-chart-card');
+      card.classList.remove('hidden');
+      document.getElementById('ve-card-title').textContent = vizName;
+      // Destroy previous chart instance
+      if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; }
+      window._kpiChartInst = null;
+      // Render
+      var canvas = document.getElementById('ve-chart-canvas');
+      var kpiDisplay = document.getElementById('ve-kpi-counter');
+      var tablePrev = document.getElementById('ve-table-preview');
+      if (tablePrev) { tablePrev.style.display = 'none'; tablePrev.classList.add('hidden'); }
+      if (rawChartType === 'kpi') {
+        if (canvas) canvas.style.display = 'none';
+        if (kpiDisplay) { kpiDisplay.style.display = 'flex'; kpiDisplay.classList.remove('hidden'); }
+        _renderKPICounterInVE();
+      } else if (rawChartType === 'table') {
+        if (canvas) canvas.style.display = 'none';
+        if (kpiDisplay) { kpiDisplay.style.display = 'none'; kpiDisplay.classList.add('hidden'); }
+        _renderVETablePreview();
+      } else {
+        if (canvas) canvas.style.display = 'block';
+        if (kpiDisplay) { kpiDisplay.style.display = 'none'; kpiDisplay.classList.add('hidden'); }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            _renderSQLKPIChart(rawChartType, 've-chart-canvas');
+            _veChartInst = window._kpiChartInst;
+          });
+        });
+      }
+      // Update result tab bar
+      _updateVEResultTab(vizId, vizName, rawChartType);
+      // Update saved count badge
+      var badge = document.getElementById('sql-viz-saved-count');
+      if (badge) { badge.textContent = _savedVizList.length + ' saved'; badge.classList.remove('hidden'); }
+      // Change button to Update
+      var btn = document.getElementById('ve-create-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('opacity-40','cursor-not-allowed');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>Update KPI';
+      }
+      _showToast('Visualization saved');
+    }
+
+    function _renderKPICounterInVE() {
+      var data = sqlState.data;
+      var colEl = document.getElementById('ve-kpi-col');
+      var col = colEl ? colEl.value : null;
+      var agg = (document.getElementById('ve-kpi-agg') || {}).value || 'sum';
+      var fmt = (document.getElementById('ve-kpi-format') || {}).value || 'auto';
+      var prefix = (document.getElementById('ve-kpi-prefix') || {}).value || '';
+      var suffix = (document.getElementById('ve-kpi-suffix') || {}).value || '';
+      var label = (document.getElementById('ve-kpi-label') || {}).value || col || '';
+      if (!data || !col) return;
+      var colIdx = data.cols.indexOf(col);
+      if (colIdx === -1) colIdx = 0;
+      var vals = data.rows.map(function(r) {
+        return parseFloat(String(r[colIdx] === null || r[colIdx] === undefined ? 0 : r[colIdx]).replace(/[$,%]/g,'').replace(/,/g,'')) || 0;
+      });
+      var raw = 0;
+      if (agg === 'sum') raw = vals.reduce(function(s,v){ return s+v; }, 0);
+      else if (agg === 'avg') raw = vals.length > 0 ? vals.reduce(function(s,v){ return s+v; }, 0) / vals.length : 0;
+      else if (agg === 'max') raw = vals.length > 0 ? Math.max.apply(null, vals) : 0;
+      else if (agg === 'min') raw = vals.length > 0 ? Math.min.apply(null, vals) : 0;
+      else if (agg === 'count') raw = data.rows.length;
+      else raw = vals[0] || 0;
+      var formatted;
+      if (fmt === 'auto') {
+        formatted = raw >= 1e9 ? (raw/1e9).toFixed(1)+'B' : raw >= 1e6 ? (raw/1e6).toFixed(1)+'M' : raw >= 1e3 ? (raw/1e3).toFixed(1)+'K' : String(Math.round(raw*100)/100);
+      } else if (fmt === 'number') {
+        formatted = Math.round(raw).toLocaleString();
+      } else if (fmt === 'decimal') {
+        formatted = raw.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+      } else if (fmt === 'percent') {
+        formatted = raw.toFixed(1) + '%';
+      } else if (fmt === 'currency') {
+        formatted = (prefix || '$') + Math.round(raw).toLocaleString(); prefix = '';
+      } else { formatted = String(raw); }
+      var bigNum = document.getElementById('ve-kpi-big-num');
+      var lblEl  = document.getElementById('ve-kpi-col-lbl');
+      if (bigNum) bigNum.textContent = prefix + formatted + suffix;
+      if (lblEl)  lblEl.textContent  = label;
+    }
+
+    var _veXScale = 'dimension';
+    function _setXScale(type) {
+      _veXScale = type;
+      ['dimension','time','measure'].forEach(function(t) {
+        var btn = document.getElementById('ve-x-scale-' + t);
+        if (btn) btn.classList.toggle('active', t === type);
+      });
+      var granField   = document.getElementById('ve-x-gran-field');
+      var dateFmtField = document.getElementById('ve-x-datefmt-field');
+      if (granField)    granField.classList.toggle('hidden', type !== 'time');
+      if (dateFmtField) dateFmtField.classList.toggle('hidden', type !== 'time');
+      var lbl = document.getElementById('ve-x-col-lbl');
+      if (lbl) {
+        var hints = {
+          dimension: 'Column <span class="text-[10.5px] font-normal text-gray-400">category / label</span>',
+          time:      'Column <span class="text-[10.5px] font-normal text-gray-400">date / timestamp</span>',
+          measure:   'Column <span class="text-[10.5px] font-normal text-gray-400">numeric value</span>'
+        };
+        lbl.innerHTML = hints[type] || hints.dimension;
+      }
+      // Repopulate x-col based on scale type
+      var data = sqlState.data;
+      if (!data || !data.cols) return;
+      var cols = data.cols;
+      var numCols = cols.filter(function(c,i){ var v=data.rows[0]?data.rows[0][i]:null; return !isNaN(parseFloat(v))&&isFinite(v); });
+      var nonNum = cols.filter(function(c){ return numCols.indexOf(c)===-1; });
+      var xSel = document.getElementById('ve-x-col');
+      if (!xSel) return;
+      var filteredCols = (type === 'measure') ? (numCols.length>0?numCols:cols) : cols;
+      xSel.innerHTML = filteredCols.map(function(c){ return '<option value="'+escHtml(c)+'">'+escHtml(c)+'</option>'; }).join('');
+      if (type !== 'measure' && nonNum.length > 0) xSel.value = nonNum[0];
+    }
+
+    function _veTableToggleAll(state) {
+      var checks = document.querySelectorAll('#ve-table-cols-list input[type=checkbox]');
+      checks.forEach(function(cb){ cb.checked = state; });
+    }
+
+    function _renderVETablePreview() {
+      var tablePrev = document.getElementById('ve-table-preview');
+      if (!tablePrev) return;
+      tablePrev.classList.remove('hidden');
+      tablePrev.style.display = 'block';
+      var checkedCols = Array.from(document.querySelectorAll('#ve-table-cols-list input[type=checkbox]:checked')).map(function(cb){ return cb.value; });
+      var data = sqlState.data;
+      if (!data || !data.cols || checkedCols.length === 0) return;
+      var colIdxs = checkedCols.map(function(c){ return data.cols.indexOf(c); }).filter(function(i){ return i >= 0; });
+      var thead = '<thead><tr style="background:#F8FAFC;border-bottom:1px solid #E2E8F0">' +
+        checkedCols.map(function(c){ return '<th>' + escHtml(c.replace(/_/g,' ')) + '</th>'; }).join('') + '</tr></thead>';
+      var tbody = '<tbody>' + data.rows.slice(0,50).map(function(row,ri) {
+        return '<tr>' + colIdxs.map(function(ci){
+          var v = row[ci];
+          var empty = v === null || v === undefined || String(v).trim() === '';
+          return '<td>' + (empty ? '<span style="color:#D1D5DB">—</span>' : escHtml(String(v))) + '</td>';
+        }).join('') + '</tr>';
+      }).join('') + '</tbody>';
+      var tbl = document.getElementById('ve-table-preview-tbl');
+      if (tbl) tbl.innerHTML = thead + tbody;
+    }
+
+    /* Preview the visualization in the center panel WITHOUT saving */
+    function previewVizInEditor() {
+      var vizName = (document.getElementById('ve-viz-name').value || '').trim();
+      var vizType = document.getElementById('ve-viz-type').value;
+      if (!vizName) return;
+      if (vizType === 'chart' && _veYCols.length === 0) return;
+      var rawChartType = vizType === 'counter' ? 'kpi' : (vizType === 'table' ? 'table' : document.getElementById('ve-chart-type').value);
+      var xCol = (document.getElementById('ve-x-col') || {}).value || null;
+      var kpiCol = (document.getElementById('ve-kpi-col') || {}).value || xCol;
+      var newAxisState = { 'x-axis': xCol, 'y-axis': _veYCols[0] || null, 'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol };
+      _axisState = JSON.parse(JSON.stringify(newAxisState));
+      sqlState.chartType = rawChartType;
+      // Show preview card
+      document.getElementById('ve-preview-empty').classList.add('hidden');
+      document.getElementById('ve-breadcrumb-name').textContent = vizName;
+      var card = document.getElementById('ve-preview-chart-card');
+      card.classList.remove('hidden');
+      document.getElementById('ve-card-title').textContent = vizName;
+      // Render chart
+      if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; }
+      window._kpiChartInst = null;
+      var canvas = document.getElementById('ve-chart-canvas');
+      var kpiDisplay = document.getElementById('ve-kpi-counter');
+      var tablePrev = document.getElementById('ve-table-preview');
+      // Reset all preview surfaces
+      if (tablePrev) { tablePrev.style.display = 'none'; tablePrev.classList.add('hidden'); }
+      if (rawChartType === 'kpi') {
+        if (canvas) canvas.style.display = 'none';
+        if (kpiDisplay) { kpiDisplay.style.display = 'flex'; kpiDisplay.classList.remove('hidden'); }
+        _renderKPICounterInVE();
+      } else if (rawChartType === 'table') {
+        if (canvas) canvas.style.display = 'none';
+        if (kpiDisplay) { kpiDisplay.style.display = 'none'; kpiDisplay.classList.add('hidden'); }
+        _renderVETablePreview();
+      } else {
+        if (canvas) canvas.style.display = 'block';
+        if (kpiDisplay) { kpiDisplay.style.display = 'none'; kpiDisplay.classList.add('hidden'); }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            _renderSQLKPIChart(rawChartType, 've-chart-canvas');
+            _veChartInst = window._kpiChartInst;
+          });
+        });
+      }
+      // Change button to "Update Preview"
+      var btn = document.getElementById('ve-create-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('opacity-40', 'cursor-not-allowed');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Update Preview';
+      }
+    }
+
+    /* Save the visualization (commits to result tab bar) and close VE */
+    function saveVizAndClose() {
+      createKPIFromVizEditor();   // saves, adds/updates named result tab
+      closeVizEditorMode();       // closes VE, switches to the new viz tab
+    }
+
+    function _updateVEResultTab(vizId, vizName, chartType) {
+      var container = document.getElementById('result-viz-tabs');
+      if (!container) return;
+      // Update if already exists
+      var existing = container.querySelector('[data-tab-id="' + vizId + '"]');
+      if (existing) {
+        var lbl = existing.querySelector('.tab-viz-label');
+        if (lbl) lbl.textContent = vizName;
+        document.querySelectorAll('.result-tab').forEach(function(t) { t.classList.remove('active'); });
+        existing.classList.add('active');
+        _activeResultTab = vizId;
+        return;
+      }
+      var iconPaths = {
+        bar:'M3 17v-2l4-4 4 2 4-6 4 4v6H3z', line:'M3 17l4-6 4 2 4-5 4 4',
+        area:'M3 17l4-6 4 2 4-5 4 4', pie:'M12 3a9 9 0 110 18A9 9 0 0112 3z',
+        doughnut:'M12 3a9 9 0 110 18A9 9 0 0112 3z', kpi:'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0',
+        scatter:'M3 21l18-18', hbar:'M3 8h10M3 12h14M3 16h8', table:'M3 10h18M3 6h18M3 14h18'
+      };
+      var tabEl = document.createElement('button');
+      tabEl.className = 'result-tab';
+      tabEl.dataset.tabId = vizId;
+      tabEl.onclick = function() { switchResultTab(vizId); };
+      tabEl.innerHTML =
+        '<svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" d="' + (iconPaths[chartType] || iconPaths.bar) + '"/>' +
+        '</svg>' +
+        '<span class="tab-viz-label">' + escHtml(vizName) + '</span>' +
+        '<span class="tab-x" onclick="_deleteVizTab(\'' + vizId + '\',event)" title="Delete">' +
+          '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+        '</span>';
+      // Replace __new__ tab if it exists, else append
+      var newTab = container.querySelector('[data-tab-id="__new__"]');
+      if (newTab) { container.replaceChild(tabEl, newTab); }
+      else { container.appendChild(tabEl); }
+      // Set active
+      document.querySelectorAll('.result-tab').forEach(function(t) { t.classList.remove('active'); });
+      tabEl.classList.add('active');
+      _activeResultTab = vizId;
+    }
+
+    function _ensureNewVizTab() {
+      // Remove if already exists
+      var existing = document.querySelector('[data-tab-id="__new__"]');
+      if (existing) return;
+      var container = document.getElementById('result-viz-tabs');
+      var tabEl = document.createElement('button');
+      tabEl.className = 'result-tab';
+      tabEl.dataset.tabId = '__new__';
+      tabEl.onclick = function() { switchResultTab('__new__'); };
+      tabEl.innerHTML =
+        '<svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>' +
+        '</svg>' +
+        'New Visualization' +
+        '<span class="tab-x" onclick="_removeNewVizTab(event)" title="Cancel">' +
+          '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+        '</span>';
+      container.appendChild(tabEl);
+    }
+
+    function _removeNewVizTab(e) {
+      if (e) e.stopPropagation();
+      var tab = document.querySelector('[data-tab-id="__new__"]');
+      if (tab) tab.remove();
+      // Return to table
+      switchResultTab('table');
+      _resetSidebar();
+    }
+
+    /* ══════════════════════════════════════════
+       GENERATE KPI (now: Save Visualization)
+    ══════════════════════════════════════════ */
     function generateKPIFromSQL() {
       if (!sqlState.chartType || sqlState.status !== 'success') return;
       var ni = document.getElementById('kpi-name-input');
-      var di = document.getElementById('kpi-desc-input');
       if (!ni || !ni.value.trim()) return;
-      var kpiName = ni.value.trim();
-      var kpiDesc = di ? di.value.trim() : '';
-      var savedSQL = sqlState.lastRunSQL;
+      var vizName = ni.value.trim();
       var savedType = sqlState.chartType;
+      var savedAxisState = JSON.parse(JSON.stringify(_axisState));
+      var savedData = sqlState.data;
 
-      // Store chart entry
-      charts.push({
-        prompt: kpiName,
-        desc: kpiDesc,
-        sqlQuery: savedSQL,
-        chartType: savedType,
-        source: { name: 'SQL Query', icon: 'database', bg: '#EEF2FF', color: '#5B63F6' }
-      });
-      currentChartIndex = charts.length - 1;
+      // Generate a unique tab id
+      var vizId = 'viz-' + Date.now();
 
-      // Build chart card HTML — same layout as AI KPI output
-      var content = document.getElementById('sql-kpi-preview-content');
-      if (content) {
-        var typeLabel = savedType.charAt(0).toUpperCase() + savedType.slice(1);
-        content.innerHTML =
-          '<div class="w-full h-full flex flex-col fade-up">' +
-          '<div class="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col flex-1" style="box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03);">' +
+      // Save viz
+      _savedVizList.push({ id: vizId, name: vizName, type: savedType, axisState: savedAxisState, data: savedData });
 
-          '<div class="flex items-center gap-3 px-5 h-[54px] border-b border-gray-100">' +
-            '<h3 class="text-[14.5px] font-semibold text-gray-900 leading-snug flex-1 min-w-0 truncate">' + escHtml(kpiName) + '</h3>' +
-            '<span class="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg flex-shrink-0 border border-indigo-100 text-[11.5px] font-semibold" style="background:#EEF2FF;color:#4338CA;">' +
-              '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>' +
-              'SQL \u00b7 ' + escHtml(typeLabel) + ' Chart' +
-            '</span>' +
-          '</div>' +
-
-          '<div class="flex-1 relative px-6 py-5" style="min-height:0;background:#fff;">' +
-            '<canvas id="sql-kpi-chart-canvas" style="width:100%;height:100%;"></canvas>' +
-          '</div>' +
-
-          '<div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100">' +
-            '<button onclick="_hideSQLKPIPreview()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-gray-200 bg-white text-[12.5px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">' +
-              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>' +
-              'Back' +
-            '</button>' +
-            '<button onclick="addToDashboard()" class="flex items-center gap-2 px-4 h-9 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">' +
-              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>' +
-              'Add to Dashboard' +
-            '</button>' +
-          '</div>' +
-
-          '</div></div>';
-
-        requestAnimationFrame(function() { _renderSQLKPIChart(savedType, 'sql-kpi-chart-canvas'); });
+      // Replace "__new__" tab with a named permanent tab
+      var newTab = document.querySelector('[data-tab-id="__new__"]');
+      var container = document.getElementById('result-viz-tabs');
+      var tabEl = document.createElement('button');
+      tabEl.className = 'result-tab';
+      tabEl.dataset.tabId = vizId;
+      tabEl.onclick = function() { switchResultTab(vizId); };
+      var typeIconMap = {
+        bar:'M3 17v-2l4-4 4 2 4-6 4 4v6H3z', line:'M3 17l4-6 4 2 4-5 4 4',
+        area:'M3 17l4-6 4 2 4-5 4 4v4H3z', pie:'M12 12L7 7a7 7 0 0010 0z',
+        donut:'M12 12L7 7a7 7 0 0010 0z', kpi:'M9 12.75L11.25 15 15 9.75',
+        scatter:'M3 21l18-18', hbar:'M3 8h10M3 12h14M3 16h8', table:'M3 10h18M3 6h18M3 14h18'
+      };
+      tabEl.innerHTML =
+        '<svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" d="' + (typeIconMap[savedType]||typeIconMap.bar) + '"/>' +
+        '</svg>' +
+        escHtml(vizName) +
+        '<span class="tab-x" onclick="_deleteVizTab(\'' + vizId + '\',event)" title="Delete">' +
+          '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
+        '</span>';
+      if (newTab) {
+        container.replaceChild(tabEl, newTab);
+      } else {
+        container.appendChild(tabEl);
       }
 
-      // Populate right detail sidebar
-      var detailBody = document.getElementById('sql-kpi-detail-body');
-      if (detailBody) {
-        var tableHTML = '';
-        if (sqlState.data && sqlState.data.cols && sqlState.data.rows) {
-          var previewRows = sqlState.data.rows.slice(0, 8);
-          var totalRows = sqlState.data.rows.length;
-          tableHTML =
-            '<div>' +
-              '<div class="flex items-center justify-between mb-2.5">' +
-                '<span class="text-[11.5px] font-semibold text-gray-700">Results <span style="color:#D1D5DB;font-weight:400;">(preview)</span></span>' +
-                '<span class="px-2 py-0.5 rounded-md text-[11px] font-medium" style="background:#F3F4F6;color:#6B7280;">' +
-                  totalRows + (totalRows === 1 ? ' row' : ' rows') +
-                '</span>' +
-              '</div>' +
-              '<div class="overflow-auto rounded-lg" style="max-height:220px;border:1.5px solid #E5E7EB;">' +
-                '<table class="sql-result-table">' +
-                  '<thead><tr>' +
-                    sqlState.data.cols.map(function(c) { return '<th>' + escHtml(c) + '</th>'; }).join('') +
-                  '</tr></thead>' +
-                  '<tbody>' +
-                    previewRows.map(function(row) {
-                      return '<tr>' +
-                        sqlState.data.cols.map(function(_, i) {
-                          var v = row[i];
-                          var empty = (v === null || v === undefined || String(v).trim() === '');
-                          return '<td>' + (empty ? '<span style="color:#D1D5DB">\u2014</span>' : escHtml(String(v))) + '</td>';
-                        }).join('') +
-                      '</tr>';
-                    }).join('') +
-                    (totalRows > 8
-                      ? '<tr><td colspan="' + sqlState.data.cols.length + '" style="color:#9CA3AF;font-style:italic;">+' + (totalRows - 8) + ' more rows\u2026</td></tr>'
-                      : '') +
-                  '</tbody>' +
-                '</table>' +
-              '</div>' +
-            '</div>';
-        }
-        detailBody.innerHTML =
-          '<div>' +
-            '<div class="flex items-center justify-between mb-2.5">' +
-              '<span class="text-[11.5px] font-semibold text-gray-700">SQL Query</span>' +
-            '</div>' +
-            '<div class="overflow-hidden" style="border:1.5px solid #E5E7EB;border-radius:8px;">' +
-              '<div class="flex items-center gap-2 px-3 py-2" style="background:#FAFAFA;border-bottom:1px solid #F3F4F6;">' +
-                '<svg class="w-3 h-3 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>' +
-                '<span style="font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:10.5px;color:#9CA3AF;">SQL</span>' +
-              '</div>' +
-              '<pre style="background:#FAFAFA;color:#374151;font-family:\'JetBrains Mono\',\'SF Mono\',Consolas,monospace;font-size:11px;line-height:1.7;padding:11px 13px;margin:0;overflow-x:auto;white-space:pre-wrap;word-break:break-word;">' + escHtml(savedSQL) + '</pre>' +
-            '</div>' +
-          '</div>' +
-          tableHTML;
-      }
-
-      // Show preview, hide editor+viz row
-      document.getElementById('sql-kpi-preview').classList.remove('hidden');
-      document.getElementById('sql-kpi-preview').classList.add('flex');
-      var editorRow = document.querySelector('#sql-layout > .flex.flex-1.overflow-hidden');
-      if (editorRow) editorRow.classList.add('hidden');
-      // Switch right panel to KPI detail view
-      var vizView = document.getElementById('sql-sidebar-viz-view');
-      var kpiView = document.getElementById('sql-sidebar-kpi-view');
-      if (vizView) vizView.classList.add('hidden');
-      if (kpiView) { kpiView.classList.remove('hidden'); kpiView.classList.add('flex'); }
-
-      // Reset sidebar state
-      sqlState.chartType = null;
-      _setGenerateBtn(false);
-      _clearChartSelection();
+      // Switch to the new saved viz tab
+      switchResultTab(vizId);
+      // Update saved count badge
+      var countBadge = document.getElementById('sql-viz-saved-count');
+      if (countBadge) { countBadge.textContent = _savedVizList.length + ' saved'; countBadge.classList.remove('hidden'); }
+      // Reset sidebar form (keep sidebar open for next viz)
+      _resetSidebar();
+      if (sqlState.data) _updateSidebarCompat(sqlState.data);
+      // Keep chart type section visible (results still exist)
+      var prerun = document.getElementById('sql-side-prerun');
+      var types  = document.getElementById('sql-side-types');
+      if (prerun) prerun.classList.add('hidden');
+      if (types)  types.classList.remove('hidden');
     }
 
-    function _hideSQLKPIPreview() {
-      document.getElementById('sql-kpi-preview').classList.add('hidden');
-      document.getElementById('sql-kpi-preview').classList.remove('flex');
-      var editorRow = document.querySelector('#sql-layout > .flex.flex-1.overflow-hidden');
-      if (editorRow) editorRow.classList.remove('hidden');
-      // Switch right panel back to viz view
-      var vizView = document.getElementById('sql-sidebar-viz-view');
-      var kpiView = document.getElementById('sql-sidebar-kpi-view');
-      if (kpiView) { kpiView.classList.add('hidden'); kpiView.classList.remove('flex'); }
-      if (vizView) vizView.classList.remove('hidden');
+    function _deleteVizTab(vizId, e) {
+      if (e) e.stopPropagation();
+      _savedVizList = _savedVizList.filter(function(v) { return v.id !== vizId; });
+      var tab = document.querySelector('[data-tab-id="' + vizId + '"]');
+      if (tab) tab.remove();
+      if (_activeResultTab === vizId) switchResultTab('table');
     }
 
     /* ══════════════════════════════════
        CLEAR SQL
     ══════════════════════════════════ */
-    function clearSQL() {
-      if (sqlEditor) { sqlEditor.setValue(''); sqlEditor.clearHistory(); }
+    // Resets query state + UI without touching the editor content.
+    // Used when switching SQL file tabs so the loaded content is preserved.
+    function _resetSQLQueryState() {
       if (sqlState.timer) { clearTimeout(sqlState.timer); sqlState.timer = null; }
       sqlState.status = 'idle'; sqlState.lastRunSQL = ''; sqlState.data = null; sqlState.chartType = null;
       if (sqlEditor) sqlEditor.setOption('readOnly', false);
@@ -2120,10 +3531,23 @@
       _toggleNotice('sql-destructive-warn', false);
       _resetSidebar();
       _showResultsPanel('sql-results-empty');
-      document.getElementById('viz-no-results-hint').classList.remove('hidden');
-      // Collapse viz sidebar
-      var sidebar = document.getElementById('sql-viz-sidebar');
-      if (sidebar) sidebar.classList.remove('sidebar-visible');
+      var prerun = document.getElementById('sql-side-prerun');
+      var types  = document.getElementById('sql-side-types');
+      if (prerun) prerun.classList.remove('hidden');
+      if (types)  types.classList.add('hidden');
+      var newVizBtn = document.getElementById('new-viz-tab-btn');
+      if (newVizBtn) { newVizBtn.disabled = true; newVizBtn.style.opacity = '0.4'; newVizBtn.style.cursor = 'not-allowed'; }
+      var badge = document.getElementById('result-tab-row-badge');
+      if (badge) badge.classList.add('hidden');
+      _savedVizList = [];
+      var vizTabsContainer = document.getElementById('result-viz-tabs');
+      if (vizTabsContainer) vizTabsContainer.innerHTML = '';
+      switchResultTab('table', true);
+    }
+
+    function clearSQL() {
+      if (sqlEditor) { sqlEditor.setValue(''); sqlEditor.clearHistory(); }
+      _resetSQLQueryState();
     }
 
     /* ══════════════════════════════════
@@ -2344,6 +3768,23 @@
       var uw = document.getElementById('user-menu-wrapper');
       var ud = document.getElementById('user-dropdown');
       if (uw && ud && !uw.contains(e.target)) ud.classList.add('hidden');
+      // Close axis dropdowns on outside click
+      ['x-axis','y-axis','kpi-value'].forEach(function(axis) {
+        var wrap = document.getElementById(axis + '-dd-wrap');
+        if (wrap && !wrap.contains(e.target)) {
+          var dd = document.getElementById(axis + '-dd');
+          var trig = document.getElementById(axis + '-trigger');
+          if (dd) dd.style.display = 'none';
+          if (trig) trig.classList.remove('open');
+        }
+      });
+      // Close VE Y-cols dropdown on outside click
+      var yTrig = document.getElementById('ve-y-col-trigger');
+      var yPanel = document.getElementById('ve-y-col-panel');
+      if (yTrig && yPanel && !yPanel.classList.contains('hidden') && !yTrig.contains(e.target) && !yPanel.contains(e.target)) {
+        yPanel.classList.add('hidden');
+        yTrig.classList.remove('open');
+      }
     });
     function markAllRead() {
       document.getElementById('notif-dot').style.display = 'none';
