@@ -3141,9 +3141,9 @@
       var vePanel = document.getElementById('ve-right-panel');
       var sqlLayout = document.getElementById('sql-layout');
       if (vePanel && sqlLayout) { sqlLayout.appendChild(vePanel); vePanel.style.display = 'none'; }
-      // Restore chat panel
+      // Restore chat panel only in AI mode (SQL mode always keeps it hidden)
       var chatPanel = document.getElementById('chat-panel');
-      if (chatPanel) chatPanel.classList.remove('hidden');
+      if (chatPanel && currentMode !== 'sql') chatPanel.classList.remove('hidden');
       if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; window._kpiChartInst = null; }
       if (_veCurrentVizId) {
         switchResultTab(_veCurrentVizId);
