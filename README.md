@@ -768,6 +768,161 @@ JS functions: `sendChip(text)` → `triggerSend(text)` → `appendUserBubble` + 
 
 `confirmClear()` checks if >1 AI/user bubble exists before prompting. `clearChat()` resets all three states, clears `charts.length = 0`, sets `currentChartIndex = -1`, and re-injects the greeting bubble.
 
+---
+
+#### Write SQL Mode
+
+Activated by the **"Write SQL"** toolbar tab. Replaces the canvas area with a full-height SQL editor split view.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  SQL FILE TAB BAR  (h-42px)  [Untitled ×]  [+ New File] │
+├──────────────────────────────────────────────────────────┤
+│  EDITOR (CodeMirror 5, flex-1, SQL mode)                 │
+├──────────────────────────────────────────────────────────┤
+│  RESULT TAB BAR   [Table ▸]  [viz tabs]  [+ Visualization]  ···  [Clear]  [▶ Run Query] │
+├──────────────────────────────────────────────────────────┤
+│  RESULTS PANEL  (flex-1, overflow-auto)                  │
+└──────────────────────────────────────────────────────────┘
+```
+
+##### SQL File Tab Bar
+
+```html
+<div id="sql-file-tab-bar" class="flex items-center border-b border-gray-100 bg-white flex-shrink-0 overflow-x-auto"
+     style="min-height:42px;">
+  <div id="sql-file-tabs" class="flex items-center h-full flex-1">
+    <!-- .sql-file-tab buttons injected here by JS -->
+  </div>
+  <button onclick="addSQLFile()" class="flex items-center gap-1.5 h-[32px] px-3 mx-3 rounded-lg text-[12.5px] font-semibold flex-shrink-0"
+          style="background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB;">
+    <svg class="w-3.5 h-3.5">…plus…</svg>
+    New File
+  </button>
+</div>
+```
+
+```css
+.sql-file-tab {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 13px; height: 42px;
+  font-size: 13px; font-weight: 500; color: #6B7280;
+  border: none; background: transparent;
+  cursor: pointer; white-space: nowrap;
+  border-bottom: 2.5px solid transparent;
+  transition: color 100ms, background 100ms;
+  flex-shrink: 0;
+}
+.sql-file-tab:hover { color: #374151; background: #F9FAFB; }
+.sql-file-tab.active { color: #111827; font-weight: 600; border-bottom-color: #5B63F6; }
+
+/* Close × button inside tab */
+.sql-file-tab .ftab-x {
+  width: 14px; height: 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 3px; opacity: 0; transition: opacity 100ms;
+  flex-shrink: 0; margin-left: 1px;
+}
+.sql-file-tab:hover .ftab-x { opacity: 0.6; }
+.sql-file-tab.active .ftab-x { opacity: 0.5; }
+.sql-file-tab .ftab-x:hover { background: #E5E7EB !important; opacity: 1 !important; }
+```
+
+JS state: `_sqlFiles[]`, `_activeFileId`, `_fileContents{}`. Functions: `addSQLFile()`, `switchSQLFile(id)`, `closeSQLFile(id)`, `_renderSQLFileTabs()`.
+
+##### Result Tab Bar
+
+Single bar below the editor that holds both the result view controls **and** the query action buttons (Clear + Run Query) at opposite ends.
+
+```html
+<div id="result-tab-bar" class="flex items-center flex-shrink-0 overflow-x-auto"
+     style="background:#F9FAFB;border-top:1.5px solid #E9EAEC;border-bottom:1px solid #E9EAEC;min-height:38px;">
+
+  <!-- Table tab (always present) -->
+  <button id="result-tab-table" class="result-tab active" onclick="switchResultTab('table')">
+    <svg …table icon…/> Table
+    <span id="result-tab-row-badge" class="hidden …">99</span>
+  </button>
+
+  <!-- Dynamically added visualization tabs -->
+  <div id="result-viz-tabs" class="flex items-center"></div>
+
+  <!-- Divider -->
+  <div class="w-px h-4 flex-shrink-0 mx-1" style="background:#E9EAEC;"></div>
+
+  <!-- + Visualization button (enabled after first successful run) -->
+  <button id="new-viz-tab-btn" onclick="startNewVisualization()" disabled
+          class="flex items-center gap-1.5 h-[26px] px-3 mx-2 rounded-lg text-[11.5px] font-semibold opacity-40 cursor-not-allowed"
+          style="background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;">
+    <svg …plus…/> Visualization
+  </button>
+
+  <!-- Spacer -->
+  <div class="flex-1"></div>
+
+  <!-- Clear + Run Query (far right) -->
+  <p id="sql-truncation-note" class="hidden text-[11px] text-amber-500 px-2 flex-shrink-0"></p>
+  <div class="flex items-center gap-1.5 px-2 flex-shrink-0">
+    <button onclick="clearSQL()" class="flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg text-[11.5px] font-medium text-gray-400 hover:bg-gray-200 hover:text-gray-600">
+      <svg …trash…/> Clear
+    </button>
+    <button id="run-query-btn" onclick="runSQLQuery()"
+            class="flex items-center gap-1.5 h-[28px] px-3.5 rounded-lg text-[12px] font-semibold text-white opacity-40 cursor-not-allowed"
+            style="background:#5B63F6;">
+      <svg …play…/> Run Query
+    </button>
+  </div>
+</div>
+```
+
+```css
+.result-tab {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 14px; height: 38px;
+  font-size: 12px; font-weight: 500; color: #6B7280;
+  border: none; background: transparent; cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 100ms;
+  flex-shrink: 0;
+}
+.result-tab:hover { color: #374151; }
+.result-tab.active { color: #111827; font-weight: 600; border-bottom-color: #5B63F6; }
+```
+
+**Run Query button states** (managed by `_setRunBtn(state)`):
+
+| State | Appearance |
+|---|---|
+| `idle` (no content) | `opacity-40 cursor-not-allowed` |
+| `ready` (has SQL) | full opacity, pointer cursor |
+| `running` | spinner + "Running…" label, disabled |
+| `done` | resets to `ready` |
+
+The `id="run-query-btn"` attribute is required — all state transitions use `document.getElementById('run-query-btn')`.
+
+##### Visualization Editor (split view)
+
+Activated by `startNewVisualization()` after a successful query run. Replaces the editor+results panel with a side-by-side layout:
+
+```
+┌──────────────────────────────────┬──────────────────────┐
+│  CHART PREVIEW  (flex-1)         │  VIZ EDITOR  360px   │
+│  bg #F4F5F8                      │  bg white            │
+│  breadcrumb: Table › Chart name  │  Type selector       │
+│  empty state / Chart.js canvas   │  Name input          │
+│                                  │  Tabs: General /     │
+│                                  │        X Axis /      │
+│                                  │        Y Axis /      │
+│                                  │        Series        │
+│                                  │  [Create KPI] CTA    │
+└──────────────────────────────────┴──────────────────────┘
+```
+
+Key JS functions: `startNewVisualization()`, `closeVizEditorMode()`, `switchVETab(tab)`, `_onVEChartTypeChange()`, `_checkVECreateBtn()`, `createKPIFromVizEditor()`.
+
+JS state: `_veYCols[]` (selected Y columns), `_veCurrentVizId`, `_veChartInst` (Chart.js instance), `_savedVizList[]`.
+
 ### Recent View (`recent-view/index.html`)
 
 - Content padding: `px-8`
