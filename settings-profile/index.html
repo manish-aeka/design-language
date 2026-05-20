@@ -195,6 +195,63 @@
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
 
+  <!-- Edit Member Modal -->
+  <div id="edit-member-modal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(17,24,39,0.45);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl w-full max-w-md mx-4" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900">Edit Member</h2>
+        </div>
+        <button onclick="closeEditMemberModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="edit-member-form" class="px-6 py-5 space-y-4" onsubmit="saveEditMember(event)">
+        <div>
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email</label>
+          <input id="edit-member-email" type="email" readonly class="w-full h-9 px-3 text-[13px] text-gray-400 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Role</label>
+          <select id="edit-member-role" class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none">
+            <option value="Admin">Admin</option>
+            <option value="Editor">Editor</option>
+            <option value="Viewer">Viewer</option>
+            <option value="Owner">Owner</option>
+            <option value="User">User</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeEditMemberModal()" class="px-4 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button type="submit" class="px-5 h-9 rounded-lg text-[13px] font-semibold text-white" style="background:#5B63F6">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  // Edit/Remove member logic
+  let _editMemberContext = { email: '', role: '', list: '' };
+  function openEditMemberModal(email, role, list) {
+    _editMemberContext = { email, role, list };
+    document.getElementById('edit-member-email').value = email;
+    document.getElementById('edit-member-role').value = role;
+    document.getElementById('edit-member-modal').style.display = 'flex';
+  }
+  function closeEditMemberModal() {
+    document.getElementById('edit-member-modal').style.display = 'none';
+  }
+  function saveEditMember(e) {
+    e.preventDefault();
+    const newRole = document.getElementById('edit-member-role').value;
+    closeEditMemberModal();
+    alert('Role updated to: ' + newRole + ' for ' + _editMemberContext.email);
+  }
+  function removeMember(email, list) {
+    alert('Remove member: ' + email + ' from ' + list);
+  }
+  </script>
+
   <!-- ═══════════════════════════════════════════
        SIDEBAR  220px fixed
   ════════════════════════════════════════════ -->
@@ -396,7 +453,7 @@
                 <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Profile &amp; Settings
               </a>
-              <button onclick="toggleUserMenu()" class="w-full flex items-center gap-2.5 px-4 h-9 text-[13px] text-red-500 hover:bg-red-50 transition-colors">
+              <button onclick="toggleUserMenu()" class="w-full flex items-center gap-2.5 px-4 h-9 text-[13px] text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
                 Log out
               </button>
@@ -608,7 +665,8 @@
             <div class="rounded-xl border border-gray-100 overflow-hidden flex flex-col flex-1 min-h-0">
               <div class="flex items-center px-4 h-8 bg-gray-50 border-b border-gray-100 flex-shrink-0">
                 <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">User</span>
-                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-24 text-right">Role</span>
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-32 text-right">Role</span>
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-44 ml-24 text-right">Actions</span>
               </div>
               <div class="divide-y divide-gray-100 overflow-y-auto flex-1 min-h-0">
                 <!-- Owner -->
@@ -620,8 +678,18 @@
                       <p class="text-[11px] text-gray-400 truncate">manish@aibii.com</p>
                     </div>
                   </div>
-                  <div class="w-24 flex justify-end">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Admin</span>
+                  <div class="w-32 flex justify-end items-center">
+                    <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#EEF2FF;color:#5B63F6">Admin</span>
+                  </div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('manish@aibii.com','Admin','workspace')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                      Edit
+                    </button>
+                    <button onclick="removeMember('manish@aibii.com','workspace')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                      Remove
+                    </button>
                   </div>
                 </div>
                 <!-- Admin -->
@@ -633,18 +701,18 @@
                       <p class="text-[11px] text-gray-400 truncate">arjun@aibii.com</p>
                     </div>
                   </div>
-                  <div class="w-24 flex justify-end">
-                    <div class="relative" id="ws-mr-1">
-                      <button onclick="toggleMemberRoleDD('ws-mr-1')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
-                        <span class="mr-role-label">Admin</span>
-                        <svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                      </button>
-                      <div id="ws-mr-1-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:110px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
-                        <button onclick="setMemberRole('ws-mr-1','Admin')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Admin</button>
-                        <button onclick="setMemberRole('ws-mr-1','Editor')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Editor</button>
-                        <button onclick="setMemberRole('ws-mr-1','Viewer')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Viewer</button>
-                      </div>
-                    </div>
+                  <div class="w-32 flex justify-end items-center">
+                    <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#EEF2FF;color:#5B63F6">Admin</span>
+                  </div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('arjun@aibii.com','Admin','workspace')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                      Edit
+                    </button>
+                    <button onclick="removeMember('arjun@aibii.com','workspace')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                      Remove
+                    </button>
                   </div>
                 </div>
                 <!-- Editor -->
@@ -656,18 +724,18 @@
                       <p class="text-[11px] text-gray-400 truncate">sneha@aibii.com</p>
                     </div>
                   </div>
-                  <div class="w-24 flex justify-end">
-                    <div class="relative" id="ws-mr-2">
-                      <button onclick="toggleMemberRoleDD('ws-mr-2')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors">
-                        <span class="mr-role-label">Editor</span>
-                        <svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                      </button>
-                      <div id="ws-mr-2-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:110px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)">
-                        <button onclick="setMemberRole('ws-mr-2','Admin')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Admin</button>
-                        <button onclick="setMemberRole('ws-mr-2','Editor')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Editor</button>
-                        <button onclick="setMemberRole('ws-mr-2','Viewer')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Viewer</button>
-                      </div>
-                    </div>
+                  <div class="w-32 flex justify-end items-center">
+                    <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#F0FDF4;color:#16A34A">Editor</span>
+                  </div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('sneha@aibii.com','Editor','workspace')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                      Edit
+                    </button>
+                    <button onclick="removeMember('sneha@aibii.com','workspace')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                      Remove
+                    </button>
                   </div>
                 </div>
               </div>
@@ -866,28 +934,49 @@
             <div class="rounded-xl border border-gray-100 overflow-hidden flex flex-col flex-1 min-h-0">
               <div class="flex items-center px-4 h-8 bg-gray-50 border-b border-gray-100 flex-shrink-0">
                 <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest flex-1">Member</span>
-                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-24 text-right">Role</span>
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-32 text-right">Role</span>
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-44 ml-24 text-right">Actions</span>
               </div>
               <div id="org-members-list" class="divide-y divide-gray-100 overflow-y-auto flex-1 min-h-0">
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#3B5BDB">M</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Manish Kumar</p><p class="text-[11px] text-gray-400 truncate">manish@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span></div>
+                  <div class="w-32 flex justify-end items-center"><span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#EEF2FF;color:#5B63F6">Owner</span></div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('manish@aibii.com','Owner','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg> Edit</button>
+                    <button onclick="removeMember('manish@aibii.com','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg> Remove</button>
+                  </div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#0F9D58">A</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Arjun Patel</p><p class="text-[11px] text-gray-400 truncate">arjun@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-1"><button onclick="toggleMemberRoleDD('org-mr-1')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-1-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-1','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-1','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
+                  <div class="w-32 flex justify-end items-center"><span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#F3F4F6;color:#6B7280">User</span></div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('arjun@aibii.com','User','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg> Edit</button>
+                    <button onclick="removeMember('arjun@aibii.com','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg> Remove</button>
+                  </div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#F97316">S</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Sneha Rao</p><p class="text-[11px] text-gray-400 truncate">sneha@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-2"><button onclick="toggleMemberRoleDD('org-mr-2')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-2-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-2','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-2','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
+                  <div class="w-32 flex justify-end items-center"><span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#F3F4F6;color:#6B7280">User</span></div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('sneha@aibii.com','User','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg> Edit</button>
+                    <button onclick="removeMember('sneha@aibii.com','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg> Remove</button>
+                  </div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#8B5CF6">R</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Riya Sharma</p><p class="text-[11px] text-gray-400 truncate">riya@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-3"><button onclick="toggleMemberRoleDD('org-mr-3')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-3-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-3','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-3','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
+                  <div class="w-32 flex justify-end items-center"><span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#F3F4F6;color:#6B7280">User</span></div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('riya@aibii.com','User','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg> Edit</button>
+                    <button onclick="removeMember('riya@aibii.com','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg> Remove</button>
+                  </div>
                 </div>
                 <div class="flex items-center px-4 h-12">
                   <div class="flex items-center gap-3 flex-1 min-w-0"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#22C55E">D</div><div class="min-w-0"><p class="text-[13px] font-medium text-gray-900 truncate">Dev Verma</p><p class="text-[11px] text-gray-400 truncate">dev@aibii.com</p></div></div>
-                  <div class="w-24 flex justify-end"><div class="relative" id="org-mr-4"><button onclick="toggleMemberRoleDD('org-mr-4')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="org-mr-4-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('org-mr-4','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('org-mr-4','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div></div>
+                  <div class="w-32 flex justify-end items-center"><span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#F3F4F6;color:#6B7280">User</span></div>
+                  <div class="w-44 ml-24 flex justify-end items-center gap-2">
+                    <button onclick="openEditMemberModal('dev@aibii.com','User','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg> Edit</button>
+                    <button onclick="removeMember('dev@aibii.com','org')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-red-500 bg-red-50 hover:bg-red-100 transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg> Remove</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -914,7 +1003,7 @@
                 </div>
                 <p class="text-[12px] text-gray-400 mt-1">Next billing: <span class="font-medium text-gray-600">June 1, 2026</span></p>
               </div>
-              <button class="px-4 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 text-[12px] font-medium text-gray-700 transition-colors mt-1">Manage plan</button>
+
             </div>
 
             <!-- Usage stats -->
@@ -949,7 +1038,7 @@
                     <p class="text-[11px] text-gray-400">Expires 08 / 2027</p>
                   </div>
                 </div>
-                <button class="px-3 h-8 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Update</button>
+
               </div>
             </div>
 
@@ -959,7 +1048,7 @@
                 <p class="text-[12px] font-medium text-gray-600">Recent invoices</p>
                 <div class="relative flex-shrink-0">
                   <button onclick="toggleBillingYearDropdown()" id="billing-year-btn"
-                    class="flex items-center gap-1.5 px-3 h-9 rounded-full text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
+                    class="flex items-center gap-1.5 px-3 h-9 rounded-lg text-[13px] font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
                     style="width:110px; justify-content:space-between;">
                     <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
                     <span id="billing-year-label">2026</span>
@@ -1002,22 +1091,7 @@
         </button>
       </div>
       <div class="px-6 py-5 space-y-3">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">First name</label>
-            <input id="au-firstname" type="text" placeholder="Jane"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
-              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
-              onblur="this.style.borderColor='';this.style.boxShadow=''" />
-          </div>
-          <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Last name</label>
-            <input id="au-lastname" type="text" placeholder="Doe"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
-              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
-              onblur="this.style.borderColor='';this.style.boxShadow=''" />
-          </div>
-        </div>
+        <!-- First name and Last name fields removed as requested -->
         <div>
           <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email <span class="text-red-400">*</span></label>
           <input id="au-email" type="email" placeholder="jane@example.com"
@@ -1065,22 +1139,6 @@
         </button>
       </div>
       <div class="px-6 py-5 space-y-3">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">First name</label>
-            <input id="nm-firstname" type="text" placeholder="Jane"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
-              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
-              onblur="this.style.borderColor='';this.style.boxShadow=''" />
-          </div>
-          <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Last name</label>
-            <input id="nm-lastname" type="text" placeholder="Doe"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none transition"
-              onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
-              onblur="this.style.borderColor='';this.style.boxShadow=''" />
-          </div>
-        </div>
         <div>
           <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Email <span class="text-red-400">*</span></label>
           <input id="nm-email" type="email" placeholder="jane@example.com"
@@ -1389,15 +1447,13 @@
     }
     function openNewMemberModal() {
       _nmSelectedRole = ''; _nmSelectedMember = null;
-      document.getElementById('nm-firstname').value = '';
-      document.getElementById('nm-lastname').value  = '';
       document.getElementById('nm-email').value     = '';
       const lbl = document.getElementById('nm-role-label');
       lbl.textContent = 'Select role…'; lbl.className = 'text-gray-400';
       document.getElementById('nm-role-dd').classList.add('hidden');
       document.getElementById('nm-role-hint').classList.add('hidden');
       document.getElementById('new-member-overlay').style.display = 'flex';
-      setTimeout(() => document.getElementById('nm-firstname').focus(), 50);
+      setTimeout(() => document.getElementById('nm-email').focus(), 50);
     }
     function closeNewMemberModal() {
       document.getElementById('new-member-overlay').style.display = 'none';
@@ -1405,21 +1461,19 @@
     function syncNmRoleStyles() {}
     document.addEventListener('change', function(e) {});
     function addOrgMember() {
-      const first    = document.getElementById('nm-firstname').value.trim();
-      const last     = document.getElementById('nm-lastname').value.trim();
       const emailRaw = document.getElementById('nm-email').value.trim();
       if (!emailRaw) { document.getElementById('nm-email').focus(); return; }
       if (!_nmSelectedRole) {
         const hint = document.getElementById('nm-role-hint');
         hint.textContent = '⚠ Please select a role'; hint.classList.remove('hidden'); return;
       }
-      const fullName = first ? (first + (last ? ' ' + last : '')) : emailRaw.split('@')[0];
+      const fullName = emailRaw.split('@')[0];
       const initial  = fullName[0].toUpperCase();
       const bg       = NM_AVATAR_COLORS[Math.floor(Math.random() * NM_AVATAR_COLORS.length)];
       const isOwner  = _nmSelectedRole === 'Owner';
       const mrId = 'org-mr-dyn-' + Date.now();
       const roleCellHtml = isOwner
-        ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold" style="background:#EEF2FF;color:#5B63F6">Owner</span>`
+        ? `<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-semibold min-w-[64px]" style="background:#EEF2FF;color:#5B63F6">Owner</span>`
         : `<div class="relative" id="${mrId}"><button onclick="toggleMemberRoleDD('${mrId}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[12px] font-medium text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 transition-colors"><span class="mr-role-label">User</span><svg class="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div id="${mrId}-dd" class="mr-dd hidden absolute right-0 top-full mt-1 z-50 bg-white rounded-xl py-1" style="min-width:100px;border:1px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06)"><button onclick="setMemberRole('${mrId}','Owner')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">Owner</button><button onclick="setMemberRole('${mrId}','User')" class="w-full text-left px-3 py-1.5 text-[12px] text-gray-700 hover:bg-gray-50">User</button></div></div>`;
       const row = document.createElement('div');
       row.className = 'flex items-center px-4 h-12';
@@ -1456,15 +1510,13 @@
 
     function openAddUserModal() {
       _auSelectedRole = '';
-      document.getElementById('au-firstname').value = '';
-      document.getElementById('au-lastname').value  = '';
       document.getElementById('au-email').value     = '';
       const lbl = document.getElementById('au-role-label');
       lbl.textContent = 'Select role…'; lbl.className = 'text-gray-400';
       document.getElementById('au-role-dd').classList.add('hidden');
       document.getElementById('au-role-hint').classList.add('hidden');
       document.getElementById('add-user-overlay').style.display = 'flex';
-      setTimeout(() => document.getElementById('au-firstname').focus(), 50);
+      setTimeout(() => document.getElementById('au-email').focus(), 50);
     }
 
     function closeAddUserModal() {
@@ -1526,8 +1578,6 @@
     }
 
     function sendWorkspaceInvite() {
-      const first    = document.getElementById('au-firstname').value.trim();
-      const last     = document.getElementById('au-lastname').value.trim();
       const _email   = document.getElementById('au-email').value.trim();
       if (!_email) { document.getElementById('au-email').focus(); return; }
       if (!_auSelectedRole) {
@@ -1536,7 +1586,7 @@
         hint.classList.remove('hidden');
         return;
       }
-      const _name  = first ? (first + (last ? ' ' + last : '')) : _email.split('@')[0];
+      const _name  = _email.split('@')[0];
       const initial = _name[0].toUpperCase();
       const bg = AU_AVATAR_COLORS[Math.floor(Math.random() * AU_AVATAR_COLORS.length)];
       const mrId = 'ws-mr-dyn-' + Date.now();
