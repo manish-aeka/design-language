@@ -3196,6 +3196,7 @@
       const q = (filter || '').toLowerCase().trim();
       const rows = (ds.tables_list || []).filter(t => !q || t.name.toLowerCase().includes(q));
       const isReadOnly = document.getElementById('view-detail')?.classList.contains('ds-readonly');
+      const showRemoveBtn = isReadOnly || _currentScope === 'proj';
       
       if (!rows.length) {
         document.getElementById('panel-tables-list').innerHTML = `<p class="text-center text-[13px] text-gray-400 py-8">No tables found</p>`;
@@ -3209,7 +3210,7 @@
               <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4">Description</th>
               <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4 text-right" style="width:7%">Cols</th>
               <th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 pr-4 text-right" style="width:12%">Rows</th>
-              ${isReadOnly ? '<th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 text-center" style="width:8%">Action</th>' : ''}
+              ${showRemoveBtn ? '<th class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pb-2 text-center" style="width:8%">Action</th>' : ''}
             </tr>
           </thead>
           <tbody>
@@ -3233,7 +3234,7 @@
                 <td class="py-3 pr-4 text-right">
                   <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background:#EEF2FF;color:#5B63F6">${t.rows}</span>
                 </td>
-                ${isReadOnly ? `
+                ${showRemoveBtn ? `
                 <td class="py-3 pr-2">
                   <div class="flex justify-end">
                     <button onclick="event.stopPropagation();removeTableFromProject('${currentDetailId}','${t.name}')" class="flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors">
