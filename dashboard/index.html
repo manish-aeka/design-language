@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aibii — Dashboard</title>
+  <title>Aibii &mdash; Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -41,9 +41,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
     ::-webkit-scrollbar-track { background: transparent; }
+    #code-panel-sql::-webkit-scrollbar { height: 3px; }
+    #code-panel-sql::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 9999px; }
+    #code-panel-sql::-webkit-scrollbar-track { background: transparent; }
 
     .nav-item { transition: background-color 100ms ease; }
     .nav-item:hover { background-color: #EEF2FF; }
@@ -80,6 +83,11 @@
       border-radius: 12px;
       padding: 16px 18px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: box-shadow 150ms ease, border-color 150ms ease;
+    }
+    .chart-card:hover {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-color: #C7D2FE;
     }
     .chart-card-title {
       font-size: 13px; font-weight: 600; color: #111827;
@@ -92,14 +100,163 @@
       background: #fff;
       border: 1px solid #E2E8F0;
       border-radius: 12px;
-      padding: 16px 18px;
+      padding: 20px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: box-shadow 150ms ease, border-color 150ms ease;
+      display: flex;
+      flex-direction: column;
     }
+    .kpi-card:hover {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-color: #C7D2FE;
+    }
+    .kpi-fullview-btn {
+      opacity: 1;
+      transition: background 120ms ease, border-color 120ms ease;
+    }
+
+    /* -- KPI Full View Overlay -- */
+    /* ------------------------------------------
+       KPI FULL VIEW OVERLAY
+    ------------------------------------------ */
+    #kpi-fullview-overlay {
+      position: fixed;
+      top: 44px; right: 0; bottom: 0; left: 220px;
+      z-index: 9999;
+      background: #fff;
+      display: none;
+      flex-direction: row;
+    }
+    #kpi-fullview-overlay.open {
+      display: flex;
+      animation: kfvSlideIn 180ms cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes kfvSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* Code Query Sidebar (fixed, above full-view overlay) */
+    #code-panel {
+      position: fixed;
+      top: 44px; right: 0; bottom: 0;
+      width: 340px;
+      z-index: 10000;
+      background: #fff;
+      border-left: 1px solid #E5E7EB;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 200ms cubic-bezier(0.16,1,0.3,1);
+    }
+    #code-panel.open { transform: translateX(0); }
+    /* Secondary toolbar */
+    .kfv-toolbar {
+      display: flex; align-items: center;
+      padding: 0 20px; height: 48px;
+      border-bottom: 1px solid #E5E7EB;
+      flex-shrink: 0; background: #fff;
+    }
+    .kfv-toolbar-left  { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+    .kfv-toolbar-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    /* Period tabs */
+    .kfv-period-tabs { display: flex; gap: 2px; background: #F3F4F6; border-radius: 8px; padding: 2px; margin-right: 4px; }
+    .kfv-period-tab  { height: 26px; padding: 0 10px; border-radius: 6px; font-size: 11.5px; font-weight: 500; color: #6B7280; border: none; background: transparent; cursor: pointer; transition: all 100ms; }
+    .kfv-period-tab.active { background: #fff; color: #111827; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.10); }
+    /* Toolbar action buttons */
+    .kfv-action-btn {
+      display: flex; align-items: center; gap: 5px;
+      height: 30px; padding: 0 10px; border-radius: 7px;
+      border: 1px solid #E5E7EB; background: #fff;
+      font-size: 12px; font-weight: 500; color: #374151;
+      cursor: pointer; transition: background 100ms; white-space: nowrap;
+    }
+    .kfv-action-btn:hover { background: #F9FAFB; }
+    .kfv-close-btn {
+      width: 28px; height: 28px; border-radius: 7px;
+      border: 1px solid #E5E7EB; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 100ms;
+    }
+    .kfv-close-btn:hover { background: #F9FAFB; }
+    /* KFV BODY — flat white layout matching screenshot */
+    .kfv-body { flex: 1; overflow-y: auto; background: #fff; }
+    /* Chart section */
+    .kfv-chart-section { padding: 16px 24px 0; }
+    .kfv-chart-meta { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+    .kfv-chart-title  { font-size: 22px; font-weight: 700; color: #111827; letter-spacing: -0.3px; line-height: 1.2; }
+    .kfv-chart-subtitle { font-size: 12px; color: #9CA3AF; margin-top: 5px; }
+    .kfv-chart-canvas-wrap { position: relative; height: 460px; }
+    /* AI Insights section */
+    .kfv-ai-section { padding: 16px 24px 20px; border-top: 1px solid #F3F4F6; }
+    .kfv-ai-section-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+    .kfv-ai-title-group { display: flex; flex-direction: column; gap: 3px; }
+    .kfv-ai-title    { display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 700; color: #111827; }
+    .kfv-ai-subtitle { font-size: 12px; color: #9CA3AF; }
+    .kfv-powered     { display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; color: #9CA3AF; flex-shrink: 0; }
+    /* AI Summary callout */
+    .kfv-summary-section {
+      margin: 0 24px 20px;
+      padding: 12px 16px;
+      border-left: 3px solid #5B63F6;
+      background: #F8F9FF;
+      border-radius: 0 10px 10px 0;
+      font-size: 13px; color: #374151; line-height: 1.75;
+    }
+    /* AI insight cards */
+    .kfv-ai-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .kfv-ai-card  {
+      background: #fff; border: 1px solid #E2E8F0; border-radius: 14px;
+      padding: 20px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .kfv-ai-card-icon  { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .kfv-ai-card-title { font-size: 13.5px; font-weight: 700; color: #111827; line-height: 1.3; }
+    .kfv-ai-card-desc  { font-size: 12.5px; color: #6B7280; line-height: 1.65; flex: 1; }
+    .kfv-ai-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 99px;
+      font-size: 11px; font-weight: 600; align-self: flex-start; margin-top: 2px;
+    }
+    /* ── KFV AI Chat Panel ── */
+    .kfv-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    #kfv-ai-panel {
+      width: 320px; min-width: 320px; display: flex; flex-direction: column;
+      border-left: 1px solid #E5E7EB; background: #fff;
+      transition: width 220ms cubic-bezier(0.16,1,0.3,1), min-width 220ms cubic-bezier(0.16,1,0.3,1), opacity 180ms ease;
+      overflow: hidden; flex-shrink: 0;
+    }
+    #kfv-ai-panel.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-left: none; }
+    #kfv-code-panel {
+      width: 340px; min-width: 340px; display: flex; flex-direction: column;
+      border-left: 1px solid #E5E7EB; background: #fff;
+      transition: width 220ms cubic-bezier(0.16,1,0.3,1), min-width 220ms cubic-bezier(0.16,1,0.3,1), opacity 180ms ease;
+      overflow: hidden; flex-shrink: 0;
+    }
+    #kfv-code-panel.collapsed { width: 0 !important; min-width: 0 !important; opacity: 0; border-left: none; }
+    .kfv-aip-header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 48px; border-bottom: 1px solid #F3F4F6; flex-shrink: 0; }
+    .kfv-aip-scroll { flex: 1; overflow-y: auto; }
+    .kfv-aip-welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 28px 20px; text-align: center; }
+    .kfv-aip-messages { display: none; padding: 14px; }
+    .kfv-msg-user { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+    .kfv-msg-user .kfv-bubble { background: #5B63F6; color: #fff; border-radius: 16px 16px 4px 16px; padding: 9px 13px; font-size: 13px; max-width: 82%; line-height: 1.5; }
+    .kfv-msg-ai { display: flex; gap: 8px; margin-bottom: 10px; align-items: flex-start; }
+    .kfv-msg-ai-av { width: 26px; height: 26px; border-radius: 8px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .kfv-msg-ai .kfv-bubble { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px 16px 16px 16px; padding: 9px 13px; font-size: 13px; color: #374151; max-width: 85%; line-height: 1.55; }
+    .kfv-aip-suggestions { padding: 0 14px 10px; flex-shrink: 0; }
+    .kfv-suggest-btn { display: flex; align-items: center; gap: 7px; width: 100%; padding: 0 11px; height: 34px; border-radius: 9px; font-size: 12px; color: #374151; text-align: left; background: #F9FAFB; border: 1px solid #E5E7EB; cursor: pointer; transition: background 100ms, border-color 100ms; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kfv-suggest-btn:hover { background: #EEF2FF; border-color: #C7D2FE; color: #4338CA; }
+    .kfv-aip-input-wrap { padding: 10px 14px 14px; border-top: 1px solid #F3F4F6; flex-shrink: 0; }
+    .kfv-aip-input-box { display: flex; flex-direction: column; border: 1px solid #E2E8F0; border-radius: 12px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+    .kfv-aip-input-box:focus-within { border-color: #A5B4FC; box-shadow: 0 0 0 3px rgba(91,99,246,0.1); }
+    #kfv-ai-input { padding: 10px 12px 6px; font-size: 13px; color: #1F2937; min-height: 22px; max-height: 100px; overflow-y: auto; outline: none; line-height: 1.5; }
+    #kfv-ai-input:empty:before { content: attr(data-placeholder); color: #9CA3AF; pointer-events: none; }
+    .kfv-aip-input-footer { display: flex; align-items: center; justify-content: flex-end; padding: 4px 8px 8px; }
   </style>
 </head>
 <body class="font-sans bg-white text-gray-900 flex h-screen overflow-hidden">
 
-  <!-- ═══════════════════ SIDEBAR 220px ═══════════════════ -->
+  <!-- ------------------- SIDEBAR 220px ------------------- -->
   <aside id="sidebar" class="w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r border-gray-100 overflow-y-auto">
 
     <!-- Workspace switcher -->
@@ -137,7 +294,7 @@
       </div>
       <div id="projects-list" class="space-y-0.5 mt-0.5">
 
-        <!-- My Private Project — PINNED (always first) -->
+        <!-- My Private Project &mdash; PINNED (always first) -->
         <div class="relative">
           <div class="nav-item group flex items-center gap-1 px-2 h-9 rounded-lg">
             <button onclick="toggleWorkspace('ws2')" id="ws2-btn" class="ws-item flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
@@ -217,7 +374,7 @@
           </div>
         </div>
 
-        <!-- Sovereign Capital Gate — ACTIVE -->
+        <!-- Sovereign Capital Gate &mdash; ACTIVE -->
         <div class="relative">
           <div class="nav-item group flex items-center gap-1 px-2 h-9 rounded-lg" style="background:#F3F4F6; border-left:3px solid #5B63F6;">
             <button onclick="toggleWorkspace('ws1')" id="ws1-btn" class="ws-item open flex items-center justify-center w-5 h-5 rounded hover:bg-gray-200 flex-shrink-0">
@@ -245,7 +402,7 @@
             </button>
           </div>
           <div id="ws1-sub" class="ws-submenu open pl-4 mt-2 space-y-1.5">
-            <!-- Sales Overview Dashboard — ACTIVE -->
+            <!-- Sales Overview Dashboard &mdash; ACTIVE -->
             <a href="#" class="nav-item flex items-center gap-2 px-3 h-8 rounded-lg text-[13px] font-semibold" style="background:#DBEAFE; color:#1D4ED8;">
               <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#1D4ED8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
               Sales Overview
@@ -289,10 +446,7 @@
           </div>
         </div>
 
-        <a href="#" onclick="event.preventDefault()" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
-          <span class="text-gray-400 font-medium text-base leading-none">+</span>
-          Create a project
-        </a>
+
       </div>
     </div>
 
@@ -322,7 +476,7 @@
 
   </aside>
 
-  <!-- ═══════════════════ MAIN ═══════════════════ -->
+  <!-- ------------------- MAIN ------------------- -->
   <main class="flex-1 flex flex-col overflow-hidden bg-[#F9FAFB]">
 
     <!-- Nav bar (sidebar toggle + notification + user) -->
@@ -451,29 +605,172 @@
     <div class="flex flex-1 overflow-hidden">
 
     <!-- Canvas -->
-    <div id="dashboard-canvas" class="flex-1 overflow-y-auto bg-white" style="padding:12px 14px;">
+    <div id="dashboard-canvas" class="flex-1 overflow-y-auto bg-white" style="padding:16px 24px;">
+
+      <!-- Row 1: KPI Metric Cards -->
+      <div class="grid grid-cols-4 gap-4 mb-4">
+
+        <!-- Total Revenue -->
+        <div class="kpi-card group" style="min-height:168px;">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wide">Total Revenue</p>
+            <div class="flex items-center gap-1">
+              <button onclick="downloadCard('revenue')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              </button>
+              <button onclick="openCodeSidebar('revenue')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+              </button>
+              <button onclick="openKpiFullView('revenue')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center flex-1 pb-2">
+            <p class="font-bold leading-none" style="font-size:30px;color:#5B63F6;letter-spacing:-1px;">$2.4M</p>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-[11px] font-semibold px-1.5 h-5 rounded inline-flex items-center gap-0.5" style="background:#D1FAE5;color:#059669;">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+                18.4%
+              </span>
+              <span class="text-[11px] text-gray-400">vs last period</span>
+            </div>
+          </div>
+          <div style="height:46px"><canvas id="sparkRevenue"></canvas></div>
+        </div>
+
+        <!-- New Customers -->
+        <div class="kpi-card group" style="min-height:168px;">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wide">New Customers</p>
+            <div class="flex items-center gap-1">
+              <button onclick="downloadCard('customers')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              </button>
+              <button onclick="openCodeSidebar('customers')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+              </button>
+              <button onclick="openKpiFullView('customers')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center flex-1 pb-2">
+            <p class="font-bold leading-none" style="font-size:30px;color:#5B63F6;letter-spacing:-1px;">1,284</p>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-[11px] font-semibold px-1.5 h-5 rounded inline-flex items-center gap-0.5" style="background:#D1FAE5;color:#059669;">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+                12.3%
+              </span>
+              <span class="text-[11px] text-gray-400">vs last period</span>
+            </div>
+          </div>
+          <div style="height:46px"><canvas id="sparkCustomers"></canvas></div>
+        </div>
+
+        <!-- Churn Rate -->
+        <div class="kpi-card group" style="min-height:168px;">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wide">Churn Rate</p>
+            <div class="flex items-center gap-1">
+              <button onclick="downloadCard('churn')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              </button>
+              <button onclick="openCodeSidebar('churn')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+              </button>
+              <button onclick="openKpiFullView('churn')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center flex-1 pb-2">
+            <p class="font-bold leading-none" style="font-size:30px;color:#5B63F6;letter-spacing:-1px;">9.0%</p>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-[11px] font-semibold px-1.5 h-5 rounded inline-flex items-center gap-0.5" style="background:#D1FAE5;color:#059669;">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/></svg>
+                2.1pp
+              </span>
+              <span class="text-[11px] text-gray-400">improvement</span>
+            </div>
+          </div>
+          <div style="height:46px"><canvas id="sparkChurn"></canvas></div>
+        </div>
+
+        <!-- Avg Deal Size -->
+        <div class="kpi-card group" style="min-height:168px;">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[11px] font-medium text-gray-400 uppercase tracking-wide">Avg Deal Size</p>
+            <div class="flex items-center gap-1">
+              <button onclick="downloadCard('dealsize')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              </button>
+              <button onclick="openCodeSidebar('dealsize')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+              </button>
+              <button onclick="openKpiFullView('dealsize')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 flex-shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center flex-1 pb-2">
+            <p class="font-bold leading-none" style="font-size:30px;color:#5B63F6;letter-spacing:-1px;">$18.7K</p>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-[11px] font-semibold px-1.5 h-5 rounded inline-flex items-center gap-0.5" style="background:#D1FAE5;color:#059669;">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+                5.2%
+              </span>
+              <span class="text-[11px] text-gray-400">vs last period</span>
+            </div>
+          </div>
+          <div style="height:46px"><canvas id="sparkDealsize"></canvas></div>
+        </div>
+
+      </div>
 
       <!-- Row 2: Monthly Revenue (wide) + Sales by Region -->
-      <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+      <div class="grid grid-cols-4 gap-4 mb-4">
 
-        <!-- Monthly Revenue — col-span-2, Line -->
-        <div class="chart-card col-span-2">
+        <!-- Monthly Revenue &mdash; col-span-2, Line -->
+        <div class="chart-card col-span-2 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cMonthlyRevenue')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cMonthlyRevenue')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cMonthlyRevenue')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <div class="flex items-start justify-between mb-0.5">
             <div>
               <p class="chart-card-title">Monthly Revenue</p>
-              <p class="chart-card-meta">Jan – Dec 2024 · USD thousands</p>
+              <p class="chart-card-meta">Jan &mdash; Dec 2024 &mdash; USD thousands</p>
             </div>
-            <span class="text-[11px] font-semibold px-2 h-5 rounded flex items-center" style="background:#EEF2FF;color:#5B63F6;">+18.4%</span>
+            
           </div>
           <div class="relative h-[150px]"><canvas id="chartLine"></canvas></div>
         </div>
 
-        <!-- Sales by Region — col-span-2, Bar -->
-        <div class="chart-card col-span-2">
+        <!-- Sales by Region &mdash; col-span-2, Bar -->
+        <div class="chart-card col-span-2 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cSalesByRegion')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cSalesByRegion')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cSalesByRegion')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <div class="flex items-start justify-between mb-0.5">
             <div>
               <p class="chart-card-title">Sales by Region</p>
-              <p class="chart-card-meta">FY 2024 · 4 regions</p>
+              <p class="chart-card-meta">FY 2024 &mdash; 4 regions</p>
             </div>
           </div>
           <div class="relative h-[150px]"><canvas id="chartBar"></canvas></div>
@@ -482,19 +779,41 @@
       </div>
 
       <!-- Row 3: Revenue by Channel (wide) + Market Share + Retention -->
-      <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+      <div class="grid grid-cols-4 gap-4 mb-4">
 
-        <!-- Revenue by Channel — col-span-2, Stacked -->
-        <div class="chart-card col-span-2">
+        <!-- Revenue by Channel &mdash; col-span-2, Stacked -->
+        <div class="chart-card col-span-2 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cRevenueByChannel')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cRevenueByChannel')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cRevenueByChannel')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <p class="chart-card-title">Revenue by Channel</p>
-          <p class="chart-card-meta">Direct · Partner · Self-serve</p>
+          <p class="chart-card-meta">Direct &mdash; Partner &mdash; Self-serve</p>
           <div class="relative h-[150px]"><canvas id="chartStacked"></canvas></div>
         </div>
 
-        <!-- Market Share — col-span-1, Pie -->
-        <div class="chart-card col-span-1">
+        <!-- Market Share &mdash; col-span-1, Pie -->
+        <div class="chart-card col-span-1 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cMarketShare')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cMarketShare')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cMarketShare')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <p class="chart-card-title">Market Share</p>
-          <p class="chart-card-meta">By product · 2024</p>
+          <p class="chart-card-meta">By product &mdash; 2024</p>
           <div class="flex items-center gap-3 h-[150px]">
             <div class="relative flex-shrink-0" style="width:110px;height:110px;"><canvas id="chartPie"></canvas></div>
             <div class="space-y-1.5 flex-1 min-w-0">
@@ -507,8 +826,19 @@
           </div>
         </div>
 
-        <!-- Customer Retention — col-span-1, Doughnut -->
-        <div class="chart-card col-span-1">
+        <!-- Customer Retention &mdash; col-span-1, Doughnut -->
+        <div class="chart-card col-span-1 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cRetentionRate')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cRetentionRate')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cRetentionRate')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <p class="chart-card-title">Retention Rate</p>
           <p class="chart-card-meta">Q4 2024</p>
           <div class="flex flex-col items-center justify-center h-[150px] gap-2">
@@ -525,26 +855,59 @@
       </div>
 
       <!-- Row 4: New vs Returning (wide) + Top Products + Marketing Spend -->
-      <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+      <div class="grid grid-cols-4 gap-4 mb-4">
 
-        <!-- New vs Returning — col-span-2, Multi-line -->
-        <div class="chart-card col-span-2">
+        <!-- New vs Returning &mdash; col-span-2, Multi-line -->
+        <div class="chart-card col-span-2 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cNewVsReturning')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cNewVsReturning')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cNewVsReturning')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <p class="chart-card-title">New vs Returning Customers</p>
-          <p class="chart-card-meta">Monthly · 2024</p>
+          <p class="chart-card-meta">Monthly &mdash; 2024</p>
           <div class="relative h-[150px]"><canvas id="chartMultiLine"></canvas></div>
         </div>
 
-        <!-- Top Products — col-span-1, Horizontal Bar -->
-        <div class="chart-card col-span-1">
+        <!-- Top Products &mdash; col-span-1, Horizontal Bar -->
+        <div class="chart-card col-span-1 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cTopProducts')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cTopProducts')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cTopProducts')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <p class="chart-card-title">Top Products</p>
-          <p class="chart-card-meta">By revenue · FY 2024</p>
+          <p class="chart-card-meta">By revenue &mdash; FY 2024</p>
           <div class="relative h-[150px]"><canvas id="chartHBar"></canvas></div>
         </div>
 
-        <!-- Marketing Spend — col-span-1, Scatter -->
-        <div class="chart-card col-span-1">
+        <!-- Marketing Spend &mdash; col-span-1, Scatter -->
+        <div class="chart-card col-span-1 relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cMarketingSpend')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cMarketingSpend')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cMarketingSpend')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <p class="chart-card-title">Marketing Spend</p>
-          <p class="chart-card-meta">Spend vs return · USD K</p>
+          <p class="chart-card-meta">Spend vs return &mdash; USD K</p>
           <div class="relative h-[150px]"><canvas id="chartScatter"></canvas></div>
         </div>
 
@@ -552,13 +915,24 @@
 
       <!-- Row 5: Cumulative Growth (full width), Area -->
       <div class="grid grid-cols-1 gap-2.5">
-        <div class="chart-card">
+        <div class="chart-card relative group">
+          <div class="absolute top-2.5 right-2.5 flex items-center gap-1" style="z-index:2">
+            <button onclick="downloadCard('cCumulativeGrowth')" title="Export" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+            <button onclick="openCodeSidebar('cCumulativeGrowth')" title="View Query" class="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </button>
+            <button onclick="openKpiFullView('cCumulativeGrowth')" title="Full View" class="kpi-fullview-btn w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center hover:border-indigo-300 hover:bg-indigo-50 transition-all">
+              <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+            </button>
+          </div>
           <div class="flex items-start justify-between mb-0.5">
             <div>
               <p class="chart-card-title">Cumulative Revenue Growth</p>
-              <p class="chart-card-meta">Jan – Dec 2024 · compounding monthly · USD thousands</p>
+              <p class="chart-card-meta">Jan &mdash; Dec 2024 &mdash; compounding monthly &mdash; USD thousands</p>
             </div>
-            <span class="text-[11px] font-semibold px-2 h-5 rounded flex items-center" style="background:#D1FAE5;color:#065F46;">+430% YTD</span>
+            <span class="text-[11px] font-semibold px-2 h-5 rounded flex items-center mr-7" style="background:#D1FAE5;color:#065F46;">+430% YTD</span>
           </div>
           <div class="relative h-[120px]"><canvas id="chartArea"></canvas></div>
         </div>
@@ -594,10 +968,10 @@
               <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#D01C2A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#E8573C"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F7A54A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#F5D466"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#A6D175"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#4DB96A"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#1A7D38"></span></div>
               <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Traffic Light</span>
             </button>
-            <!-- Red–Blue Diverging -->
-            <button onclick="selectPalette('redblue')" id="palette-redblue" title="Red–Blue Diverging" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
+            <!-- Red&mdash;Blue Diverging -->
+            <button onclick="selectPalette('redblue')" id="palette-redblue" title="Red&mdash;Blue Diverging" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
               <div class="flex gap-0.5 flex-shrink-0"><span class="w-3.5 h-3.5 rounded-full" style="background:#CC2529"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DB6917"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#DAA767"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#D5D5D5"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#90BAD3"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#4576B4"></span><span class="w-3.5 h-3.5 rounded-full" style="background:#1D3E72"></span></div>
-              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Red–Blue Diverging</span>
+              <span class="text-[12px] font-medium text-gray-700 flex-1 text-right truncate">Red&mdash;Blue Diverging</span>
             </button>
             <!-- Jewel Bright -->
             <button onclick="selectPalette('jewelbright')" id="palette-jewelbright" title="Jewel Bright" class="palette-option flex items-center gap-2.5 px-3 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 bg-gray-50 transition-all w-full">
@@ -716,7 +1090,7 @@
               <span class="text-[12px] font-semibold text-gray-800">AiBii AI</span>
               <span class="text-[10px] text-gray-400">1h ago</span>
             </div>
-            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Customer retention is at 91% — 4% above industry average.</p>
+            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Customer retention is at 91% &mdash; 4% above industry average.</p>
           </div>
         </div>
         <div class="flex items-start gap-2.5">
@@ -726,14 +1100,14 @@
               <span class="text-[12px] font-semibold text-gray-800">Priya N.</span>
               <span class="text-[10px] text-gray-400">Yesterday</span>
             </div>
-            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Top Products chart — can we add Product F to the list?</p>
+            <p class="text-[12px] text-gray-700 bg-gray-50 rounded-xl px-3 py-2">Top Products chart &mdash; can we add Product F to the list?</p>
           </div>
         </div>
       </div>
       <!-- Footer input (sticky) -->
       <div class="flex-shrink-0 px-4 py-3 border-t border-gray-100 sticky bottom-0 bg-white">
         <div class="relative">
-            <textarea id="comment-input" onkeydown="handleCommentKey(event)" placeholder="Add a comment…" rows="2" class="w-full resize-none text-[12px] text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:border-transparent" style="--tw-ring-color:#5B63F6;"></textarea>
+            <textarea id="comment-input" onkeydown="handleCommentKey(event)" placeholder="Add a comment&mdash;" rows="2" class="w-full resize-none text-[12px] text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:border-transparent" style="--tw-ring-color:#5B63F6;"></textarea>
             <button onclick="postComment()" class="absolute right-2 bottom-2 w-6 h-6 flex items-center justify-center rounded-lg transition-colors hover:bg-indigo-100" style="color:#5B63F6;">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
             </button>
@@ -741,12 +1115,51 @@
       </div>
     </div>
 
+    <!-- ── Code / Query Sidebar ── -->
+    <div id="code-panel">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0 sticky top-0 bg-white z-10">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          </div>
+          <span class="text-[13px] font-semibold text-gray-900">Query</span>
+        </div>
+        <button onclick="closeCodeSidebar()" class="w-6 h-6 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Chart name + datasource -->
+      <div class="px-4 py-3 border-b border-gray-100 flex-shrink-0">
+        <p id="code-panel-title" class="text-[13px] font-semibold text-gray-900"></p>
+        <div class="flex items-center gap-2 mt-1.5">
+          <span class="text-[11px] text-gray-400">Datasource</span>
+          <span class="text-[11px] font-medium px-2 h-5 rounded-full inline-flex items-center gap-1" style="background:#F0FDF4;color:#16A34A;">
+            <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:#16A34A"></span>sales_db
+          </span>
+        </div>
+      </div>
+      <!-- Code block -->
+      <div class="flex-1 overflow-y-auto px-4 py-4">
+        <div class="rounded-xl overflow-hidden border border-gray-200" style="background:#F8F9FC">
+          <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200" style="background:#F1F3F8">
+            <span class="text-[11px] font-medium text-gray-500">SQL &mdash; PostgreSQL</span>
+            <button onclick="copyQuery()" id="code-copy-btn" class="flex items-center gap-1.5 text-[11px] font-medium px-2.5 h-6 rounded-lg border border-gray-200 bg-white text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre id="code-panel-sql" class="px-4 py-4 text-[12px] leading-6 overflow-x-auto" style="color:#374151;font-family:'JetBrains Mono','Fira Code','Courier New',monospace;margin:0;white-space:pre;"></pre>
+        </div>
+      </div>
+    </div><!-- end code-panel -->
+
     </div><!-- end canvas+panel flex row -->
 
   </main>
 
   <script>
-    // ── Fullscreen ──
+    // -- Fullscreen --
     function toggleFullscreen() {
       const expand   = document.getElementById('icon-expand');
       const compress = document.getElementById('icon-compress');
@@ -786,7 +1199,7 @@
       }
     });
 
-    // ── Comment Panel ──
+    // -- Comment Panel --
     function toggleCommentPanel() {
       var panel = document.getElementById('comment-panel');
       var btn = document.getElementById('btn-comment');
@@ -825,7 +1238,7 @@
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postComment(); }
     }
 
-    // ── Color Palette Panel ──
+    // -- Color Palette Panel --
     var _activePalette = 'indigo';
     function toggleColorPanel() {
       var panel = document.getElementById('color-panel');
@@ -927,7 +1340,7 @@
       });
     }
 
-    // ── Project context menu ──
+    // -- Project context menu --
     function toggleProjectMenu(id, e) {
       e.stopPropagation();
       var menu = document.getElementById(id);
@@ -949,12 +1362,12 @@
       document.querySelectorAll('#ws1-menu, #ws2-menu').forEach(function(m) { m.classList.add('hidden'); });
     });
 
-    // ── Sidebar toggle ──
+    // -- Sidebar toggle --
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('collapsed');
     }
 
-    // ── New dashboard: handle ?new=1&name=...&project=... ─────────
+    // -- New dashboard: handle ?new=1&name=...&project=... ---------
     (function() {
       var params = new URLSearchParams(window.location.search);
       if (params.get('new') !== '1') return;
@@ -963,12 +1376,12 @@
       var name = params.get('name') || 'Untitled Dashboard';
       var titleEl = document.getElementById('db-title');
       if (titleEl) titleEl.textContent = name;
-      document.title = 'AiBii — ' + name;
+      document.title = 'AiBii &mdash; ' + name;
 
-      // ── Inject into sidebar submenu & make active ────────────────
+      // -- Inject into sidebar submenu & make active ----------------
       var projectId = params.get('project') || 'ws2'; // ws1 = SCG, ws2 = My Private Project
       var subEl = document.getElementById(projectId + '-sub');
-      // ── Strip any existing active highlights across all sidebar items ──
+      // -- Strip any existing active highlights across all sidebar items --
       document.querySelectorAll('.ws-submenu a, .ws-submenu button').forEach(function(el) {
         el.style.background = '';
         el.style.borderLeft = '';
@@ -1004,7 +1417,7 @@
         }
       }
 
-      // ── Disable toolbar buttons until a KPI is added ─────────────
+      // -- Disable toolbar buttons until a KPI is added -------------
       var tbContainer = document.getElementById('toolbar-btns');
       if (tbContainer) {
         tbContainer.querySelectorAll('button, a').forEach(function(el) {
@@ -1012,7 +1425,7 @@
         });
       }
 
-      // ── Hide existing charts and show empty state ────────────────
+      // -- Hide existing charts and show empty state ----------------
       var canvas = document.getElementById('dashboard-canvas');
       if (!canvas) return;
       canvas.innerHTML = '';
@@ -1036,7 +1449,7 @@
         + '</div>';
     })();
 
-    // ── Sidebar workspace toggle ──
+    // -- Sidebar workspace toggle --
     function toggleWorkspace(id) {
       const sub = document.getElementById(id + '-sub');
       const btn = document.getElementById(id + '-btn');
@@ -1044,7 +1457,7 @@
       btn.classList.toggle('open');
     }
 
-    // ── Notification dropdown ──
+    // -- Notification dropdown --
     function toggleNotifications() {
       document.getElementById('notif-dropdown').classList.toggle('hidden');
       document.getElementById('user-dropdown').classList.add('hidden');
@@ -1067,7 +1480,7 @@
       if (userDd && !userDd.classList.contains('hidden') && userWrapper && !userWrapper.contains(e.target)) userDd.classList.add('hidden');
     });
 
-    // ── Workspace switcher modal ──────────────────────────────────────────
+    // -- Workspace switcher modal ------------------------------------------
     var wsData = [
       { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
       { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
@@ -1153,7 +1566,7 @@
       selectWorkspace(newWs.id);
     }
 
-    // ── Shared Chart.js defaults ──
+    // -- Shared Chart.js defaults --
     Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
     Chart.defaults.font.size   = 11;
     Chart.defaults.color       = '#9CA3AF';
@@ -1161,7 +1574,890 @@
     const gridColor  = '#F3F4F6';
     const tickColor  = '#9CA3AF';
 
-    // ── 1. Monthly Revenue — Line ──
+    // -- KPI Sparkline helper --
+    function makeSparkline(id, data, color) {
+      var ctx = document.getElementById(id);
+      if (!ctx) return;
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(function(_,i){ return i; }),
+          datasets: [{
+            data: data,
+            borderColor: color,
+            borderWidth: 1.8,
+            pointRadius: 0,
+            tension: 0.4,
+            fill: true,
+            backgroundColor: function(context) {
+              var chart = context.chart;
+              var _a = chart.ctx, chartArea = chart.chartArea;
+              if (!chartArea) return color + '18';
+              var gradient = _a.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+              gradient.addColorStop(0, color + '28');
+              gradient.addColorStop(1, color + '04');
+              return gradient;
+            }
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { display: false },
+            y: { display: false }
+          },
+          animation: false
+        }
+      });
+    }
+
+    // Sparklines
+    makeSparkline('sparkRevenue',  [128,192,160,208,244,228,265,292,310,298,350,null], '#5B63F6');
+    makeSparkline('sparkCustomers',[82, 94, 88,104,118,112,128,134,130,146,158,null],  '#10B981');
+    makeSparkline('sparkChurn',    [11.4,11.1,10.8,10.5,10.2,9.9,9.7,9.4,9.2,9.1,9.0,null], '#F97316');
+    makeSparkline('sparkDealsize', [17.2,17.5,17.1,17.8,18.0,17.9,18.2,18.4,18.5,18.6,18.7,null], '#8B5CF6');
+
+    // -- KPI Full View ----------------------------------------------
+    var _kfvChart = null;
+
+    var _kpiConfig = {
+      revenue: {
+        title: 'Total Revenue',
+        badge: { text: '▲ 18.4%', bg: '#D1FAE5', color: '#059669' },
+        period: 'Jan &mdash; Dec 2024 &mdash; USD thousands',
+        stats: [
+          { label: 'YTD Total',  val: '$2.4M',  change: '+18.4%', pos: true },
+          { label: 'Highest Month', val: '$350K', change: 'Nov 2024', pos: true },
+          { label: 'Avg / Month', val: '$218K',  change: '+$33K',  pos: true },
+          { label: 'Run Rate',   val: '$2.8M',  change: 'projected', pos: true }
+        ],
+        chartType: 'line',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [{
+            label: 'Revenue (USD K)',
+            data: [128,192,160,208,244,228,265,292,310,298,350,null],
+            borderColor: '#5B63F6', backgroundColor: '#5B63F611',
+            borderWidth: 2.5, pointBackgroundColor: '#5B63F6',
+            pointRadius: 4, pointHoverRadius: 6,
+            tension: 0.35, fill: true
+          }]
+        },
+        chartOpts: { yLabel: '$K', yPrefix: '$', ySuffix: 'K' },
+        summary: 'Revenue grew steadily throughout 2024, achieving 18.4% YoY growth &mdash; outpacing the industry average of 11.2%. Q4 was the strongest quarter, contributing 36% of annual revenue.',
+        findings: [
+          'November reached the peak of <strong>$350K</strong>, driven by year-end enterprise deal closures.',
+          'The Feb&mdash;Mar dip (-17%) is seasonal; the pattern has repeated for 3 consecutive years.',
+          'H2 contributed 55% of annual revenue, confirming a strong back-half loading trend.',
+          '3 new enterprise accounts signed in Q3 collectively contributed $420K to the total.'
+        ],
+        anomalies: [
+          'August showed a smaller gain (+2.3%) vs the prior 3-month average &mdash; investigate pipeline health.',
+          'December data is incomplete; extrapolated end-of-month value may be understated.'
+        ],
+        forecast: [
+          { label: 'Jan 2025 Forecast', val: '$362K', detail: 'Based on 12-mo trend &mdash; +3.4% MoM' },
+          { label: 'FY 2025 Projection', val: '$2.82M', detail: 'Assuming 16% YoY growth rate' }
+        ]
+      },
+      customers: {
+        title: 'New Customers',
+        badge: { text: '▲ 12.3%', bg: '#D1FAE5', color: '#059669' },
+        period: 'Jan &mdash; Dec 2024 &mdash; monthly acquisitions',
+        stats: [
+          { label: 'Total Acquired', val: '1,284',  change: '+12.3%', pos: true },
+          { label: 'Best Month',     val: '158',    change: 'Nov',    pos: true },
+          { label: 'Avg / Month',    val: '107',    change: '+12',    pos: true },
+          { label: 'CAC',            val: '$312',   change: '-$42 vs LY', pos: true }
+        ],
+        chartType: 'bar',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [{
+            label: 'New Customers',
+            data: [82,94,88,104,118,112,128,134,130,146,158,null],
+            backgroundColor: '#10B98133',
+            borderColor: '#10B981',
+            borderWidth: 2,
+            borderRadius: 5,
+            borderSkipped: false
+          }]
+        },
+        chartOpts: { yLabel: 'customers', yPrefix: '', ySuffix: '' },
+        summary: '1,284 new customers were acquired in 2024, exceeding last year\'s 1,143 by 12.3%. Organic and paid-search channels dominated, while referral acquisition showed the fastest growth rate.',
+        findings: [
+          'Organic search drove <strong>38%</strong> of new acquisitions, the leading channel.',
+          'Referral channel grew 41% YoY &mdash; highest growth rate across all channels.',
+          'Q3 cohort customers show 23% higher estimated LTV vs Q1 cohort.',
+          'Customer Acquisition Cost fell by $42, improving unit economics significantly.'
+        ],
+        anomalies: [
+          'March dip (-6.4% MoM) correlates with a paid-search budget pause &mdash; monitor future pauses.',
+          'September acquisition slightly below August despite increased ad spend; review conversion rates.'
+        ],
+        forecast: [
+          { label: 'Jan 2025 Forecast', val: '163',    detail: 'Trend + seasonal uplift' },
+          { label: 'FY 2025 Target',    val: '1,450',  detail: '~13% YoY growth assumed' }
+        ]
+      },
+      churn: {
+        title: 'Churn Rate',
+        badge: { text: '▼ 2.1pp', bg: '#D1FAE5', color: '#059669' },
+        period: 'Jan &mdash; Dec 2024 &mdash; monthly % churned',
+        stats: [
+          { label: 'Current Rate',   val: '9.0%',  change: '-2.1pp YoY', pos: true },
+          { label: 'Enterprise',     val: '3.2%',  change: '-0.8pp',     pos: true },
+          { label: 'SMB',            val: '14.8%', change: '-1.4pp',     pos: true },
+          { label: 'At-risk ARR',    val: '$210K', change: '47 accounts', pos: false }
+        ],
+        chartType: 'line',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [
+            {
+              label: 'Churn Rate (%)',
+              data: [11.4,11.1,10.8,10.5,10.2,9.9,9.7,9.4,9.2,9.1,9.0,null],
+              borderColor: '#F97316', backgroundColor: '#F9731611',
+              borderWidth: 2.5, pointBackgroundColor: '#F97316',
+              pointRadius: 4, tension: 0.35, fill: true
+            },
+            {
+              label: 'Target (8%)',
+              data: [8,8,8,8,8,8,8,8,8,8,8,8],
+              borderColor: '#10B981', borderDash: [6,3],
+              borderWidth: 1.5, pointRadius: 0,
+              backgroundColor: 'transparent', fill: false
+            }
+          ]
+        },
+        chartOpts: { yLabel: '%', yPrefix: '', ySuffix: '%' },
+        summary: 'Churn rate improved 2.1 percentage points YoY, from 11.1% to 9.0%, reflecting the impact of the proactive Customer Success programme launched in Q2. The 8% annual target is within reach.',
+        findings: [
+          'Enterprise segment churn stabilised at <strong>3.2%</strong>, well below the SMB segment.',
+          'Proactive outreach in Q3 prevented an estimated 34 cancellations, saving ~$160K ARR.',
+          'Customers who attended 2+ onboarding sessions had 62% lower churn.',
+          'Monthly churn has fallen consistently for 11 straight months &mdash; a company record.'
+        ],
+        anomalies: [
+          'October had a brief uptick (+0.1pp) before resuming the downtrend &mdash; likely data lag.',
+          '47 accounts flagged below usage threshold; risk team intervention recommended.'
+        ],
+        forecast: [
+          { label: 'Dec 2024 Estimate', val: '8.8%',  detail: 'Continuation of current trend' },
+          { label: 'FY 2025 Target',    val: '7.5%',  detail: 'Achievable with CS expansion' }
+        ]
+      },
+      dealsize: {
+        title: 'Avg Deal Size',
+        badge: { text: '▲ 5.2%', bg: '#D1FAE5', color: '#059669' },
+        period: 'Jan &mdash; Dec 2024 &mdash; USD thousands',
+        stats: [
+          { label: 'Current Avg',    val: '$18.7K', change: '+5.2%',   pos: true },
+          { label: 'Enterprise Avg', val: '$52K',   change: '+8.4%',   pos: true },
+          { label: 'SMB Avg',        val: '$6.2K',  change: '-2.1%',   pos: false },
+          { label: 'Expansion %',    val: '34%',    change: 'of total', pos: true }
+        ],
+        chartType: 'bar',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [
+            {
+              label: 'New Business ($K)',
+              data: [10.2,10.8,10.5,11.4,12.0,11.8,12.5,13.1,12.8,13.4,14.0,null],
+              backgroundColor: '#8B5CF633', borderColor: '#8B5CF6',
+              borderWidth: 2, borderRadius: 5, borderSkipped: false
+            },
+            {
+              label: 'Expansion ($K)',
+              data: [7.0,6.7,6.6,6.4,6.0,6.1,5.7,5.3,5.7,5.2,4.7,null],
+              backgroundColor: '#A855F733', borderColor: '#A855F7',
+              borderWidth: 2, borderRadius: 5, borderSkipped: false
+            }
+          ]
+        },
+        chartOpts: { yLabel: '$K', yPrefix: '$', ySuffix: 'K' },
+        summary: 'Average deal size grew 5.2% to $18.7K, driven by an upmarket shift in the enterprise segment. The new premium tier, launched in May, contributed to the steady increase in H2.',
+        findings: [
+          'Enterprise deals averaged <strong>$52K</strong>, up 8.4% &mdash; reflecting successful up-tiering.',
+          'Upsell and expansion bookings now represent 34% of total deal value.',
+          'New premium tier accounts (launched May) averaged $27K per deal.',
+          'SMB average contracted slightly (-2.1%) due to introductory pricing promotions.'
+        ],
+        anomalies: [
+          'June showed a minor dip (-1.1%) possibly due to month-end discounting &mdash; review approval thresholds.',
+          'Two outlier deals >$200K each are skewing the enterprise average upward; monitor concentration risk.'
+        ],
+        forecast: [
+          { label: 'Q1 2025 Avg',    val: '$19.4K', detail: 'Continued enterprise mix shift' },
+          { label: 'FY 2025 Target', val: '$20K+',  detail: 'Requires 3+ more enterprise accounts' }
+        ]
+      },
+
+      // -- Chart Cards --------------------------------------------
+      cMonthlyRevenue: {
+        title: 'Monthly Revenue',
+        badge: { text: '▲ 18.4%', bg: '#EEF2FF', color: '#5B63F6' },
+        period: 'Jan &mdash; Dec 2024 &mdash; USD thousands',
+        stats: [
+          { label: 'YTD Total',     val: '$2.4M',  change: '+18.4% YoY', pos: true },
+          { label: 'Peak Month',    val: '$350K',  change: 'November',   pos: true },
+          { label: 'Avg / Month',   val: '$218K',  change: '+$33K YoY',  pos: true },
+          { label: 'Run Rate',      val: '$2.8M',  change: 'FY25 proj.', pos: true }
+        ],
+        chartType: 'line',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [{
+            label: 'Revenue (USD K)',
+            data: [128,192,160,208,244,228,265,292,310,298,350,null],
+            borderColor: '#5B63F6', backgroundColor: '#5B63F614',
+            borderWidth: 2.5, pointBackgroundColor: '#5B63F6',
+            pointRadius: 4, pointHoverRadius: 6, tension: 0.35, fill: true
+          }]
+        },
+        chartOpts: { yPrefix: '$', ySuffix: 'K' },
+        summary: 'Revenue grew consistently through FY2024, reaching $350K in November &mdash; the highest single month on record. Q4 contributed 36% of annual revenue, confirming a strong back-half loading pattern.',
+        findings: [
+          'November hit the all-time peak of <strong>$350K</strong>, driven by year-end enterprise closures.',
+          'The Feb&mdash;Mar seasonal dip (-17%) has repeated for 3 consecutive years.',
+          'H2 contributed 55% of total annual revenue.',
+          '3 new enterprise accounts signed in Q3 added $420K to the total.'
+        ],
+        anomalies: [
+          'August\'s +2.3% gain was below the 3-month moving average &mdash; investigate pipeline health.',
+          'December is still in progress; current data likely understates the final month.'
+        ],
+        forecast: [
+          { label: 'Jan 2025 Forecast', val: '$362K', detail: '12-mo trend extrapolation' },
+          { label: 'FY 2025 Projection', val: '$2.82M', detail: '+16% assumed YoY growth' }
+        ]
+      },
+
+      cSalesByRegion: {
+        title: 'Sales by Region',
+        badge: { text: 'N. America #1', bg: '#EEF2FF', color: '#5B63F6' },
+        period: 'FY 2024 &mdash; USD thousands &mdash; 4 regions',
+        stats: [
+          { label: 'North America', val: '$2.48M', change: '#1 &mdash; 30.8%', pos: true },
+          { label: 'Asia Pacific',  val: '$2.16M', change: '#2 &mdash; 26.9%', pos: true },
+          { label: 'Europe',        val: '$1.82M', change: '#3 &mdash; 22.6%', pos: true },
+          { label: 'Lat. America',  val: '$1.52M', change: '#4 &mdash; 18.9%', pos: false }
+        ],
+        chartType: 'bar',
+        chartData: {
+          labels: ['North America','Europe','Asia Pacific','Latin America'],
+          datasets: [{
+            label: 'Revenue',
+            data: [2480,1820,2160,1520],
+            backgroundColor: ['#5B63F6','#A855F7','#EC4899','#F59E0B'],
+            borderRadius: 6, borderSkipped: false
+          }]
+        },
+        chartOpts: { yPrefix: '$', ySuffix: '' },
+        summary: 'North America leads with 30.8% revenue share. Asia Pacific grew the fastest at 28% YoY, closing the gap with Europe. Latin America remains the highest-growth emerging market.',
+        findings: [
+          'Asia Pacific grew <strong>28% YoY</strong> &mdash; fastest growing region for the second year.',
+          'Europe showed flat YoY growth; UK and DACH were the key laggards.',
+          'Latin America pipeline is 2.3&mdash; last year\'s &mdash; signalling strong future growth.',
+          'North America churn-adjusted net revenue grew only 9% despite high gross adds.'
+        ],
+        anomalies: [
+          'Europe underperformed vs forecast by $210K; two large deals slipped to Q1 2025.',
+          'Latin America had an unusually strong Q2 due to a single $480K government contract.'
+        ],
+        forecast: [
+          { label: 'APAC FY25 Target',  val: '$2.8M',  detail: '+30% &mdash; fastest growth region' },
+          { label: 'LATAM FY25 Target', val: '$2.1M',  detail: '+38% &mdash; driven by new office' }
+        ]
+      },
+
+      cRevenueByChannel: {
+        title: 'Revenue by Channel',
+        badge: { text: 'Direct 52%', bg: '#EEF2FF', color: '#5B63F6' },
+        period: 'FY 2024 &mdash; Quarterly &mdash; USD thousands',
+        stats: [
+          { label: 'Direct',     val: '$2.03M', change: '+22% YoY', pos: true },
+          { label: 'Partner',    val: '$1.16M', change: '+18% YoY', pos: true },
+          { label: 'Self-serve', val: '$0.72M', change: '+31% YoY', pos: true },
+          { label: 'Total',      val: '$3.91M', change: '+21% YoY', pos: true }
+        ],
+        chartType: 'bar',
+        chartData: {
+          labels: ['Q1','Q2','Q3','Q4'],
+          datasets: [
+            { label: 'Direct',     data: [420,510,480,620], backgroundColor: '#5B63F6', borderRadius: 0, stack: 's' },
+            { label: 'Partner',    data: [230,280,310,340], backgroundColor: '#7C6FF7', borderRadius: 0, stack: 's' },
+            { label: 'Self-serve', data: [140,170,190,220], backgroundColor: '#A5B4FC', borderRadius: 4, stack: 's' }
+          ]
+        },
+        chartOptions: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+            tooltip: { callbacks: { label: function(c) { return ' ' + c.dataset.label + ': $' + c.parsed.y + 'K'; } } }
+          },
+          scales: {
+            x: { grid: { display: false }, stacked: true, ticks: { color: '#9CA3AF' } },
+            y: { grid: { color: '#F3F4F6' }, stacked: true, ticks: { color: '#9CA3AF' }, beginAtZero: true }
+          }
+        },
+        summary: 'All three channels grew strongly in 2024. Self-serve had the highest growth rate (+31%), reflecting product-led growth momentum. Direct remains the dominant channel at 52% of total revenue.',
+        findings: [
+          'Self-serve grew <strong>31% YoY</strong> &mdash; signalling strong PLG (product-led growth) adoption.',
+          'Q4 was the strongest quarter across all channels, with Direct at $620K.',
+          'Partner channel consistency throughout the year reflects strong reseller relationships.',
+          'Combined Partner + Self-serve share is growing, reducing dependence on Direct.'
+        ],
+        anomalies: [
+          'Q3 Direct dip (-5.9% QoQ) coincided with a major sales team reorganisation.',
+          'Self-serve growth accelerated unusually in Q4 &mdash; verify if driven by promotion or organic.'
+        ],
+        forecast: [
+          { label: 'Self-serve FY25',  val: '$1.1M',  detail: '+53% &mdash; PLG investment' },
+          { label: 'Total FY25',       val: '$4.8M+', detail: 'All channels growing' }
+        ]
+      },
+
+      cMarketShare: {
+        title: 'Market Share',
+        badge: { text: 'Prod A 35%', bg: '#EEF2FF', color: '#5B63F6' },
+        period: 'FY 2024 &mdash; by product line',
+        stats: [
+          { label: 'Product A',  val: '35%', change: '+3pp YoY', pos: true },
+          { label: 'Product B',  val: '25%', change: '-1pp YoY', pos: false },
+          { label: 'Product C',  val: '20%', change: 'flat',     pos: true },
+          { label: 'HHI Index',  val: '0.28', change: 'moderate conc.', pos: true }
+        ],
+        chartType: 'pie',
+        chartData: {
+          labels: ['Product A','Product B','Product C','Product D','Product E'],
+          datasets: [{
+            data: [35,25,20,15,5],
+            backgroundColor: ['#5B63F6','#A855F7','#EC4899','#F59E0B','#10B981'],
+            borderWidth: 3, borderColor: '#fff', hoverOffset: 8
+          }]
+        },
+        chartOptions: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 12 } } },
+            tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } }
+          }
+        },
+        summary: 'Product A dominates with 35% share, growing 3pp YoY. The portfolio is moderately concentrated (HHI 0.28). Product E\'s 5% share is being targeted for consolidation into the Product C line.',
+        findings: [
+          'Product A gained <strong>3pp of share</strong> thanks to two new enterprise modules launched in Q2.',
+          'Product B slightly declined (-1pp) due to pricing pressure from a competitor.',
+          'Product D pipeline is healthy; share may increase to 18&mdash;20% in FY25.',
+          'Combined Products A+B represent 60% of revenue &mdash; concentration risk to monitor.'
+        ],
+        anomalies: [
+          'Product E stalled in H2; usage metrics are declining &mdash; sunset planning may be needed.',
+          'Product C\'s flat share despite 20% revenue growth indicates market is expanding.'
+        ],
+        forecast: [
+          { label: 'Product A FY25',  val: '37%',  detail: 'Enterprise module expansion' },
+          { label: 'Product D FY25',  val: '18%',  detail: 'New SMB tier launching Q1' }
+        ]
+      },
+
+      cRetentionRate: {
+        title: 'Retention Rate',
+        badge: { text: '91% retained', bg: '#D1FAE5', color: '#059669' },
+        period: 'Q4 2024 &mdash; all customer segments',
+        stats: [
+          { label: 'Retained',   val: '91%',   change: '+0.8pp QoQ', pos: true },
+          { label: 'Churned',    val: '9%',    change: '-0.8pp',     pos: true },
+          { label: 'Enterprise', val: '97.1%', change: 'stable',     pos: true },
+          { label: 'SMB',        val: '85.2%', change: '+1.2pp',     pos: true }
+        ],
+        chartType: 'doughnut',
+        chartData: {
+          labels: ['Retained','Churned'],
+          datasets: [{
+            data: [91,9],
+            backgroundColor: ['#5B63F6','#F3F4F6'],
+            borderWidth: 3, borderColor: '#fff', hoverOffset: 6
+          }]
+        },
+        chartOptions: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '68%',
+          plugins: {
+            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 16, font: { size: 12 } } },
+            tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } }
+          }
+        },
+        summary: '91% customer retention in Q4 2024 is up 0.8pp QoQ, driven by the Customer Success expansion programme. Enterprise segment leads at 97.1%, and SMB improved by 1.2pp following self-serve onboarding enhancements.',
+        findings: [
+          'Enterprise retention at <strong>97.1%</strong> reflects deep integration and high switching costs.',
+          'SMB segment improved 1.2pp after redesigned onboarding reduced time-to-value.',
+          'Customers using 3+ features have 94% retention vs 79% for single-feature users.',
+          'Proactive outreach to at-risk accounts recovered an estimated $160K ARR in Q4.'
+        ],
+        anomalies: [
+          'Mid-market segment (50&mdash;500 seats) had a 2.4pp retention dip &mdash; needs focused attention.',
+          '8 churned accounts cited "missing feature X" in exit surveys &mdash; product roadmap alignment needed.'
+        ],
+        forecast: [
+          { label: 'Q1 2025 Target',  val: '92%',   detail: 'CS team expansion underway' },
+          { label: 'FY 2025 Target',  val: '93.5%', detail: 'With new onboarding flow' }
+        ]
+      },
+
+      cNewVsReturning: {
+        title: 'New vs Returning Customers',
+        badge: { text: 'Returning +12%', bg: '#D1FAE5', color: '#059669' },
+        period: 'Jan &mdash; Dec 2024 &mdash; monthly sessions',
+        stats: [
+          { label: 'New (total)',       val: '1,284', change: '+12.3%', pos: true },
+          { label: 'Returning (total)', val: '1,781', change: '+14.1%', pos: true },
+          { label: 'Return Rate',       val: '58.1%', change: '+0.9pp', pos: true },
+          { label: 'Avg Visits/User',   val: '4.2&mdash;',  change: '+0.3&mdash;',  pos: true }
+        ],
+        chartType: 'line',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [
+            {
+              label: 'New',
+              data: [42,58,51,70,84,78,95,108,120,112,136,150],
+              borderColor: '#5B63F6', borderWidth: 2.5,
+              pointRadius: 3, pointBackgroundColor: '#5B63F6', tension: 0.3, fill: false
+            },
+            {
+              label: 'Returning',
+              data: [86,134,109,138,160,150,170,184,190,186,214,200],
+              borderColor: '#10B981', borderWidth: 2.5,
+              pointRadius: 3, pointBackgroundColor: '#10B981', tension: 0.3, fill: false
+            }
+          ]
+        },
+        chartOpts: { yPrefix: '', ySuffix: '' },
+        summary: 'Both new and returning customer counts grew in 2024, with returning customers outpacing new. The return rate of 58.1% is a positive signal of product stickiness and long-term engagement.',
+        findings: [
+          'Returning customers grew <strong>14.1%</strong>, faster than new customer growth (12.3%).',
+          'December peak: 150 new + 200 returning in a single month &mdash; a new record.',
+          'Returning customer growth accelerates in Q3&mdash;Q4, correlating with summer campaigns.',
+          'Ratio of returning to new customers improved from 1.97&mdash; to 2.05&mdash; &mdash; strong retention signal.'
+        ],
+        anomalies: [
+          'March dip in new customers (-12% MoM) coincided with paid media budget freeze.',
+          'October returning count slightly below September despite overall growth trend.'
+        ],
+        forecast: [
+          { label: 'Return Rate FY25',   val: '60%+', detail: 'Engagement programme launching' },
+          { label: 'New Customers FY25', val: '1,450', detail: 'Based on pipeline + trends' }
+        ]
+      },
+
+      cTopProducts: {
+        title: 'Top Products by Revenue',
+        badge: { text: 'Analytics Pro #1', bg: '#EEF2FF', color: '#5B63F6' },
+        period: 'FY 2024 &mdash; USD thousands &mdash; top 5',
+        stats: [
+          { label: '#1 Analytics Pro', val: '$980K', change: '+24% YoY', pos: true },
+          { label: '#2 Data Bridge',   val: '$740K', change: '+18% YoY', pos: true },
+          { label: 'Top-2 Share',      val: '53%',   change: 'of total', pos: true },
+          { label: 'Total (top 5)',    val: '$3.24M', change: '+21% YoY', pos: true }
+        ],
+        chartType: 'bar',
+        chartData: {
+          labels: ['Analytics Pro','Data Bridge','Insight Hub','QuickReport','AutoSync'],
+          datasets: [{
+            label: 'Revenue ($K)',
+            data: [980,740,620,510,390],
+            backgroundColor: ['#5B63F6','#7C6FF7','#A5B4FC','#C7D2FE','#E0E7FF'],
+            borderRadius: 5, borderSkipped: false
+          }]
+        },
+        chartOptions: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(c) { return ' $' + c.parsed.x + 'K'; } } }
+          },
+          scales: {
+            x: { grid: { color: '#F3F4F6' }, ticks: { color: '#9CA3AF' }, beginAtZero: true },
+            y: { grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 12 } } }
+          }
+        },
+        summary: 'Analytics Pro leads by a wide margin with $980K in FY2024 revenue, up 24% YoY. The top 2 products represent 53% of total product revenue. AutoSync grew 38% YoY from the smallest base.',
+        findings: [
+          'Analytics Pro\'s <strong>24% YoY growth</strong> was driven by the Enterprise Module launch in Q2.',
+          'AutoSync had the highest growth rate (+38%) despite being the smallest revenue product.',
+          'QuickReport growth slowed to +6% &mdash; competitive pressure from new entrants.',
+          'Top-5 products collectively grew 21%, in line with overall company growth.'
+        ],
+        anomalies: [
+          'QuickReport Q3 revenue dipped 14% QoQ &mdash; one large customer downgraded their plan.',
+          'AutoSync had an unusually large Q4 ($140K) &mdash; verify if one-time deal or structural shift.'
+        ],
+        forecast: [
+          { label: 'Analytics Pro FY25', val: '$1.24M', detail: '+26% &mdash; new AI features' },
+          { label: 'AutoSync FY25',      val: '$580K',  detail: '+49% &mdash; SMB market push' }
+        ]
+      },
+
+      cMarketingSpend: {
+        title: 'Marketing Spend vs Return',
+        badge: { text: '7.1&mdash; avg ROAS', bg: '#D1FAE5', color: '#059669' },
+        period: 'FY 2024 &mdash; USD thousands &mdash; campaign-level',
+        stats: [
+          { label: 'Avg ROAS',      val: '7.1&mdash;',  change: '+0.8&mdash; YoY', pos: true },
+          { label: 'Total Spend',   val: '$15M',  change: 'budget',     pos: true },
+          { label: 'Total Return',  val: '$106M', change: '+33% YoY',   pos: true },
+          { label: 'Best Campaign', val: '$860K', change: 'return',     pos: true }
+        ],
+        chartType: 'scatter',
+        chartData: {
+          datasets: [{
+            label: 'Spend vs Return',
+            data: [
+              {x:1,y:130},{x:2,y:205},{x:3,y:260},{x:4,y:310},{x:5,y:380},
+              {x:6,y:425},{x:7,y:480},{x:8,y:510},{x:9,y:580},{x:10,y:625},
+              {x:11,y:680},{x:12,y:720},{x:13,y:760},{x:14,y:800},{x:15,y:860}
+            ],
+            backgroundColor: '#5B63F6',
+            pointRadius: 6, pointHoverRadius: 9
+          }]
+        },
+        chartOptions: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(c) { return ' Spend: $' + c.parsed.x + 'K ? Return: $' + c.parsed.y + 'K'; } } }
+          },
+          scales: {
+            x: { grid: { color: '#F3F4F6' }, ticks: { color: '#9CA3AF' }, title: { display: true, text: 'Spend ($K)', color: '#9CA3AF', font: { size: 11 } } },
+            y: { grid: { color: '#F3F4F6' }, ticks: { color: '#9CA3AF' }, beginAtZero: true, title: { display: true, text: 'Return ($K)', color: '#9CA3AF', font: { size: 11 } } }
+          }
+        },
+        summary: 'Marketing spend shows a strong positive linear correlation with return (R&mdash;&mdash;0.97). Average ROAS of 7.1&mdash; is up from 6.3&mdash; last year. The highest-spend campaigns consistently deliver proportionally higher returns.',
+        findings: [
+          'R&mdash; correlation of <strong>0.97</strong> between spend and return &mdash; highly predictable ROI.',
+          'Best campaign: $15K spend ? $860K return (57&mdash; ROAS) &mdash; Q4 enterprise event.',
+          'Campaigns with spend <$3K show disproportionately lower returns due to fixed costs.',
+          'Paid social ROAS improved 22% YoY after audience optimisation in Q2.'
+        ],
+        anomalies: [
+          'Two campaigns (spend: $8&mdash;9K) underperformed vs trend &mdash; review targeting settings.',
+          'Q3 campaigns had slightly compressed ROAS due to increased competition in search auctions.'
+        ],
+        forecast: [
+          { label: 'FY25 Budget',  val: '$18M',  detail: '+20% with projected 7.5&mdash; ROAS' },
+          { label: 'FY25 Return',  val: '$135M', detail: 'Based on current efficiency curve' }
+        ]
+      },
+
+      cCumulativeGrowth: {
+        title: 'Cumulative Revenue Growth',
+        badge: { text: '+430% YTD', bg: '#D1FAE5', color: '#065F46' },
+        period: 'Jan &mdash; Dec 2024 &mdash; compounding monthly &mdash; USD thousands',
+        stats: [
+          { label: 'Jan Baseline', val: '$100K',  change: 'start of year',  pos: true },
+          { label: 'Dec Value',    val: '$530K',  change: '+430% growth',   pos: true },
+          { label: 'Avg MoM',      val: '+14.7%', change: 'monthly CAGR',   pos: true },
+          { label: 'YoY CAGR',     val: '19.1%',  change: 'vs 14.2% prior', pos: true }
+        ],
+        chartType: 'line',
+        chartData: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [{
+            label: 'Cumulative Revenue ($K)',
+            data: [100,118,142,168,200,230,268,310,358,410,468,530],
+            borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.10)',
+            borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#10B981',
+            tension: 0.4, fill: true
+          }]
+        },
+        chartOpts: { yPrefix: '$', ySuffix: 'K' },
+        summary: 'Cumulative revenue grew 430% over FY2024, compounding at a 14.7% monthly rate. The growth trajectory has been remarkably consistent with no single-month contraction, reflecting durable business health.',
+        findings: [
+          'Zero negative months in 2024 &mdash; <strong>12 consecutive months of growth</strong>.',
+          'Growth accelerated in Q3&mdash;Q4, indicating momentum building through the year.',
+          'Monthly CAGR of 14.7% significantly exceeds the 9.2% sector benchmark.',
+          'December cumulative value of $530K establishes a strong base for FY2025.'
+        ],
+        anomalies: [
+          'Jan&mdash;Feb growth rate (18%) slightly outpaced the annual average &mdash; early-year seasonality.',
+          'May&mdash;June growth decelerated briefly before re-accelerating &mdash; coincided with product outage.'
+        ],
+        forecast: [
+          { label: 'FY25 Cumulative',  val: '$820K',  detail: 'Assuming 55% YoY growth' },
+          { label: 'Mid-year 2025',    val: '$600K',  detail: 'On current trajectory' }
+        ]
+      }
+
+    };
+
+    function openKpiFullView(kpiId) {
+      var cfg = _kpiConfig[kpiId];
+      if (!cfg) return;
+
+      // Track current chart for AI panel context
+      _kfvCurrentKpiId = kpiId;
+
+      // Reset AI panel state (keep panel closed, clear messages)
+      document.getElementById('kfv-aip-messages').innerHTML = '';
+      document.getElementById('kfv-aip-messages').style.display = 'none';
+      document.getElementById('kfv-aip-welcome').style.display = '';
+      var sugg = document.getElementById('kfv-aip-suggestions');
+      if (sugg) sugg.style.display = '';
+      kfvSetSuggestions(kpiId);
+
+      // Toolbar breadcrumb + chart header
+      document.getElementById('kfv-chart-title').textContent = cfg.title;
+      document.getElementById('kfv-chart-subtitle').innerHTML = cfg.period;
+      document.getElementById('kfv-ai-subtitle').innerHTML = 'Generated from ' + cfg.title + ' &mdash; ' + cfg.period;
+      var badge = document.getElementById('kfv-badge');
+      badge.textContent = cfg.badge.text;
+      badge.style.background = cfg.badge.bg;
+      badge.style.color       = cfg.badge.color;
+
+      // Chart
+      if (_kfvChart) { _kfvChart.destroy(); _kfvChart = null; }
+      var ctx = document.getElementById('kfv-chart');
+      var resolvedOpts;
+      if (cfg.chartOptions) {
+        resolvedOpts = cfg.chartOptions;
+      } else {
+        var co = cfg.chartOpts || { yPrefix: '', ySuffix: '' };
+        resolvedOpts = {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: cfg.chartData.datasets.length > 1, position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+            tooltip: { callbacks: { label: function(c) { return ' ' + co.yPrefix + c.parsed.y + co.ySuffix; } } }
+          },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+            y: {
+              grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: false,
+              ticks: { callback: function(v) { return co.yPrefix + v + co.ySuffix; } }
+            }
+          }
+        };
+      }
+      _kfvChart = new Chart(ctx, { type: cfg.chartType, data: cfg.chartData, options: resolvedOpts });
+
+      // AI insight cards (3: Key Finding, Anomaly, Forecast)
+      var aiGrid = document.getElementById('kfv-ai-cards-grid');
+      if (aiGrid) {
+        var findDesc = cfg.findings.slice(0, 2).join(' ');
+        var anomDesc = cfg.anomalies.slice(0, 2).join(' ');
+        var foreDesc = cfg.forecast.map(function(f) {
+          return '<strong>' + f.label + '</strong>: ' + f.val + ' &mdash; ' + f.detail;
+        }).join('<br>');
+        aiGrid.innerHTML =
+          '<div class="kfv-ai-card">'
+            + '<div class="kfv-ai-card-icon" style="background:#EEF2FF;"><svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg></div>'
+            + '<div class="kfv-ai-card-title">Key Finding</div>'
+            + '<p class="kfv-ai-card-desc">' + findDesc + '</p>'
+            + '<span class="kfv-ai-chip" style="background:#D1FAE5;color:#059669;">&#x2191; Positive signal</span>'
+          + '</div>'
+          + '<div class="kfv-ai-card">'
+            + '<div class="kfv-ai-card-icon" style="background:#FFF7ED;"><svg class="w-5 h-5" style="color:#F97316" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg></div>'
+            + '<div class="kfv-ai-card-title">Anomaly Detected</div>'
+            + '<p class="kfv-ai-card-desc">' + anomDesc + '</p>'
+            + '<span class="kfv-ai-chip" style="background:#FFF7ED;color:#D97706;">&#x26A0; Needs attention</span>'
+          + '</div>'
+          + '<div class="kfv-ai-card">'
+            + '<div class="kfv-ai-card-icon" style="background:#F0FDF4;"><svg class="w-5 h-5" style="color:#16A34A" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>'
+            + '<div class="kfv-ai-card-title">Forecast Outlook</div>'
+            + '<p class="kfv-ai-card-desc">' + foreDesc + '</p>'
+            + '<span class="kfv-ai-chip" style="background:#EEF2FF;color:#5B63F6;">&#x2192; Forecast ready</span>'
+          + '</div>';
+      }
+
+      // AI summary callout
+      var summaryBlock = document.getElementById('kfv-summary-block');
+      if (summaryBlock) {
+        summaryBlock.innerHTML = cfg.summary
+          ? '<p>' + cfg.summary + '</p>'
+          : '';
+      }
+
+      // Position overlay to sit beside the sidebar and below the topbar
+      var _sidebar = document.getElementById('sidebar');
+      var _sidebarW = (_sidebar && !_sidebar.classList.contains('collapsed'))
+        ? _sidebar.getBoundingClientRect().width
+        : 0;
+      var _navBar = document.getElementById('nav-bar');
+      var _navH = _navBar ? _navBar.getBoundingClientRect().height : 44;
+      var _overlay = document.getElementById('kpi-fullview-overlay');
+      _overlay.style.left = _sidebarW + 'px';
+      _overlay.style.top  = _navH + 'px';
+
+      // Show overlay
+      _overlay.classList.add('open');
+
+      // Re-fit chart after overlay is visible
+      setTimeout(function() { if (_kfvChart) _kfvChart.resize(); }, 50);
+    }
+
+    function closeKpiFullView() {
+      document.getElementById('kpi-fullview-overlay').classList.remove('open');
+      if (_kfvChart) { _kfvChart.destroy(); _kfvChart = null; }
+      // Collapse AI panel on close
+      document.getElementById('kfv-ai-panel').classList.add('collapsed');
+      _kfvAiOpen = false;
+      // Close code panel if open
+      document.getElementById('code-panel').classList.remove('open');
+      document.getElementById('kfv-code-panel').classList.add('collapsed');
+      var btn = document.getElementById('kfv-askai-btn');
+      if (btn) { btn.style.background=''; btn.style.borderColor=''; btn.style.color=''; btn.style.fontWeight=''; }
+    }
+
+    // ── KFV AI Chat Panel ────────────────────────────────────────────
+    var _kfvAiOpen = false;
+    var _kfvCurrentKpiId = null;
+
+    var _kfvSuggestions = {
+      revenue:         ['What drove the Nov revenue spike?', 'How does Q4 compare to Q3?', 'What\'s the projected run rate for 2025?'],
+      customers:       ['Which channel brought the most customers?', 'Why did March dip?', 'What\'s the forecast for Q1 2025?'],
+      churn:           ['What segments have the highest churn?', 'What reduced churn in H2?', 'How does enterprise churn compare to SMB?'],
+      dealsize:        ['What drove deal size growth?', 'Which region has the largest avg deal?', 'How is deal size trending into 2025?'],
+      cMonthlyRevenue: ['What caused the November peak?', 'How does H2 compare to H1?', 'Is the growth rate accelerating?'],
+      cSalesByRegion:  ['Which region grew fastest?', 'Why is APAC outperforming?', 'How should we allocate budget by region?'],
+      cRevenueByChannel: ['Which channel is most efficient?', 'Is direct sales declining relatively?', 'How is partner channel trending?'],
+      cMarketShare:    ['What drove Product A\'s share gain?', 'Is Product E being phased out?', 'How do we defend our #1 position?'],
+      cRetentionRate:  ['What\'s driving high enterprise retention?', 'How can we improve SMB retention?', 'What\'s at-risk ARR in Q1 2025?'],
+      cNewVsReturning: ['What\'s the returning user growth rate?', 'How do we convert new to returning?', 'Which cohort has the best retention?'],
+      cTopProducts:    ['What makes Product A the top performer?', 'How is Product C growing despite flat share?', 'What products should we invest in?'],
+      cMarketingSpend: ['What\'s the ROI per channel?', 'Is social spend efficient?', 'How should we reallocate budget?'],
+      cCumulativeGrowth: ['What was the inflection point in growth?', 'How does 2024 growth compare to 2023?', 'What\'s the projected 2025 trajectory?']
+    };
+
+    var _kfvMockResponses = {
+      revenue: {
+        default: 'Based on the revenue data, November was the peak month at $350K, driven by a seasonal uplift in enterprise renewals and two large deals closing in the final week. The full-year run rate of $2.8M suggests strong momentum heading into 2025.',
+        q3: 'Q4 revenue was $1.04M vs Q3\'s $908K — a 14.5% quarter-over-quarter improvement. The acceleration was primarily driven by enterprise upsells in October and November.',
+        forecast: 'Given the current run rate of $233K/month and positive deal pipeline, FY2025 revenue is projected at approximately $2.8M–$3.1M, assuming no major seasonal disruptions.'
+      },
+      customers: {
+        default: 'Organic search accounted for 38% of new customer acquisitions in 2024, making it the top channel. Referral grew 41% YoY — the fastest of any channel — indicating strong word-of-mouth momentum.',
+        march: 'The March dip (-6.4% MoM) was directly correlated with a pause in paid-search budget during a campaign review period. Future budget pauses should be monitored closely.',
+        forecast: 'Based on the trailing trend, January 2025 is forecast at approximately 163 new customers. The FY2025 target of 1,450 represents ~13% YoY growth.'
+      },
+      churn: {
+        default: 'Enterprise churn is the lowest segment at 3.2% (-0.8pp YoY), while SMB remains the most at-risk at 14.8%. The overall reduction from 11.1% to 9.0% was driven by improved onboarding flows and proactive customer success outreach launched in Q2.',
+        h2: 'H2 2024 churn averaged 8.4% vs H1\'s 9.6%. The improvement was largely driven by the new onboarding program rolled out in June and the CS team expansion in Q3.',
+        enterprise: 'Enterprise accounts show 3.2% churn — well below the company average. The key drivers are dedicated CSMs, quarterly business reviews, and multi-year contract structures.'
+      },
+      dealsize: {
+        default: 'Average deal size grew 5.2% YoY to $1,870. The growth was primarily driven by enterprise upsells adding an average of $340 per deal, and a strategic shift toward multi-module contracts in H2.',
+        region: 'North America has the largest average deal size at $2,240, followed by Europe at $1,950. APAC\'s lower deal size ($1,420) reflects a higher proportion of SMB customers in that region.',
+        trend: 'Deal size has been growing consistently at ~1.3% per quarter. If this trend holds, expect average deal size to reach approximately $1,970–$2,050 by end of FY2025.'
+      },
+      _default: {
+        default: 'Based on the data visible in this chart, the key trend is positive with notable growth in the most recent periods. The AI analysis suggests the primary driver is a combination of market expansion and improved efficiency metrics. I\'d recommend focusing on the highest-performing segments to sustain this momentum.'
+      }
+    };
+
+    function _kfvGetResponse(kpiId, question) {
+      var q = question.toLowerCase();
+      var bank = _kfvMockResponses[kpiId] || _kfvMockResponses['_default'];
+      if (q.includes('nov') || q.includes('spike') || q.includes('peak')) return bank.default || _kfvMockResponses['_default'].default;
+      if (q.includes('q3') || q.includes('q4') || q.includes('h2') || q.includes('h1') || q.includes('compar')) return bank.q3 || bank.h2 || bank.default || _kfvMockResponses['_default'].default;
+      if (q.includes('forecast') || q.includes('project') || q.includes('2025') || q.includes('trend')) return bank.forecast || bank.trend || bank.default || _kfvMockResponses['_default'].default;
+      if (q.includes('march') || q.includes('dip')) return bank.march || bank.default || _kfvMockResponses['_default'].default;
+      if (q.includes('enterprise')) return bank.enterprise || bank.default || _kfvMockResponses['_default'].default;
+      if (q.includes('region')) return bank.region || bank.default || _kfvMockResponses['_default'].default;
+      return bank.default || _kfvMockResponses['_default'].default;
+    }
+
+    function toggleKfvAiPanel() {
+      var panel = document.getElementById('kfv-ai-panel');
+      var btn   = document.getElementById('kfv-askai-btn');
+      _kfvAiOpen = !_kfvAiOpen;
+      panel.classList.toggle('collapsed', !_kfvAiOpen);
+      // Close code panel if AI is opening
+      if (_kfvAiOpen) {
+        document.getElementById('kfv-code-panel').classList.add('collapsed');
+        btn.style.background = '#EEF2FF'; btn.style.borderColor = '#A5B4FC'; btn.style.color = '#4338CA'; btn.style.fontWeight = '600';
+        setTimeout(function() { document.getElementById('kfv-ai-input').focus(); }, 240);
+      } else {
+        btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = ''; btn.style.fontWeight = '';
+      }
+    }
+
+    function kfvSetSuggestions(kpiId) {
+      var list = document.getElementById('kfv-aip-suggest-list');
+      if (!list) return;
+      var suggs = _kfvSuggestions[kpiId] || _kfvSuggestions['revenue'];
+      list.innerHTML = suggs.map(function(s) {
+        return '<button class="kfv-suggest-btn" onclick="kfvSendSuggestion(\'' + s.replace(/'/g, "\\'") + '\')">'
+          + '<svg class="w-3 h-3 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>'
+          + s + '</button>';
+      }).join('');
+    }
+
+    function kfvAddUserMsg(text) {
+      var msgs = document.getElementById('kfv-aip-messages');
+      var welcome = document.getElementById('kfv-aip-welcome');
+      var suggs   = document.getElementById('kfv-aip-suggestions');
+      welcome.style.display = 'none';
+      msgs.style.display = 'block';
+      if (suggs) suggs.style.display = 'none';
+      msgs.innerHTML += '<div class="kfv-msg-user"><div class="kfv-bubble">' + text.replace(/</g,'&lt;') + '</div></div>';
+      var scroll = document.getElementById('kfv-aip-scroll');
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+
+    function kfvAddAiMsg(text) {
+      var msgs = document.getElementById('kfv-aip-messages');
+      msgs.innerHTML += '<div class="kfv-msg-ai">'
+        + '<div class="kfv-msg-ai-av"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg></div>'
+        + '<div class="kfv-bubble">' + text + '</div>'
+        + '</div>';
+      var scroll = document.getElementById('kfv-aip-scroll');
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+
+    function kfvAddTyping() {
+      var msgs = document.getElementById('kfv-aip-messages');
+      msgs.innerHTML += '<div class="kfv-msg-ai" id="kfv-typing">'
+        + '<div class="kfv-msg-ai-av"><svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg></div>'
+        + '<div class="kfv-bubble" style="color:#9CA3AF;font-style:italic">Thinking…</div>'
+        + '</div>';
+      var scroll = document.getElementById('kfv-aip-scroll');
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+
+    function kfvDispatch(text) {
+      kfvAddUserMsg(text);
+      kfvAddTyping();
+      var kpiId = _kfvCurrentKpiId || 'revenue';
+      setTimeout(function() {
+        var typing = document.getElementById('kfv-typing');
+        if (typing) typing.remove();
+        kfvAddAiMsg(_kfvGetResponse(kpiId, text));
+      }, 900);
+    }
+
+    function kfvSendSuggestion(text) { kfvDispatch(text); }
+
+    function kfvSendMessage() {
+      var el = document.getElementById('kfv-ai-input');
+      var text = (el.innerText || '').trim();
+      if (!text) return;
+      el.innerText = '';
+      kfvDispatch(text);
+    }
+
+    function kfvHandleInputKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); kfvSendMessage(); }
+    }
+    // ── End KFV AI Chat Panel ─────────────────────────────────────────
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeKpiFullView();
+    });
+
+    // -- 1. Monthly Revenue &mdash; Line --
     new Chart(document.getElementById('chartLine'), {
       type: 'line',
       data: {
@@ -1187,7 +2483,7 @@
       }
     });
 
-    // ── 2. Sales by Region — Bar ──
+    // -- 2. Sales by Region &mdash; Bar --
     new Chart(document.getElementById('chartBar'), {
       type: 'bar',
       data: {
@@ -1209,7 +2505,7 @@
       }
     });
 
-    // ── 3. Market Share — Pie ──
+    // -- 3. Market Share &mdash; Pie --
     new Chart(document.getElementById('chartPie'), {
       type: 'pie',
       data: {
@@ -1231,7 +2527,7 @@
       }
     });
 
-    // ── 4. Marketing Spend — Scatter ──
+    // -- 4. Marketing Spend &mdash; Scatter --
     new Chart(document.getElementById('chartScatter'), {
       type: 'scatter',
       data: {
@@ -1256,7 +2552,7 @@
       }
     });
 
-    // ── 5. Revenue by Channel — Stacked Bar ──
+    // -- 5. Revenue by Channel &mdash; Stacked Bar --
     new Chart(document.getElementById('chartStacked'), {
       type: 'bar',
       data: {
@@ -1280,7 +2576,7 @@
       }
     });
 
-    // ── 6. Cumulative Growth — Area ──
+    // -- 6. Cumulative Growth &mdash; Area --
     new Chart(document.getElementById('chartArea'), {
       type: 'line',
       data: {
@@ -1305,7 +2601,7 @@
       }
     });
 
-    // ── 7. Customer Retention — Doughnut ──
+    // -- 7. Customer Retention &mdash; Doughnut --
     new Chart(document.getElementById('chartDoughnut'), {
       type: 'doughnut',
       data: {
@@ -1328,7 +2624,7 @@
       }
     });
 
-    // ── 8. Top Products — Horizontal Bar ──
+    // -- 8. Top Products &mdash; Horizontal Bar --
     new Chart(document.getElementById('chartHBar'), {
       type: 'bar',
       data: {
@@ -1351,7 +2647,7 @@
       }
     });
 
-    // ── 9. New vs Returning — Multi-line ──
+    // -- 9. New vs Returning &mdash; Multi-line --
     new Chart(document.getElementById('chartMultiLine'), {
       type: 'line',
       data: {
@@ -1386,10 +2682,10 @@
 
   </script>
 
-  <!-- ── Workspace switcher modal ── -->
-  <!-- ═══════════════════════════════════════════
+  <!-- -- Workspace switcher modal -- -->
+  <!-- -------------------------------------------
        WORKSPACE SWITCHER MODAL
-  ════════════════════════════════════════════ -->
+  -------------------------------------------- -->
   <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
     <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
@@ -1405,7 +2701,7 @@
       <div class="px-4 pt-3 pb-2 flex-shrink-0">
         <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
           <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
-          <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
+          <input id="ws-search" type="text" placeholder="Search workspaces&mdash;" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
         </div>
       </div>
       <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
@@ -1414,7 +2710,7 @@
     </div>
   </div>
 
-  <!-- ── New workspace modal ── -->
+  <!-- -- New workspace modal -- -->
   <div id="new-ws-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background:#F3F4F6">
     <!-- Topbar -->
     <div class="flex items-center justify-between px-6 h-11 bg-white border-b border-gray-100 flex-shrink-0">
@@ -1473,6 +2769,311 @@
       </div>
     </div>
   </div>
+
+  <!-- ------------------- KPI FULL VIEW OVERLAY ------------------- -->
+  <div id="kpi-fullview-overlay">
+
+    <!-- Main column: toolbar + scrollable body -->
+    <div class="kfv-main">
+
+    <!-- Secondary toolbar -->
+    <div class="kfv-toolbar">
+      <div class="kfv-toolbar-left">
+        <button onclick="closeKpiFullView()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors flex-shrink-0">
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+        </button>
+      </div>
+      <div class="kfv-toolbar-right">
+        <!-- Ask AI button -->
+        <button id="kfv-askai-btn" onclick="toggleKfvAiPanel()" class="kfv-action-btn">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          Ask AI
+        </button>
+        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+        <button onclick="downloadCard(_kfvCurrentKpiId)" class="kfv-action-btn" title="Export">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          Export
+        </button>
+        <button onclick="openCodeSidebar(_kfvCurrentKpiId)" class="kfv-action-btn" title="View Query">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          Code
+        </button>
+        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+        <button onclick="openShareModal()" class="kfv-action-btn">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          Share
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Scrollable body -->
+    <div class="kfv-body">
+
+      <!-- Chart section -->
+      <div class="kfv-chart-section">
+        <div class="kfv-chart-meta">
+          <div>
+            <h2 id="kfv-chart-title" class="kfv-chart-title"></h2>
+            <p id="kfv-chart-subtitle" class="kfv-chart-subtitle"></p>
+          </div>
+          <div class="flex items-center gap-3 flex-shrink-0 mt-1">
+            <span id="kfv-badge" class="text-[11.5px] font-semibold px-2.5 py-0.5 rounded-full"></span>
+          </div>
+        </div>
+        <div class="kfv-chart-canvas-wrap">
+          <canvas id="kfv-chart" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+        </div>
+      </div>
+
+      <!-- AI Insights section -->
+      <div class="kfv-ai-section">
+        <div class="kfv-ai-section-header">
+          <div class="kfv-ai-title-group">
+            <div class="kfv-ai-title">
+              <svg class="w-4 h-4" style="color:#5B63F6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+              AI Analysis
+            </div>
+            <p id="kfv-ai-subtitle" class="kfv-ai-subtitle"></p>
+          </div>
+          <div class="kfv-powered">
+            <svg class="w-3.5 h-3.5" style="color:#9CA3AF" fill="currentColor" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+            Powered by Aibii AI
+          </div>
+        </div>
+        <div class="kfv-ai-cards" id="kfv-ai-cards-grid"></div>
+      </div>
+
+      <!-- AI Summary callout -->
+      <div class="kfv-summary-section" id="kfv-summary-block"></div>
+
+    </div><!-- end kfv-body -->
+
+    </div><!-- end kfv-main -->
+
+    <!-- ── Code Query Panel (inline, inside full view) ── -->
+    <div id="kfv-code-panel" class="collapsed">
+      <div class="kfv-aip-header">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          </div>
+          <span class="text-[13px] font-semibold text-gray-900">Query</span>
+        </div>
+        <button onclick="closeCodeSidebar()" class="w-6 h-6 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-4 py-3 border-b border-gray-100 flex-shrink-0">
+        <p id="kfv-code-panel-title" class="text-[13px] font-semibold text-gray-900"></p>
+        <div class="flex items-center gap-2 mt-1.5">
+          <span class="text-[11px] text-gray-400">Datasource</span>
+          <span class="text-[11px] font-medium px-2 h-5 rounded-full inline-flex items-center gap-1" style="background:#F0FDF4;color:#16A34A;">
+            <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:#16A34A"></span>sales_db
+          </span>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto px-4 py-4">
+        <div class="rounded-xl overflow-hidden border border-gray-200" style="background:#F8F9FC">
+          <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200" style="background:#F1F3F8">
+            <span class="text-[11px] font-medium text-gray-500">SQL &mdash; PostgreSQL</span>
+            <button onclick="copyKfvQuery()" id="kfv-code-copy-btn" class="flex items-center gap-1.5 text-[11px] font-medium px-2.5 h-6 rounded-lg border border-gray-200 bg-white text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre id="kfv-code-panel-sql" class="px-4 py-4 text-[12px] leading-6 overflow-x-auto" style="color:#374151;font-family:'JetBrains Mono','Fira Code','Courier New',monospace;margin:0;white-space:pre;"></pre>
+        </div>
+      </div>
+    </div><!-- end kfv-code-panel -->
+
+    <!-- ── AI Chat Panel ── -->
+    <div id="kfv-ai-panel" class="collapsed">
+
+      <!-- Panel header -->
+      <div class="kfv-aip-header">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#EEF2FF">
+            <svg class="w-3.5 h-3.5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <span class="text-[13px] font-semibold text-gray-800">AiBii AI</span>
+        </div>
+        <button onclick="toggleKfvAiPanel()" class="w-6 h-6 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Scrollable messages -->
+      <div id="kfv-aip-scroll" class="kfv-aip-scroll">
+
+        <!-- Welcome state -->
+        <div id="kfv-aip-welcome" class="kfv-aip-welcome">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-3" style="background:#EEF2FF">
+            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <p class="text-[14px] font-bold text-gray-900 leading-snug">I'm AiBii AI.</p>
+          <p class="text-[14px] font-bold text-gray-900 leading-snug">Ask me anything.</p>
+          <p class="text-[12px] text-gray-400 mt-1.5">Or try the suggested questions below.</p>
+        </div>
+
+        <!-- Messages -->
+        <div id="kfv-aip-messages" class="kfv-aip-messages"></div>
+
+      </div>
+
+      <!-- Suggested questions -->
+      <div id="kfv-aip-suggestions" class="kfv-aip-suggestions">
+        <p class="text-[10.5px] font-medium text-gray-400 uppercase tracking-widest mb-2 px-1">Suggested</p>
+        <div id="kfv-aip-suggest-list" class="space-y-1.5"></div>
+      </div>
+
+      <!-- Input -->
+      <div class="kfv-aip-input-wrap">
+        <div class="kfv-aip-input-box">
+          <div
+            id="kfv-ai-input"
+            contenteditable="true"
+            data-placeholder="Ask about this chart…"
+            onkeydown="kfvHandleInputKey(event)"
+          ></div>
+          <div class="kfv-aip-input-footer">
+            <button onclick="kfvSendMessage()" class="w-7 h-7 flex items-center justify-center rounded-lg text-white" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end kfv-ai-panel -->
+
+  </div><!-- end kpi fullview overlay -->
+
+  <!-- Share Modal -->
+  <div id="share-modal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center" style="background:rgba(0,0,0,0.35)" onclick="if(event.target===this)closeShareModal()">
+    <div class="bg-white rounded-2xl w-full max-w-md mx-4" style="box-shadow:0 20px 60px rgba(0,0,0,0.18)">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:#EEF2FF">
+            <svg class="w-4 h-4" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-semibold text-gray-900">Share</p>
+            <p class="text-[11px] text-gray-400">Invite someone to view this report</p>
+          </div>
+        </div>
+        <button onclick="closeShareModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">Email address <span style="color:#EF4444">*</span></label>
+          <input id="share-email" type="email" placeholder="colleague@company.com" class="w-full h-10 px-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder-gray-400 outline-none transition-all" onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.12)'" onblur="this.style.borderColor='';this.style.boxShadow=''" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">Comment <span class="text-gray-400 font-normal">(optional)</span></label>
+          <textarea id="share-comment" rows="3" placeholder="Add a message..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder-gray-400 outline-none resize-none transition-all" onfocus="this.style.borderColor='#5B63F6';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.12)'" onblur="this.style.borderColor='';this.style.boxShadow=''"></textarea>
+        </div>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center justify-end gap-2.5 px-6 pb-5">
+        <button onclick="closeShareModal()" class="px-4 h-9 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="closeShareModal()" class="px-5 h-9 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 transition-colors" style="background:#5B63F6">Send invite</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Code Query Sidebar ────────────────────────────────────────────────────
+    var _chartTitlesMap = {
+      revenue:'Total Revenue', customers:'New Customers', churn:'Churn Rate', dealsize:'Avg Deal Size',
+      cMonthlyRevenue:'Monthly Revenue', cSalesByRegion:'Sales by Region',
+      cRevenueByChannel:'Revenue by Channel', cMarketShare:'Market Share',
+      cRetentionRate:'Retention Rate', cNewVsReturning:'New vs Returning Customers',
+      cTopProducts:'Top Products', cMarketingSpend:'Marketing Spend',
+      cCumulativeGrowth:'Cumulative Revenue Growth'
+    };
+    var _chartQueries = {
+      revenue: "SELECT\n  DATE_TRUNC('month', order_date)   AS month,\n  SUM(amount_usd) / 1000.0         AS revenue_k\nFROM sales.orders\nWHERE order_date BETWEEN '2024-01-01'\n                 AND '2024-12-31'\n  AND status = 'completed'\nGROUP BY 1\nORDER BY 1;",
+      customers: "SELECT\n  DATE_TRUNC('month', created_at)   AS month,\n  COUNT(DISTINCT customer_id)      AS new_customers\nFROM crm.customers\nWHERE created_at BETWEEN '2024-01-01'\n               AND '2024-12-31'\n  AND is_new_customer = TRUE\nGROUP BY 1\nORDER BY 1;",
+      churn: "SELECT\n  DATE_TRUNC('month', churned_at)   AS month,\n  COUNT(customer_id)               AS churned_count,\n  ROUND(COUNT(customer_id) * 100.0\n    / SUM(COUNT(customer_id)) OVER (), 2) AS churn_pct\nFROM crm.customers\nWHERE churned_at BETWEEN '2024-01-01'\n                 AND '2024-12-31'\nGROUP BY 1\nORDER BY 1;",
+      dealsize: "SELECT\n  DATE_TRUNC('month', close_date)   AS month,\n  AVG(deal_value_usd)              AS avg_deal_size\nFROM sales.deals\nWHERE close_date BETWEEN '2024-01-01'\n                 AND '2024-12-31'\n  AND stage = 'closed_won'\nGROUP BY 1\nORDER BY 1;",
+      cMonthlyRevenue: "SELECT\n  DATE_TRUNC('month', order_date)   AS month,\n  SUM(amount_usd) / 1000.0         AS revenue_k\nFROM sales.orders\nWHERE order_date BETWEEN '2024-01-01'\n                 AND '2024-12-31'\n  AND status = 'completed'\nGROUP BY 1\nORDER BY 1;",
+      cSalesByRegion: "SELECT\n  region,\n  SUM(amount_usd) / 1000.0         AS revenue_k\nFROM sales.orders o\nJOIN crm.accounts a ON a.id = o.account_id\nWHERE o.order_date BETWEEN '2024-01-01'\n                   AND '2024-12-31'\n  AND o.status = 'completed'\nGROUP BY 1\nORDER BY 2 DESC;",
+      cRevenueByChannel: "SELECT\n  DATE_TRUNC('quarter', order_date) AS quarter,\n  channel,\n  SUM(amount_usd) / 1000.0          AS revenue_k\nFROM sales.orders\nWHERE order_date BETWEEN '2024-01-01'\n                 AND '2024-12-31'\n  AND status = 'completed'\nGROUP BY 1, 2\nORDER BY 1, 2;",
+      cMarketShare: "SELECT\n  product_line,\n  SUM(revenue_usd) / 1000.0         AS revenue_k,\n  ROUND(SUM(revenue_usd) * 100.0\n    / SUM(SUM(revenue_usd)) OVER (), 1) AS share_pct\nFROM sales.product_revenue\nWHERE fiscal_year = 2024\nGROUP BY 1\nORDER BY 3 DESC;",
+      cRetentionRate: "SELECT\n  segment,\n  COUNT(CASE WHEN retained THEN 1 END)  AS retained,\n  COUNT(*)                              AS total,\n  ROUND(COUNT(CASE WHEN retained THEN 1 END)\n    * 100.0 / COUNT(*), 1)              AS retention_pct\nFROM crm.customer_cohorts\nWHERE cohort_quarter = '2024-Q4'\nGROUP BY 1\nORDER BY 3 DESC;",
+      cNewVsReturning: "SELECT\n  DATE_TRUNC('month', session_date)  AS month,\n  customer_type,\n  COUNT(DISTINCT customer_id)        AS customers\nFROM analytics.sessions\nWHERE session_date BETWEEN '2024-01-01'\n                   AND '2024-12-31'\nGROUP BY 1, 2\nORDER BY 1, 2;",
+      cTopProducts: "SELECT\n  p.product_name,\n  SUM(li.revenue_usd) / 1000.0      AS revenue_k\nFROM sales.line_items li\nJOIN products.catalog p ON p.id = li.product_id\nWHERE li.order_date BETWEEN '2024-01-01'\n                    AND '2024-12-31'\nGROUP BY 1\nORDER BY 2 DESC\nLIMIT 5;",
+      cMarketingSpend: "SELECT\n  channel,\n  SUM(spend_usd) / 1000.0           AS spend_k,\n  SUM(attributed_revenue_usd)\n    / NULLIF(SUM(spend_usd), 0)     AS roas\nFROM marketing.spend\nWHERE spend_date BETWEEN '2024-01-01'\n                 AND '2024-12-31'\nGROUP BY 1\nORDER BY 2 DESC;",
+      cCumulativeGrowth: "SELECT\n  DATE_TRUNC('month', order_date)     AS month,\n  SUM(SUM(amount_usd / 1000.0))\n    OVER (ORDER BY DATE_TRUNC('month', order_date)\n          ROWS UNBOUNDED PRECEDING)  AS cumulative_revenue_k\nFROM sales.orders\nWHERE order_date BETWEEN '2024-01-01'\n                 AND '2024-12-31'\n  AND status = 'completed'\nGROUP BY 1\nORDER BY 1;"
+    };
+
+    function openCodeSidebar(chartId) {
+      var isFullView = document.getElementById('kpi-fullview-overlay').classList.contains('open');
+      if (isFullView) {
+        document.getElementById('kfv-code-panel-title').textContent = _chartTitlesMap[chartId] || chartId;
+        document.getElementById('kfv-code-panel-sql').textContent = _chartQueries[chartId] || '-- No query available for this chart.';
+        // Close AI panel if open
+        if (_kfvAiOpen) {
+          _kfvAiOpen = false;
+          document.getElementById('kfv-ai-panel').classList.add('collapsed');
+          var _aiBtn = document.getElementById('kfv-askai-btn');
+          if (_aiBtn) { _aiBtn.style.background=''; _aiBtn.style.borderColor=''; _aiBtn.style.color=''; _aiBtn.style.fontWeight=''; }
+        }
+        document.getElementById('kfv-code-panel').classList.remove('collapsed');
+      } else {
+        document.getElementById('code-panel-title').textContent = _chartTitlesMap[chartId] || chartId;
+        document.getElementById('code-panel-sql').textContent = _chartQueries[chartId] || '-- No query available for this chart.';
+        document.getElementById('code-panel').classList.add('open');
+      }
+    }
+    function closeCodeSidebar() {
+      document.getElementById('code-panel').classList.remove('open');
+      document.getElementById('kfv-code-panel').classList.add('collapsed');
+    }
+    function copyQuery() {
+      var sql = document.getElementById('code-panel-sql').textContent;
+      var btn = document.getElementById('code-copy-btn');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(sql).then(function() {
+          btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Copied!';
+          setTimeout(function() {
+            btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg> Copy';
+          }, 2000);
+        });
+      }
+    }
+    function copyKfvQuery() {
+      var sql = document.getElementById('kfv-code-panel-sql').textContent;
+      var btn = document.getElementById('kfv-code-copy-btn');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(sql).then(function() {
+          btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Copied!';
+          setTimeout(function() {
+            btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg> Copy';
+          }, 2000);
+        });
+      }
+    }
+    function downloadCard(chartId) { /* export hook for future implementation */ }
+    // ── End Code Query Sidebar ───────────────────────────────────────────────
+
+    function openShareModal() {
+      document.getElementById('share-modal').classList.remove('hidden');
+      document.getElementById('share-email').focus();
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.add('hidden');
+      document.getElementById('share-email').value = '';
+      document.getElementById('share-comment').value = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeShareModal();
+    });
+  </script>
 
 </body>
 </html>

@@ -96,6 +96,17 @@
     .toggle-btn.toggle-active { background: #EEF2FF; box-shadow: 0 1px 3px rgba(91,99,246,0.15), 0 1px 2px rgba(91,99,246,0.08); color: #5B63F6; }
     .toggle-btn:hover:not(.toggle-active) { background-color: rgba(0,0,0,0.05); color: #6B7280; }
 
+    /* Workspace switcher modal cards */
+    .ws-grid-card { transition: all 150ms ease-out; background: #fff; }
+    .ws-grid-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06) !important; transform: translateY(-2px); }
+    .ws-list-card { transition: all 150ms ease-out; }
+    .ws-list-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06) !important; transform: translateY(-1px); }
+    @keyframes wsModalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(14px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+    #ws-modal-backdrop.open #ws-modal { animation: wsModalIn 240ms cubic-bezier(0.34,1.2,0.64,1) both; }
+
     /* Type dropdown */
     .type-dropdown { display: none; }
     .type-dropdown.open { display: block; }
@@ -402,10 +413,7 @@
           </div>
         </div>
 
-        <a href="#" onclick="event.preventDefault();openNewProjectModal()" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
-          <span class="text-gray-400 font-medium text-base leading-none">+</span>
-          Create a project
-        </a>
+
       </div>
     </div>
 
@@ -458,30 +466,57 @@
   <!-- ═══════════════════════════════════════════
        WORKSPACE SWITCHER MODAL
   ════════════════════════════════════════════ -->
-  <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.45);backdrop-filter:blur(2px)" onclick="closeWsModal(event)">
-    <div id="ws-modal" class="bg-white rounded-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col" style="max-height:620px;box-shadow:0 20px 60px rgba(0,0,0,0.18)" onclick="event.stopPropagation()">
+  <div id="ws-modal-backdrop" class="fixed inset-0 z-50 items-center justify-center" style="background:rgba(17,24,39,0.46);backdrop-filter:blur(3px)" onclick="closeWsModal(event)">
+    <div id="ws-modal" class="bg-white rounded-2xl overflow-hidden flex flex-col" style="width:860px;height:580px;box-shadow:0 28px 72px rgba(0,0,0,0.22),0 4px 18px rgba(0,0,0,0.08)" onclick="event.stopPropagation()">
+
       <!-- Modal header -->
-      <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
         <div>
-          <h2 class="text-[15px] font-semibold text-gray-900">Switch Workspace</h2>
-          <p class="text-[12px] text-gray-400 mt-0.5">Select a workspace to switch to</p>
+          <h2 class="text-[16px] font-bold text-gray-900">Switch Workspace</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Choose a workspace to continue working in</p>
         </div>
-        <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-medium text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-          New Workspace
-        </button>
+        <div class="flex items-center gap-2.5">
+          <!-- Grid / List toggle -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background:#F1F3F4;border:1px solid rgba(0,0,0,0.06)">
+            <button id="ws-view-list" onclick="setWsView('list')" title="List view"
+              class="toggle-btn flex items-center justify-center w-8 h-8 rounded-md">
+              <svg class="w-[15px] h-[15px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+            </button>
+            <button id="ws-view-grid" onclick="setWsView('grid')" title="Grid view"
+              class="toggle-btn toggle-active flex items-center justify-center w-8 h-8 rounded-md">
+              <svg class="w-[15px] h-[15px]" fill="currentColor" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/>
+                <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/>
+                <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/>
+                <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>
+              </svg>
+            </button>
+          </div>
+          <!-- New workspace -->
+          <button onclick="openNewWsModal()" class="flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-[12px] font-semibold text-white transition-colors flex-shrink-0" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            New Workspace
+          </button>
+          <!-- Close -->
+          <button onclick="closeWsModal()" class="w-9 h-9 rounded-lg ml-2 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
       </div>
+
       <!-- Search -->
-      <div class="px-4 pt-3 pb-2 flex-shrink-0">
-        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200">
+      <div class="px-6 pt-4 pb-3 flex-shrink-0">
+        <div class="flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-50 border border-gray-200 focus-within:border-indigo-400 focus-within:bg-white transition-colors">
           <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/></svg>
           <input id="ws-search" type="text" placeholder="Search workspaces…" oninput="filterWsList()" class="flex-1 text-[13px] text-gray-700 bg-transparent outline-none placeholder-gray-400">
         </div>
       </div>
-      <!-- Workspace list -->
-      <div class="flex-1 px-3 pb-3" style="overflow-y:auto;max-height:none">
-        <div id="ws-modal-list" class="space-y-0.5"></div>
+
+      <!-- Workspace content -->
+      <div class="flex-1 overflow-y-auto px-6 pb-6">
+        <div id="ws-modal-list"></div>
       </div>
+
     </div>
   </div>
 
@@ -500,18 +535,18 @@
 
     <!-- Body -->
     <div class="flex-1 flex items-center justify-center overflow-y-auto py-8">
-      <div class="bg-white rounded-lg w-full max-w-lg mx-4 px-7 py-8" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
+      <div class="bg-white rounded-xl w-full max-w-[620px] mx-4 px-9 py-9" style="box-shadow:0 1px 4px rgba(0,0,0,0.07)">
 
         <!-- Header -->
-        <div class="mb-6">
-          <h2 class="text-[17px] font-bold text-gray-900">New workspace</h2>
-          <p class="text-[12px] text-gray-400 mt-1">A shared space for your team's work.</p>
+        <div class="mb-7">
+          <h2 class="text-[18px] font-bold text-gray-900">New workspace</h2>
+          <p class="text-[13px] text-gray-400 mt-1">A shared space for your team's work.</p>
         </div>
 
         <!-- Avatar + name row -->
-        <div class="flex items-center gap-3 mb-5">
+        <div class="flex items-center gap-3.5 mb-6">
           <div id="ws-preview-avatar"
-            class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all"
+            class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 cursor-pointer select-none transition-all"
             style="background:#5B63F6"
             onclick="cycleWsColor()" title="Click to change color">A
           </div>
@@ -522,29 +557,29 @@
         </div>
 
         <!-- Fields -->
-        <div class="space-y-3">
+        <div class="space-y-4">
           <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1">Name <span class="text-red-400">*</span></label>
+            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Name <span class="text-red-400">*</span></label>
             <input id="new-ws-name" type="text" placeholder="e.g. Design Team" autocomplete="off" maxlength="48"
-              class="w-full h-9 px-3 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400"
+              class="w-full h-10 px-3.5 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition placeholder-gray-400"
               oninput="onWsNameInput(this.value)"
               onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
               onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"
               onkeydown="if(event.key==='Enter')createNewWs()">
           </div>
           <div>
-            <label class="block text-[12px] font-medium text-gray-600 mb-1">Description <span class="text-gray-400 font-normal">optional</span></label>
-            <textarea id="new-ws-desc" rows="2" placeholder="What is this workspace for?"
-              class="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400"
+            <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Description <span class="text-gray-400 font-normal">optional</span></label>
+            <textarea id="new-ws-desc" rows="3" placeholder="What is this workspace for?"
+              class="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none transition resize-none placeholder-gray-400"
               onfocus="this.style.borderColor='#5B63F6';this.style.background='#fff';this.style.boxShadow='0 0 0 3px rgba(91,99,246,0.10)'"
               onblur="this.style.borderColor='';this.style.background='';this.style.boxShadow=''"></textarea>
           </div>
         </div>
 
         <!-- Actions -->
-        <div class="flex gap-2 mt-5">
-          <button onclick="closeNewWsModal()" class="flex-1 h-9 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
-          <button onclick="createNewWs()" class="flex-1 h-9 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
+        <div class="flex gap-2.5 mt-6">
+          <button onclick="closeNewWsModal()" class="flex-1 h-10 rounded-lg text-[13px] font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="createNewWs()" class="flex-1 h-10 rounded-lg text-[13px] font-semibold text-white transition-colors" style="background:#5B63F6" onmouseover="this.style.background='#4850e4'" onmouseout="this.style.background='#5B63F6'">Create</button>
         </div>
 
       </div>
@@ -674,6 +709,16 @@
       <!-- Action cards row -->
       <div class="grid grid-cols-4 gap-4 mb-7">
 
+        <button onclick="openNewProjectModal()" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
+            <svg class="w-5 h-5" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v8.25A2.25 2.25 0 004.5 16.5h15A2.25 2.25 0 0021.75 14.25V7.5a2.25 2.25 0 00-2.25-2.25H13.5"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">New Project</p>
+            <p class="text-[13px] text-gray-500">Create a space to organise your work</p>
+          </div>
+        </button>
+
         <!-- Card: New Dashboard -->
         <button onclick="openCreateModal('New Dashboard')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(91,99,246,0.08)">
@@ -684,6 +729,9 @@
             <p class="text-[13px] text-gray-500">Charts, KPIs &amp; visual reports</p>
           </div>
         </button>
+
+      
+        
 
         <!-- Card: New Document -->
         <button onclick="openCreateModal('New Document')" class="action-card flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl shadow-card text-left">
@@ -1480,45 +1528,92 @@
     });
 
     // ── Workspace switcher ──────────────────────────────────────────
+    var wsModalView = 'grid';
+
     var wsData = [
-      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', current:true },
-      { id:'ws-scg',   name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', current:false },
-      { id:'ws-design', name:'Design System',           initial:'D', color:'#16A34A', current:false },
-      { id:'ws-data',   name:'Data Analytics',          initial:'A', color:'#F97316', current:false },
-      { id:'ws-prod',   name:'Product Research',        initial:'P', color:'#8B5CF6', current:false },
-      { id:'ws-mkt',    name:'Marketing Hub',           initial:'H', color:'#EC4899', current:false }
+      { id:'ws-manish', name:"Manish kumar's Workspace", initial:'M', color:'#3B5BDB', desc:'Personal workspace for private projects, daily work and experiments', current:true },
+      { id:'ws-scg',    name:'Sovereign Capital Gate',   initial:'S', color:'#5B63F6', desc:'Investment research, deal flow tracking and capital analysis', current:false },
+      { id:'ws-mkt',    name:'Marketing Analytics',      initial:'M', color:'#EC4899', desc:'Campaign performance, SEO strategy and brand guidelines', current:false },
+      { id:'ws-prod',   name:'Product Roadmap Q3',       initial:'P', color:'#8B5CF6', desc:'Feature backlog, design reviews and OKR tracking for Q3', current:false },
+      { id:'ws-hr',     name:'HR & People Ops',          initial:'H', color:'#0EA5E9', desc:'Onboarding forms, hiring pipeline and policy documentation', current:false },
+      { id:'ws-eng',    name:'Engineering Sprint',       initial:'E', color:'#16A34A', desc:'Velocity dashboards, bug triage and technical specifications', current:false },
+      { id:'ws-cs',     name:'Customer Success',         initial:'C', color:'#F97316', desc:'Churn analysis, support escalation and NPS surveys', current:false }
     ];
     // Merge any workspaces created on the create-workspace page
     try {
       var _saved = JSON.parse(localStorage.getItem('aibii_workspaces') || '[]');
       _saved.forEach(function(ws) {
         if (!wsData.find(function(w) { return w.id === ws.id; })) {
-          wsData.push({ id: ws.id, name: ws.name, initial: ws.initial, color: ws.color, current: false });
+          wsData.push({ id: ws.id, name: ws.name, initial: ws.initial || ws.name[0].toUpperCase(), color: ws.color, desc: ws.desc || '', current: false });
         }
       });
     } catch(e) {}
+
+    function _hexToRgba(hex, a) {
+      var r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      return 'rgba('+r+','+g+','+b+','+a+')';
+    }
+
+    function setWsView(v) {
+      wsModalView = v;
+      var gb = document.getElementById('ws-view-grid'), lb = document.getElementById('ws-view-list');
+      if (gb) gb.classList.toggle('toggle-active', v === 'grid');
+      if (lb) lb.classList.toggle('toggle-active', v === 'list');
+      renderWsModalList(document.getElementById('ws-search') ? document.getElementById('ws-search').value : '');
+    }
     function renderWsModalList(filter) {
       var list = document.getElementById('ws-modal-list');
       if (!list) return;
       var q = (filter || '').toLowerCase();
-      var items = wsData.filter(function(ws) { return !q || ws.name.toLowerCase().includes(q); });
-      // vertical scroll container: show 5 rows, scroll beyond that
-      var container = list.parentElement;
-      var ROW_H = 44; var SHOWN = 5;
-      container.style.maxHeight = (items.length > SHOWN ? ROW_H * SHOWN + 12 : '') + 'px';
-      container.style.overflowY = items.length > SHOWN ? 'auto' : 'visible';
+      var items = wsData.filter(function(ws) {
+        return !q || ws.name.toLowerCase().includes(q) || (ws.desc && ws.desc.toLowerCase().includes(q));
+      });
       if (!items.length) {
-        list.innerHTML = '<p class="text-[13px] text-gray-400 text-center py-6">No workspaces found</p>';
+        list.className = '';
+        list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;text-align:center;padding:48px 0">No workspaces found</p>';
         return;
       }
-      list.innerHTML = items.map(function(ws) {
-        var isCurrent = ws.current;
-        return '<button onclick="selectWorkspace(\'' + ws.id + '\')" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl text-left transition-colors ' + (isCurrent ? 'bg-indigo-50' : 'hover:bg-gray-50') + '">'
-          + '<span class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0" style="background:' + ws.color + '">' + ws.initial + '</span>'
-          + '<span class="flex-1 text-[13px] ' + (isCurrent ? 'font-semibold text-gray-900' : 'font-medium text-gray-700') + ' truncate">' + ws.name + '</span>'
-          + (isCurrent ? '<svg class="w-4 h-4 flex-shrink-0" style="color:#5B63F6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '')
-          + '</button>';
-      }).join('');
+      if (wsModalView === 'grid') {
+        list.className = 'grid grid-cols-3 gap-3';
+        list.innerHTML = items.map(function(ws) {
+          var ic = ws.current;
+          var tb = _hexToRgba(ws.color, 0.07);
+          var sh = ic ? '0 0 0 2px '+_hexToRgba(ws.color,0.22)+',0 1px 3px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.06)';
+          var bc = ic ? _hexToRgba(ws.color,0.50) : '#E5E7EB';
+          return '<div onclick="selectWorkspace(\''+ws.id+'\')" class="ws-grid-card rounded-xl overflow-hidden cursor-pointer" style="position:relative;border:1px solid '+bc+';box-shadow:'+sh+'">'
+            +'<div style="height:108px;background:'+tb+';display:flex;align-items:center;justify-content:center">'
+            +'<div style="width:48px;height:48px;border-radius:14px;background:'+ws.color+';display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700">'+ws.initial+'</div>'
+            +(ic ? '<span style="position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:9999px;font-size:10px;font-weight:700;background:#fff;color:'+ws.color+';box-shadow:0 1px 4px rgba(0,0,0,0.12)">'
+              +'<svg style="width:9px;height:9px" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>'
+              +'Current</span>' : '')
+            +'</div>'
+            +'<div style="padding:10px 12px 13px;background:#fff">'
+            +'<p style="font-size:13px;font-weight:700;color:#111827;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-bottom:4px">'+ws.name+'</p>'
+            +'<p style="font-size:11px;color:#9CA3AF;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+( ws.desc || 'No description')+'</p>'
+            +'</div>'
+            +'</div>';
+        }).join('');
+      } else {
+        list.className = 'grid grid-cols-2 gap-3';
+        list.innerHTML = items.map(function(ws) {
+          var ic = ws.current;
+          var cbg = ic ? _hexToRgba(ws.color,0.04) : '#fff';
+          var bc  = ic ? _hexToRgba(ws.color,0.45) : '#E5E7EB';
+          var sh  = ic ? '0 0 0 2px '+_hexToRgba(ws.color,0.16) : '0 1px 3px rgba(0,0,0,0.05)';
+          return '<div onclick="selectWorkspace(\''+ws.id+'\')" class="ws-list-card flex items-center gap-4 cursor-pointer" style="padding:18px 20px;border-radius:14px;border:1px solid '+bc+';background:'+cbg+';box-shadow:'+sh+'">'
+            +'<div style="width:52px;height:52px;border-radius:15px;background:'+ws.color+';flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700">'+ws.initial+'</div>'
+            +'<div style="flex:1;min-width:0">'
+            +'<p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 4px">'+ws.name+'</p>'
+            +'<p style="font-size:12px;color:#6B7280;margin:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+(ws.desc||'No description')+'</p>'
+            +'</div>'
+            +(ic
+              ? '<span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:9999px;font-size:11px;font-weight:700;background:'+_hexToRgba(ws.color,0.12)+';color:'+ws.color+'">'
+                +'<svg style="width:10px;height:10px" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>'
+                +'Current</span>'
+              : '<svg style="width:18px;height:18px;color:#D1D5DB;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>')
+            +'</div>';
+        }).join('');
+      }
     }
     function filterWsList() {
       renderWsModalList(document.getElementById('ws-search').value);
@@ -1526,6 +1621,10 @@
     function openWsModal() {
       var input = document.getElementById('ws-search');
       if (input) input.value = '';
+      wsModalView = 'grid';
+      var gb = document.getElementById('ws-view-grid'), lb = document.getElementById('ws-view-list');
+      if (gb) gb.classList.add('toggle-active');
+      if (lb) lb.classList.remove('toggle-active');
       renderWsModalList('');
       document.getElementById('ws-modal-backdrop').classList.add('open');
     }

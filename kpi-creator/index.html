@@ -575,10 +575,7 @@
 
         
 
-        <a href="#" class="nav-item flex items-center gap-2 px-3 h-9 rounded-lg text-sm text-gray-500">
-          <span class="text-gray-400 font-medium text-base leading-none">+</span>
-          Create a project
-        </a>
+
       </div>
     </div>
 
@@ -1323,8 +1320,8 @@
             <button id="ve-create-btn" onclick="previewVizInEditor()" disabled
               class="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12.5px] font-semibold text-white opacity-40 cursor-not-allowed transition-all"
               style="background:#5B63F6;">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              Preview
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Create KPI
             </button>
           </div>
 
@@ -2073,10 +2070,13 @@
       if (typeof Chart === 'undefined') return;
       var canvas = document.getElementById(canvasId);
       if (!canvas) return;
-      // Destroy any existing chart on this specific canvas (covers multiple canvas IDs)
+      // Destroy any existing chart on this specific canvas only
       var existing = Chart.getChart(canvas);
       if (existing) { existing.destroy(); }
-      if (window._kpiChartInst) { window._kpiChartInst.destroy(); window._kpiChartInst = null; }
+      // Only clear global ref if it was pointing to this same canvas
+      if (window._kpiChartInst && window._kpiChartInst === existing) {
+        window._kpiChartInst = null;
+      }
       // Clear stale dimension attributes so Chart.js recomputes from the current CSS layout
       canvas.removeAttribute('width');
       canvas.removeAttribute('height');
@@ -3072,13 +3072,23 @@
     // ─────────────────────────────────────────────────────────────────────────
 
     function startNewVisualization() {
-      // Show the full Visualization Editor split view
+      // Show the Visualization Editor — keep results panel visible below it
       var inner = document.getElementById('sql-editor-inner');
       var fileTabBar = document.getElementById('sql-file-tab-bar');
       var veMode = document.getElementById('sql-viz-editor-mode');
-      if (inner) inner.classList.add('hidden');
+      var editorWrap = document.getElementById('sql-editor-wrap');
       if (fileTabBar) fileTabBar.classList.add('hidden');
-      if (veMode) { veMode.classList.remove('hidden'); veMode.classList.add('flex'); }
+      // Hide only the CodeMirror editor; keep result tab bar + results panel
+      if (editorWrap) editorWrap.classList.add('hidden');
+      // Constrain inner to a compact height so VE preview gets the main space
+      // Use CSS order to place VE preview above and results below (inner is first in DOM)
+      if (inner) { inner.style.flex = '1 1 0%'; inner.style.overflow = 'hidden'; inner.style.order = '2'; }
+      if (veMode) { veMode.classList.remove('hidden'); veMode.classList.add('flex'); veMode.style.order = '1'; }
+      // In VE mode: hide saved viz tabs and + Visualization btn from result bar
+      var vizTabs = document.getElementById('result-viz-tabs');
+      var newVizBtn = document.getElementById('new-viz-tab-btn');
+      if (vizTabs) vizTabs.style.display = 'none';
+      if (newVizBtn) newVizBtn.style.display = 'none';
       // Close old sidebar if somehow open
       var vizSidebar = document.getElementById('sql-viz-sidebar');
       if (vizSidebar) { vizSidebar.classList.add('hidden'); vizSidebar.classList.remove('flex'); }
@@ -3125,9 +3135,11 @@
       // Switch to General tab
       switchVETab('general');
       _onVETypeChange();
-      // Mark __new__ tab as active
-      _ensureNewVizTab();
+      // Don't create the viz tab yet — it appears only after Create KPI is clicked
+      // Just set internal state and show the table in the results panel
       _activeResultTab = '__new__';
+      _editingNewViz = true;
+      switchResultTab('table', true);
     }
 
     function closeVizEditorMode() {
@@ -3135,8 +3147,17 @@
       var fileTabBar = document.getElementById('sql-file-tab-bar');
       var veMode = document.getElementById('sql-viz-editor-mode');
       if (veMode) { veMode.classList.add('hidden'); veMode.classList.remove('flex'); }
-      if (inner) inner.classList.remove('hidden');
       if (fileTabBar) fileTabBar.classList.remove('hidden');
+      // Restore SQL editor and full inner layout
+      var editorWrap = document.getElementById('sql-editor-wrap');
+      if (editorWrap) editorWrap.classList.remove('hidden');
+      if (inner) { inner.style.flex = ''; inner.style.overflow = ''; inner.style.order = ''; }
+      if (veMode) veMode.style.order = '';
+      // Restore viz tabs and + Visualization button
+      var vizTabs = document.getElementById('result-viz-tabs');
+      var newVizBtn = document.getElementById('new-viz-tab-btn');
+      if (vizTabs) vizTabs.style.display = '';
+      if (newVizBtn) newVizBtn.style.display = '';
       // Move VE right panel back into sql-layout (its resting place) and hide it
       var vePanel = document.getElementById('ve-right-panel');
       var sqlLayout = document.getElementById('sql-layout');
@@ -3405,6 +3426,9 @@
       var val = (document.getElementById('ve-viz-name').value || '').trim();
       var nm = document.getElementById('ve-breadcrumb-name');
       if (nm) nm.textContent = val || 'New Visualization';
+      // Keep the __new__ tab label in sync
+      var newTabLbl = document.querySelector('[data-tab-id="__new__"] .tab-new-label');
+      if (newTabLbl) newTabLbl.textContent = val || 'New Visualization';
       _checkVECreateBtn();
     }
 
@@ -3477,9 +3501,8 @@
           });
         });
       }
-      // Update result tab bar
+      // Update result tab bar (creates named tab, but don't switch to it yet — that happens on Save)
       _updateVEResultTab(vizId, vizName, rawChartType);
-      // Update saved count badge
       var badge = document.getElementById('sql-viz-saved-count');
       if (badge) { badge.textContent = _savedVizList.length + ' saved'; badge.classList.remove('hidden'); }
       // Change button to Update
@@ -3693,10 +3716,15 @@
       _activeResultTab = vizId;
     }
 
-    function _ensureNewVizTab() {
-      // Remove if already exists
+    function _ensureNewVizTab(name) {
+      var label = name || 'New Visualization';
+      // Update label if tab already exists
       var existing = document.querySelector('[data-tab-id="__new__"]');
-      if (existing) return;
+      if (existing) {
+        var lbl = existing.querySelector('.tab-new-label');
+        if (lbl) lbl.textContent = label;
+        return;
+      }
       var container = document.getElementById('result-viz-tabs');
       var tabEl = document.createElement('button');
       tabEl.className = 'result-tab';
@@ -3706,7 +3734,7 @@
         '<svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' +
           '<path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>' +
         '</svg>' +
-        'New Visualization' +
+        '<span class="tab-new-label">' + label + '</span>' +
         '<span class="tab-x" onclick="_removeNewVizTab(event)" title="Cancel">' +
           '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' +
         '</span>';
