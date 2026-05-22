@@ -1105,7 +1105,7 @@ After selecting a connector, the credentials area renders a 3-step flow dynamica
 - Hover: `background:#EEF2FF`
 - Active: `background:#EEF2FF; border-left:2px solid #5B63F6; padding-left:10px`
 - Dividers between sections: `mx-3 border-t border-gray-100`
-- Scrollbar: custom 6px width, `#CBD5E1` thumb, transparent track
+- Scrollbar: global `1px` width (`#CBD5E1` thumb, transparent track); filter scroll and link-modal scroll scoped to `4px`
 
 ---
 

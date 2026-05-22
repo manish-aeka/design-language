@@ -1045,21 +1045,15 @@
                 </div>
 
                 <!-- Card footer -->
-                <div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-100">
-                  <button onclick="closeVizEditorMode()" class="flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12.5px] font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-                    Back to query
+                <div class="flex items-center justify-end gap-2 px-5 py-3.5 border-t border-gray-100">
+                  <button onclick="exportViz()" class="flex items-center gap-1.5 h-9 px-3 rounded-xl text-[12.5px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    Export
                   </button>
-                  <div class="flex items-center gap-2">
-                    <button onclick="exportViz()" class="flex items-center gap-1.5 h-9 px-3 rounded-xl text-[12.5px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-                      Export
-                    </button>
-                    <button onclick="saveVizAndClose()" class="flex items-center gap-2 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                      Save
-                    </button>
-                  </div>
+                  <button onclick="saveVizAndClose()" class="flex items-center gap-2 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style="background:#5B63F6;box-shadow:0 1px 4px rgba(91,99,246,0.30);">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Save
+                  </button>
                 </div>
 
               </div>
@@ -2984,6 +2978,7 @@
     var _veYCols = [];           // selected Y column names
     var _veCurrentVizId = null;  // set after saving
     var _veChartInst = null;     // Chart.js instance in ve-chart-canvas
+    var _veNameUserEdited = false; // true once user manually types a name
 
     // ── VE Custom Dropdown Engine ─────────────────────────────────────────────
     var _veOpenDD = null;
@@ -3084,11 +3079,6 @@
       // Use CSS order to place VE preview above and results below (inner is first in DOM)
       if (inner) { inner.style.flex = '1 1 0%'; inner.style.overflow = 'hidden'; inner.style.order = '2'; }
       if (veMode) { veMode.classList.remove('hidden'); veMode.classList.add('flex'); veMode.style.order = '1'; }
-      // In VE mode: hide saved viz tabs and + Visualization btn from result bar
-      var vizTabs = document.getElementById('result-viz-tabs');
-      var newVizBtn = document.getElementById('new-viz-tab-btn');
-      if (vizTabs) vizTabs.style.display = 'none';
-      if (newVizBtn) newVizBtn.style.display = 'none';
       // Close old sidebar if somehow open
       var vizSidebar = document.getElementById('sql-viz-sidebar');
       if (vizSidebar) { vizSidebar.classList.add('hidden'); vizSidebar.classList.remove('flex'); }
@@ -3107,6 +3097,7 @@
       if (_veChartInst) { _veChartInst.destroy(); _veChartInst = null; }
       // Reset form fields first (so populate can set a fresh default name)
       var nameIn = document.getElementById('ve-viz-name'); if (nameIn) nameIn.value = '';
+      _veNameUserEdited = false;
       var vtSel = document.getElementById('ve-viz-type'); if (vtSel) vtSel.value = 'chart';
       var ctSel = document.getElementById('ve-chart-type'); if (ctSel) ctSel.value = 'bar';
       _veRefreshDDById('ve-viz-type');
@@ -3153,11 +3144,6 @@
       if (editorWrap) editorWrap.classList.remove('hidden');
       if (inner) { inner.style.flex = ''; inner.style.overflow = ''; inner.style.order = ''; }
       if (veMode) veMode.style.order = '';
-      // Restore viz tabs and + Visualization button
-      var vizTabs = document.getElementById('result-viz-tabs');
-      var newVizBtn = document.getElementById('new-viz-tab-btn');
-      if (vizTabs) vizTabs.style.display = '';
-      if (newVizBtn) newVizBtn.style.display = '';
       // Move VE right panel back into sql-layout (its resting place) and hide it
       var vePanel = document.getElementById('ve-right-panel');
       var sqlLayout = document.getElementById('sql-layout');
@@ -3301,9 +3287,8 @@
         }).join('');
       }
 
-      // Default name
-      var nameIn = document.getElementById('ve-viz-name');
-      if (nameIn && !nameIn.value.trim()) nameIn.value = 'Chart 1';
+      // Default name: auto-set from current chart type
+      _applyAutoVizName();
       _checkVECreateBtn();
     }
 
@@ -3388,7 +3373,27 @@
       if (cc) cc.classList.toggle('hidden', !isCounter);
       if (tc) tc.classList.toggle('hidden', !isTable);
       _populateVEDropdowns();
+      _applyAutoVizName();
       _checkVECreateBtn();
+    }
+
+    function _applyAutoVizName() {
+      if (_veNameUserEdited) return;
+      var vizType = (document.getElementById('ve-viz-type') || {}).value || 'chart';
+      var autoName;
+      if (vizType === 'counter') {
+        autoName = 'Counter';
+      } else if (vizType === 'table') {
+        autoName = 'Table';
+      } else {
+        var ct = (document.getElementById('ve-chart-type') || {}).value || 'bar';
+        var _nm = { bar:'Bar Chart', line:'Line Chart', area:'Area Chart', pie:'Pie Chart', doughnut:'Donut Chart', hbar:'Horizontal Bar', scatter:'Scatter Chart' };
+        autoName = _nm[ct] || 'Chart';
+      }
+      var nameIn = document.getElementById('ve-viz-name');
+      if (nameIn) nameIn.value = autoName;
+      var bc = document.getElementById('ve-breadcrumb-name');
+      if (bc) bc.textContent = autoName;
     }
 
     function _onVEChartTypeChange() {
@@ -3419,10 +3424,12 @@
       if (rangeRow) rangeRow.classList.toggle('hidden', isPieLike);
       if (sortRow)  sortRow.classList.toggle('hidden',  isScatter);
 
+      _applyAutoVizName();
       _checkVECreateBtn();
     }
 
     function _onVENameInput() {
+      _veNameUserEdited = true;
       var val = (document.getElementById('ve-viz-name').value || '').trim();
       var nm = document.getElementById('ve-breadcrumb-name');
       if (nm) nm.textContent = val || 'New Visualization';
@@ -3501,8 +3508,10 @@
           });
         });
       }
-      // Update result tab bar (creates named tab, but don't switch to it yet — that happens on Save)
+      // Update result tab bar
       _updateVEResultTab(vizId, vizName, rawChartType);
+      // Switch result panel at the bottom to the saved viz
+      switchResultTab(vizId);
       var badge = document.getElementById('sql-viz-saved-count');
       if (badge) { badge.textContent = _savedVizList.length + ' saved'; badge.classList.remove('hidden'); }
       // Change button to Update
@@ -3671,8 +3680,35 @@
 
     /* Save the visualization (commits to result tab bar) and close VE */
     function saveVizAndClose() {
-      createKPIFromVizEditor();   // saves, adds/updates named result tab
-      closeVizEditorMode();       // closes VE, switches to the new viz tab
+      var vizName = (document.getElementById('ve-viz-name').value || '').trim();
+      var vizType = document.getElementById('ve-viz-type').value;
+      if (!vizName) return;
+      if (vizType === 'chart' && _veYCols.length === 0) return;
+      var rawChartType = vizType === 'counter' ? 'kpi' : (vizType === 'table' ? 'table' : document.getElementById('ve-chart-type').value);
+      var xCol = (document.getElementById('ve-x-col') || {}).value || null;
+      var kpiCol = (document.getElementById('ve-kpi-col') || {}).value || xCol;
+      var newAxisState = {
+        'x-axis': xCol,
+        'y-axis': _veYCols[0] || null,
+        'y-cols': _veYCols.slice(),
+        'kpi-value': rawChartType === 'kpi' ? kpiCol : xCol
+      };
+      // Apply axis + chart state globally so closeVizEditorMode renders the right chart
+      _axisState = JSON.parse(JSON.stringify(newAxisState));
+      sqlState.chartType = rawChartType;
+      // Persist the viz entry
+      var vizId = _veCurrentVizId || ('viz-' + Date.now());
+      _veCurrentVizId = vizId;
+      var vizEntry = { id: vizId, name: vizName, type: rawChartType, axisState: JSON.parse(JSON.stringify(newAxisState)), data: sqlState.data };
+      var existIdx = _savedVizList.findIndex(function(v) { return v.id === vizId; });
+      if (existIdx >= 0) { _savedVizList[existIdx] = vizEntry; } else { _savedVizList.push(vizEntry); }
+      // Create/update the named tab in the result tab bar
+      _updateVEResultTab(vizId, vizName, rawChartType);
+      var badge = document.getElementById('sql-viz-saved-count');
+      if (badge) { badge.textContent = _savedVizList.length + ' saved'; badge.classList.remove('hidden'); }
+      // Close VE: restores SQL editor in middle and switches to the viz tab at bottom
+      // (closeVizEditorMode calls switchResultTab(_veCurrentVizId) which renders the chart there)
+      closeVizEditorMode();
     }
 
     function _updateVEResultTab(vizId, vizName, chartType) {

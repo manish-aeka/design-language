@@ -134,7 +134,13 @@ Every page uses a **3-zone shell**:
 
 ### Topbar
 
-Height `h-11`, padding `px-4`, `border-b border-gray-100`, `bg-white`, `flex-shrink-0`.
+Height `h-11`, `border-b border-gray-100`, `bg-white`, `flex-shrink-0`. Horizontal padding **varies by page:**
+
+| Pages | Padding |
+|---|---|
+| dashboard, kpi-creator, settings-profile, chat | `px-4` |
+| recent-view, sovereign-capital-gate, create-form | `px-8` |
+| presentation-builder | `px-5` |
 
 **LEFT zone:** hamburger → back → forward → `w-px h-4 bg-gray-200` divider → breadcrumb  
 **RIGHT zone:** bell icon button → user avatar + name
@@ -205,7 +211,10 @@ Top of sidebar, `border-b border-gray-100`. Avatar is `w-7 h-7 rounded-full` wit
 #### Upgrade Banner
 
 ```html
-<div class="mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+<div class="mx-3 mb-3 mt-1 rounded-lg px-3 py-2.5 flex items-center gap-2.5" style="background:#E8EEFF">
+```
+
+> **Exception:** `datasource/index.html` uses `rounded-xl` instead of `rounded-lg`.
   <div class="w-8 h-8 rounded-full flex-shrink-0" style="background:#C7D2FE">
     <svg style="color:#4F6EF7">…sparkle icon…</svg>
   </div>
@@ -243,6 +252,7 @@ Heights: `h-7` (compact footer), `h-8` (standard), `h-9` (prominent CTA).
 
 Used in editor toolbars (topbar of canvas pages):
 
+**Standard variant** (kpi-creator, document-builder):
 ```css
 .toolbar-btn {
   display: flex; align-items: center; gap: 6px;
@@ -252,6 +262,13 @@ Used in editor toolbars (topbar of canvas pages):
   cursor: pointer; transition: background-color 100ms ease;
 }
 .toolbar-btn:hover { background: #F9FAFB; }
+```
+
+**Large variant** (dashboard — toolbar bar below topbar):
+```css
+.toolbar-btn {
+  padding: 0 12px; height: 36px; font-size: 13px; /* all other props same */
+}
 ```
 
 #### Icon Button (topbar)
@@ -316,7 +333,7 @@ Used in editor toolbars (topbar of canvas pages):
 | 28px | `w-7 h-7 rounded-full` | `background:#3B5BDB` | Topbar user, nav workspace |
 | 24px | `w-6 h-6 rounded-full` | workspace color | Workspace switcher list |
 | 20px | `w-5 h-5 rounded-full` | `background:#5B63F6` | Card footer workspace |
-| AI avatar | `w-[26px] h-[26px] rounded-[8px]` | `linear-gradient(140deg,#5B63F6,#7C6FF7)` | Chat AI messages |
+| AI avatar (message bubble) | `w-6 h-6 rounded-lg` | `background:#EEF2FF` + sparkle SVG `color:#5B63F6` | AI message icons (chat page, kpi-creator chat panel) |
 | User avatar | `w-[26px] h-[26px] rounded-full` | `background:#3B5BDB` | Chat user messages |
 
 Avatar initials: `text-[10–11px] font-bold text-white`.
@@ -327,23 +344,38 @@ Avatar initials: `text-[10–11px] font-bold text-white`.
 
 #### Message bubbles
 
-```css
-/* AI bubble */
-.msg-bubble-ai {
-  background: #F3F4F6;
-  border-radius: 16px 16px 16px 4px; /* tail bottom-left */
-  padding: 9px 12px;
-  font-size: 12.5px; line-height: 1.65; color: #374151;
-  max-width: 208px;
-}
+Bubble styles differ between the full-page chat and the kpi-creator chat panel:
 
-/* User bubble */
+**`chat/index.html` (full-page chat):**
+```css
+/* User bubble — light gray */
+.msg-user .bubble {
+  background: #F3F4F6; color: #111827;
+  border-radius: 18px 18px 4px 18px; /* tail bottom-right */
+  padding: 10px 16px; font-size: 14px;
+}
+/* AI bubble — transparent canvas, icon is #EEF2FF box */
+.msg-ai .bubble {
+  background: transparent; color: #111827;
+  border-radius: 18px 18px 18px 4px; /* tail bottom-left */
+  padding: 12px 16px; font-size: 14px;
+}
+.msg-ai .ai-icon { /* w-6 h-6 rounded-lg bg-[#EEF2FF]; sparkle SVG color:#5B63F6 */ }
+```
+
+**`kpi-creator/index.html` (narrow side panel):**
+```css
+/* User bubble — brand blue */
 .msg-bubble-user {
-  background: #5B63F6;
-  border-radius: 16px 16px 4px 16px; /* tail bottom-right */
-  padding: 9px 12px;
-  font-size: 12.5px; line-height: 1.65; color: white;
-  max-width: 208px;
+  background: #5B63F6; color: white;
+  border-radius: 16px 16px 4px 16px;
+  padding: 9px 12px; font-size: 12.5px; max-width: 208px;
+}
+/* AI bubble — light gray */
+.msg-bubble-ai {
+  background: #F3F4F6; color: #374151;
+  border-radius: 16px 16px 16px 4px;
+  padding: 9px 12px; font-size: 12.5px; max-width: 208px;
 }
 ```
 
@@ -447,13 +479,26 @@ Canvas area classes: `flex-1 canvas-grid flex items-center justify-center overfl
 
 ### Scrollbar
 
-Applied globally across all pages:
+All pages share the same thumb and track style but **scrollbar width varies per page:**
 
 ```css
-::-webkit-scrollbar { width: 6px; }  /* 5px on chat page */
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ```
+
+| Page | Global width |
+|---|---|
+| dashboard | `3px` (height also `3px`) |
+| presentation-builder | `3px` |
+| kpi-creator | `4px` |
+| chat | `5px` |
+| create-workspace | `5px` |
+| create-form | `5px` |
+| recent-view | `6px` |
+| document-builder | `6px` |
+| sovereign-capital-gate | `6px` |
+| datasource | `6px` global + `.scrollbar-thin` `4px` (scoped, `#E2E8F0` thumb) |
+| settings-profile | `1px` global (filter/modal scrollers scoped to `4px`) |
 
 ### Role Toggle Button Group
 
@@ -555,9 +600,10 @@ Header row uses `flex-shrink-0` so it stays pinned while the rows div scrolls in
 
 ### Chat (`chat/index.html`)
 
-- Right panel `w-[300px]` with `border-l border-gray-100`
-- Content area uses `flex-1` document canvas on the left
-- Same chat bubble + input patterns as KPI Creator
+- **Full-width conversation layout** — message container is `max-w-5xl mx-auto px-4`, not a narrow panel
+- **Collapsible sources drawer:** `#chat-sources-drawer` starts at `width:0`, expands to `width:320px` via `.open` class with `transition: width 280ms cubic-bezier(0.4,0,0.2,1)`. A matching separator transitions from 0→1px border.
+- **Input bar:** `rounded-2xl border border-gray-200 shadow-card`, `focus-within:border-indigo-300 focus-within:shadow-input`. Auto-grow `<textarea rows="1" oninput="autoGrow(this)">`. Bottom actions: attach button + search pill + send button.
+- **Bubble styles differ from KPI Creator** — see Chat UI → Message bubbles above (user = gray `#F3F4F6`, AI icon = `#EEF2FF` box, not blue/gradient).
 
 ### KPI Creator (`kpi-creator/index.html`)
 
