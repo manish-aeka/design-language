@@ -22,8 +22,9 @@
 |  > My Private Proj |  +----------------------------------------------+ |
 |  > Sovereign Cap.  |  |  CANVAS  (flex-1, overflow-y-auto, bg-white) | |
 |    (ACTIVE)        |  |  +------------------+ +-------------------+  | |
-| ----------         |  |  | Monthly Revenue  | | Sales by Region   |  | |
-| Settings           |  |  | Line  col-span-2 | | Bar   col-span-2  |  | |
+| ----------         |  |                                              | |
+| Datasources        |  |                                              | |
+| Settings           |  |  | Monthly Revenue  | | Sales by Region   |  | |
 | Explore banner     |  |  +------------------+ +-------------------+  | |
 |                    |  |  +----------+ +-------+ +-------+           | |
 |                    |  |  | Revenue  | |Market | |Retain |  (4-col)  | |
@@ -166,7 +167,7 @@ Settings → `../settings-profile/index.html`
 ### Explore Banner
 
 ```
-mx-3 mb-3 mt-1 rounded-xl px-3 py-2.5  bg-[#E8EEFF]
+mx-3 mb-3 mt-1 rounded-lg px-3 py-2.5  bg-[#E8EEFF]
 +-- icon w-8 h-8 rounded-full bg-[#C7D2FE]  (sparkle SVG color:#4F6EF7)
 +-- "Explore free features"  text-[12px] font-semibold color:#3B4ECC
     "Credit left: 15"        text-[11px] color:#6B7ADE
@@ -445,7 +446,7 @@ Form card: `rounded-lg max-w-lg px-7 py-8`.
 ## 15. Scrollbar
 
 ```css
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ```

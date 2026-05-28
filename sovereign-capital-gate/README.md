@@ -28,8 +28,8 @@ The **Sovereign Capital Gate** page is a project detail view within Aibii. It di
 │    └ …(9 sub-items)          │  Item grid (4 cols, 9 cards)                 │
 │  + Create a project          │                                               │
 │  ──────────────────────────  │                                               │
+│  🗄  Datasources             │                                               │
 │  ⚙  Settings                 │                                               │
-│  ──────────────────────────  │                                               │
 │  🔵 Explore free features    │                                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -89,7 +89,10 @@ Label: `"PROJECTS"` — 11px uppercase `#9CA3AF`.
 
 ### Bottom Nav
 
-Settings only — `href="../settings-profile/index.html"`. Shared with me is commented out.
+| Item | href |
+|---|---|
+| Datasources | `../datasource/index.html` |
+| Settings | `../settings-profile/index.html` |
 
 ### Explore Banner
 

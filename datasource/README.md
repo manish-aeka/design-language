@@ -445,9 +445,34 @@ Shared across all design-language pages.
 ### Bottom utility nav
 | Item | State |
 |---|---|
-| Connect Datasource | **Active** — `#EEF2FF` bg, `2px solid #5B63F6` left border |
-| Shared with me | — |
+| Datasource | **Active** — `#EEF2FF` bg, `2px solid #5B63F6` left border |
 | Settings | `href="../settings-profile/index.html"` |
+
+### Explore banner
+```
+div.mx-3.mb-3.mt-1.rounded-xl.px-3.py-2.5  bg:#E8EEFF
+  div.w-8.h-8.rounded-full  bg:#C7D2FE  → sparkle SVG color:#4F6EF7
+  p "Explore free features"  text-[12px] font-semibold color:#3B4ECC
+  p "Credit left: 15"        text-[11px] color:#6B7ADE
+```
+> Note: This page uses `rounded-xl` — all other pages use `rounded-lg`.
+
+---
+
+## Scrollbar
+
+```css
+/* Global */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Scoped thin variant (.scrollbar-thin) */
+.scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 9999px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+```
 
 ---
 

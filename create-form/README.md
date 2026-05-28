@@ -26,8 +26,8 @@ The **Create Form** page is a drag-and-drop form builder within Aibii. Users can
 │  ▶ Sovereign Capital Gate    │  │  ────────────────────── (input)       │   │
 │  + Create a project          │  └───────────────────────────────────────┘   │
 │  ──────────────────────────  │  ┌── Question Card ──────────────────────┐   │
-│  ⚙  Settings                 │  │  ...                                  │   │
-│  ──────────────────────────  │  └───────────────────────────────────────┘   │
+│  🗄  Datasources             │  │  ...                                  │   │
+│  ⚙  Settings                 │  └───────────────────────────────────────┘   │
 │  🔵 Explore free features    │                        [Clear form] [Submit]  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -83,7 +83,10 @@ Label: `"PROJECTS"` — 11px uppercase `#9CA3AF`.
 
 ### Bottom Nav
 
-Settings only — `href="../settings-profile/index.html"`. Connect Datasource and Shared with me are commented out.
+| Item | href |
+|---|---|
+| Datasources | `../datasource/index.html` |
+| Settings | `../settings-profile/index.html` |
 
 ### Explore Banner
 

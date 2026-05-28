@@ -79,9 +79,10 @@ Root element: `body.font-sans.bg-white.text-gray-900.flex.h-screen.overflow-hidd
 |---|---|
 | Sidebar width | `220px` fixed, `min-w-[220px]` |
 | Top bar height | `h-11` (44px) |
-| Messages area padding | `px-6 py-6` |
+| Messages area outer | `py-6` (on `#messages-area`) |
+| Messages area inner | `max-w-5xl mx-auto px-4 space-y-6` (on `#messages-inner`) |
 | Message gap | `space-y-6` (24px between messages) |
-| Input bar padding | `px-6 pb-5` |
+| Input bar padding | `px-4 pb-5 pt-2` + `max-w-5xl mx-auto` wrapper |
 | Input bar inner padding | `px-4 py-3` |
 | AI message gap (icon + content) | `gap-3` |
 | Action button height | `h-7` (28px) |
@@ -106,7 +107,7 @@ aside#sidebar  w-[220px] min-w-[220px] h-full flex flex-col bg-white border-r bo
 ├── Spacer               flex-1
 ├── Divider              mx-3 border-t border-gray-100
 ├── Bottom nav           px-3 py-2 space-y-0.5
-└── Explore banner       mx-3 mb-3 rounded-xl bg-[#E8EEFF]
+└── Explore banner       mx-3 mb-3 rounded-lg bg-[#E8EEFF]
 ```
 
 ### Workspace switcher button
@@ -158,7 +159,7 @@ Sub-item icon colours: `#5B63F6` chat, `#16A34A` dashboard, `#F97316` document, 
 
 ### Explore banner
 ```
-div.mx-3.mb-3.mt-1.rounded-xl.px-3.py-2.5  bg:#E8EEFF
+div.mx-3.mb-3.mt-1.rounded-lg.px-3.py-2.5  bg:#E8EEFF
   div.w-8.h-8.rounded-full  bg:#C7D2FE  → sparkle SVG color:#4F6EF7
   p "Explore free features"  text-[12px] font-semibold color:#3B4ECC
   p "Credit left: 15"        text-[11px] color:#6B7ADE
